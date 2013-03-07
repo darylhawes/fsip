@@ -54,7 +54,7 @@ class Five extends Orbit{
 	public function orbit_config(){
 		
 		?>
-		<p>Let Alkaline update your <a href="http://www.500px.com/">500px</a>.</p>
+		<p>Update your <a href="http://www.500px.com/">500px</a>.</p>
 		<?php
 		if($this->five_active){
 			$this->five_format_image = $this->makeHTMLSafe($this->five_format_image);
@@ -81,7 +81,7 @@ class Five extends Orbit{
 					<td class="right"><label>Name:</label></td>
 					<td>
 						<a href="<?php echo $this->locationFull(array('link' => 'five')); ?>"><button>Link to 500px</button></a><br /><br />
-						<span class="quiet">Note: Alkaline will be linked to whichever 500px account you are currently logged into.</span>
+						<span class="quiet">Note: Link will be to whichever 500px account you are currently logged into.</span>
 					</td>
 				</tr>
 			</table>

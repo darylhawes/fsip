@@ -7,14 +7,14 @@
 */
 
 require_once('./../../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true);
 
-if(!empty($_SESSION['alkaline']['maintenance']['size_id'])){
+if(!empty($_SESSION['fsip']['maintenance']['size_id'])){
 	if(empty($_POST['image_id'])){
 		$image_ids = new Find('images', null, null, null, false);
 		$image_ids->find();
@@ -22,7 +22,7 @@ if(!empty($_SESSION['alkaline']['maintenance']['size_id'])){
 	}
 	else{
 		$image = new Image($_POST['image_id']);
-		$image->sizeImage(null, intval($_SESSION['alkaline']['maintenance']['size_id']));
+		$image->sizeImage(null, intval($_SESSION['fsip']['maintenance']['size_id']));
 	}
 }
 

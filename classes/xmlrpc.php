@@ -12,7 +12,7 @@
  * @version 1.0
  */
 
-class XMLRPC extends Alkaline{
+class XMLRPC extends FSIP{
 	public $user;
 	
 	public function __construct(){

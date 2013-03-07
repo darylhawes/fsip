@@ -6,15 +6,15 @@
 // http://www.alkalineapp.com/
 */
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true, 'thumbnails');
 
 if(!empty($_GET['id'])){
-	$size_id = $alkaline->findID($_GET['id']);
+	$size_id = $fsip->findID($_GET['id']);
 }
 
 if(!empty($_GET['act'])){
@@ -23,23 +23,23 @@ if(!empty($_GET['act'])){
 
 // SAVE CHANGES
 if(!empty($_POST['size_id'])){
-	$size_id = $alkaline->findID($_POST['size_id']);
+	$size_id = $fsip->findID($_POST['size_id']);
 	
 	// Delete size
 	if(@$_POST['size_delete'] == 'delete'){
-		$alkaline->deleteRow('sizes', $size_id);
+		$fsip->deleteRow('sizes', $size_id);
 	}
 	
 	// Update size
 	else{
 		// Check for file append, prepend duplicates--will overwrite
-		$query = $alkaline->prepare('SELECT size_title FROM sizes WHERE size_append = :size_append AND size_prepend = :size_prepend AND size_id != ' . $size_id);
+		$query = $fsip->prepare('SELECT size_title FROM sizes WHERE size_append = :size_append AND size_prepend = :size_prepend AND size_id != ' . $size_id);
 		$query->execute(array(':size_append' => @$_POST['size_append'], ':size_prepend' => @$_POST['size_prepend']));
 		$sizes = $query->fetchAll();
 		
 		if(count($sizes) > 0){
 			$size_title = $sizes[0]['size_title'];
-			$alkaline->addNote('The thumbnail &#8220;' . $size_title . '&#8221; already uses these prepend and append to filename settings.', 'error');
+			$fsip->addNote('The thumbnail &#8220;' . $size_title . '&#8221; already uses these prepend and append to filename settings.', 'error');
 		}
 		else{
 			if(@$_POST['size_watermark'] == 'watermark'){
@@ -49,8 +49,8 @@ if(!empty($_POST['size_id'])){
 				$size_watermark = 0;
 			}
 		
-			$fields = array('size_title' => $alkaline->makeUnicode($_POST['size_title']),
-				'size_label' => preg_replace('#[^a-z]#si', '', $alkaline->makeUnicode($_POST['size_label'])),
+			$fields = array('size_title' => $fsip->makeUnicode($_POST['size_title']),
+				'size_label' => preg_replace('#[^a-z]#si', '', $fsip->makeUnicode($_POST['size_label'])),
 				'size_height' => $_POST['size_height'],
 				'size_width' => $_POST['size_width'],
 				'size_type' => $_POST['size_type'],
@@ -58,14 +58,14 @@ if(!empty($_POST['size_id'])){
 				'size_prepend' => @$_POST['size_prepend'],
 				'size_watermark' => $size_watermark);
 		
-			$alkaline->updateRow($fields, 'sizes', $size_id);
+			$fsip->updateRow($fields, 'sizes', $size_id);
 		}
 	}
 	
 	// Build size
-	if((@$_POST['size_build'] == 'build') and ($alkaline->countNotes('error') == 0)){
+	if((@$_POST['size_build'] == 'build') and ($fsip->countNotes('error') == 0)){
 		// Store to build thumbnails
-		$_SESSION['alkaline']['maintenance']['size_id'] = $size_id;
+		$_SESSION['fsip']['maintenance']['size_id'] = $size_id;
 		
 		sleep(1);
 		
@@ -73,27 +73,27 @@ if(!empty($_POST['size_id'])){
 		exit();
 	}
 	
-	if($alkaline->countNotes('error') == 0){
+	if($fsip->countNotes('error') == 0){
 		unset($size_id);
 	}
 }
 else{
-	$alkaline->deleteEmptyRow('sizes', array('size_title'));
+	$fsip->deleteEmptyRow('sizes', array('size_title'));
 }
 
 // CREATE SIZE
 if(!empty($size_act) and ($size_act == 'build')){
-	$size_id = $alkaline->addRow(null, 'sizes');
+	$size_id = $fsip->addRow(null, 'sizes');
 }
 
 define('TAB', 'settings');
 
 // GET SIZES TO VIEW OR SIZE TO EDIT
 if(empty($size_id)){
-	$sizes = $alkaline->getTable('sizes', null, null, null, 'size_title ASC');
+	$sizes = $fsip->getTable('sizes', null, null, null, 'size_title ASC');
 	$size_count = @count($sizes);
 	
-	define('TITLE', 'Alkaline Thumbnails');
+	define('TITLE', 'Thumbnails');
 	require_once(PATH . ADMIN . 'includes/header.php');
 
 	?>
@@ -136,16 +136,16 @@ if(empty($size_id)){
 }
 else{
 	// Get sizes set
-	$size = $alkaline->getRow('sizes', $size_id);
-	$size = $alkaline->makeHTMLSafe($size);
+	$size = $fsip->getRow('sizes', $size_id);
+	$size = $fsip->makeHTMLSafe($size);
 	
 	// Dashboard thumbnail warning
 	if(($size['size_label'] == 'admin') or ($size['size_label'] == 'square')){
-		$alkaline->addNote('This thumbnail is crucial to the proper functioning of your dashboard. Modify at your own risk.', 'error');
+		$fsip->addNote('This thumbnail is crucial to the proper functioning of your dashboard. Modify at your own risk.', 'error');
 	}
 	
 	if(!empty($size['size_title'])){	
-		define('TITLE', 'Alkaline Thumbnail: &#8220;' . ucwords($size['size_title'])  . '&#8221;');
+		define('TITLE', 'Thumbnail: &#8220;' . ucwords($size['size_title'])  . '&#8221;');
 	}
 	require_once(PATH . ADMIN . 'includes/header.php');
 	
@@ -227,7 +227,7 @@ else{
 			</tr>
 			<tr>
 				<td></td>
-				<td><input type="hidden" name="size_id" value="<?php echo $size['size_id']; ?>" /><input type="submit" value="Save changes" /> or <a href="<?php echo $alkaline->back(); ?>">cancel</a></td>
+				<td><input type="hidden" name="size_id" value="<?php echo $size['size_id']; ?>" /><input type="submit" value="Save changes" /> or <a href="<?php echo $fsip->back(); ?>">cancel</a></td>
 			</tr>
 		</table>
 	</form>

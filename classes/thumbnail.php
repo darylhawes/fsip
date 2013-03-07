@@ -12,7 +12,7 @@
  * @version 1.0
  */
 
-class Thumbnail extends Alkaline{
+class Thumbnail extends FSIP{
 	public $library;
 	public $thumbnail;
 	protected $path;

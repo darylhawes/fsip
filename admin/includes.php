@@ -7,18 +7,18 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true);
 
-$includes = $alkaline->getincludes();
+$includes = $fsip->getincludes();
 $include_count = count($includes);
 
 define('TAB', 'settings');
-define('TITLE', 'Alkaline Theme Includes');
+define('TITLE', 'Theme Includes');
 require_once(PATH . ADMIN . 'includes/header.php');
 
 ?>

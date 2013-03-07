@@ -1,4 +1,4 @@
-<?php if(!empty($user) and $user->perm()){ $badges = $alkaline->getBadges(); } ?>
+<?php if(!empty($user) and $user->perm()){ $badges = $fsip->getBadges(); } ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -7,19 +7,19 @@
 	<meta name="base" content="<?php echo LOCATION . BASE; ?>" />
 	<meta name="folder_prefix" content="<?php echo FOLDER_PREFIX; ?>" />
 	<meta name="permissions" content="<?php if(!empty($user) and $user->perm() and !empty($user->user['user_permissions'])){ echo @implode(', ', $user->user['user_permissions']); } ?>" />
-	<title><?php echo (defined('TITLE') ? TITLE : 'Alkaline'); ?></title>
+	<title><?php echo (defined('TITLE') ? TITLE : 'FSIP'); ?></title>
 	<link rel="stylesheet" href="<?php echo BASE . ADMIN; ?>css/blueprint/screen.css" type="text/css" media="screen, projection" />
 	<link rel="stylesheet" href="<?php echo BASE . ADMIN; ?>css/blueprint/print.css" type="text/css" media="print" />	
 	<!--[if lt IE 8]><link rel="stylesheet" href="<?php echo BASE . ADMIN; ?>css/blueprint/ie.css" type="text/css" media="screen, projection" /><![endif]-->
 	<link rel="stylesheet" href="<?php echo BASE . ADMIN; ?>css/formalize.css" type="text/css" media="screen, projection" />
 	<link rel="stylesheet" href="<?php echo BASE . ADMIN; ?>css/jquery-ui/jquery-ui-1.8.7.custom.css" type="text/css" media="screen, projection" />
-	<link rel="stylesheet" href="<?php echo BASE . ADMIN; ?>css/alkaline.css" type="text/css" media="screen, projection" />
+	<link rel="stylesheet" href="<?php echo BASE . ADMIN; ?>css/fsip.css" type="text/css" media="screen, projection" />
 	<!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo BASE . JS; ?>jquery/excanvas.min.js"></script><![endif]-->
 	<link rel="shortcut icon" href="<?php echo BASE . ADMIN; ?>images/favicon.ico" />
-	<script src="<?php echo BASE . JS; ?>alkaline.packed.js" type="text/javascript"></script>
-	<script src="<?php echo BASE . JS; ?>alkaline.js" type="text/javascript"></script>
+	<script src="<?php echo BASE . JS; ?>fsip.packed.js" type="text/javascript"></script>
+	<script src="<?php echo BASE . JS; ?>fsip.js" type="text/javascript"></script>
 </head>
-<body id="alkaline">
+<body id="fsip">
 	<div id="header_holder">
 		<div class="container">
 			<div id="userbar" class="span-24 right">
@@ -28,7 +28,7 @@
 					?>
 					<div id="userbar_home">
 						<strong>
-							<?php $title = $alkaline->returnConf('web_title'); echo (!empty($title) ? $title : ''); ?>
+							<?php $title = $fsip->returnConf('web_title'); echo (!empty($title) ? $title : ''); ?>
 						</strong> &#0160;
 						<a href="<?php echo BASE; ?>" target="<?php if($user->readPref('home_target')){ echo '_blank'; } ?>">Launch</a>
 					</div>
@@ -49,7 +49,7 @@
 			</div>
 			<div id="header" class="span-24 last">
 				<div class="span-6 append-1">
-					<a href="<?php echo BASE . ADMIN; ?>"><img src="<?php echo BASE . ADMIN; ?>images/alkaline.png" alt="Alkaline" class="logo" /></a>
+					<a href="<?php echo BASE . ADMIN; ?>"><img src="<?php echo BASE . ADMIN; ?>images/fsip.png" alt="FSIP" class="logo" /></a>
 				</div>
 				<div id="panels" class="span-17 last">
 					<?php
@@ -124,7 +124,8 @@
 								<li id="sub_maintenance"><a href="<?php echo BASE . ADMIN . 'maintenance' . URL_CAP; ?>"><img src="<?php echo BASE . ADMIN; ?>images/minis/maintenance.png" alt="" /> Maintenance</a></li>
 							</ul>
 						</li>
-						<li id="tab_help"><a href="http://www.alkalineapp.com/guide/" target="_blank">Help</a></li>
+<!-- DEH remove dead guide link
+						<li id="tab_help"><a href="http://www.alkalineapp.com/guide/" target="_blank">Help</a></li>-->
 						<?php
 					}
 					else{
@@ -140,4 +141,4 @@
 	</div>
 	<div class="container">
 		<div id="content" class="span-24 last">
-			<?php if(!empty($alkaline)){ echo $alkaline->returnNotes(); } ?>
+			<?php if(!empty($fsip)){ echo $fsip->returnNotes(); } ?>

@@ -40,7 +40,7 @@ class Flickr extends Orbit{
 	
 	public function orbit_config(){
 		?>
-		<p>Let Alkaline upload to <a href="http://www.flickr.com/">Flickr</a>.</p>
+		<p>Upload to <a href="http://www.flickr.com/">Flickr</a>.</p>
 		<?php
 		if($this->flickr_active){
 			$this->flickr_format_image = $this->makeHTMLSafe($this->flickr_format_image);
@@ -71,7 +71,7 @@ class Flickr extends Orbit{
 					<td class="right"><label>Username:</label></td>
 					<td>
 						<a href="<?php echo $this->locationFull(array('link' => 'flickr')); ?>"><button>Link to Flickr</button></a><br /><br />
-						<span class="quiet">Note: Alkaline will be linked to whichever Flickr account you are currently logged into.</span>
+						<span class="quiet">Note: Link to the Flickr account you are currently logged into.</span>
 					</td>
 				</tr>
 			</table>
@@ -112,7 +112,7 @@ class Flickr extends Orbit{
 					$to = $this->flickr->auth('write');
 					$params = array('to' => $to,
 						'from' => $this->locationFull(array('from' => 'flickr')));
-					header('Location: http://www.alkalineapp.com/callback/?' . http_build_query($params));
+					header('Location: http://fsip.sdelargy.com/callback/?' . http_build_query($params));
 					break;
 			}
 		}

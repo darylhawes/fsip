@@ -39,7 +39,7 @@ class GoogleAnalytics extends Orbit{
 		?>
 		<p>To use this extension you will need a <a href="http://www.google.com/analytics/sign_up.html">Google Analytics account</a>. For more information on Google Analytics, visit <a href="http://www.google.com/analytics/">Google Analytics&#8217;s Web site</a>.</p>
 		
-		<p>This extension does not affect Alkaline&#8217;s built-in statistics module.</p>
+		<p>This extension does not affect the built-in statistics module.</p>
 
 		<table>
 			<tr>

@@ -19,12 +19,12 @@ function __autoload($class){
 	}
 }
 
-class Alkaline{
+class FSIP{
 	const build = 1294;
-	const copyright = 'Powered by <a href="http://www.alkalineapp.com/">Alkaline</a>. Copyright &copy; 2010-2012 by <a href="http://www.budinltd.com/">Budin Ltd.</a> Some rights reserved.';
+	const copyright = 'Powered by <a href="http://github.com/darylhawes/fsip">FSIP</a> based on <a href="http://www.alkalineapp.com/">Alkaline</a> under MIT license.';
 	const edition = 'multiuser';
-	const product = 'Alkaline';
-	const version = '1.1.2.2';
+	const product = 'FSIP';
+	const version = '1.1.2.3';
 	
 	public $admin;
 		
@@ -39,7 +39,7 @@ class Alkaline{
 	protected $notifications;
 	
 	/**
-	 * Initiates Alkaline
+	 * Initiates FSIP
 	 *
 	 * @return void
 	 **/
@@ -78,7 +78,7 @@ class Alkaline{
 		if(session_id() == ''){ session_start(); }
 		
 		// Debug info
-		$chief_classes = array('Alkaline', 'XMLRPC');
+		$chief_classes = array('FSIP', 'XMLRPC');
 		if(in_array(get_class($this), $chief_classes)){
 			// Send browser headers
 			if(!headers_sent()){
@@ -86,14 +86,14 @@ class Alkaline{
 				header('Expires: Sat, 26 Jul 1997 05:00:00 GMT', false);
 			}
 			
-			$_SESSION['alkaline']['debug']['start_time'] = microtime(true);
-			$_SESSION['alkaline']['debug']['queries'] = 0;
+			$_SESSION['fsip']['debug']['start_time'] = microtime(true);
+			$_SESSION['fsip']['debug']['queries'] = 0;
 			if($contents = file_get_contents($this->correctWinPath(PATH . 'config.json'))){
-				$_SESSION['alkaline']['config'] = json_decode($contents, true);
+				$_SESSION['fsip']['config'] = json_decode($contents, true);
 			}	
 			
-			if(empty($_SESSION['alkaline']['config'])){
-				$_SESSION['alkaline']['config'] = array();
+			if(empty($_SESSION['fsip']['config'])){
+				$_SESSION['fsip']['config'] = array();
 			}
 			
 			if($timezone = $this->returnConf('web_timezone')){
@@ -116,7 +116,7 @@ class Alkaline{
 		
 		// Set back link
 		if(!empty($_SERVER['HTTP_REFERER']) and ($_SERVER['HTTP_REFERER'] != LOCATION . $_SERVER['REQUEST_URI'])){
-			$_SESSION['alkaline']['back'] = $_SERVER['HTTP_REFERER'];
+			$_SESSION['fsip']['back'] = $_SERVER['HTTP_REFERER'];
 		} 
 		
 		// Initiate database connection, if necessary
@@ -153,11 +153,11 @@ class Alkaline{
 		}
 		
 		// Delete saved Orbit extension session references
-		if($class == 'Alkaline'){
-			unset($_SESSION['alkaline']['extensions']);
+		if($class == 'FSIP'){
+			unset($_SESSION['fsip']['extensions']);
 			
 			// Log-in guests via cookie
-			if(!empty($_COOKIE['guest_key']) and !empty($_COOKIE['guest_id']) and empty($_SESSION['alkaline']['guest'])){
+			if(!empty($_COOKIE['guest_key']) and !empty($_COOKIE['guest_id']) and empty($_SESSION['fsip']['guest'])){
 				$query = $this->prepare('SELECT * FROM guests WHERE guest_id = :guest_id LIMIT 0, 1;');
 				$query->execute(array(':guest_id' => $_COOKIE['guest_id']));
 				$guests = $query->fetchAll();
@@ -222,11 +222,11 @@ class Alkaline{
 	 * @return string Translated query
 	 */
 	public function prequery(&$query){
-		$_SESSION['alkaline']['debug']['queries']++;
+		$_SESSION['fsip']['debug']['queries']++;
 		
 		if(TABLE_PREFIX != ''){
 			// Add table prefix
-			$query = preg_replace('#(FROM|JOIN)\s+([\sa-z0-9_\-,]*)\s*(WHERE|GROUP|HAVING|ORDER)?#se', "'\\1 '.Alkaline::appendTablePrefix('\\2').' \\3'", $query);
+			$query = preg_replace('#(FROM|JOIN)\s+([\sa-z0-9_\-,]*)\s*(WHERE|GROUP|HAVING|ORDER)?#se', "'\\1 '.FSIP::appendTablePrefix('\\2').' \\3'", $query);
 			$query = preg_replace('#([a-z]+[a-z0-9-\_]*)\.#si', TABLE_PREFIX . '\\1.', $query);
 			$query = preg_replace('#(INSERT INTO|UPDATE)\s+(\w+)#si', '\\1 ' . TABLE_PREFIX . '\\2', $query);
 			$query = preg_replace('#TABLE ([[:punct:]]*)(\w+)#s', 'TABLE \\1' . TABLE_PREFIX . '\\2', $query);
@@ -342,6 +342,7 @@ class Alkaline{
 	 * @param string $request Request
 	 * @return string Response
 	 */
+	 /* DEH disable fetches from missing remote services
 	public function boomerang($request){
 		ini_set('default_socket_timeout', 1);
 		$contents = @file_get_contents('http://www.alkalineapp.com/boomerang/' . $request . '/');
@@ -353,7 +354,7 @@ class Alkaline{
 		
 		$reply = self::removeNull(json_decode($contents, true));
 		return $reply;
-	}	
+	}	*/
 	
 	// GUESTS
 	
@@ -365,7 +366,7 @@ class Alkaline{
 	 */
 	public function access($key=null){
 		// Logout
-		unset($_SESSION['alkaline']['guest']);
+		unset($_SESSION['fsip']['guest']);
 		
 		// Error checking
 		if(empty($key)){
@@ -392,7 +393,7 @@ class Alkaline{
 			setcookie('guest_key', $key, time()+$seconds, '/');
 		}
 		
-		$_SESSION['alkaline']['guest'] = $guest;
+		$_SESSION['fsip']['guest'] = $guest;
 	}
 	
 	// NOTIFICATIONS
@@ -409,7 +410,7 @@ class Alkaline{
 		$type = strval($type);
 		
 		if(!empty($message)){
-			$_SESSION['alkaline']['notifications'][] = array('message' => $message, 'type' => $type);
+			$_SESSION['fsip']['notifications'][] = array('message' => $message, 'type' => $type);
 		}
 	}
 	
@@ -421,7 +422,7 @@ class Alkaline{
 	 */
 	public function countNotes($type=null){
 		if(!empty($type)){
-			$notifications = @$_SESSION['alkaline']['notifications'];
+			$notifications = @$_SESSION['fsip']['notifications'];
 			$count = @count($notifications);
 			if($count > 0){
 				$count = 0;
@@ -436,7 +437,7 @@ class Alkaline{
 			}			
 		}
 		else{
-			$count = @count($_SESSION['alkaline']['notifications']);
+			$count = @count($_SESSION['fsip']['notifications']);
 			if($count > 0){
 				return $count;
 			}
@@ -452,9 +453,9 @@ class Alkaline{
 	 * @return string HTML-formatted notifications 
 	 */
 	public function returnNotes($type=null){
-		if(!isset($_SESSION['alkaline']['notifications'])){ return; }
+		if(!isset($_SESSION['fsip']['notifications'])){ return; }
 		
-		$count = count($_SESSION['alkaline']['notifications']);
+		$count = count($_SESSION['fsip']['notifications']);
 		
 		if($count == 0){ return; }
 		
@@ -462,7 +463,7 @@ class Alkaline{
 		
 		// Determine unique types
 		$types = array();
-		foreach($_SESSION['alkaline']['notifications'] as $notifications){
+		foreach($_SESSION['fsip']['notifications'] as $notifications){
 			$types[] = $notifications['type'];
 		}
 		$types = array_unique($types);
@@ -471,7 +472,7 @@ class Alkaline{
 		foreach($types as $type){
 			$return = '<p class="' . $type . '">';
 			$messages = array();
-			foreach($_SESSION['alkaline']['notifications'] as $notification){
+			foreach($_SESSION['fsip']['notifications'] as $notification){
 				if($notification['type'] == $type){
 					$messages[] = $notification['message'];
 				}
@@ -483,7 +484,7 @@ class Alkaline{
 		$return .= '<br />';
 
 		// Dispose of messages
-		unset($_SESSION['alkaline']['notifications']);
+		unset($_SESSION['fsip']['notifications']);
 		
 		return $return;
 	}
@@ -1751,7 +1752,7 @@ class Alkaline{
 		unset($tables['items']);
 		unset($tables['trackbacks']);
 		
-		if(Alkaline::edition == 'standard'){ unset($tables['users']); }
+		if(FSIP::edition == 'standard'){ unset($tables['users']); }
 		
 		// Run helper function
 		foreach($tables as $table => $selector){
@@ -1771,7 +1772,7 @@ class Alkaline{
 	}
 	
 	/**
-	 * Get Alkaline Dashboard header badges
+	 * Get FSIP Dashboard header badges
 	 *
 	 * @return array Associate array of fields and integers
 	 */
@@ -2466,7 +2467,7 @@ class Alkaline{
 				if(empty($fields['trackback_created'])){ $fields['trackback_created'] = $now; }
 				break;
 			case 'users':
-				if(Alkaline::edition == 'standard'){ return false; }
+				if(FSIP::edition == 'standard'){ return false; }
 				if(empty($fields['user_created'])){ $fields['user_created'] = $now; }
 				break;
 			default:
@@ -2678,12 +2679,12 @@ class Alkaline{
 			}
 		}
 		
-		if(empty($_SESSION['alkaline']['duration_start']) or ((time() - @$_SESSION['alkaline']['duration_recent']) > 3600)){
+		if(empty($_SESSION['fsip']['duration_start']) or ((time() - @$_SESSION['fsip']['duration_recent']) > 3600)){
 			$duration = 0;
-			$_SESSION['alkaline']['duration_start'] = time();
+			$_SESSION['fsip']['duration_start'] = time();
 		}
 		else{
-			$duration = time() - $_SESSION['alkaline']['duration_start'];
+			$duration = time() - $_SESSION['fsip']['duration_start'];
 		}
 		
 		// Ignore bots
@@ -2692,7 +2693,7 @@ class Alkaline{
 		if(stripos($_SERVER['HTTP_USER_AGENT'], 'slurp') !== false){ return; }
 		if(stripos($_SERVER['HTTP_USER_AGENT'], 'crawl') !== false){ return; }
 		
-		$_SESSION['alkaline']['duration_recent'] = time();
+		$_SESSION['fsip']['duration_recent'] = time();
 		
 		$referrer = (!empty($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : null;
 		$page = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : null;
@@ -2712,9 +2713,9 @@ class Alkaline{
 		
 		$query->execute(array(':stat_session' => session_id(), ':stat_date' => date('Y-m-d H:i:s'), ':stat_duration' => $duration, ':stat_referrer' => $referrer, ':stat_page' => $page, ':stat_page_type' => $page_type, ':stat_local' => $local));
 		
-		if(isset($_SESSION['alkaline']['guest'])){
-			$_SESSION['alkaline']['guest']['guest_views']++;
-			$this->exec('UPDATE guests SET guest_views = ' . $_SESSION['alkaline']['guest']['guest_views'] . ' WHERE guest_id = ' . $_SESSION['alkaline']['guest']['guest_id'] . ';');
+		if(isset($_SESSION['fsip']['guest'])){
+			$_SESSION['fsip']['guest']['guest_views']++;
+			$this->exec('UPDATE guests SET guest_views = ' . $_SESSION['fsip']['guest']['guest_views'] . ' WHERE guest_id = ' . $_SESSION['fsip']['guest']['guest_id'] . ';');
 		}
 	}
 	
@@ -2816,7 +2817,7 @@ class Alkaline{
 	 * @return void
 	 */
 	public function setConf($name, $unset=''){
-		return self::setForm($_SESSION['alkaline']['config'], $name, $unset);
+		return self::setForm($_SESSION['fsip']['config'], $name, $unset);
 	}
 	
 	/**
@@ -2827,7 +2828,7 @@ class Alkaline{
 	 * @return string
 	 */
 	public function readConf($name, $check=true){
-		return self::readForm($_SESSION['alkaline']['config'], $name, $check);
+		return self::readForm($_SESSION['fsip']['config'], $name, $check);
 	}
 	
 	/**
@@ -2837,7 +2838,7 @@ class Alkaline{
 	 * @return string
 	 */
 	public function returnConf($name){
-		return self::makeHTMLSafe(self::returnForm($_SESSION['alkaline']['config'], $name));
+		return self::makeHTMLSafe(self::returnForm($_SESSION['fsip']['config'], $name));
 	}
 	
 	/**
@@ -2846,7 +2847,7 @@ class Alkaline{
 	 * @return int|false Bytes written or error
 	 */
 	public function saveConf(){
-		return file_put_contents($this->correctWinPath(PATH . 'config.json'), json_encode(self::reverseHTMLSafe($_SESSION['alkaline']['config'])));
+		return file_put_contents($this->correctWinPath(PATH . 'config.json'), json_encode(self::reverseHTMLSafe($_SESSION['fsip']['config'])));
 	}
 	
 	// URL HANDLING
@@ -3312,10 +3313,10 @@ class Alkaline{
 	 */
 	public function setCallback($page=null){
 		if(!empty($page)){
-			$_SESSION['alkaline']['callback'] = $page;
+			$_SESSION['fsip']['callback'] = $page;
 		}
 		else{
-			$_SESSION['alkaline']['callback'] = self::location();
+			$_SESSION['fsip']['callback'] = self::location();
 		}
 	}
 	
@@ -3326,9 +3327,9 @@ class Alkaline{
 	 * @return void
 	 */
 	public function callback($url=null){
-		unset($_SESSION['alkaline']['go']);
-		if(!empty($_SESSION['alkaline']['callback'])){
-			header('Location: ' . $_SESSION['alkaline']['callback']);
+		unset($_SESSION['fsip']['go']);
+		if(!empty($_SESSION['fsip']['callback'])){
+			header('Location: ' . $_SESSION['fsip']['callback']);
 		}
 		elseif(!empty($url)){
 			header('Location: ' . $url);
@@ -3345,8 +3346,8 @@ class Alkaline{
 	 * @return void
 	 */
 	public function back(){
-		if(!empty($_SESSION['alkaline']['back'])){
-			echo $_SESSION['alkaline']['back'];
+		if(!empty($_SESSION['fsip']['back'])){
+			echo $_SESSION['fsip']['back'];
 		}
 		elseif(!empty($_SERVER['HTTP_REFERER'])){
 			echo $_SERVER['HTTP_REFERER'];
@@ -3393,7 +3394,7 @@ class Alkaline{
 		
 		$source = strip_tags($this->returnConf('web_title'));
 		
-		if(empty($source)){ $source = 'Alkaline'; }
+		if(empty($source)){ $source = 'FSIP'; }
 		
 		$subject = $source . ': ' . $subject;
 		$message = $message . "\r\n\n" . '-- ' . $source;
@@ -3616,7 +3617,7 @@ class Alkaline{
 			}
 			
 			// Write to session
-			$_SESSION['alkaline']['error'] = array('error_title' => $severity, 'error_message' => $message);
+			$_SESSION['fsip']['error'] = array('error_title' => $severity, 'error_message' => $message);
 			session_write_close();
 			
 			// Get error page
@@ -3631,10 +3632,10 @@ class Alkaline{
 		
 		switch($severity){
 			case E_USER_NOTICE:
-				$_SESSION['alkaline']['errors'][] = array('constant' => $severity, 'severity' => 'notice', 'message' => $message, 'filename' => $filename, 'line_number' => $line_number);
+				$_SESSION['fsip']['errors'][] = array('constant' => $severity, 'severity' => 'notice', 'message' => $message, 'filename' => $filename, 'line_number' => $line_number);
 				break;
 			case E_USER_WARNING:
-				$_SESSION['alkaline']['errors'][] = array('constant' => $severity, 'severity' => 'warning', 'message' => $message, 'filename' => $filename, 'line_number' => $line_number);
+				$_SESSION['fsip']['errors'][] = array('constant' => $severity, 'severity' => 'warning', 'message' => $message, 'filename' => $filename, 'line_number' => $line_number);
 				break;
 			case E_USER_ERROR:
 				try{
@@ -3644,7 +3645,7 @@ class Alkaline{
 					self::addException($e);
 				}
 			default:
-				$_SESSION['alkaline']['errors'][] = array('constant' => $severity, 'severity' => 'warning', 'message' => $message, 'filename' => $filename, 'line_number' => $line_number);
+				$_SESSION['fsip']['errors'][] = array('constant' => $severity, 'severity' => 'warning', 'message' => $message, 'filename' => $filename, 'line_number' => $line_number);
 				break;
 		}
 		
@@ -3658,7 +3659,7 @@ class Alkaline{
 	 * @return void
 	 */
 	public static function addException($e){
-		throw new AlkalineException($e);
+		throw new FSIPException($e);
 	}
 	
 	/**
@@ -3667,15 +3668,15 @@ class Alkaline{
 	 * @return void|string HTML-formatted notifications 
 	 */
 	public static function returnErrors(){
-		if(!isset($_SESSION['alkaline']['errors'])){ return; }
+		if(!isset($_SESSION['fsip']['errors'])){ return; }
 		
-		$count = @count($_SESSION['alkaline']['errors']);
+		$count = @count($_SESSION['fsip']['errors']);
 		
 		if(empty($count)){ return; }
 		
 		// Determine unique types
 		$types = array();
-		foreach($_SESSION['alkaline']['errors'] as $error){
+		foreach($_SESSION['fsip']['errors'] as $error){
 			$types[] = $error['severity'];
 		}
 		$types = array_unique($types);
@@ -3687,7 +3688,7 @@ class Alkaline{
 		foreach($types as $type){
 			$i = 0;
 			
-			foreach($_SESSION['alkaline']['errors'] as $error){
+			foreach($_SESSION['fsip']['errors'] as $error){
 				if($error['severity'] == $type){
 					$i++;
 				}
@@ -3701,7 +3702,7 @@ class Alkaline{
 			}
 		}
 		
-		foreach($_SESSION['alkaline']['errors'] as $error){
+		foreach($_SESSION['fsip']['errors'] as $error){
 			$item = '<li><strong>' . ucwords($error['severity']) .':</strong> ' . $error['message'];
 			if(!empty($error['filename'])){
 				$item .= ' (' . $error['filename'] . ', line ' . $error['line_number'] .')';
@@ -3711,7 +3712,7 @@ class Alkaline{
 		}
 		
 		// Dispose of messages
-		unset($_SESSION['alkaline']['errors']);
+		unset($_SESSION['fsip']['errors']);
 		
 		return '<span>(<a href="#" class="show">' . implode(', ', $overview) . '</a>)</span><div class="reveal"><ol class="errors">' . implode("\n", $list) . '</ol></div>';
 	}
@@ -3722,8 +3723,8 @@ class Alkaline{
 	 * @return array
 	 */
 	public function debug(){
-		$_SESSION['alkaline']['debug']['execution_time'] = microtime(true) - $_SESSION['alkaline']['debug']['start_time'];
-		return $_SESSION['alkaline']['debug'];
+		$_SESSION['fsip']['debug']['execution_time'] = microtime(true) - $_SESSION['fsip']['debug']['start_time'];
+		return $_SESSION['fsip']['debug'];
 	}
 	
 	/**
@@ -3734,9 +3735,9 @@ class Alkaline{
 	 * @return void
 	 */
 	public function report($message, $number=null){
-		if(isset($_SESSION['alkaline']['warning']) and ($_SESSION['alkaline']['warning'] == $message)){ return false; }
+		if(isset($_SESSION['fsip']['warning']) and ($_SESSION['fsip']['warning'] == $message)){ return false; }
 		
-		$_SESSION['alkaline']['warning'] = $message;
+		$_SESSION['fsip']['warning'] = $message;
 		
 		// Format message
 		$message = date('Y-m-d H:i:s') . "\t" . $message;
@@ -3751,8 +3752,9 @@ class Alkaline{
 		fclose($handle);
 	}
 	
+/* DEH - remove old commercial code to limit user capabilities
 	public function deleteDisallowedUsers(){
-		if(Alkaline::edition == 'multiuser'){ return false; }
+		if(FSIP::edition == 'multiuser'){ return false; }
 		
 		$query = $this->prepare('SELECT * FROM users ORDER BY user_id ASC;');
 		$query->execute();
@@ -3766,7 +3768,7 @@ class Alkaline{
 		
 		if(count($user_ids) < 1){ return false; }
 		
-		unset($_SESSION['alkaline']['user']);
+		unset($_SESSION['fsip']['user']);
 		
 		unset($_COOKIE['uid']);
 		unset($_COOKIE['key']);
@@ -3775,7 +3777,7 @@ class Alkaline{
 		$this->addError(E_USER_ERROR, 'Alkaline Multiuser is required for multiuser functionality');
 		
 		return true;
-	}
+	}*/
 	
 	/**
 	 * Compare two strings
@@ -3797,7 +3799,7 @@ class Alkaline{
 	}
 }
 
-class AlkalineException extends Exception implements Serializable{
+class FSIPException extends Exception implements Serializable{
 	public $public_trace;
 	public $public_message;
 	
@@ -3813,7 +3815,7 @@ class AlkalineException extends Exception implements Serializable{
 			$this->public_message = $this->message;
 		}
 		
-		$_SESSION['alkaline']['exception'] = $this;
+		$_SESSION['fsip']['exception'] = $this;
 		session_write_close();
 		
 		// Get error page
@@ -3823,7 +3825,7 @@ class AlkalineException extends Exception implements Serializable{
 		ob_flush();
 		
 		session_start();
-		unset($_SESSION['alkaline']['exception']);
+		unset($_SESSION['fsip']['exception']);
 	
 		// Quit
 		exit();

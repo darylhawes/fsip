@@ -7,20 +7,20 @@
 */
 
 require_once('config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
-$alkaline->recordStat('page');
+$fsip = new FSIP;
+$fsip->recordStat('page');
 
-$id = $alkaline->findID($_GET['id']);
-if(!$id){ $alkaline->addError('No page was found.', 'Try searching for the page you were seeking.', null, null, 404); }
+$id = $fsip->findID($_GET['id']);
+if(!$id){ $fsip->addError('No page was found.', 'Try searching for the page you were seeking.', null, null, 404); }
 
 $pages = new Page($id);
 $pages->formatTime();
 $pages->updateViews();
 $page = $pages->pages[0];
 
-if(!$page){ $alkaline->addError('No page was found.', 'Try searching for the page you were seeking.', null, null, 404); }
+if(!$page){ $fsip->addError('No page was found.', 'Try searching for the page you were seeking.', null, null, 404); }
 
 $header = new Canvas;
 $header->load('header');

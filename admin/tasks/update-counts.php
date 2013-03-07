@@ -7,9 +7,9 @@
 */
 
 require_once('./../../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true);
@@ -20,7 +20,7 @@ if(empty($_POST['image_id'])){
 	echo json_encode($image_ids->ids);
 }
 else{
-	$alkaline->updateCount('comments', 'images', 'image_comment_count', $_POST['image_id']);
+	$fsip->updateCount('comments', 'images', 'image_comment_count', $_POST['image_id']);
 }
 
 ?>

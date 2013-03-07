@@ -7,10 +7,10 @@
 */
 
 require_once('config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
-$alkaline->recordStat('archive');
+$fsip = new FSIP;
+$fsip->recordStat('archive');
 
 $year = intval($_REQUEST['y']);
 $month = intval($_REQUEST['m']);
@@ -27,7 +27,7 @@ $image_ids->privacy('public');
 $image_ids->sort('image_published', 'ASC');
 $image_ids->find();
 
-if(empty($image_ids)){ $alkaline->addError('No images were found.', 'Try searching for the images you were seeking.', null, null, 404); }
+if(empty($image_ids)){ $fsip->addError('No images were found.', 'Try searching for the images you were seeking.', null, null, 404); }
 
 $images = new Image($image_ids);
 $images->formatTime();

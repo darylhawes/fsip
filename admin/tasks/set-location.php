@@ -7,16 +7,16 @@
 */
 
 require_once('./../../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 
 $hint = strip_tags($_POST);
 
 $geo = new Geo('(' . $_POST['latitude'] . ', ' . $_POST['longitude'] . ')');
 $geo = strval($geo);
 
-$_SESSION['alkaline']['location'] = $geo;
+$_SESSION['fsip']['location'] = $geo;
 echo $geo;
 
 ?>

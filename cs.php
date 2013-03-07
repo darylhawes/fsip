@@ -76,7 +76,7 @@ class AlkalineCS{
 	}
 	
 	public function isNet(){
-		$ip = gethostbyname('http://www.alkalineapp.com/');
+		$ip = gethostbyname('http://fsip.sdelargy.com/');
 		if(!empty($ip)){
 			return true;
 		}
@@ -144,7 +144,7 @@ class AlkalineCS{
 	}
 }
 
-$test = new AlkalineCS();
+$test = new FSIP_CS();
 
 ?>
 
@@ -154,20 +154,20 @@ $test = new AlkalineCS();
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>Alkaline Compatibility Suite</title>
-	<link rel="stylesheet" href="http://www.alkalineapp.com/remote/cs/css/blueprint/screen.css" type="text/css" media="screen, projection" />
-	<link rel="stylesheet" href="http://www.alkalineapp.com/remote/cs/css/blueprint/print.css" type="text/css" media="print" />	
-	<!--[if lt IE 8]><link rel="stylesheet" href="http://www.alkalineapp.com/remote/cs/css/blueprint/ie.css" type="text/css" media="screen, projection" /><![endif]-->
-	<link rel="stylesheet" href="http://www.alkalineapp.com/remote/cs/css/alkaline.css" type="text/css" media="screen, projection" />
-	<link rel="shortcut icon" href="http://www.alkalineapp.com/remote/cs/favicon.ico" />
+	<title>Compatibility Suite</title>
+	<link rel="stylesheet" href="admin/css/blueprint/screen.css" type="text/css" media="screen, projection" />
+	<link rel="stylesheet" href="admin/css/blueprint/print.css" type="text/css" media="print" />	
+	<!--[if lt IE 8]><link rel="stylesheet" href="admin/css/blueprint/ie.css" type="text/css" media="screen, projection" /><![endif]-->
+	<link rel="stylesheet" href="admin/css/alkaline.css" type="text/css" media="screen, projection" />
+	<link rel="shortcut icon" href="admin/images/favicon.ico" />
 </head>
 <body>
 	<div id="header_holder">
 		<div class="container">
 			<div id="header" class="span-24 last">
-				<div class="span-12 append-1">
+<!--				<div class="span-12 append-1">
 					<a href="http://www.alkalineapp.com/"><img src="http://www.alkalineapp.com/remote/cs/images/shutter.png" alt="Alkaline" /></a>
-				</div>
+				</div>-->
 				<div id="panels" class="span-11 last">
 				</div>
 			</div>
@@ -180,9 +180,9 @@ $test = new AlkalineCS();
 	</div>
 	<div class="container">
 		<div id="content" class="span-24 last">
-			<h1>Alkaline Compatibility Suite</h1>
+			<h1>FSIP Compatibility Suite</h1>
 			
-			<p>The Alkaline Compatibility Suite tests your Web server to ensure it&#8217;s compatible with <a href="http://www.alkalineapp.com/">Alkaline</a>.</p>
+			<p>Test your Web server to ensure it&#8217;s compatible with FSIP.</p>
 			
 			<h2>Required</h2>
 			
@@ -201,7 +201,7 @@ $test = new AlkalineCS();
 					<?php $result = $test->isExt('gd'); echo $test->boolToIMG($result); ?>
 					<td>
 						<strong>GD image library</strong><br />
-						<span class="quiet">GD allows Alkaline to create and manipulate raster image files (GIF, JPG, and PNG).</span>
+						<span class="quiet">GD is used to create and manipulate raster image files (GIF, JPG, and PNG).</span>
 					</td>
 					<?php echo $test->boolToHTML($result); ?>
 				</tr>
@@ -209,7 +209,7 @@ $test = new AlkalineCS();
 					<?php $result = $test->isVer('/^(5\.2|5\.3).+/is', $test->php_version); echo $test->boolToIMG($result); ?>
 					<td>
 						<strong>PHP 5.2+</strong><br />
-						<span class="quiet">PHP allows Alkaline to produce dynamic Web pages.</span>
+						<span class="quiet">PHP is used to produce dynamic Web pages.</span>
 					</td>
 					<?php echo $test->boolToHTML($result, '<strong>' . $test->php_version . '</strong>', '<strong>' . $test->php_version . '</strong>'); ?>
 				</tr>
@@ -217,7 +217,7 @@ $test = new AlkalineCS();
 					<?php $result = $test->isExt('json'); echo $test->boolToIMG($result); ?>
 					<td>
 						<strong>PHP JSON support</strong><br />
-						<span class="quiet">PHP JSON allows Alkaline to provide real-time interactivity.</span>
+						<span class="quiet">PHP JSON is used to provide real-time interactivity.</span>
 					</td>
 					<?php echo $test->boolToHTML($result); ?>
 				</tr>
@@ -225,7 +225,7 @@ $test = new AlkalineCS();
 					<?php $result = ($test->isExt('PDO') and (count($test->php_pdo_drivers) > 0)); echo $test->boolToIMG($result); ?>
 					<td>
 						<strong>PHP PDO support</strong><br />
-						<span class="quiet">PHP PDO allows Alkaline to connect to various database types.</span>
+						<span class="quiet">PHP PDO is used to connect to various database types.</span>
 					</td>
 					<?php echo $test->boolToHTML($result, '<strong>Installed</strong><br />(' . implode(', ', $test->php_pdo_drivers) . ')'); ?>
 				</tr>
@@ -233,7 +233,7 @@ $test = new AlkalineCS();
 					<?php $result = $test->isExt('SimpleXML'); echo $test->boolToIMG($result); ?>
 					<td>
 						<strong>PHP SimpleXML support</strong><br />
-						<span class="quiet">PHP SimpleXML allows Alkaline to process new themes and extensions.</span>
+						<span class="quiet">PHP SimpleXML is used to process new themes and extensions.</span>
 					</td>
 					<?php echo $test->boolToHTML($result); ?>
 				</tr>
@@ -247,7 +247,7 @@ $test = new AlkalineCS();
 						<?php $result = $test->isThere('mod_rewrite'); echo $test->boolToIMG($result); ?>
 						<td>
 							<strong>Apache mod_rewrite module</strong><br />
-							<span class="quiet">Apache mod_rewite allows Alkaline to use clean, semantic URLs.</span>
+							<span class="quiet">Apache mod_rewite is used to create clean, semantic URLs.</span>
 						</td>
 						<?php echo $test->boolToHTML($result); ?>
 					</tr>
@@ -256,7 +256,7 @@ $test = new AlkalineCS();
 					<?php $result = $test->isExt('imagick', false); echo $test->boolToIMG($result); ?>
 					<td>
 						<strong>ImageMagick library</strong><br />
-						<span class="quiet">ImageMagick allows Alkaline to create and manipulate vector image files (PDF and SVG).</span>
+						<span class="quiet">ImageMagick is used to create and manipulate vector image files (PDF and SVG).</span>
 					</td>
 					<?php echo $test->boolToHTML($result); ?>
 				</tr>
@@ -264,7 +264,7 @@ $test = new AlkalineCS();
 					<?php $result = $test->isExt('exif', false); echo $test->boolToIMG($result); ?>
 					<td>
 						<strong>PHP EXIF support</strong><br />
-						<span class="quiet">PHP EXIF allows Alkaline to read EXIF data from your images.</span>
+						<span class="quiet">PHP EXIF is used to read EXIF data from your images.</span>
 					</td>
 					<?php echo $test->boolToHTML($result); ?>
 				</tr>
@@ -272,7 +272,7 @@ $test = new AlkalineCS();
 					<?php $result = $test->isThere('PDO Driver for SQLite 3.x'); echo $test->boolToIMG($result); ?>
 					<td>
 						<strong>PHP SQLite support</strong><br />
-						<span class="quiet">PHP SQLite allows Alkaline to operate without a conventional database.</span>
+						<span class="quiet">PHP SQLite is used to operate without a conventional database.</span>
 					</td>
 					<?php echo $test->boolToHTML($result); ?>
 				</tr>
@@ -280,7 +280,7 @@ $test = new AlkalineCS();
 					<?php $result = $test->isExt('xmlrpc', false); echo $test->boolToIMG($result); ?>
 					<td>
 						<strong>PHP XML-RPC support</strong><br />
-						<span class="quiet">PHP XML-RPC allows Alkaline to interact with third-party blogging clients.</span>
+						<span class="quiet">PHP XML-RPC is used to interact with third-party blogging clients.</span>
 					</td>
 					<?php echo $test->boolToHTML($result); ?>
 				</tr>
@@ -288,7 +288,7 @@ $test = new AlkalineCS();
 					<?php $result = $test->isExt('sphinx', false); echo $test->boolToIMG($result); ?>
 					<td>
 						<strong>Sphinx server</strong><br />
-						<span class="quiet">Sphinx allows Alkaline to conduct ultra-fast, relevancy-based searches.</span>
+						<span class="quiet">Sphinx is used to conduct ultra-fast, relevancy-based searches.</span>
 					</td>
 					<?php echo $test->boolToHTML($result); ?>
 				</tr>
@@ -300,23 +300,22 @@ $test = new AlkalineCS();
 				<?php
 				if($test->compatible == true){
 					?>
-					<img src="http://www.alkalineapp.com/remote/cs/images/success.png" alt="" /><br />
-					<strong>Good news, you can install Alkaline here!</strong><br />
-					<span class="quiet small">What are you waiting for? <a href="http://www.alkalineapp.com/buy/">Purchase and download Alkaline today.</a></span>
+					SUCCESS<br />
+					<strong>Good news, you can install here!</strong><br />
 					<?php
 				}
 				else{
 					?>
-					<img src="http://www.alkalineapp.com/remote/cs/images/failure.png" alt="" /><br />
-					<strong>Uh-oh, you cannot install Alkaline here.</strong><br />
-					<span class="quiet small"><a href="http://www.alkalineapp.com/compatibility/">Learn how to make your Web server compatible with Alkaline.</a></span>
+					FAILURE!<br />
+					<strong>Uh-oh, you cannot install here.</strong><br />
+<!--					<span class="quiet small"><a href="http://www.alkalineapp.com/compatibility/">Learn how to make your Web server compatible.</a></span>-->
 					<?php
 				}
 				?>
 			</p><br />
 		
 			<div id="footer" class="span-24 last">
-				Powered by <a href="http://www.alkalineapp.com/compatibility/">Alkaline</a>. Copyright &#0169; 2010-2011 by <a href="http://www.budinltd.com/">Budin Ltd.</a> All rights reserved.
+				Powered by FSIP
 			</div>
 		</div>
 	</div>

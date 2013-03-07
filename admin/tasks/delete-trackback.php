@@ -6,15 +6,15 @@
 // http://www.alkalineapp.com/
 */
 require_once('./../../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true);
 
 if(!empty($_POST['id'])){
-	$alkaline->deleteRow('trackbacks', intval($_POST['id']));
+	$fsip->deleteRow('trackbacks', intval($_POST['id']));
 }
 
 ?>

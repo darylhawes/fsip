@@ -7,10 +7,10 @@
 */
 
 require_once('config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
-$alkaline->recordStat('slideshow');
+$fsip = new FSIP;
+$fsip->recordStat('slideshow');
 
 $image_ids = new Find('images');
 $image_ids->sort('images.image_published', 'DESC');

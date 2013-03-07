@@ -7,20 +7,20 @@
 */
 
 require_once('config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
-$alkaline->recordStat('set');
+$fsip = new FSIP;
+$fsip->recordStat('set');
 
-$id = $alkaline->findID($_GET['id']);
-if(!$id){ $alkaline->addError('No set was found.', 'Try searching for the set you were seeking.', null, null, 404); }
+$id = $fsip->findID($_GET['id']);
+if(!$id){ $fsip->addError('No set was found.', 'Try searching for the set you were seeking.', null, null, 404); }
 
 $set = new Set($id);
 $set = @$set->sets[0];
-if(!$set){ $alkaline->addError('No set was found.', 'Try searching for the set you were seeking.', null, null, 404); }
+if(!$set){ $fsip->addError('No set was found.', 'Try searching for the set you were seeking.', null, null, 404); }
 
-$set['set_created'] = $alkaline->formatTime($set['set_created']);
-$set['set_modified'] = $alkaline->formatTime($set['set_modified']);
+$set['set_created'] = $fsip->formatTime($set['set_created']);
+$set['set_modified'] = $fsip->formatTime($set['set_modified']);
 
 $image_ids = new Find('images');
 $image_ids->page(null, 0);

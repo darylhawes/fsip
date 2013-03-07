@@ -7,9 +7,9 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true, 'statistics');
@@ -128,7 +128,7 @@ $stats->getPageTypes();
 $stats->getRecentReferrers(10, false);
 
 foreach($stats->referrers_recent as &$referrer){
-	$referrer['stat_referrer_display'] = $alkaline->fitString($alkaline->minimizeURL($referrer['stat_referrer']), 30);
+	$referrer['stat_referrer_display'] = $fsip->fitString($fsip->minimizeURL($referrer['stat_referrer']), 30);
 }
 
 // POPULAR REFERRS
@@ -136,11 +136,11 @@ foreach($stats->referrers_recent as &$referrer){
 $stats->getPopularReferrers(10, false);
 
 foreach($stats->referrers_popular as &$referrer){
-	$referrer['stat_referrer_display'] = $alkaline->fitString($alkaline->minimizeURL($referrer['stat_referrer']), 30);
+	$referrer['stat_referrer_display'] = $fsip->fitString($fsip->minimizeURL($referrer['stat_referrer']), 30);
 }
 
 define('TAB', 'dashboard');
-define('TITLE', 'Alkaline Statistics');
+define('TITLE', 'Statistics');
 require_once(PATH . ADMIN . 'includes/header.php');
 
 ?>
@@ -196,7 +196,7 @@ require_once(PATH . ADMIN . 'includes/header.php');
 			foreach($stats->pages as $page){
 				echo '<tr>';
 				echo '<td class="right">' . number_format($page['stat_count']) . '</td>';
-				echo '<td><a href="' . BASE . substr($page['stat_page'], 1) . '">' . $alkaline->fitString($page['stat_page'], 30) . '</a></td>';
+				echo '<td><a href="' . BASE . substr($page['stat_page'], 1) . '">' . $fsip->fitString($page['stat_page'], 30) . '</a></td>';
 				echo '</tr>';
 			}
 			?>
@@ -243,7 +243,7 @@ require_once(PATH . ADMIN . 'includes/header.php');
 			<?php				
 			foreach($stats->referrers_recent as $referrer){
 				echo '<tr>';
-				echo '<td class="right quiet">' . $alkaline->formatRelTime($referrer['stat_date'], 'M j, g:i a') . '</td>';
+				echo '<td class="right quiet">' . $fsip->formatRelTime($referrer['stat_date'], 'M j, g:i a') . '</td>';
 				echo '<td><a href="' . $referrer['stat_referrer'] . '">' . $referrer['stat_referrer_display'] . '</a></td>';
 				echo '</tr>';
 			}

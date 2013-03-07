@@ -12,7 +12,7 @@
  * @version 1.0
  */
 
-class User extends Alkaline{
+class User extends FSIP{
 	public $user;
 	
 	/**
@@ -23,14 +23,14 @@ class User extends Alkaline{
 		parent::__construct();
 		
 		// Login user by session data
-		if(!empty($_SESSION['alkaline']['user'])){
-			$this->user = $_SESSION['alkaline']['user'];
+		if(!empty($_SESSION['fsip']['user'])){
+			$this->user = $_SESSION['fsip']['user'];
 		}
 		// Login user by ID, key
 		elseif(!empty($_COOKIE['uid']) and !empty($_COOKIE['key'])){
 			$user_id = strip_tags($_COOKIE['uid']);
 			$user_key = strip_tags($_COOKIE['key']);
-			unset($_SESSION['alkaline']['guest']);
+			unset($_SESSION['fsip']['guest']);
 			self::authByCookie($user_id, $user_key);
 		}
 	}
@@ -43,7 +43,7 @@ class User extends Alkaline{
 	public function __destruct(){
 		// Store user to session data
 		if(isset($this->user)){
-			$_SESSION['alkaline']['user'] = $this->user;
+			$_SESSION['fsip']['user'] = $this->user;
 		}
 		
 		parent::__destruct();
@@ -134,7 +134,7 @@ class User extends Alkaline{
 		$this->user = $this->user[0];
 		
 		// Remove guest access
-		unset($_SESSION['alkaline']['guest']);
+		unset($_SESSION['fsip']['guest']);
 		
 		$key = '';
 		
@@ -155,7 +155,7 @@ class User extends Alkaline{
 		$this->user['user_preferences'] = unserialize($this->user['user_preferences']);
 		
 		// Save in session
-		$_SESSION['alkaline']['user'] = $this->user;
+		$_SESSION['fsip']['user'] = $this->user;
 		
 		// Update database
 		$fields = array('user_last_login' => date('Y-m-d H:i:s'), 'user_key' => $key);
@@ -198,7 +198,7 @@ class User extends Alkaline{
 	public function perm($required=false, $permission=null){
 		if(empty($this->user)){
 			if($required === true){
-				$_SESSION['alkaline']['destination'] = $this->location();
+				$_SESSION['fsip']['destination'] = $this->location();
 				session_write_close();
 				
 				header('Location: ' . LOCATION . BASE . ADMIN . 'login' . URL_CAP);

@@ -7,9 +7,9 @@
 */
 
 require_once('./../../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true);
@@ -20,10 +20,10 @@ if(!empty($_REQUEST['id'])){
 }
 
 if($bool === true){
-	$alkaline->addNote('A trackback has successfully been sent.', 'success');
+	$fsip->addNote('A trackback has successfully been sent.', 'success');
 }
 else{
-	$alkaline->addNote('A trackback could not be sent.', 'error');
+	$fsip->addNote('A trackback could not be sent.', 'error');
 }
 
 header('Location: ' . BASE . ADMIN . 'posts' . URL_ID . $posts->posts[0]['post_id'] . URL_RW);

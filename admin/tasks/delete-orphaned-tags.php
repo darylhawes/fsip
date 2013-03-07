@@ -7,21 +7,21 @@
 */
 
 require_once('./../../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true);
 
-$id = $alkaline->findID(@$_POST['image_id']);
+$id = $fsip->findID(@$_POST['image_id']);
 
 if(empty($id)){
-	$query = $alkaline->prepare('SELECT DISTINCT tags.tag_id FROM tags;');
+	$query = $fsip->prepare('SELECT DISTINCT tags.tag_id FROM tags;');
 	$query->execute();
 	$tags = $query->fetchAll();
 	
-	$query = $alkaline->prepare('SELECT DISTINCT tags.tag_id FROM tags, links WHERE tags.tag_id = links.tag_id;');
+	$query = $fsip->prepare('SELECT DISTINCT tags.tag_id FROM tags, links WHERE tags.tag_id = links.tag_id;');
 	$query->execute();
 	$tags_in_use = $query->fetchAll();
 	
@@ -42,7 +42,7 @@ if(empty($id)){
 	echo json_encode($tag_ids);
 }
 else{
-	$alkaline->exec('DELETE FROM tags WHERE tag_id = ' . intval($id));
+	$fsip->exec('DELETE FROM tags WHERE tag_id = ' . intval($id));
 }
 
 ?>

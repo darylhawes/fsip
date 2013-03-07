@@ -12,7 +12,7 @@
  * @version 1.0
  */
 
-class Canvas extends Alkaline{
+class Canvas extends FSIP{
 	public $form_wrap;
 	public $slideshow;
 	public $tables;
@@ -245,8 +245,8 @@ class Canvas extends Alkaline{
 		$table_regex = implode('|', array_keys($this->tables));
 		$table_regex = strtoupper($table_regex);
 		
-		if(!empty($_SESSION['alkaline']['preview']['object'])){
-			$this->assignArray($_SESSION['alkaline']['preview']['object']);
+		if(!empty($_SESSION['fsip']['preview']['object'])){
+			$this->assignArray($_SESSION['fsip']['preview']['object']);
 		}
 		
 		$class = strtolower(get_class($object));
@@ -667,7 +667,7 @@ class Canvas extends Alkaline{
 	 * @return void
 	 */
 	public function fit50(){
-		return Alkaline::fitStringByWord($this->value, 50);
+		return FSIP::fitStringByWord($this->value, 50);
 	}
 	
 	/**
@@ -676,7 +676,7 @@ class Canvas extends Alkaline{
 	 * @return void
 	 */
 	public function reltime(){
-		return Alkaline::formatRelTime($this->value, null, '(Unknown)');
+		return FSIP::formatRelTime($this->value, null, '(Unknown)');
 	}
 	
 	/**
@@ -685,7 +685,7 @@ class Canvas extends Alkaline{
 	 * @return void
 	 */
 	public function fit100(){
-		return Alkaline::fitStringByWord($this->value, 100);
+		return FSIP::fitStringByWord($this->value, 100);
 	}
 	
 	/**
@@ -694,7 +694,7 @@ class Canvas extends Alkaline{
 	 * @return void
 	 */
 	public function fit250(){
-		return Alkaline::fitStringByWord($this->value, 250);
+		return FSIP::fitStringByWord($this->value, 250);
 	}
 	
 	/**
@@ -703,7 +703,7 @@ class Canvas extends Alkaline{
 	 * @return void
 	 */
 	public function fit500(){
-		return Alkaline::fitStringByWord($this->value, 500);
+		return FSIP::fitStringByWord($this->value, 500);
 	}
 	
 	/**
@@ -712,16 +712,16 @@ class Canvas extends Alkaline{
 	 * @return void
 	 */
 	public function fit1000(){
-		return Alkaline::fitStringByWord($this->value, 1000);
+		return FSIP::fitStringByWord($this->value, 1000);
 	}
 	
 	/**
-	 * Perform Alkaline::makeURL filter
+	 * Perform FSIP::makeURL filter
 	 *
 	 * @return string
 	 */
 	public function urlize(){
-		return Alkaline::makeURL($this->value);
+		return FSIP::makeURL($this->value);
 	}
 	
 	
@@ -743,7 +743,7 @@ class Canvas extends Alkaline{
 	 * @return string
 	 */
 	public function alpha(){
-		return Alkaline::numberToWords($this->value);
+		return FSIP::numberToWords($this->value);
 	}
 	
 	/**
@@ -753,7 +753,7 @@ class Canvas extends Alkaline{
 	 */
 	public function alpha0(){
 		if($this->value != 0){
-			$this->value = Alkaline::numberToWords($this->value);
+			$this->value = FSIP::numberToWords($this->value);
 		}
 		return $this->value;
 	}
@@ -797,7 +797,7 @@ class Canvas extends Alkaline{
 	 * @return string
 	 */
 	public function sterilize(){
-		return Alkaline::stripTags($this->value);
+		return FSIP::stripTags($this->value);
 	}
 	
 	
@@ -863,7 +863,7 @@ class Canvas extends Alkaline{
 			$template = preg_replace('#{if:' . $loop['var'] . '}(.*?){/if:' . $loop['var'] . '}#si', $loop['replacement'], $template, 1);
 		}
 		
-		if($this->returnConf('canvas_remove_unused') or !empty($_SESSION['alkaline']['preview']['object'])){
+		if($this->returnConf('canvas_remove_unused') or !empty($_SESSION['fsip']['preview']['object'])){
 			$template = preg_replace('#\{.*?}#si', '', $template);
 		}
 		
@@ -1033,7 +1033,7 @@ class Canvas extends Alkaline{
 	public function generate(){
 		// Add copyright information
 		$this->assign('Copyright', parent::copyright);
-		$this->assign('Powered_by', 'Powered by <a href="http://www.alkalineapp.com/">Alkaline</a>. <!-- ' . LICENSE_HASH . ' -->');
+		$this->assign('Powered_by', 'Powered by <a href="http://github.com/darylhawes/fsip">FSIP</a> based on <a href="http://www.alkalineapp.com/">Alkaline</a> under MIT license. <!-- ' . LICENSE_HASH . ' -->');
 		$this->assign('Search_Uri', LOCATION . BASE . 'search' . URL_CAP);
 		$this->assign('Results_Uri', LOCATION . BASE . 'results' . URL_CAP);
 		$this->assign('Atom_Uri', LOCATION . BASE . 'atom' . URL_CAP);

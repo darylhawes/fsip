@@ -7,19 +7,19 @@
 */
 
 if(empty($_SERVER['PHP_AUTH_USER'])){
-    header('WWW-Authenticate: Basic realm="Alkaline Dashboard Feed"');
+    header('WWW-Authenticate: Basic realm="Dashboard Feed"');
     header('HTTP/1.0 401 Unauthorized');
     exit();
 }
 
 require_once('../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline();
+$fsip = new FSIP();
 $user = new User();
 
 if($user->auth($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) === false){
-	header('WWW-Authenticate: Basic realm="Alkaline Dashboard Feed"');
+	header('WWW-Authenticate: Basic realm="Dashboard Feed"');
     header('HTTP/1.0 401 Unauthorized');
     exit();
 }
@@ -32,7 +32,7 @@ require_once(PATH . CLASSES . 'cache_lite/Lite.php');
 // Set a few options
 $options = array(
     'cacheDir' => PATH . CACHE,
-    'lifeTime' => $alkaline->returnConf('syndication_cache_time')
+    'lifeTime' => $fsip->returnConf('syndication_cache_time')
 );
 
 // Create a Cache_Lite object
@@ -90,7 +90,7 @@ else{
 	$trackback_ids->page(1,10);
 	$trackback_ids->find();
 
-	$trackbacks = $alkaline->getTable('trackbacks', $trackback_ids->trackback_ids);
+	$trackbacks = $fsip->getTable('trackbacks', $trackback_ids->trackback_ids);
 	foreach($trackbacks as &$trackback){
 		$trackback['trackback_created_format'] = date('c', strtotime($trackback['trackback_created']));
 	}
@@ -132,7 +132,7 @@ else{
 	?>
 
 	<feed xmlns="http://www.w3.org/2005/Atom">
-		<title>Alkaline Dashboard Feed</title>
+		<title>Dashboard Feed</title>
 		<updated><?php echo date('c', strtotime($images->images[0]['image_published'])); ?></updated>
 		<link href="<?php echo BASE . ADMIN; ?>" />
 		<link rel="self" type="application/atom+xml" href="<?php echo LOCATION . BASE . ADMIN; ?>atom.php" />

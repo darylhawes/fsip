@@ -7,15 +7,15 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true, 'maintenance');
 
 define('TAB', 'settings');
-define('TITLE', 'Alkaline Maintenance');
+define('TITLE', 'Maintenance');
 require_once(PATH . ADMIN . 'includes/header.php');
 
 ?>
@@ -26,7 +26,7 @@ require_once(PATH . ADMIN . 'includes/header.php');
 </div>
 
 <div id="tasks">
-	<p>Maintenance tasks correct the behavior or improve of the performance of your Alkaline installation. You do not need to perform them if you are not experiencing any problems.<p>
+	<p>Maintenance tasks correct the behavior or improve of the performance of your installation. You do not need to perform them if you are not experiencing any problems.<p>
 		
 	<p class="notice">Backup your Web site (and its database) before performing maintenance. Most of these actions cannot be undone.</p><br />
 	
@@ -55,7 +55,7 @@ require_once(PATH . ADMIN . 'includes/header.php');
 				</li>
 				<li>
 					<strong><a href="#delete-unused-thumbnails">Delete unclaimed image thumbnails</a></strong><br />
-					Delete stray thumbnails that are no longer part of your Alkaline installation, increasing available disk space
+					Delete stray thumbnails that are no longer part of your installation, increasing available disk space
 				</li>
 				<li>
 					<strong><a href="#build-items">Build items table</a></strong><br />

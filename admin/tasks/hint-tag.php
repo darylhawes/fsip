@@ -7,13 +7,13 @@
 */
 
 require_once('./../../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 
 $hint = strip_tags($_GET['term']);
 
-$tags = $alkaline->hintTag($hint);
+$tags = $fsip->hintTag($hint);
 
 echo json_encode($tags);
 

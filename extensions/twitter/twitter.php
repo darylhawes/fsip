@@ -141,7 +141,7 @@ class Twitter extends Orbit{
 					<td class="right"><label>Username:</label></td>
 					<td>
 						<a href="<?php echo $this->locationFull(array('link' => 'twitter')); ?>"><button>Link to Twitter</button></a><br /><br />
-						<span class="quiet">Note: Alkaline will be linked to whichever Twitter account you are currently logged into.</span>
+						<span class="quiet">Note: Link will be to the Twitter account you are currently logged into.</span>
 					</td>
 				</tr>
 			</table>

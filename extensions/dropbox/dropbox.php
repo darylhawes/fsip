@@ -35,7 +35,7 @@ class Dropbox extends Orbit{
 	
 	public function orbit_config(){
 		?>
-		<p>Alkaline can monitor a folder on your Dropbox account and automatically download new files to your Shoebox folder.</p>
+		<p>Monitor a folder on your Dropbox account and automatically download new files to your Shoebox folder.</p>
 		
 		<?php
 		if($this->dropbox_active){
@@ -49,7 +49,7 @@ class Dropbox extends Orbit{
 					<td class="right pad"><label for="dropbox_folder">Folder:</label></td>
 					<td>
 						<input type="text" id="dropbox_folder" name="dropbox_folder" value="<?php echo $this->dropbox_folder; ?>" class="m" /><br />
-						<span class="quiet">Alkaline will only import files from this folder. It is non-recursive.</span>
+						<span class="quiet">Only files at the root of this folder will be imported. It is non-recursive.</span>
 					</td>
 				</tr>
 			</table>
@@ -62,7 +62,7 @@ class Dropbox extends Orbit{
 					<td class="right"><label>Username:</label></td>
 					<td>
 						<a href="<?php echo $this->locationFull(array('link' => 'dropbox')); ?>"><button>Link to Dropbox</button></a><br /><br />
-						<span class="quiet">Note: Alkaline will be linked to whichever Dropbox account you are currently logged into.</span>
+						<span class="quiet">Note: Link is to the Dropbox account you are currently logged into.</span>
 					</td>
 				</tr>
 			</table>

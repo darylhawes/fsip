@@ -7,10 +7,10 @@
 */
 
 require_once('config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
-$alkaline->recordStat('error');
+$fsip = new FSIP;
+$fsip->recordStat('error');
 
 $header = new Canvas;
 $header->load('header');
@@ -19,7 +19,7 @@ $header->display();
 
 $index = new Canvas;
 $index->load('error');
-$index->assignArray($_SESSION['alkaline']['error']);
+$index->assignArray($_SESSION['fsip']['error']);
 $index->display();
 
 $footer = new Canvas;

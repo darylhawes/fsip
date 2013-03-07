@@ -7,14 +7,14 @@
 */
 
 require_once('./../../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true);
 
-$id = $alkaline->findID(@$_POST['image_id']);
+$id = $fsip->findID(@$_POST['image_id']);
 
 if(empty($id)){
 	$image_ids = new Find('images', null, null, null, false);
@@ -29,12 +29,12 @@ else{
 	
 	$dir = '';
 	
-	if($alkaline->returnConf('image_hdm') == true){
-		if($alkaline->returnConf('image_hdm_format') == 'yyyy/mm/dd'){
+	if($fsip->returnConf('image_hdm') == true){
+		if($fsip->returnConf('image_hdm_format') == 'yyyy/mm/dd'){
 			$dir = substr($image['image_uploaded'], 0, 10);
 			$dir = str_replace('-', '/', $dir);
 		}
-		elseif($alkaline->returnConf('image_hdm_format') == '1000'){
+		elseif($fsip->returnConf('image_hdm_format') == '1000'){
 			if($image['image_id'] < 1000){
 				$dir = '0000';
 			}
@@ -46,7 +46,7 @@ else{
 		$dir .= '/';
 	}
 	
-	$path = $alkaline->correctWinPath(PATH . IMAGES . $dir);
+	$path = $fsip->correctWinPath(PATH . IMAGES . $dir);
 	$dest = $path . $image['image_id'] . '.' . $image['image_ext'];
 	
 	if($src != $dest){
@@ -60,7 +60,7 @@ else{
 		
 		foreach($sizes as $size){
 			$src = $size['size_file'];
-			$dest = $alkaline->correctWinPath(PATH . IMAGES . $dir . $size['size_prepend'] . $image['image_id'] . $size['size_append'] . '.' . $image['image_ext']);
+			$dest = $fsip->correctWinPath(PATH . IMAGES . $dir . $size['size_prepend'] . $image['image_id'] . $size['size_append'] . '.' . $image['image_ext']);
 			
 			rename($src, $dest);
 		}

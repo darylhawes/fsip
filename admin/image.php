@@ -7,23 +7,23 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $orbit = new Orbit;
 $user = new User;
 
 $user->perm(true, 'images');
 
 // GET PHOTO
-if(!$image_id = $alkaline->findID($_GET['id'])){
+if(!$image_id = $fsip->findID($_GET['id'])){
 	header('Location: ' . LOCATION . BASE . ADMIN . 'library' . URL_CAP);
 	exit();
 }
 
 // SAVE CHANGES
 if(!empty($_POST['image_id'])){
-	if(!$image_id = $alkaline->findID($_POST['image_id'])){
+	if(!$image_id = $fsip->findID($_POST['image_id'])){
 		header('Location: ' . LOCATION . BASE . ADMIN . 'library' . URL_CAP);
 		exit();
 	}
@@ -32,12 +32,12 @@ if(!empty($_POST['image_id'])){
 	
 	if(@$_POST['image_delete'] == 'delete'){
 		if($images->delete()){
-			$alkaline->addNote('The image has been deleted.', 'success');
+			$fsip->addNote('The image has been deleted.', 'success');
 		}
 	}
 	elseif(@$_POST['image_recover'] == 'recover'){
 		if($images->recover()){
-			$alkaline->addNote('The image has been recovered.', 'success');
+			$fsip->addNote('The image has been recovered.', 'success');
 		}
 	}
 	else{
@@ -52,14 +52,14 @@ if(!empty($_POST['image_id'])){
 			$image_title = $orbit->hook('markup_title_' . $image_markup_ext, $image_title, $image_title);
 			$image_description = $orbit->hook('markup_' . $image_markup_ext, $image_description_raw, $image_description_raw);
 		}
-		elseif($alkaline->returnConf('web_markup')){
-			$image_markup_ext = $alkaline->returnConf('web_markup_ext');
+		elseif($fsip->returnConf('web_markup')){
+			$image_markup_ext = $fsip->returnConf('web_markup_ext');
 			$image_title = $orbit->hook('markup_title_' . $image_markup_ext, $image_title, $image_title);
 			$image_description = $orbit->hook('markup_' . $image_markup_ext, $image_description_raw, $image_description_raw);
 		}
 		else{
 			$image_markup_ext = '';
-			$image_description = $alkaline->nl2br($image_description_raw);
+			$image_description = $fsip->nl2br($image_description_raw);
 		}
 		
 		if(@$_POST['image_comment_disabled'] == 'disabled'){
@@ -96,17 +96,17 @@ if(!empty($_POST['image_id'])){
 		$image_ids->page(null, 1);
 		$image_ids->find();
 		if($_REQUEST['go'] == 'next'){
-			$_SESSION['alkaline']['go'] = 'next';
+			$_SESSION['fsip']['go'] = 'next';
 			header('Location: ' . LOCATION . BASE . ADMIN . 'images' . URL_ID . $image_ids->ids_after[0] . URL_CAP);
 		}
 		else{
-			$_SESSION['alkaline']['go'] = 'previous';
+			$_SESSION['fsip']['go'] = 'previous';
 			header('Location: ' . LOCATION . BASE . ADMIN . 'images' . URL_ID . $image_ids->ids_before[0] . URL_CAP);
 		}
 		exit();
 	}
 	else{
-		$alkaline->callback();
+		$fsip->callback();
 	}
 }
 
@@ -120,13 +120,13 @@ $comments = $images->getComments();
 $exifs = $images->getEXIF();
 
 if(!$image = @$images->images[0]){
-	$alkaline->addNote('The image you requested could not be found.', 'error');
-	$alkaline->callback();
+	$fsip->addNote('The image you requested could not be found.', 'error');
+	$fsip->callback();
 }
 
 $comment_count = count($comments);
 if($comment_count > 0){
-	$comment_action = '<a href="' . BASE . ADMIN . 'comments' . URL_CAP . '?image=' . $image['image_id'] . '"><button>View ' . $alkaline->returnCount($comment_count, 'comment') . ' (' . $comment_count . ')</button></a>';
+	$comment_action = '<a href="' . BASE . ADMIN . 'comments' . URL_CAP . '?image=' . $image['image_id'] . '"><button>View ' . $fsip->returnCount($comment_count, 'comment') . ' (' . $comment_count . ')</button></a>';
 }
 else{
 	$comment_action = '';
@@ -142,14 +142,14 @@ else{
 }
 
 $image_colorkey = $image['image_colorkey'];
-$image = $alkaline->makeHTMLSafe($image);
+$image = $fsip->makeHTMLSafe($image);
 
 define('TAB', 'library');
 if(!empty($image['image_title'])){	
-	define('TITLE', 'Alkaline Image: &#8220;' . $image['image_title']  . '&#8221;');
+	define('TITLE', 'Image: &#8220;' . $image['image_title']  . '&#8221;');
 }
 else{
-	define('TITLE', 'Alkaline Image');
+	define('TITLE', 'Image');
 }
 require_once(PATH . ADMIN . 'includes/header.php');
 
@@ -202,22 +202,22 @@ else{
 					<?php
 				}
 				?>
-				<span class="none get_location_set"><?php if(!empty($_SESSION['alkaline']['location'])){ echo $_SESSION['alkaline']['location']; } ?></span>
+				<span class="none get_location_set"><?php if(!empty($_SESSION['fsip']['location'])){ echo $_SESSION['fsip']['location']; } ?></span>
 			</p>
 			
 			<p>
 				<label for="image_published">Publish date:</label><br />
-				<input type="text" id="image_published" name="image_published" placeholder="Unpublished" value="<?php echo $alkaline->formatTime($image['image_published']); ?>" />
+				<input type="text" id="image_published" name="image_published" placeholder="Unpublished" value="<?php echo $fsip->formatTime($image['image_published']); ?>" />
 			</p>
 			
 			<p>
 				<label for="image_privacy">Privacy level:</label><br />
-				<?php echo $alkaline->showPrivacy('image_privacy', $image['image_privacy']); ?>
+				<?php echo $fsip->showPrivacy('image_privacy', $image['image_privacy']); ?>
 			</p>
 			
 			<p>
 				<label for="right_id">Rights set:</label><br />
-				<?php echo $alkaline->showRights('right_id', $image['right_id']); ?>
+				<?php echo $fsip->showRights('right_id', $image['right_id']); ?>
 			</p>
 			
 			<?php if(!empty($image_colorkey)){ ?>
@@ -277,7 +277,7 @@ else{
 						</label>
 					</td>
 				</tr>
-				<?php if($alkaline->returnConf('comm_enabled')){ ?>
+				<?php if($fsip->returnConf('comm_enabled')){ ?>
 				<tr>
 					<td class="right" style="width: 5%"><input type="checkbox" id="image_comment_disabled" name="image_comment_disabled" value="disabled" <?php if($image['image_comment_disabled'] == 1){ echo 'checked="checked"'; } ?> /></td>
 					<td>
@@ -326,10 +326,10 @@ else{
 				and
 				<select name="go">
 					<option value="">return to previous screen</option>
-					<option value="next" <?php echo $alkaline->readForm($_SESSION['alkaline'], 'go', 'next'); ?>>go to next image</option>
-					<option value="previous" <?php echo $alkaline->readForm($_SESSION['alkaline'], 'go', 'previous'); ?>>go to previous image</option>
+					<option value="next" <?php echo $fsip->readForm($_SESSION['fsip'], 'go', 'next'); ?>>go to next image</option>
+					<option value="previous" <?php echo $fsip->readForm($_SESSION['fsip'], 'go', 'previous'); ?>>go to previous image</option>
 				</select>
-				or <a href="<?php echo $alkaline->back(); ?>" class="autosave_delete">cancel</a>
+				or <a href="<?php echo $fsip->back(); ?>" class="autosave_delete">cancel</a>
 			</p>
 		</div>
 	</form>

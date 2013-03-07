@@ -7,21 +7,21 @@
 */
 
 require_once('config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
-$alkaline->recordStat('image');
-$alkaline->addComments();
+$fsip = new FSIP;
+$fsip->recordStat('image');
+$fsip->addComments();
 
-$id = $alkaline->findID($_GET['id'], true);
-if(!$id){ $alkaline->addError('No image was found.', 'Try searching for the image you were seeking.', null, null, 404); }
+$id = $fsip->findID($_GET['id'], true);
+if(!$id){ $fsip->addError('No image was found.', 'Try searching for the image you were seeking.', null, null, 404); }
 
 $image_ids = new Find('images', $id);
 $image_ids->published();
 $image_ids->privacy('public');
 $image_ids->find();
 
-if(!$image_ids->ids){ $alkaline->addError('No image was found.', 'Try searching for the image you were seeking.', null, null, 404); }
+if(!$image_ids->ids){ $fsip->addError('No image was found.', 'Try searching for the image you were seeking.', null, null, 404); }
 
 $images = new Image($image_ids);
 $images->updateViews();

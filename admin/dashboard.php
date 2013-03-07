@@ -7,14 +7,14 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true);
 
-$alkaline->setCallback();
+$fsip->setCallback();
 
 // Vitals
 $stats = new Stat(strtotime('-30 days'));
@@ -37,7 +37,7 @@ foreach($stats->stats as $stat){
 $visitors = json_encode($visitors);
 
 define('TAB', 'dashboard');
-define('TITLE', 'Alkaline Dashboard');
+define('TITLE', 'Dashboard');
 require_once(PATH . ADMIN . 'includes/header.php');
 
 ?>
@@ -63,12 +63,12 @@ require_once(PATH . ADMIN . 'includes/header.php');
 	</div>
 	<div class="span-6 prepend-top last">
 		<h3>Hello</h3>
-		<p><?php echo ($user->user['user_last_login']) ? 'Welcome back! You last logged in on:  ' .  $alkaline->formatTime($user->user['user_last_login'], 'l, F j \a\t g:i a') : 'Welcome to Alkaline. You should begin by <a href="' . BASE . ADMIN . 'preferences' . URL_CAP . '">configuring your preferences</a> and <a href="' . BASE . ADMIN . 'upload' . URL_CAP . '">uploading some content</a>.'; ?></p>
+		<p><?php echo ($user->user['user_last_login']) ? 'Welcome back! You last logged in on:  ' .  $fsip->formatTime($user->user['user_last_login'], 'l, F j \a\t g:i a') : 'Welcome to FSIP. You should begin by <a href="' . BASE . ADMIN . 'preferences' . URL_CAP . '">configuring your preferences</a> and <a href="' . BASE . ADMIN . 'upload' . URL_CAP . '">uploading some content</a>.'; ?></p>
 
 		<h3>Census</h3>
 		<table class="census">
 			<?php
-			$tables = $alkaline->getInfo();
+			$tables = $fsip->getInfo();
 			foreach($tables as $table){
 				echo '<tr><td class="right">' . number_format($table['count']) . '</td><td><a href="' . BASE . ADMIN . $table['table'] . URL_CAP . '">' . $table['display'] . '</a></td></tr>';
 				
@@ -78,8 +78,8 @@ require_once(PATH . ADMIN . 'includes/header.php');
 			?>
 		</table>
 
-		<h3>Alkaline</h3>
-		<p>You are running Alkaline <?php echo Alkaline::version; ?>.</p>
+		<h3>FSIP</h3>
+		<p>You are running FSIP <?php echo FSIP::version; ?>.</p>
 	</div>
 </div>
 
@@ -142,7 +142,7 @@ require_once(PATH . ADMIN . 'includes/header.php');
 	array_multisort($timestamps, SORT_DESC, $items, $types);
 
 	if(count($items) == 0){
-		echo '<p>Welcome to Alkaline, starting enjoying your new Web site to populate the timeline.</p>';
+		echo '<p>Sart enjoying your new Free Stock Image Project site to populate the timeline.</p>';
 	}
 	else{
 		$timeline = array();
@@ -153,7 +153,7 @@ require_once(PATH . ADMIN . 'includes/header.php');
 	
 			$type = $types[$i];
 	
-			$modified = $alkaline->formatRelTime($timestamps[$i]);
+			$modified = $fsip->formatRelTime($timestamps[$i]);
 	
 			if($modified != $modified_last){
 				$timeline[$modified] = array();
@@ -163,8 +163,8 @@ require_once(PATH . ADMIN . 'includes/header.php');
 			ob_start();
 	
 			if($type == 'comment'){
-				echo '<p><strong><a href="' . BASE . ADMIN . 'comments' . URL_ID . $items[$i]['comment_id'] . URL_RW . '" class="large tip" title="' . $alkaline->makeHTMLSafe($alkaline->fitStringByWord(strip_tags($items[$i]['comment_text']), 150)) . '">';
-				echo $alkaline->fitStringByWord(strip_tags($items[$i]['comment_text']), 50);
+				echo '<p><strong><a href="' . BASE . ADMIN . 'comments' . URL_ID . $items[$i]['comment_id'] . URL_RW . '" class="large tip" title="' . $fsip->makeHTMLSafe($fsip->fitStringByWord(strip_tags($items[$i]['comment_text']), 150)) . '">';
+				echo $fsip->fitStringByWord(strip_tags($items[$i]['comment_text']), 50);
 				echo '</a></strong><br /><span class="quiet">';
 				
 				if(!empty($items[$i]['user_id'])){
@@ -187,13 +187,13 @@ require_once(PATH . ADMIN . 'includes/header.php');
 			}
 			elseif($type == 'image'){
 				echo '<a href="' . BASE . ADMIN . 'image' . URL_ID . $items[$i]['image_id'] . URL_RW . '" class="nu">
-					<img src="' . $items[$i]['image_src_square'] . '" alt="" title="' . $alkaline->makeHTMLSafe($items[$i]['image_title']) . '" class="frame tip" />
+					<img src="' . $items[$i]['image_src_square'] . '" alt="" title="' . $fsip->makeHTMLSafe($items[$i]['image_title']) . '" class="frame tip" />
 				</a>';
 		
 				$timeline[$modified][] = ob_get_contents();
 			}
 			elseif($type == 'post'){
-				echo '<p><strong class="large"><a href="' . BASE . ADMIN . 'posts' . URL_ID . $items[$i]['post_id'] . URL_RW . '" title="' . $alkaline->makeHTMLSafe($alkaline->fitStringByWord(strip_tags($items[$i]['post_text']), 150)) . '" class="tip">' . $items[$i]['post_title'] . '</a></strong></p>';
+				echo '<p><strong class="large"><a href="' . BASE . ADMIN . 'posts' . URL_ID . $items[$i]['post_id'] . URL_RW . '" title="' . $fsip->makeHTMLSafe($fsip->fitStringByWord(strip_tags($items[$i]['post_text']), 150)) . '" class="tip">' . $items[$i]['post_title'] . '</a></strong></p>';
 		
 				$timeline[$modified][] = ob_get_contents();
 			}
@@ -222,7 +222,7 @@ require_once(PATH . ADMIN . 'includes/header.php');
 require_once(PATH . ADMIN . 'includes/footer.php');
 
 // Delete old cache
-$alkaline->emptyDirectory(PATH . CACHE, false, 3600);
+$fsip->emptyDirectory(PATH . CACHE, false, 3600);
 
 // Anonymous usage reports 
 $now = time();
@@ -232,12 +232,12 @@ if(($user->returnConf('maint_reports') === true) && ($user->returnConf('maint_re
 			'unique' => sha1($_SERVER['HTTP_HOST']),
 			'views' => $stats->views,
 			'visitors' => $stats->visitors,
-			'build' => Alkaline::build,
-			'version' => Alkaline::version,
+			'build' => FSIP::build,
+			'version' => FSIP::version,
 			'http_server' => preg_replace('#\/.*#si', '', $_SERVER['SERVER_SOFTWARE']),
 			'http_server_version' => preg_replace('#.*?\/([0-9.]*).*#si', '\\1', $_SERVER['SERVER_SOFTWARE']),
-			'db_server' => $alkaline->db_type,
-			'db_server_version' => $alkaline->db_version,
+			'db_server' => $fsip->db_type,
+			'db_server_version' => $fsip->db_version,
 			'php_version' => phpversion(),
 			'image_count' => $image_count,
 			'post_count' => $post_count,
@@ -252,6 +252,8 @@ if(($user->returnConf('maint_reports') === true) && ($user->returnConf('maint_re
 		)
 	);
 
+/*
+//DEH - disabling all boomerang features
 	$context = stream_context_create($opts);
 	$bool = file_get_contents('http://www.alkalineapp.com/boomerang/usage/', false, $context);
 	
@@ -259,6 +261,7 @@ if(($user->returnConf('maint_reports') === true) && ($user->returnConf('maint_re
 		$alkaline->setConf('maint_reports_time', $now);
 		$alkaline->saveConf();
 	}
+*/
 }
 
 ?>

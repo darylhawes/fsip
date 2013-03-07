@@ -7,12 +7,12 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 
 // GET PHOTO
-if($image_id = $alkaline->findID($_GET['id'])){
+if($image_id = $fsip->findID($_GET['id'])){
 	header('Location: ' . LOCATION . BASE . ADMIN . 'image' . URL_ID . $image_id . URL_RW);
 	exit();
 }

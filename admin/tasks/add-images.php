@@ -7,18 +7,18 @@
 */
 
 require_once('./../../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true);
 
 if(empty($_POST['image_file'])){
-	$image_files = $alkaline->seekDirectory(PATH . SHOEBOX);
+	$image_files = $fsip->seekDirectory(PATH . SHOEBOX);
 	$image_files = array_reverse($image_files);
-	if($alkaline->returnConf('shoe_max')){
-		$image_files = array_splice($image_files, 0, $alkaline->returnConf('shoe_max_count'));
+	if($fsip->returnConf('shoe_max')){
+		$image_files = array_splice($image_files, 0, $fsip->returnConf('shoe_max_count'));
 	}
 	$image_files = array_map('base64_encode', $image_files);
 	echo json_encode($image_files);
@@ -41,7 +41,7 @@ else{
 	}
 	
 	$image['image_tags'] = $tag_names;
-	echo $alkaline->removeNull(json_encode($image));
+	echo $fsip->removeNull(json_encode($image));
 }
 
 ?>

@@ -12,7 +12,7 @@
  * @version 1.0
  */
 
-class Orbit extends Alkaline{
+class Orbit extends FSIP{
 	public $id;
 	public $uid;
 	
@@ -39,7 +39,7 @@ class Orbit extends Alkaline{
 		
 		// Start Orbit Engine
 		if(!is_subclass_of($this, 'Orbit')){
-			if(empty($_SESSION['alkaline']['extensions'])){
+			if(empty($_SESSION['fsip']['extensions'])){
 				if(empty($id)){
 					$query = $this->prepare('SELECT * FROM extensions WHERE extension_status > 0 ORDER BY extension_title ASC;');
 				}
@@ -58,15 +58,15 @@ class Orbit extends Alkaline{
 					$extension['extension_hooks'] = unserialize($extension['extension_hooks']);
 				}
 			
-				$_SESSION['alkaline']['extensions'] = $extensions;
+				$_SESSION['fsip']['extensions'] = $extensions;
 			}
 			
-			$this->extensions = $_SESSION['alkaline']['extensions'];
+			$this->extensions = $_SESSION['fsip']['extensions'];
 			$this->extension_count = count($this->extensions);
 		}
 		// Prepare Orbit-powered extension
 		else{
-			if(empty($_SESSION['alkaline']['extensions'])){
+			if(empty($_SESSION['fsip']['extensions'])){
 				if(empty($id)){
 					$query = $this->prepare('SELECT * FROM extensions WHERE extension_class = :extension_class AND extension_status > 0;');
 					$query->execute(array(':extension_class' => get_class($this)));
@@ -85,7 +85,7 @@ class Orbit extends Alkaline{
 				$extension = $extensions[0];
 			}
 			else{
-				$extensions = $_SESSION['alkaline']['extensions'];
+				$extensions = $_SESSION['fsip']['extensions'];
 				
 				if(!empty($id)){
 					$extension_ids = array();
@@ -133,7 +133,7 @@ class Orbit extends Alkaline{
 	 */
 	public function __destruct(){
 		// Save extension data
-		$_SESSION['alkaline']['extensions'] = $this->extensions;
+		$_SESSION['fsip']['extensions'] = $this->extensions;
 		
 		parent::__destruct();
 	}
@@ -213,11 +213,11 @@ class Orbit extends Alkaline{
 		$arguments = func_get_args();
 		$arguments = array_slice($arguments, 1);
 		
-		if(!isset($_SESSION['alkaline']['tasks'])){
-			$_SESSION['alkaline']['tasks'] = 1;
+		if(!isset($_SESSION['fsip']['tasks'])){
+			$_SESSION['fsip']['tasks'] = 1;
 		}
 		
-		++$_SESSION['alkaline']['tasks'];
+		++$_SESSION['fsip']['tasks'];
 		
 		if(!file_exists(PATH . CACHE . 'tasks/')){
 			@mkdir(PATH . CACHE . 'tasks/', 0777, true);
@@ -225,7 +225,7 @@ class Orbit extends Alkaline{
 		
 		$contents = array($callback, $arguments);
 		
-		file_put_contents(PATH . CACHE . 'tasks/' . md5(DB_DSN . PATH . $_SESSION['alkaline']['tasks']), serialize($contents));
+		file_put_contents(PATH . CACHE . 'tasks/' . md5(DB_DSN . PATH . $_SESSION['fsip']['tasks']), serialize($contents));
 	}
 	
 	/**
@@ -245,8 +245,8 @@ class Orbit extends Alkaline{
 		}
 		
 		if($contents === false){
-			if($id == $_SESSION['alkaline']['tasks']){
-				unset($_SESSION['alkaline']['tasks']);
+			if($id == $_SESSION['fsip']['tasks']){
+				unset($_SESSION['fsip']['tasks']);
 			}
 			return false;
 		}
@@ -271,8 +271,8 @@ class Orbit extends Alkaline{
 			return false;
 		}
 		
-		if($id == $_SESSION['alkaline']['tasks']){
-			unset($_SESSION['alkaline']['tasks']);
+		if($id == $_SESSION['fsip']['tasks']){
+			unset($_SESSION['fsip']['tasks']);
 		}
 		
 		return true;
@@ -286,15 +286,15 @@ class Orbit extends Alkaline{
 	public static function promptTasks(){
 		$tasks = array();
 		
-		if(empty($_SESSION['alkaline']['tasks'])){ return; }
+		if(empty($_SESSION['fsip']['tasks'])){ return; }
 		
-		$count = $_SESSION['alkaline']['tasks'];
+		$count = $_SESSION['fsip']['tasks'];
 		
 		for($i=1; $i <= $count; $i++){
 			$tasks[] = $i;
 		}
 		
-		return '<div id="alkaline_tasks" class="none">' . json_encode($tasks) . '</div>';
+		return '<div id="fsip_tasks" class="none">' . json_encode($tasks) . '</div>';
 	}
 	
 	/**

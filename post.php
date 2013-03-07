@@ -7,20 +7,20 @@
 */
 
 require_once('config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
-$alkaline->recordStat('post');
-$alkaline->addComments();
+$fsip = new FSIP;
+$fsip->recordStat('post');
+$fsip->addComments();
 
-$id = $alkaline->findID($_GET['id']);
-if(!$id){ $alkaline->addError('No post was found.', 'Try searching for the post you were seeking.', null, null, 404); }
+$id = $fsip->findID($_GET['id']);
+if(!$id){ $fsip->addError('No post was found.', 'Try searching for the post you were seeking.', null, null, 404); }
 
 $post_ids = new Find('posts', $id);
 $post_ids->published();
 $post_ids->find();
 
-if(!$post_ids->ids){ $alkaline->addError('No post was found.', 'Try searching for the post you were seeking.', null, null, 404); }
+if(!$post_ids->ids){ $fsip->addError('No post was found.', 'Try searching for the post you were seeking.', null, null, 404); }
 
 $posts = new Post($post_ids);
 $posts->getComments(true);

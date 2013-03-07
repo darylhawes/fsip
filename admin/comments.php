@@ -7,16 +7,16 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $orbit = new Orbit;
 $user = new User;
 
 $user->perm(true, 'editor');
 
 if(!empty($_GET['id'])){
-	$comment_id = $alkaline->findID($_GET['id']);
+	$comment_id = $fsip->findID($_GET['id']);
 }
 
 if(!empty($_GET['act'])){
@@ -35,7 +35,7 @@ if(!empty($_GET['act'])){
 
 // SAVE CHANGES
 if(!empty($_POST['comment_id'])){
-	$comment_id = $alkaline->findID($_POST['comment_id']);
+	$comment_id = $fsip->findID($_POST['comment_id']);
 	
 	$comment = new Comment($comment_id);
 	
@@ -43,29 +43,29 @@ if(!empty($_POST['comment_id'])){
 		$comment_text_raw = $_POST['post_response_raw'];
 		
 		if(!empty($_POST['image_id'])){
-			$id = $alkaline->findID($_POST['image_id']);
+			$id = $fsip->findID($_POST['image_id']);
 			$id_type = 'image_id';
 		}
 		elseif(!empty($_POST['post_id'])){
-			$id = $alkaline->findID($_POST['post_id']);
+			$id = $fsip->findID($_POST['post_id']);
 			$id_type = 'post_id';
 		}
 		
 		// Configuration: comm_markup
-		if($alkaline->returnConf('web_markup')){
-			$comm_markup_ext = $alkaline->returnConf('web_markup_ext');
+		if($fsip->returnConf('web_markup')){
+			$comm_markup_ext = $fsip->returnConf('web_markup_ext');
 			$comment_text = $orbit->hook('markup_' . $comm_markup_ext, $comment_text_raw, $comment_text_raw);
 		}
 		else{
 			$comm_markup_ext = '';
-			$comment_text = $alkaline->nl2br($comment_text_raw);
+			$comment_text = $fsip->nl2br($comment_text_raw);
 		}
 		
 		$fields = array($id_type => $id,
 			'comment_response' => $comment_id,
 			'comment_status' => 1,
-			'comment_text' => $alkaline->makeUnicode($comment_text),
-			'comment_text_raw' => $alkaline->makeUnicode($comment_text_raw),
+			'comment_text' => $fsip->makeUnicode($comment_text),
+			'comment_text_raw' => $fsip->makeUnicode($comment_text_raw),
 			'comment_markup' => $comm_markup_ext,
 			'user_id' => $user->user['user_id'],
 			'comment_author_name' => $user->user['user_name'],
@@ -75,64 +75,64 @@ if(!empty($_POST['comment_id'])){
 		
 		$fields = $orbit->hook('comment_add', $fields, $fields);
 		
-		if(!$comment_id = $alkaline->addRow($fields, 'comments')){
-			$alkaline->addNote('The response could not be posted.', 'error');
+		if(!$comment_id = $fsip->addRow($fields, 'comments')){
+			$fsip->addNote('The response could not be posted.', 'error');
 		}
 		else{
 			// Update comment counts
 			if($id_type == 'image_id'){
-				$alkaline->updateCount('comments', 'images', 'image_comment_count', $id);
+				$fsip->updateCount('comments', 'images', 'image_comment_count', $id);
 			}
 			elseif($id_type == 'post_id'){
-				$alkaline->updateCount('comments', 'posts', 'post_comment_count', $id);
+				$fsip->updateCount('comments', 'posts', 'post_comment_count', $id);
 			}
 			
-			$alkaline->addNote('The response was successfully posted.', 'success');
+			$fsip->addNote('The response was successfully posted.', 'success');
 		}
 	}
 	
 	if(isset($_POST['comment_delete']) and ($_POST['comment_delete'] == 'delete')){
 		if($comment->delete()){
-			$alkaline->addNote('The comment has been deleted.', 'success');
+			$fsip->addNote('The comment has been deleted.', 'success');
 		}
 		
 		// Update comment counts
 		if(!empty($_POST['image_id'])){
-			$id = $alkaline->findID($_POST['image_id']);
+			$id = $fsip->findID($_POST['image_id']);
 			$id_type = 'image_id';
 		}
 		elseif(!empty($_POST['post_id'])){
-			$id = $alkaline->findID($_POST['post_id']);
+			$id = $fsip->findID($_POST['post_id']);
 			$id_type = 'post_id';
 		}
 		
 		if($id_type == 'image_id'){
-			$alkaline->updateCount('comments', 'images', 'image_comment_count', $id);
+			$fsip->updateCount('comments', 'images', 'image_comment_count', $id);
 		}
 		elseif($id_type == 'post_id'){
-			$alkaline->updateCount('comments', 'posts', 'post_comment_count', $id);
+			$fsip->updateCount('comments', 'posts', 'post_comment_count', $id);
 		}
 	}
 	elseif(isset($_POST['comment_recover']) and ($_POST['comment_recover'] == 'recover')){
 		if($comment->recover()){
-			$alkaline->addNote('The comment has been recovered.', 'success');
+			$fsip->addNote('The comment has been recovered.', 'success');
 		}
 		
 		// Update comment counts
 		if(!empty($_POST['image_id'])){
-			$id = $alkaline->findID($_POST['image_id']);
+			$id = $fsip->findID($_POST['image_id']);
 			$id_type = 'image_id';
 		}
 		elseif(!empty($_POST['post_id'])){
-			$id = $alkaline->findID($_POST['post_id']);
+			$id = $fsip->findID($_POST['post_id']);
 			$id_type = 'post_id';
 		}
 		
 		if($id_type == 'image_id'){
-			$alkaline->updateCount('comments', 'images', 'image_comment_count', $id);
+			$fsip->updateCount('comments', 'images', 'image_comment_count', $id);
 		}
 		elseif($id_type == 'post_id'){
-			$alkaline->updateCount('comments', 'posts', 'post_comment_count', $id);
+			$fsip->updateCount('comments', 'posts', 'post_comment_count', $id);
 		}
 	}
 	elseif(!empty($_POST['comment_quick'])){
@@ -158,24 +158,24 @@ if(!empty($_POST['comment_id'])){
 		}
 		elseif($_POST['comment_quick'] == 'delete'){
 			if($comment->delete()){
-				$alkaline->addNote('The comment has been deleted.', 'success');
+				$fsip->addNote('The comment has been deleted.', 'success');
 			}
 
 			// Update comment counts
 			if(!empty($_POST['image_id'])){
-				$id = $alkaline->findID($_POST['image_id']);
+				$id = $fsip->findID($_POST['image_id']);
 				$id_type = 'image_id';
 			}
 			elseif(!empty($_POST['post_id'])){
-				$id = $alkaline->findID($_POST['post_id']);
+				$id = $fsip->findID($_POST['post_id']);
 				$id_type = 'post_id';
 			}
 
 			if($id_type == 'image_id'){
-				$alkaline->updateCount('comments', 'images', 'image_comment_count', $id);
+				$fsip->updateCount('comments', 'images', 'image_comment_count', $id);
 			}
 			elseif($id_type == 'post_id'){
-				$alkaline->updateCount('comments', 'posts', 'post_comment_count', $id);
+				$fsip->updateCount('comments', 'posts', 'post_comment_count', $id);
 			}
 		}
 	}
@@ -188,13 +188,13 @@ if(!empty($_POST['comment_id'])){
 			$comment_markup_ext = $_POST['comm_markup'];
 			$comment_text = $orbit->hook('markup_' . $comment_markup_ext, $comment_text_raw, $comment_text);
 		}
-		elseif($alkaline->returnConf('comm_markup')){
-			$comment_markup_ext = $alkaline->returnConf('comm_markup_ext');
+		elseif($fsip->returnConf('comm_markup')){
+			$comment_markup_ext = $fsip->returnConf('comm_markup_ext');
 			$comment_text = $orbit->hook('markup_' . $comment_markup_ext, $comment_text_raw, $comment_text);
 		}
 		else{
 			$comment_markup_ext = '';
-			$comment_text = $alkaline->nl2br($comment_text_raw);
+			$comment_text = $fsip->nl2br($comment_text_raw);
 		}
 		
 		
@@ -205,8 +205,8 @@ if(!empty($_POST['comment_id'])){
 			$comment_status = 1;
 		}
 		
-		$fields = array('comment_text_raw' => $alkaline->makeUnicode($comment_text_raw),
-			'comment_text' => $alkaline->makeUnicode($comment_text),
+		$fields = array('comment_text_raw' => $fsip->makeUnicode($comment_text_raw),
+			'comment_text' => $fsip->makeUnicode($comment_text),
 			'comment_status' => $comment_status);
 		
 		$comment->updateFields($fields);
@@ -221,28 +221,28 @@ if(!empty($_POST['comment_id'])){
 		$comment_ids->find();
 		
 		if($_REQUEST['go'] == 'next'){
-			$_SESSION['alkaline']['go'] = 'next';
+			$_SESSION['fsip']['go'] = 'next';
 			if(!empty($comment_ids->ids_after[0])){
 				$comment_id = $comment_ids->ids_after[0];
 			}
 			else{
-				unset($_SESSION['alkaline']['go']);
+				unset($_SESSION['fsip']['go']);
 				unset($comment_id);
 			}
 		}
 		else{
-			$_SESSION['alkaline']['go'] = 'previous';
+			$_SESSION['fsip']['go'] = 'previous';
 			if(!empty($comment_ids->ids_before[0])){
 	 			$comment_id = $comment_ids->ids_before[0];
 			}
 			else{
-				unset($_SESSION['alkaline']['go']);
+				unset($_SESSION['fsip']['go']);
 				unset($comment_id);
 			}
 		}
 	}
 	else{
-		unset($_SESSION['alkaline']['go']);
+		unset($_SESSION['fsip']['go']);
 		unset($comment_id);
 	}
 }
@@ -258,14 +258,14 @@ if(empty($comment_id)){
 	
 	$comments = new Comment($comment_ids);
 	$comments->formatTime();
-	$comments->comments = $alkaline->stripTags($comments->comments);
+	$comments->comments = $fsip->stripTags($comments->comments);
 	
 	$image_ids = $comments->image_ids;
 	
 	$images = new Image($image_ids);
 	$images->getSizes('square');
 	
-	define('TITLE', 'Alkaline Comments');
+	define('TITLE', 'FSIP Comments');
 	require_once(PATH . ADMIN . 'includes/header.php');
 
 	?>
@@ -328,7 +328,7 @@ if(empty($comment_id)){
 	
 	<?php
 	// Configuration: comm_enabled
-	if(!$alkaline->returnConf('comm_enabled')){
+	if(!$fsip->returnConf('comm_enabled')){
 		?>
 		<p class="notice">New comments have been disabled. You can enabled comments in your <a href="<?php echo BASE . ADMIN . 'configuration' . URL_CAP; ?>">configuration</a>.</p><br />
 		<?php
@@ -374,8 +374,8 @@ if(empty($comment_id)){
 				echo '<option value="go_post">Go to post</option>';
 			}
 			echo '</select> <input type="hidden" name="comment_id" value="' . $comment['comment_id'] . '" /><input type="submit" value="Do" /></form>\'></button></div>';
-			echo '<strong><a href="' . BASE . ADMIN . 'comments' . URL_ID . $comment['comment_id'] . URL_RW . '" class="large tip" title="' . $alkaline->makeHTMLSafe($alkaline->fitStringByWord(strip_tags($comment['comment_text']), 150)) . '">';
-			echo $alkaline->fitStringByWord(strip_tags($comment['comment_text']), 50);
+			echo '<strong><a href="' . BASE . ADMIN . 'comments' . URL_ID . $comment['comment_id'] . URL_RW . '" class="large tip" title="' . $fsip->makeHTMLSafe($fsip->fitStringByWord(strip_tags($comment['comment_text']), 150)) . '">';
+			echo $fsip->fitStringByWord(strip_tags($comment['comment_text']), 50);
 			echo '</a></strong><br /><span class="quiet">';
 			
 			if(!empty($comment['user_id'])){
@@ -428,10 +428,10 @@ if(empty($comment_id)){
 	
 }
 else{
-	$comment = $alkaline->getRow('comments', $comment_id);
-	$comment = $alkaline->makeHTMLSafe($comment);
+	$comment = $fsip->getRow('comments', $comment_id);
+	$comment = $fsip->makeHTMLSafe($comment);
 	
-	define('TITLE', 'Alkaline Comment');
+	define('TITLE', 'FSIP Comment');
 	require_once(PATH . ADMIN . 'includes/header.php');
 	
 	$email_action = '';
@@ -507,7 +507,7 @@ else{
 					<p>
 						<label>Web site:</label><br />
 						<span class="quiet">
-							<a href="<?php echo $comment['comment_author_uri']; ?>"><?php echo $alkaline->fitString($alkaline->minimizeURL($comment['comment_author_uri']), 100); ?></a>
+							<a href="<?php echo $comment['comment_author_uri']; ?>"><?php echo $fsip->fitString($fsip->minimizeURL($comment['comment_author_uri']), 100); ?></a>
 						</span>
 					</p>
 					<?php
@@ -553,10 +553,10 @@ else{
 			and
 			<select name="go">
 				<option value="">return to previous screen</option>
-				<option value="next" <?php echo $alkaline->readForm($_SESSION['alkaline'], 'go', 'next'); ?>>go to next comment</option>
-				<option value="previous" <?php echo $alkaline->readForm($_SESSION['alkaline'], 'go', 'previous'); ?>>go to previous comment</option>
+				<option value="next" <?php echo $fsip->readForm($_SESSION['fsip'], 'go', 'next'); ?>>go to next comment</option>
+				<option value="previous" <?php echo $fsip->readForm($_SESSION['fsip'], 'go', 'previous'); ?>>go to previous comment</option>
 			</select>
-			or <a href="<?php echo $alkaline->back(); ?>">cancel</a>
+			or <a href="<?php echo $fsip->back(); ?>">cancel</a>
 		</p>
 	</form>
 

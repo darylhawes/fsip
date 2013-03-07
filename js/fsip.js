@@ -659,7 +659,7 @@ $(document).ready(function(){
 		$("#progress").progressbar({ value: 0 }).hide();
 	}
 	
-	orbit_tasks = $('#alkaline_tasks').text();
+	orbit_tasks = $('#fsip_tasks').text();
 	
 	if(!empty(orbit_tasks)){
 		orbit_tasks = $.evalJSON(orbit_tasks);

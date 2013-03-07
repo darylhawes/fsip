@@ -12,7 +12,7 @@
  * @version 1.0
  */
 
-class Geo extends Alkaline{
+class Geo extends FSIP{
 	public $city;
 	public $lat;
 	public $long;

@@ -7,13 +7,13 @@
 */
 
 require_once('config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
-$alkaline->recordStat('home');
+$fsip = new FSIP;
+$fsip->recordStat('home');
 
-$with_id = $alkaline->findID($_GET['with'], true);
-if(!$with_id and !empty($_GET['with'])){ $alkaline->addError('No image was found.', 'Try searching for the image you were seeking.', null, null, 404); }
+$with_id = $fsip->findID($_GET['with'], true);
+if(!$with_id and !empty($_GET['with'])){ $fsip->addError('No image was found.', 'Try searching for the image you were seeking.', null, null, 404); }
 
 $image_ids = new Find('images');
 $image_ids->page(null, 12, 1);

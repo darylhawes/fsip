@@ -12,7 +12,7 @@
  * @version 1.0
  */
 
-class Comment extends Alkaline{
+class Comment extends FSIP{
 	public $comments;
 	public $comment_ids;
 	public $comment_count = 0;

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="extension.xsd" xmlns:p="http://www.alkalineapp.com/extensions">
+<extension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="extension.xsd" xmlns:p="http://fsip.sdelargy.com/extensions">
 	<uid>e706e1fb5fe3141f43d6d2cb4f8e24f24a52eca6</uid>
 	<file>flickr</file>
 	<class>Flickr</class>

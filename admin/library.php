@@ -7,14 +7,14 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true);
 
-$alkaline->setCallback();
+$fsip->setCallback();
 
 // Preference: page_limit
 if(!$max = $user->returnPref('page_limit')){
@@ -30,7 +30,7 @@ $images = new Image($image_ids);
 $images->getSizes('square');
 $images->hook();
 
-$shoebox_count = $alkaline->countDirectory(PATH . SHOEBOX);
+$shoebox_count = $fsip->countDirectory(PATH . SHOEBOX);
 if($shoebox_count > 0){
 	$shoebox_count = '(' . $shoebox_count . ') ';
 }
@@ -39,7 +39,7 @@ else{
 }
 
 define('TAB', 'library');
-define('TITLE', 'Alkaline Library');
+define('TITLE', 'Library');
 require_once(PATH . ADMIN . 'includes/header.php');
 
 ?>
@@ -80,14 +80,14 @@ require_once(PATH . ADMIN . 'includes/header.php');
 					<tr>
 						<td class="right middle"><label for="tags">EXIF metadata:</label></td>
 						<td>
-							<?php echo $alkaline->showEXIFNames('exif_name'); ?>
+							<?php echo $fsip->showEXIFNames('exif_name'); ?>
 							<input type="text" id="exif_value" name="exif_value" class="s" /><br />
 						</td>
 					</tr>
 					<tr>
 						<td class="right middle"><label for="rights">Rights set:</label></td>
 						<td class="quiet">
-							<?php echo $alkaline->showRights('rights'); ?>
+							<?php echo $fsip->showRights('rights'); ?>
 						</td>
 					</tr>
 					<tr>
@@ -224,7 +224,7 @@ require_once(PATH . ADMIN . 'includes/header.php');
 		foreach($images->images as $image){
 			?>
 			<a href="<?php echo BASE . ADMIN . 'image' . URL_ID . $image['image_id'] . URL_RW; ?>" class="nu">
-				<img src="<?php echo $image['image_src_square']; ?>" alt="" title="<?php echo $alkaline->makeHTMLSafe($image['image_title']); ?>" class="frame tip" />
+				<img src="<?php echo $image['image_src_square']; ?>" alt="" title="<?php echo $fsip->makeHTMLSafe($image['image_title']); ?>" class="frame tip" />
 			</a>
 			<?php
 		}

@@ -9,17 +9,17 @@
 error_reporting(E_ALL & ~E_DEPRECATED);
 
 require_once('./../../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true);
 
 $version_id = intval($_POST['version_id']);
-$version = $alkaline->getRow('versions', $version_id);
+$version = $fsip->getRow('versions', $version_id);
 
-$comparison = $alkaline->compare($version['version_title'] . "\n\n" . $version['version_text_raw'], $_POST['title'] . "\n\n" . $_POST['text_raw']);
+$comparison = $fsip->compare($version['version_title'] . "\n\n" . $version['version_text_raw'], $_POST['title'] . "\n\n" . $_POST['text_raw']);
 
 // Bold title
 $comparison = preg_replace('#(.*?)\n#si', '<strong>\\1</strong>', $comparison, 1);

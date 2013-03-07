@@ -7,16 +7,16 @@
 */
 
 require_once('./../../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true);
 
 if(!empty($_POST['id'])){
-	$version = $alkaline->getRow('versions', $_POST['id']);
-	echo $alkaline->removeNull(json_encode($version));
+	$version = $fsip->getRow('versions', $_POST['id']);
+	echo $fsip->removeNull(json_encode($version));
 }
 
 ?>

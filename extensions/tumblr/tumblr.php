@@ -57,7 +57,7 @@ class Tumblr extends Orbit{
 	
 	public function orbit_config(){
 		?>
-		<p>Let Alkaline update your <a href="http://www.tumblr.com/">Tumblr</a>.</p>
+		<p>Update your <a href="http://www.tumblr.com/">Tumblr</a>.</p>
 		<?php
 		if($this->tumblr_active){
 			$this->tumblr_format_image = $this->makeHTMLSafe($this->tumblr_format_image);
@@ -106,7 +106,7 @@ class Tumblr extends Orbit{
 					<td class="right"><label>Title:</label></td>
 					<td>
 						<a href="<?php echo $this->locationFull(array('link' => 'tumblr')); ?>"><button>Link to Tumblr</button></a><br /><br />
-						<span class="quiet">Note: Alkaline will be linked to whichever Tumblr account you are currently logged into.</span>
+						<span class="quiet">Note: Link will be to the Tumblr account you are currently logged into.</span>
 					</td>
 				</tr>
 			</table>

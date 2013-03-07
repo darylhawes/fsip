@@ -10,10 +10,10 @@ require_once('../config.php');
 
 if(session_id() == ''){ session_start(); }
 
-$e = $_SESSION['alkaline']['exception'];
+$e = $_SESSION['fsip']['exception'];
 
 define('TAB', 'Error');
-define('TITLE', 'Alkaline Error');
+define('TITLE', 'Error');
 require_once(PATH . ADMIN . 'includes/header.php');
 
 ?>

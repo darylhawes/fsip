@@ -7,14 +7,14 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true);
 
-$alkaline->setCallback();
+$fsip->setCallback();
 
 // Preference: page_limit
 if(!$max = $user->returnPref('page_limit')){
@@ -30,7 +30,7 @@ $images = new Image($image_ids);
 $images->getSizes('square');
 
 define('TAB', 'library');
-define('TITLE', 'Alkaline Search Results');
+define('TITLE', 'Search Results');
 require_once(PATH . ADMIN . 'includes/header.php');
 
 ?>
@@ -64,7 +64,7 @@ if($image_ids->count_result > 0){
 	<?php
 	for($i = 0; $i < $images->image_count; ++$i){
 		?>
-		<a href="<?php echo BASE . ADMIN . 'image' . URL_ID . $images->images[$i]['image_id'] . URL_RW; ?>"><img src="<?php echo $images->images[$i]['image_src_square']; ?>" alt="" title="<?php echo $alkaline->makeHTMLSafe($images->images[$i]['image_title']); ?>" class="frame tip" /></a>
+		<a href="<?php echo BASE . ADMIN . 'image' . URL_ID . $images->images[$i]['image_id'] . URL_RW; ?>"><img src="<?php echo $images->images[$i]['image_src_square']; ?>" alt="" title="<?php echo $fsip->makeHTMLSafe($images->images[$i]['image_title']); ?>" class="frame tip" /></a>
 		<?php
 	}
 	?>

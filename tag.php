@@ -7,17 +7,17 @@
 */
 
 require_once('config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
-$alkaline->recordStat('tag');
+$fsip = new FSIP;
+$fsip->recordStat('tag');
 
-$id = $alkaline->findID($_GET['id']);
-if(!$id){ $alkaline->addError('No tag was found.', 'Try searching for the images you were seeking.', null, null, 404); }
+$id = $fsip->findID($_GET['id']);
+if(!$id){ $fsip->addError('No tag was found.', 'Try searching for the images you were seeking.', null, null, 404); }
 
-$tag = $alkaline->getRow('tags', $id);
+$tag = $fsip->getRow('tags', $id);
 
-if(!$tag){ $alkaline->addError('No tag was found.', 'Try searching for the images you were seeking.', null, null, 404); }
+if(!$tag){ $fsip->addError('No tag was found.', 'Try searching for the images you were seeking.', null, null, 404); }
 
 $image_ids = new Find('images');
 $image_ids->page(null, 0);

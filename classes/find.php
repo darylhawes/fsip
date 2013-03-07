@@ -12,7 +12,7 @@
  * @version 1.0
  */
 
-class Find extends Alkaline{
+class Find extends FSIP{
 	public $admin;
 	public $cache;
 	public $ids;
@@ -143,15 +143,15 @@ class Find extends Alkaline{
 		
 		if(($auto_guest == true) and ($this->table == 'images')){
 			// Guest access
-			if(isset($_SESSION['alkaline']['guest']) and ($this->admin != true)){
-				if($_SESSION['alkaline']['guest']['guest_inclusive']){
+			if(isset($_SESSION['fsip']['guest']) and ($this->admin != true)){
+				if($_SESSION['fsip']['guest']['guest_inclusive']){
 					$this->privacy(2, true, false);
 				}
 				else{
 					$this->privacy(2, false, false);
 				}
-				if(!empty($_SESSION['alkaline']['guest']['guest_sets'])){
-					$this->sets(intval($_SESSION['alkaline']['guest']['guest_sets']));
+				if(!empty($_SESSION['fsip']['guest']['guest_sets'])){
+					$this->sets(intval($_SESSION['fsip']['guest']['guest_sets']));
 				}
 			}
 		}
@@ -492,7 +492,7 @@ class Find extends Alkaline{
 	public function published($begin=true, $end=null){
 		// Error checking
 		if(!isset($begin) and empty($end)){ return false; }
-		if(!empty($_SESSION['alkaline']['preview'])){ return; }
+		if(!empty($_SESSION['fsip']['preview'])){ return; }
 		
 		// Set status
 		if($begin === 'false'){ $published = false; }
@@ -1105,7 +1105,7 @@ class Find extends Alkaline{
 	 * Comments: comment text, comment author name, comment author URI, comment author email, comment author IP
 	 *
 	 * @param string $search Search query
-	 * @param string|array $fields Required for tables not built into Alkaline (or for overriding built-in search parameters)
+	 * @param string|array $fields Required for tables not built into FSIP (or for overriding built-in search parameters)
 	 * @return bool True if successful
 	 */
 	public function search($search=null, $fields=null){
@@ -1248,7 +1248,7 @@ class Find extends Alkaline{
 	 * Comments: comment text, comment author name, comment author URI, comment author email, comment author IP
 	 *
 	 * @param string $search Search query
-	 * @param string|array $fields Required for tables not built into Alkaline (or for overriding built-in search parameters)
+	 * @param string|array $fields Required for tables not built into FSIP (or for overriding built-in search parameters)
 	 * @return bool True if successful
 	 */
 	public function hide($search=null, $fields=null){
@@ -1338,9 +1338,9 @@ class Find extends Alkaline{
 		if(empty($privacy)){ return false; }
 		//  if(intval($privacy)){ $privacy = intval($privacy); }
 		if($this->table != 'images'){ return false; }
-		if(!empty($_SESSION['alkaline']['preview'])){ return; }
+		if(!empty($_SESSION['fsip']['preview'])){ return; }
 		
-		if(!empty($_SESSION['alkaline']['guest']) and ($auto_guest == true) and ($this->admin != true)){ return; }
+		if(!empty($_SESSION['fsip']['guest']) and ($auto_guest == true) and ($this->admin != true)){ return; }
 		
 		// Convert strings
 		if(is_string($privacy)){
@@ -1740,7 +1740,7 @@ class Find extends Alkaline{
 				$this->_sets(@intval($_GET['id']));
 				break;
 			case 'me':
-				$this->_user(@intval($_SESSION['alkaline']['user']['user_id']));
+				$this->_user(@intval($_SESSION['fsip']['user']['user_id']));
 				break;
 			case 'users':
 				$this->_user(@intval($_GET['id']));
@@ -2143,10 +2143,10 @@ class Find extends Alkaline{
 	public function saveMemory(){
 		$table = $this->table;
 		
-		$_SESSION['alkaline']['search']['table'] = $table;
-		$_SESSION['alkaline']['search'][$table]['request'] = $_REQUEST;
-		$_SESSION['alkaline']['search'][$table]['call'] = $this->call;
-		$_SESSION['alkaline']['search'][$table]['ids'] = $this->ids;
+		$_SESSION['fsip']['search']['table'] = $table;
+		$_SESSION['fsip']['search'][$table]['request'] = $_REQUEST;
+		$_SESSION['fsip']['search'][$table]['call'] = $this->call;
+		$_SESSION['fsip']['search'][$table]['ids'] = $this->ids;
 	}
 	
 	/**
@@ -2157,11 +2157,11 @@ class Find extends Alkaline{
 	public function recentMemory(){
 		$table = $this->table;
 		
-		if(empty($_SESSION['alkaline']['search'][$table]['call'])){
+		if(empty($_SESSION['fsip']['search'][$table]['call'])){
 			return false;
 		}
 		
-		return $_SESSION['alkaline']['search'][$table]['call'];
+		return $_SESSION['fsip']['search'][$table]['call'];
 	}
 	
 	/**
@@ -2170,7 +2170,7 @@ class Find extends Alkaline{
 	 * @return void
 	 */
 	public static function clearMemory(){
-		unset($_SESSION['alkaline']['search']);
+		unset($_SESSION['fsip']['search']);
 	}
 }
 

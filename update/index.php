@@ -8,26 +8,26 @@
 
 
 require_once('../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 
 $builds = array(918, 928, 1000, 1100, 1200);
 
 foreach($builds as $build){
 	// Import default SQL
-	$queries = file_get_contents(PATH . 'update/' . $build . '/' . $alkaline->db_type . '.sql');
+	$queries = file_get_contents(PATH . 'update/' . $build . '/' . $fsip->db_type . '.sql');
 	$queries = explode("\n", $queries);
 
 	foreach($queries as $query){
 		$query = trim($query);
 		if(!empty($query)){
-			$alkaline->exec($query);
+			$fsip->exec($query);
 		}
 	}
 }
 
-$alkaline->addNote('You have successfully updated Alkaline. You should now remove the /update directory.', 'success');
+$fsip->addNote('You have successfully updated FSIP. You should now remove the /update directory.', 'success');
 
 header('Location: ' . LOCATION . BASE . ADMIN);
 exit();

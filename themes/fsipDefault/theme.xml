@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<theme xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="theme.xsd" xmlns:p="http://sdelargy.com/themes">
+<theme xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="theme.xsd" xmlns:p="http://fsip.sdelargy.com/themes">
 	<uid>225b134b655901223d2f2ee26599b71763b1e5fe</uid>
 	<title>fsipDefault</title>
 	<build>1</build>

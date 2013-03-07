@@ -7,9 +7,9 @@
 */
 
 require_once('config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
-echo $alkaline->addTrackbacks();
+$fsip = new FSIP;
+echo $fsip->addTrackbacks();
 
 ?>

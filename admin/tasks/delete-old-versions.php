@@ -7,19 +7,19 @@
 */
 
 require_once('./../../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true);
 
-$id = $alkaline->findID(@$_POST['image_id']);
+$id = $fsip->findID(@$_POST['image_id']);
 
 if(empty($id)){
 	$olds = array();
 	
-	$query = $alkaline->prepare('SELECT DISTINCT versions.version_id FROM versions WHERE versions.version_similarity > :version_similarity AND versions.version_created < :version_created;');
+	$query = $fsip->prepare('SELECT DISTINCT versions.version_id FROM versions WHERE versions.version_similarity > :version_similarity AND versions.version_created < :version_created;');
 	$query->execute(array(':version_similarity' => 65, ':version_created' => date('Y-m-d H:i:s', strtotime('-2 weeks'))));
 	$versions1 = $query->fetchAll();
 	
@@ -37,7 +37,7 @@ if(empty($id)){
 	echo json_encode($version_ids);
 }
 else{
-	$alkaline->exec('DELETE FROM versions WHERE version_id = ' . intval($id));
+	$fsip->exec('DELETE FROM versions WHERE version_id = ' . intval($id));
 }
 
 ?>

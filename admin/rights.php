@@ -7,16 +7,16 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 $orbit = new Orbit;
 
 $user->perm(true, 'rights');
 
 if(!empty($_GET['id'])){
-	$right_id = $alkaline->findID($_GET['id']);
+	$right_id = $fsip->findID($_GET['id']);
 }
 
 if(!empty($_GET['act'])){
@@ -25,7 +25,7 @@ if(!empty($_GET['act'])){
 
 // SAVE CHANGES
 if(!empty($_POST['right_id'])){
-	$right_id = $alkaline->findID($_POST['right_id']);
+	$right_id = $fsip->findID($_POST['right_id']);
 	
 	$right = new Right($right_id);
 	
@@ -43,12 +43,12 @@ if(!empty($_POST['right_id'])){
 	// Delete rights set
 	if(!empty($_POST['right_delete']) and ($_POST['right_delete'] == 'delete')){
 		if($right->delete()){
-			$alkaline->addNote('The right set has been deleted.', 'success');
+			$fsip->addNote('The right set has been deleted.', 'success');
 		}
 	}
 	elseif(!empty($_POST['right_recover']) and ($_POST['right_recover'] == 'recover')){
 		if($right->recover()){
-			$alkaline->addNote('The right set has been recovered.', 'success');
+			$fsip->addNote('The right set has been recovered.', 'success');
 		}
 	}
 	// Update rights set
@@ -62,19 +62,19 @@ if(!empty($_POST['right_id'])){
 			$right_description = $orbit->hook('markup_' . $right_markup_ext, $right_description_raw, $right_description_raw);
 			$right_title = $orbit->hook('markup_title_' . $right_markup_ext, $right_title, $right_title);
 		}
-		elseif($alkaline->returnConf('web_markup')){
-			$right_markup_ext = $alkaline->returnConf('web_markup_ext');
+		elseif($fsip->returnConf('web_markup')){
+			$right_markup_ext = $fsip->returnConf('web_markup_ext');
 			$right_description = $orbit->hook('markup_' . $right_markup_ext, $right_description_raw, $right_description_raw);
 			$right_title = $orbit->hook('markup_title_' . $right_markup_ext, $right_title, $right_title);
 		}
 		else{
 			$right_markup_ext = '';
-			$right_description = $alkaline->nl2br($right_description_raw);
+			$right_description = $fsip->nl2br($right_description_raw);
 		}
 		
-		$fields = array('right_title' => $alkaline->makeUnicode($right_title),
-			'right_description_raw' => $alkaline->makeUnicode($right_description_raw),
-			'right_description' => $alkaline->makeUnicode($right_description));
+		$fields = array('right_title' => $fsip->makeUnicode($right_title),
+			'right_description_raw' => $fsip->makeUnicode($right_description_raw),
+			'right_description' => $fsip->makeUnicode($right_description));
 		
 		$right->updateFields($fields);
 	}
@@ -82,19 +82,19 @@ if(!empty($_POST['right_id'])){
 	unset($right_id);
 }
 else{
-	$alkaline->deleteEmptyRow('rights', array('right_title'));
+	$fsip->deleteEmptyRow('rights', array('right_title'));
 }
 
 // CREATE RIGHTS SET
 if(isset($right_act) and ($right_act == 'add')){
-	$right_id = $alkaline->addRow(null, 'rights');
+	$right_id = $fsip->addRow(null, 'rights');
 }
 
 define('TAB', 'features');
 
 // GET RIGHTS SETS TO VIEW OR RIGHTS SET TO EDIT
 if(empty($right_id)){
-	$alkaline->updateCounts('images', 'rights', 'right_image_count');
+	$fsip->updateCounts('images', 'rights', 'right_image_count');
 	
 	$right_ids = new Find('rights');
 	$right_ids->sort('right_modified', 'DESC');
@@ -102,7 +102,7 @@ if(empty($right_id)){
 	
 	$rights = new Right($right_ids);
 	
-	define('TITLE', 'Alkaline Right Sets');
+	define('TITLE', 'Right Sets');
 	require_once(PATH . ADMIN . 'includes/header.php');
 	
 	?>
@@ -128,10 +128,10 @@ if(empty($right_id)){
 	
 		foreach($rights->rights as $right){
 			echo '<tr class="ro">';
-				echo '<td><strong class="large"><a href="' . BASE . ADMIN . 'rights' . URL_ID . $right['right_id'] . URL_RW . '" class="tip" title="' . htmlentities($alkaline->fitStringByWord(strip_tags($right['right_description']), 150)) . '">' . $right['right_title'] . '</a></strong></td>';
+				echo '<td><strong class="large"><a href="' . BASE . ADMIN . 'rights' . URL_ID . $right['right_id'] . URL_RW . '" class="tip" title="' . htmlentities($fsip->fitStringByWord(strip_tags($right['right_description']), 150)) . '">' . $right['right_title'] . '</a></strong></td>';
 				echo '<td class="center"><a href="' . BASE . ADMIN . 'search' . URL_ACT . 'rights' . URL_AID . $right['right_id'] . URL_RW . '">' . $right['right_image_count'] . '</a></td>';
-				echo '<td>' . $alkaline->formatTime($right['right_created']) . '</td>';
-				echo '<td>' . ucfirst($alkaline->formatRelTime($right['right_modified'])) . '</td>';
+				echo '<td>' . $fsip->formatTime($right['right_created']) . '</td>';
+				echo '<td>' . ucfirst($fsip->formatRelTime($right['right_modified'])) . '</td>';
 			echo '</tr>';
 		}
 	
@@ -150,14 +150,14 @@ else{
 	$image_ids->find();
 	
 	$fields = array('right_image_count' => $image_ids->count);
-	$alkaline->updateRow($fields, 'rights', $right_id, false);
+	$fsip->updateRow($fields, 'rights', $right_id, false);
 	
 	// Get rights set
-	$right = $alkaline->getRow('rights', $right_id);
-	$right = $alkaline->makeHTMLSafe($right);
+	$right = $fsip->getRow('rights', $right_id);
+	$right = $fsip->makeHTMLSafe($right);
 
 	if(!empty($right['right_title'])){	
-		define('TITLE', 'Alkaline Right Set: &#8220;' . $right['right_title']  . '&#8221;');
+		define('TITLE', 'Right Set: &#8220;' . $right['right_title']  . '&#8221;');
 	}
 	require_once(PATH . ADMIN . 'includes/header.php');
 
@@ -187,7 +187,7 @@ else{
 					<tr>
 						<td class="right" style="width: 5%"><input type="checkbox" id="right_merge" name="right_merge" value="merge" /></td>
 						<td>
-							<label for="right_merge">Transfer images to <?php echo $alkaline->showRights('right_merge_id'); ?> rights set.</label><br />
+							<label for="right_merge">Transfer images to <?php echo $fsip->showRights('right_merge_id'); ?> rights set.</label><br />
 							This action cannot be undone.
 						</td>
 					</tr>
@@ -213,7 +213,7 @@ else{
 		<input type="hidden" id="right_markup" name="right_markup" value="<?php echo $right['right_markup']; ?>" />
 		
 		<p>
-			<input type="hidden" name="right_id" value="<?php echo $right['right_id']; ?>" /><input type="submit" value="Save changes" /> or <a href="<?php echo $alkaline->back(); ?>">cancel</a>
+			<input type="hidden" name="right_id" value="<?php echo $right['right_id']; ?>" /><input type="submit" value="Save changes" /> or <a href="<?php echo $fsip->back(); ?>">cancel</a>
 		</p>
 	</form>
 

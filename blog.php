@@ -7,10 +7,10 @@
 */
 
 require_once('config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
-$alkaline->recordStat('blog');
+$fsip = new FSIP;
+$fsip->recordStat('blog');
 
 $post_ids = new Find('posts');
 $post_ids->page(null, 3);

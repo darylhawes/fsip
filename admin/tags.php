@@ -7,63 +7,63 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true, 'tags');
 
 if(!empty($_GET['id'])){
-	$tag_id = $alkaline->findID($_GET['id']);
+	$tag_id = $fsip->findID($_GET['id']);
 }
 
 // SAVE CHANGES
 if(!empty($_POST['tag_id'])){
-	$tag_id = $alkaline->findID($_POST['tag_id']);
+	$tag_id = $fsip->findID($_POST['tag_id']);
 	$tag_name = $_POST['tag_name'];
 	
 	// Delete tags set
 	if(@$_POST['tag_delete'] == 'delete'){
-		$alkaline->exec('DELETE FROM links WHERE tag_id = ' . $tag_id);
-		$alkaline->deleteRow('tags', $tag_id);
+		$fsip->exec('DELETE FROM links WHERE tag_id = ' . $tag_id);
+		$fsip->deleteRow('tags', $tag_id);
 	}
 	
 	// Update tags set
 	else{
-		$query = $alkaline->prepare('SELECT tag_id FROM tags WHERE tag_name = :tag_name AND tag_id != ' . $tag_id);
+		$query = $fsip->prepare('SELECT tag_id FROM tags WHERE tag_name = :tag_name AND tag_id != ' . $tag_id);
 		$query->execute(array(':tag_name' => $tag_name));
 		$tags = $query->fetchAll();
 		$tag = @$tags[0];
 		
 		// Tag parents
 		$tag_parents = json_decode($_POST['image_tags_input']);
-		$tag_parents = array_map(array($alkaline, 'makeUnicode'), $tag_parents);
+		$tag_parents = array_map(array($fsip, 'makeUnicode'), $tag_parents);
 		
-		$fields = array('tag_name' => $alkaline->makeUnicode($tag_name),
+		$fields = array('tag_name' => $fsip->makeUnicode($tag_name),
 			'tag_parents' => serialize($tag_parents));
-		$alkaline->updateRow($fields, 'tags', $tag_id);
+		$fsip->updateRow($fields, 'tags', $tag_id);
 		
 		if(count($tags) == 1){
-			$alkaline->exec('UPDATE links SET tag_id = ' . $tag['tag_id'] . ' WHERE tag_id = ' . $tag_id);
-			$alkaline->deleteRow('tags', $tag_id);
+			$fsip->exec('UPDATE links SET tag_id = ' . $tag['tag_id'] . ' WHERE tag_id = ' . $tag_id);
+			$fsip->deleteRow('tags', $tag_id);
 		}
 	}
 	
 	unset($tag_id);
 }
 else{
-	$alkaline->deleteEmptyRow('tags', array('tag_name'));
+	$fsip->deleteEmptyRow('tags', array('tag_name'));
 }
 
-$tags = $alkaline->getTags(true);
+$tags = $fsip->getTags(true);
 $tag_count = count($tags);
 
 define('TAB', 'features');
 
 // GET TAG CLOUD TO VIEW OR TAG TO EDIT
 if(empty($tag_id)){	
-	define('TITLE', 'Alkaline Tags');
+	define('TITLE', 'fsip Tags');
 	require_once(PATH . ADMIN . 'includes/header.php');
 
 	?>
@@ -97,11 +97,11 @@ else{
 	$image_ids->find();
 	
 	// Get rights set
-	$tag = $alkaline->getRow('tags', $tag_id);
-	$tag = $alkaline->makeHTMLSafe($tag);
+	$tag = $fsip->getRow('tags', $tag_id);
+	$tag = $fsip->makeHTMLSafe($tag);
 
 	if(!empty($tag['tag_name'])){	
-		define('TITLE', 'Alkaline Tag: &#8220;' . $tag['tag_name']  . '&#8221;');
+		define('TITLE', 'Tag: &#8220;' . $tag['tag_name']  . '&#8221;');
 	}
 	require_once(PATH . ADMIN . 'includes/header.php');
 	
@@ -150,7 +150,7 @@ else{
 			</tr>
 			<tr>
 				<td></td>
-				<td><input type="hidden" name="tag_id" value="<?php echo $tag['tag_id']; ?>" /><input type="submit" value="Save changes" /> or <a href="<?php echo $alkaline->back(); ?>">cancel</a></td>
+				<td><input type="hidden" name="tag_id" value="<?php echo $tag['tag_id']; ?>" /><input type="submit" value="Save changes" /> or <a href="<?php echo $fsip->back(); ?>">cancel</a></td>
 			</tr>
 		</table>
 	</form>

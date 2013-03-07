@@ -7,14 +7,14 @@
 */
 
 require_once('./../../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true);
 
-$id = $alkaline->findID(@$_POST['image_id']);
+$id = $fsip->findID(@$_POST['image_id']);
 
 if(empty($id)){
 	$sets = new Find('sets');

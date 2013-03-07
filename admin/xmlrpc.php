@@ -9,12 +9,12 @@
 $request = file_get_contents('php://input');
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline();
+$fsip = new FSIP();
 $xmlrpc = new XMLRPC();
 
-if(!function_exists('xmlrpc_server_create')){ $alkaline->addError('Module not found.', 'You do not have the XML-RPC PHP module installed.', null, null, 500); }
+if(!function_exists('xmlrpc_server_create')){ $fsip->addError('Module not found.', 'You do not have the XML-RPC PHP module installed.', null, null, 500); }
 
 $server = xmlrpc_server_create();
 

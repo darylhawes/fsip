@@ -12,7 +12,7 @@
  * @version 1.0
  */
 
-class Set extends Alkaline{
+class Set extends FSIP{
 	public $images;
 	public $set_ids;
 	public $set_count = 0;

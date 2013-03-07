@@ -7,15 +7,15 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true, 'extensions');
 
 if(!empty($_GET['id'])){
-	$extension_id = $alkaline->findID($_GET['id']);
+	$extension_id = $fsip->findID($_GET['id']);
 }
 
 if(!empty($_GET['act'])){
@@ -24,14 +24,14 @@ if(!empty($_GET['act'])){
 
 // SAVE CHANGES
 if(!empty($_POST['extension_id'])){
-	$extension_id = $alkaline->findID($_POST['extension_id']);
+	$extension_id = $fsip->findID($_POST['extension_id']);
 	
 	// Reset extension
 	if(@$_POST['extension_reset'] == 'reset'){
 		$fields = array('extension_preferences' => '');
-		$bool = $alkaline->updateRow($fields, 'extensions', $extension_id);
+		$bool = $fsip->updateRow($fields, 'extensions', $extension_id);
 		if($bool === true){
-			$alkaline->addNote('You successfully reset the extension.', 'success');
+			$fsip->addNote('You successfully reset the extension.', 'success');
 			$reset = 1;
 		}
 	}
@@ -39,9 +39,9 @@ if(!empty($_POST['extension_id'])){
 	// Disable extension
 	if(@$_POST['extension_disable'] == 'disable'){
 		$fields = array('extension_status' => 0);
-		$bool = $alkaline->updateRow($fields, 'extensions', $extension_id);
+		$bool = $fsip->updateRow($fields, 'extensions', $extension_id);
 		if($bool === true){
-			$alkaline->addNote('You successfully disabled the extension.', 'success');
+			$fsip->addNote('You successfully disabled the extension.', 'success');
 			$disable = 1;
 		}
 	}
@@ -49,9 +49,9 @@ if(!empty($_POST['extension_id'])){
 	// Enable extension
 	if(@$_POST['extension_enable'] == 'enable'){
 		$fields = array('extension_status' => 1);
-		$bool = $alkaline->updateRow($fields, 'extensions', $extension_id);
+		$bool = $fsip->updateRow($fields, 'extensions', $extension_id);
 		if($bool === true){
-			$alkaline->addNote('You successfully enabled the extension.', 'success');
+			$fsip->addNote('You successfully enabled the extension.', 'success');
 			$enable = 1;
 		}
 	}
@@ -69,15 +69,15 @@ if(!empty($_POST['extension_id'])){
 }
 
 // Configuration: maint_disable
-if($alkaline->returnConf('maint_disable')){
-	$alkaline->addNote('All extensions have been disabled.', 'notice');
+if($fsip->returnConf('maint_disable')){
+	$fsip->addNote('All extensions have been disabled.', 'notice');
 }
 
 // Load current extensions
-$extensions = $alkaline->getTable('extensions');
+$extensions = $fsip->getTable('extensions');
 
 // Seek all extensions
-$seek_extensions = $alkaline->seekDirectory(PATH . EXTENSIONS, '');
+$seek_extensions = $fsip->seekDirectory(PATH . EXTENSIONS, '');
 
 $extension_ids = array();
 $extension_uids = array();
@@ -104,24 +104,24 @@ foreach($extensions as $extension){
 	}
 }
 
-$alkaline->deleteRow('extensions', $extension_deleted);
+$fsip->deleteRow('extensions', $extension_deleted);
 
 // Determine which extensions are new, install them
 $extensions_installed = array();
 $extensions_updated = array();
 
 foreach($seek_extensions as &$extension_folder){
-	if(strpos($alkaline->getFilename($extension_folder), '.') === 0){ continue; }
+	if(strpos($fsip->getFilename($extension_folder), '.') === 0){ continue; }
 	
-	$extension_folder = $alkaline->getFilename($extension_folder);
+	$extension_folder = $fsip->getFilename($extension_folder);
 	if(!in_array($extension_folder, $extension_folders)){
 		$data = file_get_contents(PATH . EXTENSIONS . $extension_folder . '/extension.xml');
-		if(empty($data)){ $alkaline->addNote('Alkaline could not install a new extension. Its XML file is missing or corrupted.', 'error'); continue; }
+		if(empty($data)){ $fsip->addNote('Could not install a new extension. Its XML file is missing or corrupted.', 'error'); continue; }
 		
 		$xml = new SimpleXMLElement($data);
 		
 		if(in_array($xml->class, $extension_classes)){
-			$alkaline->addNote('Alkaline could not install a new extension. Its class name interferes with an preexisting extension.', 'error');
+			$fsip->addNote('Could not install a new extension. Its class name interferes with a pre-existing extension.', 'error');
 		}
 		
 		require_once(PATH . EXTENSIONS . $extension_folder . '/' . $xml->file . '.php');
@@ -147,7 +147,7 @@ foreach($seek_extensions as &$extension_folder){
 			'extension_description' => $xml->description,
 			'extension_creator_name' => $xml->creator->name,
 			'extension_creator_uri' => $xml->creator->uri);
-		$extension_intalled_id = $alkaline->addRow($fields, 'extensions');
+		$extension_intalled_id = $fsip->addRow($fields, 'extensions');
 		$extensions_installed[] = $extension_intalled_id;
 	}
 	else{
@@ -179,7 +179,7 @@ foreach($seek_extensions as &$extension_folder){
 					'extension_description' => $xml->description,
 					'extension_creator_name' => $xml->creator->name,
 					'extension_creator_uri' => $xml->creator->uri);
-				$alkaline->updateRow($fields, 'extensions', $id);
+				$fsip->updateRow($fields, 'extensions', $id);
 				$extensions_updated[] = $id;
 			}
 		}
@@ -195,9 +195,9 @@ if($extensions_installed_count > 0){
 		$notification = 'You have successfully installed ' . $extensions_installed_count . ' extensions.';
 	}
 	
-	$alkaline->addNote($notification, 'success');
+	$fsip->addNote($notification, 'success');
 	
-	$extensions = $alkaline->getTable('extensions');
+	$extensions = $fsip->getTable('extensions');
 }
 
 $extensions_updated_count = count($extensions_updated);
@@ -209,16 +209,16 @@ if($extensions_updated_count > 0){
 		$notification = 'You have successfully updated ' . $extensions_updated_count . ' extensions.';
 	}
 	
-	$alkaline->addNote($notification, 'success');
+	$fsip->addNote($notification, 'success');
 	
-	$extensions = $alkaline->getTable('extensions');
+	$extensions = $fsip->getTable('extensions');
 }
 
 define('TAB', 'settings');
 
 if(empty($extension_id)){
 	// Check for updates
-	$latest_extensions = @$alkaline->boomerang('latest-extensions');
+	$latest_extensions = @$fsip->boomerang('latest-extensions');
 	if(!empty($latest_extensions)){
 		foreach($latest_extensions as $latest_extension){
 			foreach($extensions as &$extension){
@@ -226,13 +226,13 @@ if(empty($extension_id)){
 					if($latest_extension['extension_build'] > $extension['extension_build']){
 						$fields = array('extension_build_latest' => $latest_extension['extension_build'],
 							'extension_version_latest' => $latest_extension['extension_version']);
-						$alkaline->updateRow($fields, 'extensions', $extension['extension_id']);
+						$fsip->updateRow($fields, 'extensions', $extension['extension_id']);
 					}
 					else{
 						if(!empty($extension['extension_build_latest']) or !empty($extension['extension_version_latest'])){
 							$fields = array('extension_build_latest' => '',
 								'extension_version_latest' => '');
-							$alkaline->updateRow($fields, 'extensions', $extension['extension_id']);
+							$fsip->updateRow($fields, 'extensions', $extension['extension_id']);
 						}
 					}
 				}
@@ -240,18 +240,18 @@ if(empty($extension_id)){
 		}
 	}
 	
-	$extensions = $alkaline->getTable('extensions', null, null, null, array('extension_status DESC', 'extension_title ASC'));
+	$extensions = $fsip->getTable('extensions', null, null, null, array('extension_status DESC', 'extension_title ASC'));
 	$extensions_count = @count($extensions);
 	
-	define('TITLE', 'Alkaline Extensions');
+	define('TITLE', 'Extensions');
 	require_once(PATH . ADMIN . 'includes/header.php');
 
 	?>
 
 	<h1><img src="<?php echo BASE . ADMIN; ?>images/icons/extensions.png" alt="" /> Extensions (<?php echo @$extensions_count; ?>)</h1>
-	
-	<p>Extensions add new functionality to your Alkaline installation. You can browse and download additional extensions at the <a href="http://www.alkalineapp.com/users/">Alkaline Lounge</a>.</p>
-	
+	<!-- //DEH removing dead remote user lounge links
+	<p>Extensions add new functionality to your FSIP installation. You can browse and download additional extensions at the <a href="http://www.alkalineapp.com/users/">Alkaline Lounge</a>.</p>
+	-->
 	<p>
 		<input type="search" name="filter" placeholder="Filter" class="s" results="0" />
 	</p>
@@ -281,6 +281,8 @@ if(empty($extension_id)){
 			echo '<td class="center">';
 			echo (($extension['extension_status'] == 1) ? 'Enabled' : 'Disabled');
 			echo '</td>';
+/*
+//DEH remove the currently dead remote extension version checking
 			echo '<td class="center">' . $extension['extension_version'] . '</td>';
 			if(!empty($extension['extension_build_latest'])){
 				echo '<td class="center"><a href="http://www.alkalineapp.com/users/extensions/">Download</a>';
@@ -290,8 +292,9 @@ if(empty($extension_id)){
 				echo '</td>';
 			}
 			else{
+*/
 				echo '<td class="center quiet">&#8212;</td>';
-			}
+//			}
 			echo '</tr>';
 		}
 	
@@ -305,14 +308,14 @@ if(empty($extension_id)){
 }
 else{
 	// Get extension
-	$extension = $alkaline->getRow('extensions', $extension_id);
-	$extension = $alkaline->makeHTMLSafe($extension);
+	$extension = $fsip->getRow('extensions', $extension_id);
+	$extension = $fsip->makeHTMLSafe($extension);
 	
 	if($extension['extension_status'] > 0){
 		$orbit = new Orbit($extension_id);
 		$orbit->hook('config_load');
 	
-		define('TITLE', 'Alkaline Extension: &#8220;' . $extension['extension_title']  . '&#8221;');
+		define('TITLE', 'Extension: &#8220;' . $extension['extension_title']  . '&#8221;');
 		require_once(PATH . ADMIN . 'includes/header.php');
 	
 		?>
@@ -335,7 +338,7 @@ else{
 				</tr>
 				<tr>
 					<td></td>
-					<td><input type="hidden" name="extension_id" value="<?php echo $extension['extension_id']; ?>" /><input type="submit" value="Save changes" /> or <a href="<?php echo $alkaline->back(); ?>">cancel</a></td>
+					<td><input type="hidden" name="extension_id" value="<?php echo $extension['extension_id']; ?>" /><input type="submit" value="Save changes" /> or <a href="<?php echo $fsip->back(); ?>">cancel</a></td>
 				</tr>
 			</table>
 		</form>
@@ -345,7 +348,7 @@ else{
 		require_once(PATH . ADMIN . 'includes/footer.php');
 	}
 	else{
-		define('TITLE', 'Alkaline Extension: &#8220;' . $extension['extension_title']  . '&#8221;');
+		define('TITLE', 'Extension: &#8220;' . $extension['extension_title']  . '&#8221;');
 		require_once(PATH . ADMIN . 'includes/header.php');
 		
 		?>
@@ -364,7 +367,7 @@ else{
 				</tr>
 				<tr>
 					<td></td>
-					<td><input type="hidden" name="extension_id" value="<?php echo $extension['extension_id']; ?>" /><input type="submit" value="Save changes" /> or <a href="<?php echo $alkaline->back(); ?>">cancel</a></td>
+					<td><input type="hidden" name="extension_id" value="<?php echo $extension['extension_id']; ?>" /><input type="submit" value="Save changes" /> or <a href="<?php echo $fsip->back(); ?>">cancel</a></td>
 				</tr>
 			</table>
 		</form>

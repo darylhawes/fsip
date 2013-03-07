@@ -7,10 +7,10 @@
 */
 
 require_once('config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
-$alkaline->access($_REQUEST['id']);
+$fsip = new FSIP;
+$fsip->access($_REQUEST['id']);
 
 session_write_close();
 

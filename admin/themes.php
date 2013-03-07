@@ -7,15 +7,15 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true, 'themes');
 
 // Load current themes
-$themes = $alkaline->getTable('themes');
+$themes = $fsip->getTable('themes');
 
 $theme_ids = array();
 $theme_uids = array();
@@ -30,7 +30,7 @@ foreach($themes as $theme){
 }
 
 // Seek all themes
-$seek_themes = $alkaline->seekDirectory(PATH . THEMES, '');
+$seek_themes = $fsip->seekDirectory(PATH . THEMES, '');
 
 $theme_deleted = array();
 
@@ -42,17 +42,17 @@ foreach($themes as $theme){
 	}
 }
 
-$alkaline->deleteRow('themes', $theme_deleted);
+$fsip->deleteRow('themes', $theme_deleted);
 
 // Determine which themes are new, install them
 $themes_installed = array();
 $themes_updated = array();
 
 foreach($seek_themes as &$theme_folder){
-	$theme_folder = $alkaline->getFilename($theme_folder);
+	$theme_folder = $fsip->getFilename($theme_folder);
 	if(!in_array($theme_folder, $theme_folders)){
 		$data = file_get_contents(PATH . THEMES . $theme_folder . '/theme.xml');
-		if(empty($data)){ $alkaline->addNote('Alkaline could not install a new theme. Its XML file is missing or corrupted.', 'error'); continue; }
+		if(empty($data)){ $fsip->addNote('Could not install a new theme. Its XML file is missing or corrupted.', 'error'); continue; }
 		
 		$xml = new SimpleXMLElement($data);
 		
@@ -64,7 +64,7 @@ foreach($seek_themes as &$theme_folder){
 			'theme_creator_name' => $xml->creator->name,
 			'theme_creator_uri' => $xml->creator->uri);
 		
-		$theme_intalled_id = $alkaline->addRow($fields, 'themes');
+		$theme_intalled_id = $fsip->addRow($fields, 'themes');
 		$themes_installed[] = $theme_intalled_id;
 	}
 	else{
@@ -81,7 +81,7 @@ foreach($seek_themes as &$theme_folder){
 					'theme_version' => $xml->version,
 					'theme_creator_name' => $xml->creator->name,
 					'theme_creator_uri' => $xml->creator->uri);
-				$alkaline->updateRow($fields, 'themes', $id);
+				$fsip->updateRow($fields, 'themes', $id);
 				$themes_updated[] = $id;
 			}
 		}
@@ -97,9 +97,9 @@ if($themes_installed_count > 0){
 		$notification = 'You have successfully installed ' . $themes_installed_count . ' themes.';
 	}
 	
-	$alkaline->addNote($notification, 'success');
+	$fsip->addNote($notification, 'success');
 	
-	$themes = $alkaline->getTable('themes');
+	$themes = $fsip->getTable('themes');
 }
 
 $themes_updated_count = count($themes_updated);
@@ -111,13 +111,14 @@ if($themes_updated_count > 0){
 		$notification = 'You have successfully updated ' . $themes_updated_count . ' themes.';
 	}
 	
-	$alkaline->addNote($notification, 'success');
+	$fsip->addNote($notification, 'success');
 	
-	$themes = $alkaline->getTable('themes');
+	$themes = $fsip->getTable('themes');
 }
 
 // Check for updates
-$latest_themes = @$alkaline->boomerang('latest-themes');
+/* DEH remove dead remote services
+$latest_themes = @$fsip->boomerang('latest-themes');
 if(!empty($latest_themes)){
 	foreach($latest_themes as $latest_theme){
 		foreach($themes as $theme){
@@ -138,12 +139,13 @@ if(!empty($latest_themes)){
 		}
 	}
 }
+*/
 
-$themes = $alkaline->getTable('themes');
+$themes = $fsip->getTable('themes');
 $theme_count = @count($themes);
 
 define('TAB', 'settings');
-define('TITLE', 'Alkaline Themes');
+define('TITLE', 'Themes');
 require_once(PATH . ADMIN . 'includes/header.php');
 
 ?>
@@ -152,7 +154,9 @@ require_once(PATH . ADMIN . 'includes/header.php');
 
 <h1><img src="<?php echo BASE . ADMIN; ?>images/icons/themes.png" alt="" /> Themes (<?php echo $theme_count; ?>)</h1>
 
-<p>Themes change the look and feel of your Alkaline library. You can browse and download additional themes at the <a href="http://www.alkalineapp.com/users/">Alkaline Lounge</a>.</p>
+<!-- DEH remove dead link
+<p>Themes change the look and feel of your library. You can browse and download additional themes at the <a href="http://www.alkalineapp.com/users/">Alkaline Lounge</a>.</p>
+-->
 
 <p>
 	<input type="search" name="filter" placeholder="Filter" class="s" results="0" />
@@ -184,6 +188,8 @@ require_once(PATH . ADMIN . 'includes/header.php');
 		echo '</td>';
 		echo '<td class="center"><a href="' . BASE . '?theme=' . $theme['theme_folder'] . '">Preview</a></td>';
 		echo '<td class="center">' . $theme['theme_version'] . ' <span class="small">(' . $theme['theme_build'] . ')</span></td>';
+
+/* DEH remove remote services
 		if(!empty($theme['theme_build_latest'])){
 			echo '<td class="center"><a href="http://www.alkalineapp.com/users/themes/">Download</a>';
 			if(!empty($theme['theme_version_latest'])){
@@ -192,8 +198,9 @@ require_once(PATH . ADMIN . 'includes/header.php');
 			echo '</td>';
 		}
 		else{
+		*/
 			echo '<td class="center quiet">&#8212;</td>';
-		}
+//		}
 		echo '</tr>';
 	}
 

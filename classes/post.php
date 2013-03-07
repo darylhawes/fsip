@@ -12,7 +12,7 @@
  * @version 1.0
  */
 
-class Post extends Alkaline{
+class Post extends FSIP{
 	public $citations;
 	public $comments;
 	public $posts = array();

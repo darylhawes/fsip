@@ -7,9 +7,9 @@
 */
 
 require_once('./../../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true, 'maintenance');
@@ -27,7 +27,7 @@ $options = array(
 $cache = new Cache_Lite($options);
 
 if(!$report = $cache->get('diagnostic_report')){
-	$alkaline->addNote('Your diagnostic report could not be submitted. Please try again.', 'error');
+	$fsip->addNote('Your diagnostic report could not be submitted. Please try again.', 'error');
 	header('Location: ' . LOCATION . BASE . ADMIN . 'settings' . URL_CAP);
 }
 
@@ -46,15 +46,17 @@ $opts = array(
 	)
 );
 
+/* DEH - remove dead remote services
 $context = stream_context_create($opts);
 $body = file_get_contents('http://www.alkalineapp.com/boomerang/report/', false, $context);
 
 if($body == 'true'){
-	$alkaline->addNote('Your diagnostic report has been submitted. Please <a href="http://www.alkalineapp.com/support/">submit a bug report</a> if you have not already done so.', 'success');
+	$fsip->addNote('Your diagnostic report has been submitted. Please <a href="http://www.alkalineapp.com/support/">submit a bug report</a> if you have not already done so.', 'success');
 }
 else{
-	$alkaline->addNote('Your diagnostic report could not be submitted at this time.', 'error');
-}
+*/
+	$fsip->addNote('Your diagnostic report could not be submitted at this time.', 'error');
+//}
 
 header('Location: ' . LOCATION . BASE . ADMIN);
 

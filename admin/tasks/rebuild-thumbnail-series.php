@@ -7,9 +7,9 @@
 */
 
 require_once('./../../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true);
@@ -17,11 +17,11 @@ $user->perm(true);
 $valid = false;
 
 if(isset($_REQUEST['min'])){
-	$_SESSION['alkaline']['maintenance']['series']['min'] = $_REQUEST['min'];
+	$_SESSION['fsip']['maintenance']['series']['min'] = $_REQUEST['min'];
 	$valid = true;
 }
 if(isset($_REQUEST['max'])){
-	$_SESSION['alkaline']['maintenance']['series']['max'] = $_REQUEST['max'];
+	$_SESSION['fsip']['maintenance']['series']['max'] = $_REQUEST['max'];
 	$valid = true;
 }
 
@@ -31,14 +31,14 @@ if(!empty($_REQUEST['series'])){
 		exit();
 	}
 	else{
-		$alkaline->addNote('You must select a valid series when rebuilding thumbnails by series.', 'error');
+		$fsip->addNote('You must select a valid series when rebuilding thumbnails by series.', 'error');
 		header('Location: ' . LOCATION . BASE . ADMIN . 'maintenance' . URL_CAP);
 		exit();
 	}
 }
 
 if(empty($_POST['image_id'])){
-	$image_ids = range($_SESSION['alkaline']['maintenance']['series']['min'], $_SESSION['alkaline']['maintenance']['series']['max']);
+	$image_ids = range($_SESSION['fsip']['maintenance']['series']['min'], $_SESSION['fsip']['maintenance']['series']['max']);
 	$image_ids = new Find('images', $image_ids, null, null, false);
 	$image_ids->find();
 	echo json_encode($image_ids->ids);

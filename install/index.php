@@ -8,31 +8,31 @@
 
 
 require_once('../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 
 $_POST = array_map('strip_tags', $_POST);
 
 // Diagnostic checks
 
-if($alkaline->checkPerm(PATH . DB) != '0777'){
-	$alkaline->addNote('Database (db/) folder may not be writable.', 'notice');
+if($fsip->checkPerm(PATH . DB) != '0777'){
+	$fsip->addNote('Database (db/) folder may not be writable.', 'notice');
 }
-if($alkaline->checkPerm(PATH . IMAGES) != '0777'){
-	$alkaline->addNote('Images (images/) folder may not be writable.', 'notice');
+if($fsip->checkPerm(PATH . IMAGES) != '0777'){
+	$fsip->addNote('Images (images/) folder may not be writable.', 'notice');
 }
-if($alkaline->checkPerm(PATH . SHOEBOX) != '0777'){
-	$alkaline->addNote('Shoebox (shoebox/) folder may not be writable.', 'notice');
+if($fsip->checkPerm(PATH . SHOEBOX) != '0777'){
+	$fsip->addNote('Shoebox (shoebox/) folder may not be writable.', 'notice');
 }
-if($alkaline->checkPerm(PATH . CACHE) != '0777'){
-	$alkaline->addNote('Cache (cache/) folder may not be writable.', 'notice');
+if($fsip->checkPerm(PATH . CACHE) != '0777'){
+	$fsip->addNote('Cache (cache/) folder may not be writable.', 'notice');
 }
-if(($alkaline->checkPerm(PATH . 'config.json') != '0777') and (SERVER_TYPE != 'win')){
-	$alkaline->addNote('Configuration (config.json) file may not be writable.', 'notice');
+if(($fsip->checkPerm(PATH . 'config.json') != '0777') and (SERVER_TYPE != 'win')){
+	$fsip->addNote('Configuration (config.json) file may not be writable.', 'notice');
 }
-if($alkaline->checkPerm(PATH . 'config.php') == '0777'){
-	$alkaline->addNote('Configuration (config.php) file should not be writable.', 'notice');
+if($fsip->checkPerm(PATH . 'config.php') == '0777'){
+	$fsip->addNote('Configuration (config.php) file should not be writable.', 'notice');
 }
 
 // Configuration setup
@@ -44,22 +44,22 @@ if(@$_POST['install'] == 'Install'){
 	$password = $_POST['install_db_pass'];
 	
 	if(!$config = file_get_contents(PATH . INSTALL . 'config.php', false)){
-		$alkaline->addNote('Cannot find configuration file.', 'error');
+		$fsip->addNote('Cannot find configuration file.', 'error');
 	}
 	
-	$config = $alkaline->replaceVar('$base', $_POST['install_base'], $config);
-	$config = $alkaline->replaceVar('$path', $_POST['install_path'], $config);
+	$config = $fsip->replaceVar('$base', $_POST['install_base'], $config);
+	$config = $fsip->replaceVar('$path', $_POST['install_path'], $config);
 	
 	if($_POST['install_server'] == 'win'){
-		$config = $alkaline->replaceVar('$server_type', 'win', $config);
+		$config = $fsip->replaceVar('$server_type', 'win', $config);
 	}
 	
 	if($_POST['install_db_type'] == 'mysql'){
 		if(empty($name)){
-			$alkaline->addNote('A database name is required for MySQL.', 'error');
+			$fsip->addNote('A database name is required for MySQL.', 'error');
 		}
 		if(empty($username)){
-			$alkaline->addNote('A database username is required for MySQL.', 'error');
+			$fsip->addNote('A database username is required for MySQL.', 'error');
 		}
 		
 		$dsn = 'mysql:';
@@ -77,23 +77,23 @@ if(@$_POST['install'] == 'Install'){
 		
 		$dsn .= 'dbname=' . $_POST['install_db_name'];
 		
-		$config = $alkaline->replaceVar('$db_dsn', $dsn, $config);
-		$config = $alkaline->replaceVar('$db_type', 'mysql', $config);
-		$config = $alkaline->replaceVar('$db_user', $username, $config);
-		$config = $alkaline->replaceVar('$db_pass', $password, $config);
+		$config = $fsip->replaceVar('$db_dsn', $dsn, $config);
+		$config = $fsip->replaceVar('$db_type', 'mysql', $config);
+		$config = $fsip->replaceVar('$db_user', $username, $config);
+		$config = $fsip->replaceVar('$db_pass', $password, $config);
 	}
 	elseif($_POST['install_db_type'] == 'sqlite'){
 		if(!empty($_POST['install_db_file'])){
 			$path = $_POST['install_db_file'];
 		}
 		else{
-			$path = PATH . DB . 'alkaline.db';
-			$path = $alkaline->correctWinPath($path);
+			$path = PATH . DB . 'fsip.db';
+			$path = $fsip->correctWinPath($path);
 			
-			$rand = $alkaline->randInt();
+			$rand = $fsip->randInt();
 			$rand = substr(md5($rand), 0, 8);
-			$path_new = PATH . DB . 'alkaline_' . $rand . '.db';
-			$path_new = $alkaline->correctWinPath($path_new);
+			$path_new = PATH . DB . 'fsip_' . $rand . '.db';
+			$path_new = $fsip->correctWinPath($path_new);
 			
 			if(copy($path, $path_new)){
 				unlink($path);
@@ -102,23 +102,23 @@ if(@$_POST['install'] == 'Install'){
 			}
 		}
 		
-		$path = $alkaline->correctWinPath($path);
+		$path = $fsip->correctWinPath($path);
 		
 		$dsn = 'sqlite:' . $path;
 		
-		$config = $alkaline->replaceVar('$db_dsn', $dsn, $config);
-		$config = $alkaline->replaceVar('$db_type', 'sqlite', $config);
+		$config = $fsip->replaceVar('$db_dsn', $dsn, $config);
+		$config = $fsip->replaceVar('$db_type', 'sqlite', $config);
 		
-		if(($alkaline->checkPerm($path) != '0777') and (SERVER_TYPE != 'win')){
-			$alkaline->addNote('Your SQLite database is not writable (CHMOD 777).', 'error');
+		if(($fsip->checkPerm($path) != '0777') and (SERVER_TYPE != 'win')){
+			$fsip->addNote('Your SQLite database is not writable (CHMOD 777).', 'error');
 		}
 	}
 	elseif($_POST['install_db_type'] == 'pgsql'){
 		if(empty($name)){
-			$alkaline->addNote('A database name is required for PostgreSQL.', 'error');
+			$fsip->addNote('A database name is required for PostgreSQL.', 'error');
 		}
 		if(empty($username)){
-			$alkaline->addNote('A database username is required for PostgreSQL.', 'error');
+			$fsip->addNote('A database username is required for PostgreSQL.', 'error');
 		}
 		
 		$dsn = 'pgsql:';
@@ -136,26 +136,26 @@ if(@$_POST['install'] == 'Install'){
 		
 		$dsn .= 'dbname=' . $_POST['install_db_name'];
 		
-		$config = $alkaline->replaceVar('$db_dsn', $dsn, $config);
-		$config = $alkaline->replaceVar('$db_type', 'pgsql', $config);
-		$config = $alkaline->replaceVar('$db_user', $username, $config);
-		$config = $alkaline->replaceVar('$db_pass', $password, $config);
+		$config = $fsip->replaceVar('$db_dsn', $dsn, $config);
+		$config = $fsip->replaceVar('$db_type', 'pgsql', $config);
+		$config = $fsip->replaceVar('$db_user', $username, $config);
+		$config = $fsip->replaceVar('$db_pass', $password, $config);
 	}
 	
 	if(!empty($_POST['install_db_prefix'])){
-		$config = $alkaline->replaceVar('$table_prefix', $_POST['install_db_prefix'], $config);
+		$config = $fsip->replaceVar('$table_prefix', $_POST['install_db_prefix'], $config);
 	}
 }
 
 
 // Database setup
 
-if((@$_POST['install'] == 'Install') and ($alkaline->countNotes('error') == 0)){
+if((@$_POST['install'] == 'Install') and ($fsip->countNotes('error') == 0)){
 	// Check to see if can connect
 	$db = new PDO($dsn, $username, $password);
 	$error = $db->errorInfo();
 	if(!empty($error[0])){
-		$alkaline->addNote('The database could not be contacted. ' . $error[0] . ' Check your settings.', 'error');
+		$fsip->addNote('The database could not be contacted. ' . $error[0] . ' Check your settings.', 'error');
 	}
 	else{
 		function appendTableName($query){
@@ -218,21 +218,21 @@ if((@$_POST['install'] == 'Install') and ($alkaline->countNotes('error') == 0)){
 		
 		$query->closeCursor();
 		
-		$alkaline->setConf('theme_id', '1');
-		$alkaline->setConf('theme_folder', 'p1');
-		$alkaline->saveConf();
+		$fsip->setConf('theme_id', '1');
+		$fsip->setConf('theme_folder', 'fsipDefault');
+		$fsip->saveConf();
 	}
 }
 
 define('TAB', 'Installation');
-define('TITLE', 'Alkaline Installation');
+define('TITLE', 'FSIP Installation');
 
-if((@$_POST['install'] == 'Install') and ($alkaline->countNotes('error') == 0)){
+if((@$_POST['install'] == 'Install') and ($fsip->countNotes('error') == 0)){
 	require_once(PATH . ADMIN . 'includes/header.php');
 	
 	?>
 	
-	<p class="large"><strong>Almost there.</strong> Copy and paste the text below into a text editor and save it as &#8220;config.php&#8221; to your hard disk. Then upload this file (overwriting the file that is already there) to your Alkaline directory to complete your installation.</p>
+	<p class="large"><strong>Almost there.</strong> Copy and paste the text below into a text editor and save it as &#8220;config.php&#8221; to your hard disk. Then upload this file (overwriting the file that is already there) to your fsip directory to complete your installation.</p>
 	
 	<p>Once you&#8217;re done, <a href="<?php echo BASE . ADMIN; ?>">log in to access your Dashboard</a>.</p>
 	
@@ -245,7 +245,7 @@ else{
 	
 	?>
 
-	<p class="large"><strong>Welcome to Alkaline.</strong> You&#8217;re halfway there, simply complete the fields below and follow the remaining instructions.</p>
+	<p class="large"><strong>Welcome to FSIP.</strong> You&#8217;re halfway there, simply complete the fields below and follow the remaining instructions.</p>
 
 	<form input="" method="post">
 		<h3>Your Server OS</h3>
@@ -273,7 +273,7 @@ else{
 		
 		<h3>Your File Structure</h3>
 	
-		<p>Where did you install Alkaline relative to your domain name?</p>
+		<p>Where did you install FSIP relative to your domain name?</p>
 	
 		<table>
 			<tr>
@@ -344,7 +344,7 @@ else{
 					<input type="checkbox" name="install_db_empty" id="install_db_empty" value="1">
 				</td>
 				<td>
-					<label for="install_db_empty" style="font-weight: normal;">Delete Alkaline database contents if they already exist.</label>
+					<label for="install_db_empty" style="font-weight: normal;">Delete FSIP database contents if they already exist.</label>
 				</td>
 			</tr>
 		</table>
@@ -404,7 +404,7 @@ else{
 				<td>
 					<input type="text" name="install_db_file" id="install_db_file" value="<?php echo @$_POST['install_db_file'] ?>" class="m" /> <span class="quiet">(optional)</span><br />
 					<span class="quiet">
-						Defaults to <pre><?php echo DB; ?>alkaline.db</pre>. Your database file must be writable (<pre>CHMOD 777</pre>).<br />
+						Defaults to <pre><?php echo DB; ?>fsip.db</pre>. Your database file must be writable (<pre>CHMOD 777</pre>).<br />
 						For security purposes, this file will be renamed during installation.
 					</span>
 				</td>
@@ -413,7 +413,7 @@ else{
 	
 		<h3>Your Admin Account</h3>
 	
-		<p>Don&#8217;t worry, you can change these details later through your Alkaline Dashboard.</p>
+		<p>Don&#8217;t worry, you can change these details later through your FSIP Dashboard.</p>
 	
 		<table>
 			<tr>
@@ -458,7 +458,7 @@ else{
 			</tr> -->
 		</table>
 		
-		<h3>Install Alkaline</h3>
+		<h3>Install FSIP</h3>
 	
 		<p>This may take several moments, please be patient. Do not interrupt the process by stopping the page from loading or closing your Web browser.</p><p><input type="submit" name="install" value="Install" /></p>
 	</form>

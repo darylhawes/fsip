@@ -7,9 +7,9 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 $orbit = new Orbit;
 
@@ -18,7 +18,7 @@ if(isset($_REQUEST['context']) and ($_REQUEST['context'] == sha1(PATH . BASE . D
 	header('Content-Type: application/x-plist');
 	
 	$file = $_FILES['upload_file'];
-	move_uploaded_file($file['tmp_name'], $alkaline->correctWinPath(PATH . SHOEBOX . $file['name']));
+	move_uploaded_file($file['tmp_name'], $fsip->correctWinPath(PATH . SHOEBOX . $file['name']));
 	
 	echo '<?xml version="1.0" encoding="UTF-8"?>';
 	?>
@@ -37,7 +37,7 @@ $user->perm(true, 'upload');
 if(!empty($_FILES)){
 	$filename = $_FILES['user_file']['name'][0];
 	$tmp_file = $_FILES['user_file']['tmp_name'][0];
-	copy($tmp_file, $alkaline->correctWinPath(PATH . SHOEBOX . $filename));
+	copy($tmp_file, $fsip->correctWinPath(PATH . SHOEBOX . $filename));
 	unlink($tmp_file);
 	
 	exit();
@@ -51,7 +51,7 @@ if(isset($_GET['success']) and ($_GET['success'] == 1)){
 $orbit->hook('shoebox');
 
 define('TAB', 'upload');
-define('TITLE', 'Alkaline Upload');
+define('TITLE', 'Upload');
 require_once(PATH . ADMIN . 'includes/header.php');
 
 // cliqcliq Quickpic support
@@ -87,13 +87,16 @@ if(preg_match('#iphone|ipad#si', $_SERVER['HTTP_USER_AGENT']) and !isset($_GET['
 			
 			$sizes = array('post_max_size', 'upload_max_filesize', 'memory_limit');
 			$sizes = array_map('ini_get', $sizes);
-			$sizes = array_map(array($alkaline, 'convertToBytes'), $sizes);
+			$sizes = array_map(array($fsip, 'convertToBytes'), $sizes);
 			sort($sizes);
 			
 			echo str_replace(array('000000000', '000000', '000000'), array('GB', 'MB', 'KB'), $sizes[0]);
 			
 			?>
-			<span class="quiet">(<a href="http://www.alkalineapp.com/guide/faq/#file-size-limit-uploads">Why?</a>)</span>
+<!-- DEH - remove dead link to missing guide
+			<span class="quiet">(<a href="http://www.alkalineapp.com/guide/faq/#file-size-limit-uploads">Why?</a>)
+			</span>
+-->
 		</p>
 		
 		<h3>Instructions</h3>

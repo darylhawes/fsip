@@ -7,9 +7,9 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 if(!empty($_POST['login_user'])){ $username = strip_tags($_POST['login_user']); }
@@ -33,12 +33,13 @@ if($user->perm()){
 if(!empty($username) or !empty($password)){
 	if($user->auth($username, $password, $remember)){
 		// Check for updates
-		$latest = @$alkaline->boomerang('latest');
-		if($latest['build'] > Alkaline::build){
-			$alkaline->addNote('A new version of Alkaline (v' . $latest['version'] . ') is available. Learn more and download the update at <a href="http://www.alkalineapp.com/">alkalineapp.com</a>.', 'notice');
+/* DEH remove dead remote services
+		$latest = @$fsip->boomerang('latest');
+		if($latest['build'] > FSIP::build){
+			$fsip->addNote('A new version of FSIP (v' . $latest['version'] . ') is available. Learn more and download the update at <a href="http://www.alkalineapp.com/">alkalineapp.com</a>.', 'notice');
 		}
-		
-		unset($_SESSION['alkaline']['destination']);
+*/		
+		unset($_SESSION['fsip']['destination']);
 		session_write_close();
 		
 		if(file_exists(PATH . 'update/index.php')){
@@ -54,12 +55,12 @@ if(!empty($username) or !empty($password)){
 		exit();
 	}
 	else{
-		$alkaline->addNote('Your username or password is invalid. Please try again.', 'error');
+		$fsip->addNote('Your username or password is invalid. Please try again.', 'error');
 	}
 }
 
 define('TAB', 'Login');
-define('TITLE', 'Alkaline Login');
+define('TITLE', 'Login');
 require_once(PATH . ADMIN . 'includes/header.php');
 
 ?>
@@ -94,7 +95,7 @@ require_once(PATH . ADMIN . 'includes/header.php');
 			<tr>
 				<td></td>
 				<td>
-					<input type="hidden" name="destination" value="<?php if(isset($_SESSION['alkaline']['destination'])){ echo $_SESSION['alkaline']['destination']; } ?>" />
+					<input type="hidden" name="destination" value="<?php if(isset($_SESSION['fsip']['destination'])){ echo $_SESSION['fsip']['destination']; } ?>" />
 					<input type="submit" value="Login" />
 				</td>
 			</tr>

@@ -34,7 +34,7 @@ $db_pass = '';
 // Database table prefix
 $table_prefix = '';
 
-// Alkaline subdirectory prefix
+// Subdirectory prefix
 $folder_prefix = '';
 
 // URL rewriting (supports Apache mod_rewrite, Microsoft URL Rewrite 2, and compatible)

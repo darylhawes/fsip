@@ -7,15 +7,15 @@
 */
 
 require_once('./../../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true);
 
 if(!empty($_POST['id'])){
-	$alkaline->revertVersion($_POST['id']);
+	$fsip->revertVersion($_POST['id']);
 }
 
 ?>

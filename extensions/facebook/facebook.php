@@ -106,7 +106,7 @@ class FacebookHandler extends Orbit{
 					<td class="right"><label>Title:</label></td>
 					<td>
 						<a href="<?php echo $this->locationFull(array('link' => 'facebook')); ?>"><button>Link to Facebook</button></a><br /><br />
-						<span class="quiet">Note: Alkaline will be linked to whichever Facebook account you are currently logged into.</span>
+						<span class="quiet">Note: Link will be to the Facebook account you are currently logged into.</span>
 					</td>
 				</tr>
 			</table>
@@ -157,11 +157,11 @@ class FacebookHandler extends Orbit{
 					$this->setPref('facebook_oauth_token', $facebook_oauth_token);
 					$this->savePref();
 					
-					$params = array('next' => 'http://www.alkalineapp.com/callback/',
-						'cancel_url' => 'http://www.alkalineapp.com/callback/',
+					$params = array('next' => 'http://fsip.sdelargy.com/callback/',
+						'cancel_url' => 'http://fsip.delargy.com/callback/',
 						'req_perms' => 'user_photos, publish_stream, offline_access');
 					
-					header('Location: http://www.alkalineapp.com/callback/?' . http_build_query(
+					header('Location: http://fsip.sdelargy.com/callback/?' . http_build_query(
 						array('to' => $this->facebook->getLoginUrl($params),
 						'from' => $this->locationFull(array('from' => 'facebook'))))
 					);

@@ -7,16 +7,16 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $orbit = new Orbit;
 $user = new User;
 
 $user->perm(true, 'pages');
 
 if(!empty($_GET['id'])){
-	$page_id = $alkaline->findID($_GET['id']);
+	$page_id = $fsip->findID($_GET['id']);
 }
 
 if(!empty($_GET['act'])){
@@ -25,18 +25,18 @@ if(!empty($_GET['act'])){
 
 // SAVE CHANGES
 if(!empty($_POST['page_id'])){
-	$page_id = $alkaline->findID($_POST['page_id']);
+	$page_id = $fsip->findID($_POST['page_id']);
 	
 	$page = new Page($page_id);
 	
 	if(!empty($_POST['page_delete']) and ($_POST['page_delete'] == 'delete')){
 		if($page->delete()){
-			$alkaline->addNote('The page has been deleted.', 'success');
+			$fsip->addNote('The page has been deleted.', 'success');
 		}
 	}
 	elseif(!empty($_POST['page_recover']) and ($_POST['page_recover'] == 'recover')){
 		if($page->recover()){
-			$alkaline->addNote('The page has been recovered.', 'success');
+			$fsip->addNote('The page has been recovered.', 'success');
 		}
 	}
 	else{
@@ -45,10 +45,10 @@ if(!empty($_POST['page_id'])){
 		$page_title = trim($_POST['page_title']);
 		
 		if(!empty($_POST['page_title_url'])){
-			$page_title_url = $alkaline->makeURL($_POST['page_title_url']);
+			$page_title_url = $fsip->makeURL($_POST['page_title_url']);
 		}
 		else{
-			$page_title_url = $alkaline->makeURL($page_title);
+			$page_title_url = $fsip->makeURL($page_title);
 		}
 		
 		$page_text_raw = $_POST['page_text_raw'];
@@ -67,31 +67,31 @@ if(!empty($_POST['page_id'])){
 			$page_title = $orbit->hook('markup_title_' . $page_markup_ext, $page_title, $page_title);
 			$page_excerpt = $orbit->hook('markup_' . $page_markup_ext, $page_excerpt_raw, $page_excerpt);
 		}
-		elseif($alkaline->returnConf('web_markup')){
-			$page_markup_ext = $alkaline->returnConf('web_markup_ext');
+		elseif($fsip->returnConf('web_markup')){
+			$page_markup_ext = $fsip->returnConf('web_markup_ext');
 			$page_text = $orbit->hook('markup_' . $page_markup_ext, $page_text_raw, $page_text_raw);
 			$page_title = $orbit->hook('markup_title_' . $page_markup_ext, $page_title, $page_title);
 			$page_excerpt = $orbit->hook('markup_' . $page_markup_ext, $page_excerpt_raw, $page_excerpt);
 		}
 		else{
 			$page_markup_ext = '';
-			$page_text = $alkaline->nl2br($page_text_raw);
-			$page_excerpt = $alkaline->nl2br($page_excerpt_raw);
+			$page_text = $fsip->nl2br($page_text_raw);
+			$page_excerpt = $fsip->nl2br($page_excerpt_raw);
 		}
 		
-		$page_images = implode(', ', $alkaline->findIDRef($page_text));
+		$page_images = implode(', ', $fsip->findIDRef($page_text));
 		
-		$page_words = $alkaline->countWords($_POST['page_text_raw']);
+		$page_words = $fsip->countWords($_POST['page_text_raw']);
 		
-		$fields = array('page_title' => $alkaline->makeUnicode($page_title),
+		$fields = array('page_title' => $fsip->makeUnicode($page_title),
 			'page_title_url' => $page_title_url,
-			'page_text' => $alkaline->makeUnicode($page_text),
-			'page_text_raw' => $alkaline->makeUnicode($page_text_raw),
-			'page_excerpt' => $alkaline->makeUnicode($page_excerpt),
-			'page_excerpt_raw' => $alkaline->makeUnicode($page_excerpt_raw),
+			'page_text' => $fsip->makeUnicode($page_text),
+			'page_text_raw' => $fsip->makeUnicode($page_text_raw),
+			'page_excerpt' => $fsip->makeUnicode($page_excerpt),
+			'page_excerpt_raw' => $fsip->makeUnicode($page_excerpt_raw),
 			'page_markup' => $page_markup_ext,
 			'page_images' => $page_images,
-			'page_category' => $alkaline->makeUnicode(@$_POST['page_category']),
+			'page_category' => $fsip->makeUnicode(@$_POST['page_category']),
 			'page_words' => $page_words);
 		
 		$page->updateFields($fields);
@@ -99,12 +99,12 @@ if(!empty($_POST['page_id'])){
 	unset($page_id);
 }
 else{
-	$alkaline->deleteEmptyRow('pages', array('page_title', 'page_text_raw'));
+	$fsip->deleteEmptyRow('pages', array('page_title', 'page_text_raw'));
 }
 
 // CREATE PAGE
 if(!empty($page_act) and ($page_act == 'add')){
-	$page_id = $alkaline->addRow(null, 'pages');
+	$page_id = $fsip->addRow(null, 'pages');
 }
 
 define('TAB', 'features');
@@ -118,7 +118,7 @@ if(empty($page_id)){
 	$pages = new Page($page_ids);
 	$pages->hook();
 	
-	define('TITLE', 'Alkaline Pages');
+	define('TITLE', 'Pages');
 	require_once(PATH . ADMIN . 'includes/header.php');
 
 	?>
@@ -145,11 +145,11 @@ if(empty($page_id)){
 
 		foreach($pages->pages as $page){
 			echo '<tr class="ro">';
-				echo '<td><strong class="large"><a href="' . BASE . ADMIN . 'pages' . URL_ID . $page['page_id'] . URL_RW . '" class="tip" title="' . htmlentities($alkaline->fitStringByWord(strip_tags($page['page_text']), 150)) . '">' . $page['page_title'] . '</a></strong><br /><a href="' . BASE . 'page' . URL_ID . $page['page_title_url'] . URL_RW . '" class="nu quiet">' . $page['page_title_url'] . '</td>';
+				echo '<td><strong class="large"><a href="' . BASE . ADMIN . 'pages' . URL_ID . $page['page_id'] . URL_RW . '" class="tip" title="' . htmlentities($fsip->fitStringByWord(strip_tags($page['page_text']), 150)) . '">' . $page['page_title'] . '</a></strong><br /><a href="' . BASE . 'page' . URL_ID . $page['page_title_url'] . URL_RW . '" class="nu quiet">' . $page['page_title_url'] . '</td>';
 				echo '<td class="center">' . number_format($page['page_views']) . '</td>';
 				echo '<td class="center">' . number_format($page['page_words']) . '</td>';
-				echo '<td>' . $alkaline->formatTime($page['page_created']) . '</td>';
-				echo '<td>' . ucfirst($alkaline->formatRelTime($page['page_modified'])) . '</td>';
+				echo '<td>' . $fsip->formatTime($page['page_created']) . '</td>';
+				echo '<td>' . ucfirst($fsip->formatRelTime($page['page_modified'])) . '</td>';
 			echo '</tr>';
 		}
 
@@ -164,13 +164,13 @@ else{
 	$pages->getCitations();
 	$pages->getVersions();
 	$page = $pages->pages[0];
-	$page = $alkaline->makeHTMLSafe($page);
+	$page = $fsip->makeHTMLSafe($page);
 	
 	if(!empty($page['page_title'])){	
-		define('TITLE', 'Alkaline Page: &#8220;' . $page['page_title']  . '&#8221;');
+		define('TITLE', 'Page: &#8220;' . $page['page_title']  . '&#8221;');
 	}
 	else{
-		define('TITLE', 'Alkaline Page');
+		define('TITLE', 'Page');
 	}
 	require_once(PATH . ADMIN . 'includes/header.php');
 
@@ -250,7 +250,7 @@ else{
 									echo ' <span class="quiet">(' . $citation['citation_site_name'] . ')</span>';
 								}
 								else{
-									echo ' <span class="quiet">(' . $alkaline->siftDomain($citation['citation_uri_requested']) . ')</span>';
+									echo ' <span class="quiet">(' . $fsip->siftDomain($citation['citation_uri_requested']) . ')</span>';
 								}
 								echo '</td></tr>';
 							}
@@ -307,7 +307,7 @@ else{
 					
 					echo '<option value="' . $version['version_id'] . '"';
 					if($i == 2){ echo ' selected="selected"'; }
-					echo '>' . ucfirst($alkaline->formatRelTime($version['version_created'])) . ' (#' . $version['version_id'] . ', ' . $similarity . ')</option>';
+					echo '>' . ucfirst($fsip->formatRelTime($version['version_created'])) . ' (#' . $version['version_id'] . ', ' . $similarity . ')</option>';
 				}
 				
 				?>
@@ -339,19 +339,19 @@ else{
 				$images = new Image($image_ids);
 				$images->getSizes();
 	
-				if($alkaline->returnConf('post_size_label')){
-					$label = 'image_src_' . $alkaline->returnConf('post_size_label');
+				if($fsip->returnConf('post_size_label')){
+					$label = 'image_src_' . $fsip->returnConf('post_size_label');
 				}
 				else{
 					$label = 'image_src_admin';
 				}
 	
-				if($alkaline->returnConf('post_div_wrap')){
-					echo '<div class="none wrap_class">' . $alkaline->returnConf('post_div_wrap_class') . '</div>';
+				if($fsip->returnConf('post_div_wrap')){
+					echo '<div class="none wrap_class">' . $fsip->returnConf('post_div_wrap_class') . '</div>';
 				}
 	
 				foreach($images->images as $image){
-					$image['image_title'] = $alkaline->makeHTMLSafe($image['image_title']);
+					$image['image_title'] = $fsip->makeHTMLSafe($image['image_title']);
 					echo '<a href="' . $image[$label] . '"><img src="' . $image['image_src_square'] .'" alt="' . $image['image_title']  . '" class="frame" id="image-' . $image['image_id'] . '" /></a>';
 					echo '<div class="none uri_rel image-' . $image['image_id'] . '">' . $image['image_uri_rel'] . '</div>';
 				}
@@ -364,7 +364,7 @@ else{
 		<input type="hidden" id="page_citations" name="page_citations" value="<?php foreach($pages->citations as $citation){ echo $citation['citation_uri_requested']; } ?>" />
 		
 		<p>
-			<input type="submit" value="Save changes" /> or <a href="<?php echo $alkaline->back(); ?>">cancel</a>
+			<input type="submit" value="Save changes" /> or <a href="<?php echo $fsip->back(); ?>">cancel</a>
 		</p>
 	</form>
 

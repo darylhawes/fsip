@@ -7,9 +7,9 @@
 */
 
 require_once('./../../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true);
@@ -26,7 +26,7 @@ else{
 	$now = date('Y-m-d H:i:s');
 	$image_tags = implode('; ', $images->images[0]['image_tags_array']);
 	
-	$query = $alkaline->prepare('UPDATE images SET image_tags = :image_tags, image_tag_count = :image_tag_count WHERE image_id = :image_id;');
+	$query = $fsip->prepare('UPDATE images SET image_tags = :image_tags, image_tag_count = :image_tag_count WHERE image_id = :image_id;');
 	
 	$query->execute(array(':image_tags' => $image_tags, ':image_tag_count' => count($images->images[0]['image_tags_array']), ':image_id' => $images->images[0]['image_id']));
 }

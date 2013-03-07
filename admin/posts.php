@@ -7,9 +7,9 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $orbit = new Orbit;
 $user = new User;
 
@@ -17,7 +17,7 @@ $user->perm(true, 'posts');
 
 // GET POST
 if(!empty($_GET['id'])){
-	$post_id = $alkaline->findID($_GET['id']);
+	$post_id = $fsip->findID($_GET['id']);
 }
 
 if(!empty($_GET['act'])){
@@ -36,7 +36,7 @@ if(!empty($_GET['act'])){
 
 // SAVE CHANGES
 if(!empty($_POST['post_id'])){
-	if(!$post_id = $alkaline->findID($_POST['post_id'])){
+	if(!$post_id = $fsip->findID($_POST['post_id'])){
 		header('Location: ' . LOCATION . BASE . ADMIN . 'posts' . URL_CAP);
 		exit();
 	}
@@ -45,12 +45,12 @@ if(!empty($_POST['post_id'])){
 	
 	if(!empty($_POST['post_delete']) and ($_POST['post_delete'] == 'delete')){
 		if($posts->delete()){
-			$alkaline->addNote('The post has been deleted.', 'success');
+			$fsip->addNote('The post has been deleted.', 'success');
 		}
 	}
 	elseif(!empty($_POST['post_recover']) and ($_POST['post_recover'] == 'recover')){
 		if($posts->recover()){
-			$alkaline->addNote('The post has been recovered.', 'success');
+			$fsip->addNote('The post has been recovered.', 'success');
 		}
 	}
 	elseif(!empty($_POST['post_quick'])){
@@ -71,10 +71,10 @@ if(!empty($_POST['post_id'])){
 		$post_title = trim($_POST['post_title']);
 		
 		if(!empty($_POST['post_title_url'])){
-			$post_title_url = $alkaline->makeURL($_POST['post_title_url']);
+			$post_title_url = $fsip->makeURL($_POST['post_title_url']);
 		}
 		else{
-			$post_title_url = $alkaline->makeURL($post_title);
+			$post_title_url = $fsip->makeURL($post_title);
 		}
 		
 		$post_text_raw = $_POST['post_text_raw'];
@@ -90,16 +90,16 @@ if(!empty($_POST['post_id'])){
 			$post_title = $orbit->hook('markup_title_' . $post_markup_ext, $post_title, $post_title);
 			$post_excerpt = $orbit->hook('markup_' . $post_markup_ext, $post_excerpt_raw, $post_excerpt);
 		}
-		elseif($alkaline->returnConf('web_markup')){
-			$post_markup_ext = $alkaline->returnConf('web_markup_ext');
+		elseif($fsip->returnConf('web_markup')){
+			$post_markup_ext = $fsip->returnConf('web_markup_ext');
 			$post_text = $orbit->hook('markup_' . $post_markup_ext, $post_text_raw, $post_text_raw);
 			$post_title = $orbit->hook('markup_title_' . $post_markup_ext, $post_title, $post_title);
 			$post_excerpt = $orbit->hook('markup_' . $post_markup_ext, $post_excerpt_raw, $post_excerpt);
 		}
 		else{
 			$post_markup_ext = '';
-			$post_text = $alkaline->nl2br($post_text_raw);
-			$post_excerpt = $alkaline->nl2br($post_excerpt_raw);
+			$post_text = $fsip->nl2br($post_text_raw);
+			$post_excerpt = $fsip->nl2br($post_excerpt_raw);
 		}
 		
 		// Comment disabling
@@ -110,22 +110,22 @@ if(!empty($_POST['post_id'])){
 			$post_comment_disabled = 0;
 		}
 		
-		$post_images = implode(', ', $alkaline->findIDRef($post_text));
+		$post_images = implode(', ', $fsip->findIDRef($post_text));
 		
-		$post_words = $alkaline->countWords($_POST['post_text_raw'], 0);
+		$post_words = $fsip->countWords($_POST['post_text_raw'], 0);
 		
-		$fields = array('post_title' => $alkaline->makeUnicode($post_title),
+		$fields = array('post_title' => $fsip->makeUnicode($post_title),
 			'post_title_url' => $post_title_url,
-			'post_text' => $alkaline->makeUnicode($post_text),
-			'post_text_raw' => $alkaline->makeUnicode($post_text_raw),
-			'post_excerpt' => $alkaline->makeUnicode($post_excerpt),
-			'post_excerpt_raw' => $alkaline->makeUnicode($post_excerpt_raw),
+			'post_text' => $fsip->makeUnicode($post_text),
+			'post_text_raw' => $fsip->makeUnicode($post_text_raw),
+			'post_excerpt' => $fsip->makeUnicode($post_excerpt),
+			'post_excerpt_raw' => $fsip->makeUnicode($post_excerpt_raw),
 			'post_geo' => @$_POST['post_geo'],
-			'post_source' => $alkaline->makeUnicode($_POST['post_source']),
+			'post_source' => $fsip->makeUnicode($_POST['post_source']),
 			'post_markup' => $post_markup_ext,
 			'post_images' => $post_images,
 			'post_published' => @$_POST['post_published'],
-			'post_category' => $alkaline->makeUnicode(@$_POST['post_category']),
+			'post_category' => $fsip->makeUnicode(@$_POST['post_category']),
 			'post_comment_disabled' => $post_comment_disabled,
 			'post_words' => $post_words,
 			'right_id' => @$_POST['right_id']);
@@ -148,33 +148,33 @@ if(!empty($_POST['post_id'])){
 		$post_ids->find();
 		
 		if($_REQUEST['go'] == 'next'){
-			$_SESSION['alkaline']['go'] = 'next';
+			$_SESSION['fsip']['go'] = 'next';
 			if(!empty($post_ids->ids_after[0])){
 				$post_id = $post_ids->ids_after[0];
 			}
 			else{
-				unset($_SESSION['alkaline']['go']);
+				unset($_SESSION['fsip']['go']);
 				unset($post_id);
 			}
 		}
 		else{
-			$_SESSION['alkaline']['go'] = 'previous';
+			$_SESSION['fsip']['go'] = 'previous';
 			if(!empty($post_ids->ids_before[0])){
 	 			$post_id = $post_ids->ids_before[0];
 			}
 			else{
-				unset($_SESSION['alkaline']['go']);
+				unset($_SESSION['fsip']['go']);
 				unset($post_id);
 			}
 		}
 	}
 	else{
-		unset($_SESSION['alkaline']['go']);
+		unset($_SESSION['fsip']['go']);
 		unset($post_id);
 	}
 }
 else{
-	$alkaline->deleteEmptyRow('posts', array('post_title', 'post_text_raw'));
+	$fsip->deleteEmptyRow('posts', array('post_title', 'post_text_raw'));
 }
 
 define('TAB', 'posts');
@@ -182,7 +182,7 @@ define('TAB', 'posts');
 // CREATE POST
 if(!empty($post_act) and ($post_act == 'add')){
 	$fields = array('user_id' => $user->user['user_id']);
-	$post_id = $alkaline->addRow($fields, 'posts');
+	$post_id = $fsip->addRow($fields, 'posts');
 }
 
 // GET POSTS TO VIEW OR PAGE TO EDIT
@@ -196,7 +196,7 @@ if(empty($post_id)){
 	$posts = new Post($post_ids);
 	$posts->hook();
 	
-	define('TITLE', 'Alkaline Posts');
+	define('TITLE', 'Posts');
 	require_once(PATH . ADMIN . 'includes/header.php');
 
 	?>
@@ -310,12 +310,12 @@ if(empty($post_id)){
 						echo '<option value="unpublish">Unpublish</option>';
 					}
 					echo '<option value="view_images">View images</option></select> <input type="hidden" name="post_id" value="' . $post['post_id'] . '" /><input type="submit" value="Do" /></form>\'></button></div>';
-					echo '<strong class="large"><a href="' . BASE . ADMIN . 'posts' . URL_ID . $post['post_id'] . URL_RW . '" title="' . $alkaline->makeHTMLSafe($alkaline->fitStringByWord(strip_tags($post['post_text']), 150)) . '" class="tip">' . $post['post_title'] . '</a></strong><br />
+					echo '<strong class="large"><a href="' . BASE . ADMIN . 'posts' . URL_ID . $post['post_id'] . URL_RW . '" title="' . $fsip->makeHTMLSafe($fsip->fitStringByWord(strip_tags($post['post_text']), 150)) . '" class="tip">' . $post['post_title'] . '</a></strong><br />
 						<a href="' . BASE . 'post' . URL_ID . $post['post_id'] . '-' . $post['post_title_url'] . URL_RW . '" class="nu quiet">' . $post['post_title_url'] . '</td>';
 					echo '<td class="center">' . number_format($post['post_views']) . '</td>';
 					echo '<td class="center">' . number_format($post['post_words']) . '</td>';
-					echo '<td>' . $alkaline->formatTime($post['post_created']) . '</td>';
-					echo '<td>' . ucfirst($alkaline->formatRelTime($post['post_modified'])) . '</td>';
+					echo '<td>' . $fsip->formatTime($post['post_created']) . '</td>';
+					echo '<td>' . ucfirst($fsip->formatRelTime($post['post_modified'])) . '</td>';
 				echo '</tr>';
 			}
 
@@ -362,7 +362,7 @@ else{
 	$posts->formatTime();
 	
 	$post = $posts->posts[0];
-	$post = $alkaline->makeHTMLSafe($post);
+	$post = $fsip->makeHTMLSafe($post);
 	
 	$now = time();
 	$launch_action = '';
@@ -390,10 +390,10 @@ else{
 	}
 	
 	if(!empty($post['post_title'])){	
-		define('TITLE', 'Alkaline Post: &#8220;' . $post['post_title']  . '&#8221;');
+		define('TITLE', 'Post: &#8220;' . $post['post_title']  . '&#8221;');
 	}
 	else{
-		define('TITLE', 'Alkaline Post');
+		define('TITLE', 'Post');
 	}
 	require_once(PATH . ADMIN . 'includes/header.php');
 
@@ -459,7 +459,7 @@ else{
 						<?php
 					}
 					?>
-					<div class="none get_location_set"><?php if(!empty($_SESSION['alkaline']['location'])){ echo $_SESSION['alkaline']['location']; } ?></div>
+					<div class="none get_location_set"><?php if(!empty($_SESSION['fsip']['location'])){ echo $_SESSION['fsip']['location']; } ?></div>
 				</p>
 				
 				<p class="slim">
@@ -481,7 +481,7 @@ else{
 					
 					<p>
 						<label for="right_id">Rights set:</label><br />
-						<?php echo $alkaline->showRights('right_id', $post['right_id']); ?>
+						<?php echo $fsip->showRights('right_id', $post['right_id']); ?>
 					</p>
 				</div>
 				
@@ -515,7 +515,7 @@ else{
 								echo ' <span class="quiet">(' . $citation['citation_site_name'] . ')</span>';
 							}
 							else{
-								echo ' <span class="quiet">(' . $alkaline->siftDomain($citation['citation_uri_requested']) . ')</span>';
+								echo ' <span class="quiet">(' . $fsip->siftDomain($citation['citation_uri_requested']) . ')</span>';
 							}
 							echo '</td></tr>';
 						}
@@ -547,7 +547,7 @@ else{
 								echo ' <span class="quiet">(' . $trackback['trackback_blog_name'] . ')</span>';
 							}
 							else{
-								echo ' <span class="quiet">(' . $alkaline->siftDomain($trackback['trackback_uri']) . ')</span>';
+								echo ' <span class="quiet">(' . $fsip->siftDomain($trackback['trackback_uri']) . ')</span>';
 							}
 							echo '</td></tr>';
 						}
@@ -564,7 +564,7 @@ else{
 					<?php
 
 					foreach($posts->related->posts as $related_post){
-						echo '<li><a href="' . BASE . ADMIN . 'posts' . URL_ID . $related_post['post_id'] . URL_RW . '" title="' . $alkaline->fitStringByWord(strip_tags($related_post['post_text']), 150) . '" class="tip">' . $related_post['post_title'] . '</a> <span class="quiet">(' . $alkaline->formatTime($related_post['post_created'], 'j M Y') . ')</span></li>';
+						echo '<li><a href="' . BASE . ADMIN . 'posts' . URL_ID . $related_post['post_id'] . URL_RW . '" title="' . $fsip->fitStringByWord(strip_tags($related_post['post_text']), 150) . '" class="tip">' . $related_post['post_title'] . '</a> <span class="quiet">(' . $fsip->formatTime($related_post['post_created'], 'j M Y') . ')</span></li>';
 					}
 
 					?>
@@ -585,7 +585,7 @@ else{
 							</label>.
 						</td>
 					</tr>
-					<?php if($alkaline->returnConf('comm_enabled')){ ?>
+					<?php if($fsip->returnConf('comm_enabled')){ ?>
 					<tr>
 						<td class="right" style="width: 5%"><input type="checkbox" id="post_comment_disabled" name="post_comment_disabled" value="disabled" <?php if($post['post_comment_disabled'] == 1){ echo 'checked="checked"'; } ?> /></td>
 						<td>
@@ -632,7 +632,7 @@ else{
 					
 					echo '<option value="' . $version['version_id'] . '"';
 					if($i == 2){ echo ' selected="selected"'; }
-					echo '>' . ucfirst($alkaline->formatRelTime($version['version_created'])) . ' (#' . $version['version_id'] . ', ' . $similarity . ')</option>';
+					echo '>' . ucfirst($fsip->formatRelTime($version['version_created'])) . ' (#' . $version['version_id'] . ', ' . $similarity . ')</option>';
 				}
 				
 				?>
@@ -664,19 +664,19 @@ else{
 				$images = new Image($image_ids);
 				$images->getSizes();
 	
-				if($alkaline->returnConf('post_size_label')){
-					$label = 'image_src_' . $alkaline->returnConf('post_size_label');
+				if($fsip->returnConf('post_size_label')){
+					$label = 'image_src_' . $fsip->returnConf('post_size_label');
 				}
 				else{
 					$label = 'image_src_admin';
 				}
 	
-				if($alkaline->returnConf('post_div_wrap')){
-					echo '<div class="none wrap_class">' . $alkaline->returnConf('post_div_wrap_class') . '</div>';
+				if($fsip->returnConf('post_div_wrap')){
+					echo '<div class="none wrap_class">' . $fsip->returnConf('post_div_wrap_class') . '</div>';
 				}
 	
 				foreach($images->images as $image){
-					$image['image_title'] = $alkaline->makeHTMLSafe($image['image_title']);
+					$image['image_title'] = $fsip->makeHTMLSafe($image['image_title']);
 					echo '<a href="' . $image[$label] . '"><img src="' . $image['image_src_square'] .'" alt="' . $image['image_title']  . '" class="frame" id="image-' . $image['image_id'] . '" /></a>';
 					echo '<div class="none uri_rel image-' . $image['image_id'] . '">' . $image['image_uri_rel'] . '</div>';
 				}
@@ -693,10 +693,10 @@ else{
 			and
 			<select name="go">
 				<option value="">return to previous screen</option>
-				<option value="next" <?php echo $alkaline->readForm($_SESSION['alkaline'], 'go', 'next'); ?>>go to next post</option>
-				<option value="previous" <?php echo $alkaline->readForm($_SESSION['alkaline'], 'go', 'previous'); ?>>go to previous post</option>
+				<option value="next" <?php echo $fsip->readForm($_SESSION['fsip'], 'go', 'next'); ?>>go to next post</option>
+				<option value="previous" <?php echo $fsip->readForm($_SESSION['fsip'], 'go', 'previous'); ?>>go to previous post</option>
 			</select>
-			or <a href="<?php echo $alkaline->back(); ?>" class="autosave_delete">cancel</a></p>
+			or <a href="<?php echo $fsip->back(); ?>" class="autosave_delete">cancel</a></p>
 	</form>
 
 	<?php

@@ -12,7 +12,7 @@
  * @version 1.0
  */
 
-class Page extends Alkaline{
+class Page extends FSIP{
 	public $images;
 	public $page_ids;
 	public $page_count = 0;

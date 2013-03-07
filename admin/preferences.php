@@ -7,9 +7,9 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true);
@@ -28,14 +28,14 @@ if(!empty($_POST['preferences_save'])){
 	$user->setPref('post_pub', @$_POST['post_pub']);
 	$user->savePref();
 	
-	$alkaline->addNote('Your preferences have been saved.', 'success');
+	$fsip->addNote('Your preferences have been saved.', 'success');
 	
 	header('Location: ' . BASE . ADMIN . 'dashboard' . URL_CAP);
 	exit();
 }
 
 define('TAB', 'dashboard');
-define('TITLE', 'Alkaline Preferences');
+define('TITLE', 'Preferences');
 require_once(PATH . ADMIN . 'includes/header.php');
 
 ?>
@@ -135,7 +135,7 @@ require_once(PATH . ADMIN . 'includes/header.php');
 		</tr>
 	</table>
 	
-	<p><input type="submit" name="preferences_save" value="Save changes" /> or <a href="<?php echo $alkaline->back(); ?>">cancel</a></p>
+	<p><input type="submit" name="preferences_save" value="Save changes" /> or <a href="<?php echo $fsip->back(); ?>">cancel</a></p>
 </form>
 
 <?php

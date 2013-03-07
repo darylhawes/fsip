@@ -12,7 +12,7 @@
  * @version 1.0
  */
 
-class Image extends Alkaline{
+class Image extends FSIP{
 	public $comments;
 	public $db;
 	public $images = array();

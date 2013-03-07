@@ -12,7 +12,7 @@
  * @version 1.0
  */
 
-class Stat extends Alkaline{
+class Stat extends FSIP{
 	public $durations;
 	public $pages;
 	public $page_types;

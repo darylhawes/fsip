@@ -12,26 +12,26 @@ ini_set('display_errors', 0);
 chdir(__DIR__);
 
 require_once('./../../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 
 // Deny external execution
 if(!isset($argv)){ exit(); };
 
 $table_ids = array();
 
-foreach($alkaline->tables_index as $key => $value){
+foreach($fsip->tables_index as $key => $value){
 	$table_ids[] = ++$key;
 }
 	
 foreach($table_ids as $id){
-	$table = $alkaline->tables_index[--$id];
+	$table = $fsip->tables_index[--$id];
 	
 	$ids = new Find($table);
 	$ids->find();
 	
-	$query = $alkaline->prepare('SELECT item_table_id FROM items WHERE item_table = :item_table;');
+	$query = $fsip->prepare('SELECT item_table_id FROM items WHERE item_table = :item_table;');
 	$query->execute(array(':item_table' => $table));
 	$items = $query->fetchAll();
 	
@@ -44,9 +44,9 @@ foreach($table_ids as $id){
 	foreach($ids->ids as $item_id){
 		if(in_array($item_id, $item_table_ids)){ continue; }
 		
-		$fields = array('item_table' => $alkaline->tables_index[$id],
+		$fields = array('item_table' => $fsip->tables_index[$id],
 			'item_table_id' => $item_id);
-		$alkaline->addRow($fields, 'items');
+		$fsip->addRow($fields, 'items');
 	}
 	
 	$delete_ids = array();
@@ -56,7 +56,7 @@ foreach($table_ids as $id){
 		$delete_ids[] = $item_id;
 	}
 	
-	$query = $alkaline->prepare('DELETE FROM items WHERE item_table = :item_table AND item_table_id IN (' . implode(', ', $delete_ids) . ')');
+	$query = $fsip->prepare('DELETE FROM items WHERE item_table = :item_table AND item_table_id IN (' . implode(', ', $delete_ids) . ')');
 	$query->execute(array(':item_table' => $table));
 }
 

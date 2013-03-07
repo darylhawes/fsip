@@ -7,16 +7,16 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 $orbit = new Orbit;
 
 $user->perm(true, 'sets');
 
 if(!empty($_GET['id'])){
-	$set_id = $alkaline->findID($_GET['id']);
+	$set_id = $fsip->findID($_GET['id']);
 }
 
 if(!empty($_GET['act'])){
@@ -25,18 +25,18 @@ if(!empty($_GET['act'])){
 
 // SAVE CHANGES
 if(!empty($_POST['set_id'])){
-	$set_id = $alkaline->findID($_POST['set_id']);
+	$set_id = $fsip->findID($_POST['set_id']);
 	
 	$set = new Set($set_id);
 	
 	if(@$_POST['set_delete'] == 'delete'){
 		if($set->delete()){
-			$alkaline->addNote('The set has been deleted.', 'success');
+			$fsip->addNote('The set has been deleted.', 'success');
 		}
 	}
 	elseif(@$_POST['set_recover'] == 'recover'){
 		if($set->recover()){
-			$alkaline->addNote('The set has been recovered.', 'success');
+			$fsip->addNote('The set has been recovered.', 'success');
 		}
 	}
 	else{
@@ -44,10 +44,10 @@ if(!empty($_POST['set_id'])){
 		$set_description_raw = $_POST['set_description_raw'];
 		
 		if(!empty($_POST['set_title_url'])){
-			$set_title_url = $alkaline->makeURL($_POST['set_title_url']);
+			$set_title_url = $fsip->makeURL($_POST['set_title_url']);
 		}
 		else{
-			$set_title_url = $alkaline->makeURL($set_title);
+			$set_title_url = $fsip->makeURL($set_title);
 		}
 		
 		// Configuration: set_markup
@@ -56,14 +56,14 @@ if(!empty($_POST['set_id'])){
 			$set_description = $orbit->hook('markup_' . $set_markup_ext, $set_description_raw, $set_description_raw);
 			$set_title = $orbit->hook('markup_title_' . $set_markup_ext, $set_title, $set_title);
 		}
-		elseif($alkaline->returnConf('web_markup')){
-			$set_markup_ext = $alkaline->returnConf('web_markup_ext');
+		elseif($fsip->returnConf('web_markup')){
+			$set_markup_ext = $fsip->returnConf('web_markup_ext');
 			$set_description = $orbit->hook('markup_' . $set_markup_ext, $set_description_raw, $set_description_raw);
 			$set_title = $orbit->hook('markup_title_' . $set_markup_ext, $set_title, $set_title);
 		}
 		else{
 			$set_markup_ext = '';
-			$set_description = $alkaline->nl2br($set_description_raw);
+			$set_description = $fsip->nl2br($set_description_raw);
 		}
 		
 		if($_POST['set_type'] == 'auto'){
@@ -73,13 +73,13 @@ if(!empty($_POST['set_id'])){
 			$image_ids->saveMemory();
 		}
 		
-		$fields = array('set_call' => serialize($_SESSION['alkaline']['search']['images']['call']),
-			'set_request' => serialize($_SESSION['alkaline']['search']['images']['request']),
-			'set_title' => $alkaline->makeUnicode($set_title),
+		$fields = array('set_call' => serialize($_SESSION['fsip']['search']['images']['call']),
+			'set_request' => serialize($_SESSION['fsip']['search']['images']['request']),
+			'set_title' => $fsip->makeUnicode($set_title),
 			'set_title_url' => $set_title_url,
 			'set_type' => $_POST['set_type'],
-			'set_description_raw' => $alkaline->makeUnicode($set_description_raw),
-			'set_description' => $alkaline->makeUnicode($set_description),
+			'set_description_raw' => $fsip->makeUnicode($set_description_raw),
+			'set_description' => $fsip->makeUnicode($set_description),
 			'set_markup' => $set_markup_ext);
 		
 		if($_POST['set_type'] == 'auto'){
@@ -96,7 +96,7 @@ if(!empty($_POST['set_id'])){
 	unset($set_id);
 }
 else{
-	$alkaline->deleteEmptyRow('sets', array('set_title'));
+	$fsip->deleteEmptyRow('sets', array('set_title'));
 }
 
 // CREATE PILE
@@ -105,13 +105,13 @@ if($set_act == 'build'){
 	$set_call = $image_ids->recentMemory();
 	if(!empty($set_call)){
 		$fields = array('set_call' => serialize($set_call),
-			'set_request' => serialize($_SESSION['alkaline']['search']['images']['request']),
+			'set_request' => serialize($_SESSION['fsip']['search']['images']['request']),
 			'set_type' => 'auto');
 	}
 	else{
 		$fields = array('set_type' => 'static');
 	}
-	$set_id = $alkaline->addRow($fields, 'sets');
+	$set_id = $fsip->addRow($fields, 'sets');
 	
 	$images = new Find('images');
 	$images->sets($set_id);
@@ -122,7 +122,7 @@ if($set_act == 'build'){
 	
 	$fields = array('set_images' => $set_images,
 		'set_image_count' => $set_image_count);
-	$alkaline->updateRow($fields, 'sets', $set_id);
+	$fsip->updateRow($fields, 'sets', $set_id);
 }
 
 define('TAB', 'features');
@@ -136,7 +136,7 @@ if(empty($set_id)){
 	
 	$sets = new Set($set_ids);
 	
-	define('TITLE', 'Alkaline Sets');
+	define('TITLE', 'Sets');
 	require_once(PATH . ADMIN . 'includes/header.php');
 	
 	?>
@@ -170,8 +170,8 @@ if(empty($set_id)){
 				echo '<td class="center">' . ucwords($set['set_type']) . '</td>';
 				echo '<td class="center">' . $set['set_views'] . '</td>';
 				echo '<td class="center"><a href="' . BASE . ADMIN . 'search' . URL_ACT . 'sets' . URL_AID . $set['set_id'] . URL_RW . '">' . $set['set_image_count'] . '</a></td>';
-				echo '<td>' . $alkaline->formatTime($set['set_created']) . '</td>';
-				echo '<td>' . ucfirst($alkaline->formatRelTime($set['set_modified'])) . '</td>';
+				echo '<td>' . $fsip->formatTime($set['set_created']) . '</td>';
+				echo '<td>' . ucfirst($fsip->formatRelTime($set['set_modified'])) . '</td>';
 			echo '</tr>';
 		}
 	
@@ -187,7 +187,7 @@ else{
 	// Get set
 	$sets = new Set($set_id);
 	$set = $sets->sets[0];
-	$set = $alkaline->makeHTMLSafe($set);
+	$set = $fsip->makeHTMLSafe($set);
 	$set_request = $set['set_request'];
 	
 	// Update set
@@ -196,10 +196,10 @@ else{
 	$image_ids->find();
 	
 	if(!empty($set['set_title'])){	
-		define('TITLE', 'Alkaline Set: &#8220;' . $set['set_title']  . '&#8221;');
+		define('TITLE', 'Set: &#8220;' . $set['set_title']  . '&#8221;');
 	}
 	else{
-		define('TITLE', 'Alkaline Set');
+		define('TITLE', 'Set');
 	}
 	require_once(PATH . ADMIN . 'includes/header.php');
 
@@ -294,14 +294,14 @@ else{
 				<tr>
 					<td class="right pad"><label for="tags">EXIF metadata:</label></td>
 					<td>
-						<?php echo $alkaline->showEXIFNames('exif_name', $set_request['exif_name']); ?>
+						<?php echo $fsip->showEXIFNames('exif_name', $set_request['exif_name']); ?>
 						<input type="text" id="exif_value" name="exif_value" class="s" value="<?php echo $set_request['exif_value']; ?>" /><br />
 					</td>
 				</tr>
 				<tr>
 					<td class="right middle"><label for="rights">Rights set:</label></td>
 					<td class="quiet">
-						<?php echo $alkaline->showRights('rights', $set_request['rights']); ?>
+						<?php echo $fsip->showRights('rights', $set_request['rights']); ?>
 					</td>
 				</tr>
 				<tr>
@@ -323,14 +323,14 @@ else{
 					<td class="quiet">
 						within
 						<select name="location_proximity">
-							<option value="10" <?php echo $alkaline->readForm($set_request, 'location_proximity', '10'); ?>>10</option>
-							<option value="25" <?php echo $alkaline->readForm($set_request, 'location_proximity', '25'); ?>>25</option>
-							<option value="50" <?php echo $alkaline->readForm($set_request, 'location_proximity', '50'); ?>>50</option>
-							<option value="100" <?php echo $alkaline->readForm($set_request, 'location_proximity', '100'); ?>>100</option>
-							<option value="250" <?php echo $alkaline->readForm($set_request, 'location_proximity', '250'); ?>>250</option>
-							<option value="500" <?php echo $alkaline->readForm($set_request, 'location_proximity', '500'); ?>>500</option>
-							<option value="1000" <?php echo $alkaline->readForm($set_request, 'location_proximity', '1000'); ?>>1,000</option>
-							<option value="2500" <?php echo $alkaline->readForm($set_request, 'location_proximity', '2500'); ?>>2,500</option>
+							<option value="10" <?php echo $fsip->readForm($set_request, 'location_proximity', '10'); ?>>10</option>
+							<option value="25" <?php echo $fsip->readForm($set_request, 'location_proximity', '25'); ?>>25</option>
+							<option value="50" <?php echo $fsip->readForm($set_request, 'location_proximity', '50'); ?>>50</option>
+							<option value="100" <?php echo $fsip->readForm($set_request, 'location_proximity', '100'); ?>>100</option>
+							<option value="250" <?php echo $fsip->readForm($set_request, 'location_proximity', '250'); ?>>250</option>
+							<option value="500" <?php echo $fsip->readForm($set_request, 'location_proximity', '500'); ?>>500</option>
+							<option value="1000" <?php echo $fsip->readForm($set_request, 'location_proximity', '1000'); ?>>1,000</option>
+							<option value="2500" <?php echo $fsip->readForm($set_request, 'location_proximity', '2500'); ?>>2,500</option>
 						</select>
 						miles of 
 						<input type="text" name="location" class="image_geo m" value="<?php echo $set_request['location']; ?>" />
@@ -341,14 +341,14 @@ else{
 					<td>
 						<select id="color" name="color">
 							<option></option>
-							<option value="blue" <?php echo $alkaline->readForm($set_request, 'color', 'blue'); ?>>Blue</option>
-							<option value="red" <?php echo $alkaline->readForm($set_request, 'color', 'red'); ?>>Red</option>
-							<option value="yellow" <?php echo $alkaline->readForm($set_request, 'color', 'yellow'); ?>>Yellow</option>
-							<option value="green" <?php echo $alkaline->readForm($set_request, 'color', 'green'); ?>>Green</option>
-							<option value="purple" <?php echo $alkaline->readForm($set_request, 'color', 'purple'); ?>>Purple</option>
-							<option value="orange" <?php echo $alkaline->readForm($set_request, 'color', 'orange'); ?>>Orange</option>
-							<option value="brown" <?php echo $alkaline->readForm($set_request, 'color', 'brown'); ?>>Brown</option>
-							<option value="pink" <?php echo $alkaline->readForm($set_request, 'color', 'pink'); ?>>Pink</option>
+							<option value="blue" <?php echo $fsip->readForm($set_request, 'color', 'blue'); ?>>Blue</option>
+							<option value="red" <?php echo $fsip->readForm($set_request, 'color', 'red'); ?>>Red</option>
+							<option value="yellow" <?php echo $fsip->readForm($set_request, 'color', 'yellow'); ?>>Yellow</option>
+							<option value="green" <?php echo $fsip->readForm($set_request, 'color', 'green'); ?>>Green</option>
+							<option value="purple" <?php echo $fsip->readForm($set_request, 'color', 'purple'); ?>>Purple</option>
+							<option value="orange" <?php echo $fsip->readForm($set_request, 'color', 'orange'); ?>>Orange</option>
+							<option value="brown" <?php echo $fsip->readForm($set_request, 'color', 'brown'); ?>>Brown</option>
+							<option value="pink" <?php echo $fsip->readForm($set_request, 'color', 'pink'); ?>>Pink</option>
 						</select>
 					</td>
 				</tr>
@@ -356,9 +356,9 @@ else{
 					<td class="right middle"><label>Views:</label></td>
 					<td>
 						<select name="views_operator">
-							<option value="greater" <?php echo $alkaline->readForm($set_request, 'views_operator', 'greater'); ?>>&#8805;</option>
-							<option value="less" <?php echo $alkaline->readForm($set_request, 'views_operator', 'less'); ?>>&#8804;</option>
-							<option value="equal" <?php echo $alkaline->readForm($set_request, 'views_operator', 'equal'); ?>>&#0061;</option>
+							<option value="greater" <?php echo $fsip->readForm($set_request, 'views_operator', 'greater'); ?>>&#8805;</option>
+							<option value="less" <?php echo $fsip->readForm($set_request, 'views_operator', 'less'); ?>>&#8804;</option>
+							<option value="equal" <?php echo $fsip->readForm($set_request, 'views_operator', 'equal'); ?>>&#0061;</option>
 						</select>
 						<input type="text" name="views" class="xs" value="<?php echo $set_request['views']; ?>" />
 					</td>
@@ -367,10 +367,10 @@ else{
 					<td class="right middle"><label for="orientation">Orientation:</label></td>
 					<td class="quiet">
 						<select id="orientation" name="orientation">
-							<option value="" <?php echo $alkaline->readForm($set_request, 'orientation', ''); ?>>All</option>
-							<option value="portrait" <?php echo $alkaline->readForm($set_request, 'orientation', 'portrait'); ?>>Portrait</option>
-							<option value="landscape" <?php echo $alkaline->readForm($set_request, 'orientation', 'landscape'); ?>>Landscape</option>
-							<option value="square" <?php echo $alkaline->readForm($set_request, 'orientation', 'square'); ?>>Square</option>
+							<option value="" <?php echo $fsip->readForm($set_request, 'orientation', ''); ?>>All</option>
+							<option value="portrait" <?php echo $fsip->readForm($set_request, 'orientation', 'portrait'); ?>>Portrait</option>
+							<option value="landscape" <?php echo $fsip->readForm($set_request, 'orientation', 'landscape'); ?>>Landscape</option>
+							<option value="square" <?php echo $fsip->readForm($set_request, 'orientation', 'square'); ?>>Square</option>
 						</select>
 					</td>
 				</tr>
@@ -378,10 +378,10 @@ else{
 					<td class="right middle"><label for="privacy">Privacy level:</label></td>
 					<td class="quiet">
 						<select id="privacy" name="privacy">
-							<option value="" <?php echo $alkaline->readForm($set_request, 'privacy', ''); ?>>All</option>
-							<option value="public" <?php echo $alkaline->readForm($set_request, 'privacy', 'public'); ?>>Public</option>
-							<option value="protected" <?php echo $alkaline->readForm($set_request, 'privacy', 'protected'); ?>>Protected</option>
-							<option value="private" <?php echo $alkaline->readForm($set_request, 'privacy', 'private'); ?>>Private</option>
+							<option value="" <?php echo $fsip->readForm($set_request, 'privacy', ''); ?>>All</option>
+							<option value="public" <?php echo $fsip->readForm($set_request, 'privacy', 'public'); ?>>Public</option>
+							<option value="protected" <?php echo $fsip->readForm($set_request, 'privacy', 'protected'); ?>>Protected</option>
+							<option value="private" <?php echo $fsip->readForm($set_request, 'privacy', 'private'); ?>>Private</option>
 						</select>
 					</td>
 				</tr>
@@ -389,9 +389,9 @@ else{
 					<td class="right middle"><label for="published">Publication status:</label></td>
 					<td class="quiet">
 						<select id="published" name="published">
-							<option value="" <?php echo $alkaline->readForm($set_request, 'published', ''); ?>>All</option>
-							<option value="published" <?php echo $alkaline->readForm($set_request, 'published', 'published'); ?>>Published</option>
-							<option value="unpublished" <?php echo $alkaline->readForm($set_request, 'published', 'unpublished'); ?>>Unpublished</option>
+							<option value="" <?php echo $fsip->readForm($set_request, 'published', ''); ?>>All</option>
+							<option value="published" <?php echo $fsip->readForm($set_request, 'published', 'published'); ?>>Published</option>
+							<option value="unpublished" <?php echo $fsip->readForm($set_request, 'published', 'unpublished'); ?>>Unpublished</option>
 						</select>
 					</td>
 				</tr>
@@ -399,16 +399,16 @@ else{
 					<td class="right middle"><label>Sort results by:</label></td>
 					<td>
 						<select name="sort">
-							<option value="published" <?php echo $alkaline->readForm($set_request, 'sort', 'published'); ?>>Date published</option>
-							<option value="taken" <?php echo $alkaline->readForm($set_request, 'sort', 'taken'); ?>>Date taken</option>
-							<option value="updated" <?php echo $alkaline->readForm($set_request, 'sort', 'updated'); ?>>Date last updated</option>
-							<option value="uploaded" <?php echo $alkaline->readForm($set_request, 'sort', 'uploaded'); ?>>Date uploaded</option>
-							<option value="title" <?php echo $alkaline->readForm($set_request, 'sort', 'title'); ?>>Title</option>
-							<option value="views" <?php echo $alkaline->readForm($set_request, 'sort', 'views'); ?>>Views</option>
+							<option value="published" <?php echo $fsip->readForm($set_request, 'sort', 'published'); ?>>Date published</option>
+							<option value="taken" <?php echo $fsip->readForm($set_request, 'sort', 'taken'); ?>>Date taken</option>
+							<option value="updated" <?php echo $fsip->readForm($set_request, 'sort', 'updated'); ?>>Date last updated</option>
+							<option value="uploaded" <?php echo $fsip->readForm($set_request, 'sort', 'uploaded'); ?>>Date uploaded</option>
+							<option value="title" <?php echo $fsip->readForm($set_request, 'sort', 'title'); ?>>Title</option>
+							<option value="views" <?php echo $fsip->readForm($set_request, 'sort', 'views'); ?>>Views</option>
 						</select>
 						<select name="sort_direction">
-							<option value="DESC" <?php echo $alkaline->readForm($set_request, 'sort_direction', 'DESC'); ?>>Descending</option>
-							<option value="ASC" <?php echo $alkaline->readForm($set_request, 'sort_direction', 'ASC'); ?>>Ascending</option>
+							<option value="DESC" <?php echo $fsip->readForm($set_request, 'sort_direction', 'DESC'); ?>>Descending</option>
+							<option value="ASC" <?php echo $fsip->readForm($set_request, 'sort_direction', 'ASC'); ?>>Ascending</option>
 						</select>
 					</td>
 				</tr>
@@ -436,7 +436,7 @@ else{
 		<input type="hidden" id="set_images" name="set_images" value="<?php echo $set['set_images']; ?>" />
 		
 		<p>
-			<input type="hidden" name="set_id" value="<?php echo $set['set_id']; ?>" /><input type="submit" value="Save changes" /> or <a href="<?php echo $alkaline->back(); ?>">cancel</a>
+			<input type="hidden" name="set_id" value="<?php echo $set['set_id']; ?>" /><input type="submit" value="Save changes" /> or <a href="<?php echo $fsip->back(); ?>">cancel</a>
 		</p>
 	</form>
 

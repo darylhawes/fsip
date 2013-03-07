@@ -7,9 +7,9 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true);
@@ -18,11 +18,11 @@ $user->perm(true);
 if(isset($_REQUEST['recovery'])){
 	if($_REQUEST['recovery'] == 1){
 		$user->setPref('recovery_mode', true);
-		$alkaline->addNote('You have entered recovery mode.', 'success');
+		$fsip->addNote('You have entered recovery mode.', 'success');
 	}
 	else{
 		$user->setPref('recovery_mode', false);
-		$alkaline->addNote('You have exited recovery mode.', 'success');
+		$fsip->addNote('You have exited recovery mode.', 'success');
 	}
 	$user->savePref();
 	
@@ -39,13 +39,14 @@ else{
 
 
 // Check for updates
-$latest = @$alkaline->boomerang('latest');
-if($latest['build'] > Alkaline::build){
+/* DEH remove all dead boomerang remote calls
+$latest = @$fsip->boomerang('latest');
+if($latest['build'] > FSIP::build){
 	$alkaline->addNote('A new version of Alkaline (v' . $latest['version'] . ') is available. Learn more and download the update at <a href="http://www.alkalineapp.com/">alkalineapp.com</a>.', 'notice');
-}
+} */
 
 define('TAB', 'settings');
-define('TITLE', 'Alkaline Settings');
+define('TITLE', 'Settings');
 require_once(PATH . ADMIN . 'includes/header.php');
 
 ?>
@@ -60,22 +61,22 @@ require_once(PATH . ADMIN . 'includes/header.php');
 	
 	<?php ob_start(); ?>
 
-	<h2>Alkaline</h2>
+	<h2>FSIP</h2>
 	<table>
 		<tr>
 			<td class="right">Product:</td>
-			<td><?php echo Alkaline::product ?></td>
+			<td><?php echo FSIP::product ?></td>
 		</tr>
 		<tr>
 			<td class="right">Version:</td>
-			<td><?php echo Alkaline::version; ?> <span class="small">(<?php echo Alkaline::build; ?>)</span></td>
+			<td><?php echo FSIP::version; ?> <span class="small">(<?php echo FSIP::build; ?>)</span></td>
 		</tr>
 		<tr>
 			<td class="right">Database:</td>
 			<td>
 				<?php
 				
-				switch($alkaline->db_type){
+				switch($fsip->db_type){
 					case 'mssql':
 						echo 'Microsoft SQL Server';
 						break;
@@ -98,7 +99,7 @@ require_once(PATH . ADMIN . 'includes/header.php');
 		</tr>
 		<tr>
 			<td class="right">Theme:</td>
-			<td><?php $theme = $alkaline->getRow('themes', $alkaline->returnConf('theme_id')); if(!empty($theme)){ echo $theme['theme_title'] . ' <span class="small">(' . $theme['theme_build'] . ')</span>'; } else { echo '&#8212;'; } ?></td>
+			<td><?php $theme = $fsip->getRow('themes', $fsip->returnConf('theme_id')); if(!empty($theme)){ echo $theme['theme_title'] . ' <span class="small">(' . $theme['theme_build'] . ')</span>'; } else { echo '&#8212;'; } ?></td>
 		</tr>
 		<tr>
 			<td class="right">Extensions:</td>
@@ -120,7 +121,7 @@ require_once(PATH . ADMIN . 'includes/header.php');
 			<td class="right">
 				<?php
 				
-				switch($alkaline->db_type){
+				switch($fsip->db_type){
 					case 'mssql':
 						echo 'Microsoft SQL Server';
 						break;
@@ -142,7 +143,7 @@ require_once(PATH . ADMIN . 'includes/header.php');
 				version:
 			</td>
 			<td>
-				<?php echo $alkaline->db_version; ?>
+				<?php echo $fsip->db_version; ?>
 			</td>
 		</tr>
 		<tr>
@@ -186,10 +187,11 @@ require_once(PATH . ADMIN . 'includes/header.php');
 	
 	?>
 	
+<!-- DEH remove dead calls to remote services
 	<div class="actions" style="margin-top:0">
-		<a href="<?php echo BASE . ADMIN . 'tasks/send-diagnostic-report.php'; ?>" class="tip" title="Sends a diagnostic report to Alkaline engineers to help identify the cause of your support case."><button>Send diagnostic report</button></a>
+		<a href="<?php echo BASE . ADMIN . 'tasks/send-diagnostic-report.php'; ?>" class="tip" title="Sends a diagnostic report to FSIP engineers to help identify the cause of your support case."><button>Send diagnostic report</button></a>
 	</div>
-	
+-->	
 	<h2>Diagnostics</h2>
 	
 	<p>

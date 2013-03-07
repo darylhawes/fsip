@@ -7,7 +7,7 @@
 */
 
 require_once('config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
 if(isset($_REQUEST['type'])){
 	$type = $_REQUEST['type'];
@@ -26,14 +26,14 @@ if(isset($_REQUEST['type'])){
 	$ids->find();
 	$ids->saveMemory();
 	
-	$_SESSION['alkaline']['search']['table'] = $type;
+	$_SESSION['fsip']['search']['table'] = $type;
 	
 	header('Location: ' . LOCATION . BASE . 'results' . URL_CAP);
 	exit();
 }
 
-$alkaline = new Alkaline;
-$alkaline->recordStat('home');
+$fsip = new FSIP;
+$fsip->recordStat('home');
 
 $header = new Canvas;
 $header->load('header');
@@ -42,8 +42,8 @@ $header->display();
 
 $content = new Canvas;
 $content->load('search');
-$content->assign('EXIF_Names', $alkaline->showEXIFNames('exif_name'));
-$content->assign('Rights', $alkaline->showRights('rights'));
+$content->assign('EXIF_Names', $fsip->showEXIFNames('exif_name'));
+$content->assign('Rights', $fsip->showRights('rights'));
 $content->display();
 
 $footer = new Canvas;

@@ -7,21 +7,21 @@
 */
 
 require_once('./../../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true);
 
 if(empty($_POST['image_id'])){
-	$count = $_SESSION['alkaline']['tasks'];
+	$count = $_SESSION['fsip']['tasks'];
 	
 	for($i=1; $i <= $count; $i++){
 		$tasks[] = $i;
 	}
 	
-	echo $alkaline->removeNull(json_encode($tasks));
+	echo $fsip->removeNull(json_encode($tasks));
 }
 else{
 	$prbit = new Orbit;

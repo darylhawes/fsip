@@ -16,9 +16,9 @@ $path = implode('/', $path) . '/';
 header('Content-Type: application/xml');
 
 require_once($path . 'config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline();
+$fsip = new FSIP();
 $xml = new XMLWriter();
 
 $xml->openMemory();
@@ -77,7 +77,7 @@ $xml->endAttribute();
 	while($count <= $item_ids->count){
 		$ids = array_slice($item_ids->ids, $count, 1000);
 		
-		$items = $alkaline->getTable('items', $ids);
+		$items = $fsip->getTable('items', $ids);
 		
 		$item_ids = array();
 		$item_table_ids = array();
@@ -85,7 +85,7 @@ $xml->endAttribute();
 		
 		foreach($items as $item){
 			$item_table = $item['item_table'];
-			$table_int = array_search($item_table, $alkaline->tables_index);
+			$table_int = array_search($item_table, $fsip->tables_index);
 			
 			$item_ids[$table_int][] = $item['item_id'];
 			$item_table_ids[$table_int][] = $item['item_table_id'];
@@ -96,10 +96,10 @@ $xml->endAttribute();
 		
 		for($i=0; $i < $item_count; $i++){
 			if($item_tables[$i][0] == 'comments'){
-				$comments = $alkaline->getTable('comments', $item_table_ids[$i]);
+				$comments = $fsip->getTable('comments', $item_table_ids[$i]);
 				$comment_count = count($comments);
 				
-				$table_int = array_search('comments', $alkaline->tables_index);
+				$table_int = array_search('comments', $fsip->tables_index);
 				
 				for($j=0; $j < $comment_count; $j++){
 					$xml->startElement('sphinx:document');
@@ -122,10 +122,10 @@ $xml->endAttribute();
 				}
 			}
 			elseif($item_tables[$i][0] == 'images'){
-				$images = $alkaline->getTable('images', $item_table_ids[$i]);
+				$images = $fsip->getTable('images', $item_table_ids[$i]);
 				$image_count = count($images);
 				
-				$table_int = array_search('images', $alkaline->tables_index);
+				$table_int = array_search('images', $fsip->tables_index);
 				
 				for($j=0; $j < $image_count; $j++){
 					$xml->startElement('sphinx:document');
@@ -148,10 +148,10 @@ $xml->endAttribute();
 				}
 			}
 			elseif($item_tables[$i][0] == 'pages'){
-				$pages = $alkaline->getTable('pages', $item_table_ids[$i]);
+				$pages = $fsip->getTable('pages', $item_table_ids[$i]);
 				$page_count = count($pages);
 				
-				$table_int = array_search('pages', $alkaline->tables_index);
+				$table_int = array_search('pages', $fsip->tables_index);
 				
 				for($j=0; $j < $page_count; $j++){
 					$xml->startElement('sphinx:document');
@@ -174,10 +174,10 @@ $xml->endAttribute();
 				}
 			}
 			elseif($item_tables[$i][0] == 'posts'){
-				$posts = $alkaline->getTable('posts', $item_table_ids[$i]);
+				$posts = $fsip->getTable('posts', $item_table_ids[$i]);
 				$post_count = count($posts);
 				
-				$table_int = array_search('posts', $alkaline->tables_index);
+				$table_int = array_search('posts', $fsip->tables_index);
 				
 				for($j=0; $j < $post_count; $j++){
 					$xml->startElement('sphinx:document');
@@ -200,10 +200,10 @@ $xml->endAttribute();
 				}
 			}
 			elseif($item_tables[$i][0] == 'rights'){
-				$rights = $alkaline->getTable('rights', $item_table_ids[$i]);
+				$rights = $fsip->getTable('rights', $item_table_ids[$i]);
 				$right_count = count($rights);
 				
-				$table_int = array_search('rights', $alkaline->tables_index);
+				$table_int = array_search('rights', $fsip->tables_index);
 				
 				for($j=0; $j < $right_count; $j++){
 					$xml->startElement('sphinx:document');
@@ -226,10 +226,10 @@ $xml->endAttribute();
 				}
 			}
 			elseif($item_tables[$i][0] == 'sets'){
-				$sets = $alkaline->getTable('sets', $item_table_ids[$i]);
+				$sets = $fsip->getTable('sets', $item_table_ids[$i]);
 				$set_count = count($sets);
 				
-				$table_int = array_search('sets', $alkaline->tables_index);
+				$table_int = array_search('sets', $fsip->tables_index);
 				
 				for($j=0; $j < $set_count; $j++){
 					$xml->startElement('sphinx:document');
@@ -252,10 +252,10 @@ $xml->endAttribute();
 				}
 			}
 			elseif($item_tables[$i][0] == 'tags'){
-				$tags = $alkaline->getTable('tags', $item_table_ids[$i]);
+				$tags = $fsip->getTable('tags', $item_table_ids[$i]);
 				$tag_count = count($tags);
 				
-				$table_int = array_search('tags', $alkaline->tables_index);
+				$table_int = array_search('tags', $fsip->tables_index);
 				
 				for($j=0; $j < $tag_count; $j++){
 					$xml->startElement('sphinx:document');

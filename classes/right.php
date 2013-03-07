@@ -12,7 +12,7 @@
  * @version 1.0
  */
 
-class Right extends Alkaline{
+class Right extends FSIP{
 	public $images;
 	public $right_ids;
 	public $right_count = 0;

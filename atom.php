@@ -7,10 +7,10 @@
 */
 
 require_once('config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline();
-$alkaline->recordStat('atom');
+$fsip = new FSIP();
+$fsip->recordStat('atom');
 
 header('Content-Type: application/xml');
 
@@ -20,7 +20,7 @@ require_once(PATH . CLASSES . 'cache_lite/Lite.php');
 // Set a few options
 $options = array(
     'cacheDir' => PATH . CACHE,
-    'lifeTime' => $alkaline->returnConf('syndication_cache_time')
+    'lifeTime' => $fsip->returnConf('syndication_cache_time')
 );
 
 // Create a Cache_Lite object
@@ -81,9 +81,9 @@ else{
 	$posts = new Post($post_ids);
 	$posts->formatTime('c');
 
-	if($alkaline->returnConf('syndication_summary_only')){
+	if($fsip->returnConf('syndication_summary_only')){
 		foreach($posts->posts as &$post){
-			$post['post_text'] = $alkaline->fitStringByWord($post['post_text'], 400);
+			$post['post_text'] = $fsip->fitStringByWord($post['post_text'], 400);
 		}
 	}
 
@@ -121,13 +121,13 @@ else{
 
 	<feed xmlns="http://www.w3.org/2005/Atom">
 
-		<title><?php echo $alkaline->returnConf('web_title'); ?></title>
+		<title><?php echo $fsip->returnConf('web_title'); ?></title>
 		<updated><?php echo date('c', $last_updated); ?></updated>
 		<link href="<?php echo BASE; ?>" />
 		<link rel="self" type="application/atom+xml" href="<?php echo LOCATION . BASE; ?>atom.php" />
 		<id>tag:<?php echo DOMAIN; ?>,2010:/</id>
 		<author>
-			<name><?php echo $alkaline->returnConf('web_name'); ?></name>
+			<name><?php echo $fsip->returnConf('web_name'); ?></name>
 		</author>
 
 		<?php echo $image_entries; ?>

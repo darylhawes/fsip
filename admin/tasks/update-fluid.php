@@ -7,15 +7,15 @@
 */
 
 require_once('./../../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true);
 
 $json = array();
-$json['dockBadge'] = array_sum($alkaline->getBadges());
+$json['dockBadge'] = array_sum($fsip->getBadges());
 
 $now = time();
 
@@ -30,10 +30,10 @@ $json['showGrowlNotification'] = array();
 
 foreach($comments->comments as $comment){
 	if(!empty($comment['comment_response'])){ continue; }
-	$comment_text = html_entity_decode($alkaline->fitStringByWord($comment['comment_text'], 100), ENT_QUOTES, 'UTF-8');
+	$comment_text = html_entity_decode($fsip->fitStringByWord($comment['comment_text'], 100), ENT_QUOTES, 'UTF-8');
 	$json['showGrowlNotification'][] = array('title' => 'New comment', 'description' => $comment_text);
 }
 
-echo $alkaline->removeNull(json_encode($json));
+echo $fsip->removeNull(json_encode($json));
 
 ?>

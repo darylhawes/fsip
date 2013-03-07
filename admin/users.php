@@ -7,15 +7,15 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true, 'users');
 
 if(!empty($_GET['id'])){
-	$user_db_id = $alkaline->findID($_GET['id']);
+	$user_db_id = $fsip->findID($_GET['id']);
 }
 
 if(!empty($_GET['act'])){
@@ -24,16 +24,16 @@ if(!empty($_GET['act'])){
 
 // SAVE CHANGES
 if(!empty($_POST['user_id'])){
-	$user_db_id = $alkaline->findID($_POST['user_id']);
+	$user_db_id = $fsip->findID($_POST['user_id']);
 	if(isset($_POST['user_delete']) and ($_POST['user_delete'] == 'delete')){
-		$alkaline->deleteRow('users', $user_db_id);
+		$fsip->deleteRow('users', $user_db_id);
 	}
 	else{
 		if($_POST['user_reset_pass'] == 'reset_pass'){
-			$rand = $alkaline->randInt();
+			$rand = $fsip->randInt();
 			echo $rand;
 			$pass = substr(sha1($rand), 0, 8);
-			$alkaline->email($_POST['user_email'], 'Password reset', 'Your password has been reset:' . "\r\n\n" . $pass . "\r\n\n" . LOCATION . BASE . ADMIN);
+			$fsip->email($_POST['user_email'], 'Password reset', 'Your password has been reset:' . "\r\n\n" . $pass . "\r\n\n" . LOCATION . BASE . ADMIN);
 			$_POST['user_pass'] = $pass;
 		}
 		
@@ -60,24 +60,24 @@ if(!empty($_POST['user_id'])){
 		
 		$permissions = array_unique($permissions);
 		
-		$fields = array('user_name' => $alkaline->makeUnicode($_POST['user_name']),
+		$fields = array('user_name' => $fsip->makeUnicode($_POST['user_name']),
 			'user_user' => $_POST['user_user'],
 			'user_email' => $_POST['user_email'],
 			'user_permissions' => serialize($permissions));
 		if(!empty($_POST['user_pass']) and ($_POST['user_pass'] != '********')){
 			$fields['user_pass'] = sha1($_POST['user_pass']);
 		}
-		$alkaline->updateRow($fields, 'users', $user_db_id);
+		$fsip->updateRow($fields, 'users', $user_db_id);
 	}
 	unset($user_db_id);
 }
 else{
-	$alkaline->deleteEmptyRow('users', array('user_user', 'user_pass', 'user_name'));
+	$fsip->deleteEmptyRow('users', array('user_user', 'user_pass', 'user_name'));
 }
 
 // CREATE User
 if(!empty($user_db_act) and ($user_db_act == 'add')){
-	$user_db_id = $alkaline->addRow(null, 'users');
+	$user_db_id = $fsip->addRow(null, 'users');
 }
 
 define('TAB', 'settings');
@@ -85,17 +85,17 @@ define('TAB', 'settings');
 // GET USERS TO VIEW OR USER TO EDIT
 if(empty($user_db_id)){
 	// Update image counts
-	$alkaline->updateCounts('images', 'users', 'user_image_count');
-	$alkaline->updateCounts('posts', 'users', 'user_post_count');
-	$alkaline->updateCounts('comments', 'users', 'user_comment_count');
+	$fsip->updateCounts('images', 'users', 'user_image_count');
+	$fsip->updateCounts('posts', 'users', 'user_post_count');
+	$fsip->updateCounts('comments', 'users', 'user_comment_count');
 	
-	$user_dbs = $alkaline->getTable('users');
+	$user_dbs = $fsip->getTable('users');
 	$user_db_count = @count($user_dbs);
 	
-	define('TITLE', 'Alkaline Users');
+	define('TITLE', 'Users');
 	require_once(PATH . ADMIN . 'includes/header.php');
 	
-	if(Alkaline::edition == 'multiuser'){
+	if(FSIP::edition == 'multiuser'){
 		?>
 		<div class="actions"><a href="<?php echo BASE . ADMIN . 'users' . URL_ACT . 'add' . URL_RW; ?>"><button>Add user</button></a></div>
 		<?php
@@ -105,7 +105,7 @@ if(empty($user_db_id)){
 
 	<h1><img src="<?php echo BASE . ADMIN; ?>images/icons/users.png" alt="" /> Users (<?php echo $user_db_count; ?>)</h1>
 	
-	<p>Users can add images to your Alkaline library and modify the your Alkaline installation.</p>
+	<p>Users can add images to your library and modify this installation.</p>
 	
 	<p>
 		<input type="search" name="filter" placeholder="Filter" class="s" results="0" />
@@ -131,7 +131,7 @@ if(empty($user_db_id)){
 				echo '<td class="center"><a href="' . BASE . ADMIN . 'search' . URL_ACT . 'users' . URL_AID . $user_db['user_id'] . URL_RW . '">' . number_format($user_db['user_image_count']) . '</a></td>';
 				echo '<td class="center"><a href="' . BASE . ADMIN . 'posts' . URL_ACT . 'users' . URL_AID . $user_db['user_id'] . URL_RW . '">' . number_format($user_db['user_post_count']) . '</a></td>';
 				echo '<td class="center"><a href="' . BASE . ADMIN . 'comments' . URL_ACT . 'users' . URL_AID . $user_db['user_id'] . URL_RW . '">' . number_format($user_db['user_comment_count']) . '</a></td>';
-				echo '<td>' . $alkaline->formatTime($user_db['user_last_login'], null, '<em>Never</em>') . '</td>';
+				echo '<td>' . $fsip->formatTime($user_db['user_last_login'], null, '<em>Never</em>') . '</td>';
 			echo '</tr>';
 		}
 	
@@ -145,12 +145,12 @@ if(empty($user_db_id)){
 }
 else{
 	// Update image count
-	$alkaline->updateCount('images', 'users', 'user_image_count', $user_db_id);
+	$fsip->updateCount('images', 'users', 'user_image_count', $user_db_id);
 	
 	// Get user
-	$user_db = $alkaline->getRow('users', $user_db_id);
+	$user_db = $fsip->getRow('users', $user_db_id);
 	$user_db_perms = unserialize($user_db['user_permissions']);
-	$user_db = $alkaline->makeHTMLSafe($user_db);
+	$user_db = $fsip->makeHTMLSafe($user_db);
 	$user_image_count = $user_db['user_image_count'];
 	
 	if(empty($user_image_count)){
@@ -158,10 +158,10 @@ else{
 	}
 	
 	if(!empty($user_db['user_name'])){
-		define('TITLE', 'Alkaline User: ' . $user_db['user_name']);
+		define('TITLE', 'User: ' . $user_db['user_name']);
 	}
 	else{
-		define('TITLE', 'Alkaline user');
+		define('TITLE', 'User');
 	}
 	require_once(PATH . ADMIN . 'includes/header.php');
 
@@ -300,7 +300,7 @@ else{
 			</tr>
 			<tr>
 				<td></td>
-				<td><input type="hidden" name="user_id" value="<?php echo $user_db['user_id']; ?>" /><input type="submit" value="Save changes" /> or <a href="<?php echo $alkaline->back(); ?>">cancel</a></td>
+				<td><input type="hidden" name="user_id" value="<?php echo $user_db['user_id']; ?>" /><input type="submit" value="Save changes" /> or <a href="<?php echo $fsip->back(); ?>">cancel</a></td>
 			</tr>
 		</table>
 	</form>

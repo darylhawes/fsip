@@ -7,15 +7,15 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true, 'guests');
 
 if(!empty($_GET['id'])){
-	$guest_id = $alkaline->findID($_GET['id']);
+	$guest_id = $fsip->findID($_GET['id']);
 }
 
 if(!empty($_GET['act'])){
@@ -24,9 +24,9 @@ if(!empty($_GET['act'])){
 
 // SAVE CHANGES
 if(!empty($_POST['guest_id'])){
-	$guest_id = $alkaline->findID($_POST['guest_id']);
+	$guest_id = $fsip->findID($_POST['guest_id']);
 	if($_POST['guest_delete'] == 'delete'){
-		$alkaline->deleteRow('guests', $guest_id);
+		$fsip->deleteRow('guests', $guest_id);
 	}
 	else{
 		$guest_sets = @$_POST['guest_sets'];
@@ -45,7 +45,7 @@ if(!empty($_POST['guest_id'])){
 			$guest_inclusive = 0;
 		}
 		
-		$fields = array('guest_title' => $alkaline->makeUnicode(@$_POST['guest_title']),
+		$fields = array('guest_title' => $fsip->makeUnicode(@$_POST['guest_title']),
 			'guest_key' => @$_POST['guest_key'],
 			'guest_sets' => $guest_sets,
 			'guest_inclusive' => $guest_inclusive);
@@ -53,27 +53,27 @@ if(!empty($_POST['guest_id'])){
 			$fields['guest_views'] = 0;
 		}
 		
-		$alkaline->updateRow($fields, 'guests', $guest_id);
+		$fsip->updateRow($fields, 'guests', $guest_id);
 	}
 	unset($guest_id);
 }
 else{
-	$alkaline->deleteEmptyRow('guests', array('guest_title', 'guest_key'));
+	$fsip->deleteEmptyRow('guests', array('guest_title', 'guest_key'));
 }
 
 // CREATE GUEST
 if(!empty($guest_act) and ($guest_act == 'add')){
-	$guest_id = $alkaline->addRow(null, 'guests');
+	$guest_id = $fsip->addRow(null, 'guests');
 }
 
 define('TAB', 'settings');
 
 // GET GUEST TO VIEW OR GUEST TO EDIT
 if(empty($guest_id)){
-	$guests = $alkaline->getTable('guests');
+	$guests = $fsip->getTable('guests');
 	$guest_count = @count($guests);
 	
-	define('TITLE', 'Alkaline Guests');
+	define('TITLE', 'Guests');
 	require_once(PATH . ADMIN . 'includes/header.php');
 
 	?>
@@ -82,7 +82,7 @@ if(empty($guest_id)){
 
 	<h1><img src="<?php echo BASE . ADMIN; ?>images/icons/guests.png" alt="" /> Guests (<?php echo $guest_count; ?>)</h1>
 	
-	<p>Guests can use an access key to view some or all protected images in your Alkaline library.</p>
+	<p>Guests can use an access key to view some or all protected images in your library.</p>
 	
 	<p>
 		<input type="search" name="filter" placeholder="Filter" class="s" results="0" />
@@ -100,7 +100,7 @@ if(empty($guest_id)){
 			echo '<tr class="ro">';
 				echo '<td><strong class="large"><a href="' . BASE . ADMIN . 'guests' . URL_ID . $guest['guest_id'] . URL_RW . '">' . $guest['guest_title'] . '</a></strong></td>';
 				echo '<td class="center">' . number_format($guest['guest_views']) . '</td>';
-				echo '<td>' . $alkaline->formatTime($guest['guest_last_login'], null, '<em>Never</em>') . '</td>';
+				echo '<td>' . $fsip->formatTime($guest['guest_last_login'], null, '<em>Never</em>') . '</td>';
 			echo '</tr>';
 		}
 	
@@ -114,17 +114,17 @@ if(empty($guest_id)){
 }
 else{
 	// Get guest
-	$guest = $alkaline->getRow('guests', $guest_id);
-	$guest = $alkaline->makeHTMLSafe($guest);
+	$guest = $fsip->getRow('guests', $guest_id);
+	$guest = $fsip->makeHTMLSafe($guest);
 	
 	// Save credentials
-	$_SESSION['alkaline']['guest'] = $guest;
+	$_SESSION['fsip']['guest'] = $guest;
 	
 	if(!empty($guest['guest_title'])){	
-		define('TITLE', 'Alkaline Guest: ' . $guest['guest_title']);
+		define('TITLE', 'Guest: ' . $guest['guest_title']);
 	}
 	else{
-		define('TITLE', 'Alkaline Guest');
+		define('TITLE', 'Guest');
 	}
 	require_once(PATH . ADMIN . 'includes/header.php');
 
@@ -169,7 +169,7 @@ else{
 						</tr>
 						<tr>
 							<td class="right" style="width: 5%;"><input type="radio" name="guest_sets" value="select" id="guest_sets_select" <?php if(!empty($guest['guest_sets'])){ echo 'checked="checked" '; } ?>/></td>
-							<td><label for="guest_sets_select">Restrict access to the protected images in the set: &#0160; <?php echo $alkaline->showSets('guest_sets_select', @$guest['guest_sets']); ?></label></td>
+							<td><label for="guest_sets_select">Restrict access to the protected images in the set: &#0160; <?php echo $fsip->showSets('guest_sets_select', @$guest['guest_sets']); ?></label></td>
 						</tr>
 						<tr>
 							<td></td>
@@ -192,7 +192,7 @@ else{
 			</tr>
 			<tr>
 				<td></td>
-				<td><input type="hidden" name="guest_id" value="<?php echo $guest['guest_id']; ?>" /><input type="submit" value="Save changes" /> or <a href="<?php echo $alkaline->back(); ?>">cancel</a></td>
+				<td><input type="hidden" name="guest_id" value="<?php echo $guest['guest_id']; ?>" /><input type="submit" value="Save changes" /> or <a href="<?php echo $fsip->back(); ?>">cancel</a></td>
 			</tr>
 		</table>
 	</form>

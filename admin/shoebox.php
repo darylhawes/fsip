@@ -7,9 +7,9 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $orbit = new Orbit;
 $user = new User;
 
@@ -20,33 +20,33 @@ if(!empty($_POST['image_ids'])){
 	$image_ids = explode(',', $_POST['image_ids']);
 	array_pop($image_ids);
 	
-	$alkaline->convertToIntegerArray($image_ids);
+	$fsip->convertToIntegerArray($image_ids);
 	
 	foreach($image_ids as $image_id){
 		$image = new Image($image_id);
 		if(@$_POST['image-' . $image_id . '-delete'] == 'delete'){
 			if($image->delete()){
-				$alkaline->addNote('Your image has been deleted.', 'success');
+				$fsip->addNote('Your image has been deleted.', 'success');
 			}
 		}
 		else{
-			$image_title = $alkaline->makeUnicode(@$_POST['image-' . $image_id . '-title']);
-			$image_description_raw = $alkaline->makeUnicode(@$_POST['image-' . $image_id . '-description-raw']);
+			$image_title = $fsip->makeUnicode(@$_POST['image-' . $image_id . '-title']);
+			$image_description_raw = $fsip->makeUnicode(@$_POST['image-' . $image_id . '-description-raw']);
 			
-			if($alkaline->returnConf('web_markup')){
-				$image_markup_ext = $alkaline->returnConf('web_markup_ext');
+			if($fsip->returnConf('web_markup')){
+				$image_markup_ext = $fsip->returnConf('web_markup_ext');
 				$image_title = $orbit->hook('markup_title_' . $image_markup_ext, $image_title, $image_title);
 				$image_description = $orbit->hook('markup_' . $image_markup_ext, $image_description_raw, $image_description_raw);
 			}
 			else{
 				$image_markup_ext = '';
-				$image_description = $alkaline->nl2br($image_description_raw);
+				$image_description = $fsip->nl2br($image_description_raw);
 			}
 			
 			$fields = array('image_title' => $image_title,
 				'image_description_raw' => $image_description_raw,
 				'image_description' => $image_description,
-				'image_geo' => $alkaline->makeUnicode(@$_POST['image-' . $image_id . '-geo']),
+				'image_geo' => $fsip->makeUnicode(@$_POST['image-' . $image_id . '-geo']),
 				'image_published' => @$_POST['image-' . $image_id . '-published'],
 				'image_privacy' => @$_POST['image-' . $image_id . '-privacy'],
 				'right_id' => @$_POST['right-' . $image_id . '-id']);
@@ -55,7 +55,7 @@ if(!empty($_POST['image_ids'])){
 		}
 	}
 	
-	$alkaline->addNote('Your shoebox has been processed.', 'success');
+	$fsip->addNote('Your shoebox has been processed.', 'success');
 	
 	if($user->returnPref('shoe_to_bulk') === true){
 		Find::clearMemory();
@@ -75,7 +75,7 @@ if(!empty($_POST['image_ids'])){
 }
 
 // New posts
-$files = $alkaline->seekDirectory(PATH . SHOEBOX, 'txt|mdown|md|markdown|textile');
+$files = $fsip->seekDirectory(PATH . SHOEBOX, 'txt|mdown|md|markdown|textile');
 $p_count = count($files);
 
 foreach($files as $file){
@@ -85,40 +85,40 @@ foreach($files as $file){
 }
 
 // New images
-$files = $alkaline->seekDirectory(PATH . SHOEBOX);
+$files = $fsip->seekDirectory(PATH . SHOEBOX);
 $i_count = count($files);
 
 if(($i_count == 0) and ($p_count == 0)){
-	$alkaline->addNote('There are no files in your shoebox.', 'error');
+	$fsip->addNote('There are no files in your shoebox.', 'error');
 	header('Location: ' . BASE . ADMIN . 'upload' . URL_CAP);
 	exit();
 }
 elseif(($i_count == 0) and ($p_count > 0)){
-	$alkaline->addNote('You have successfully imported ' . $alkaline->returnFullCount($p_count, 'post') . '.', 'success');
+	$fsip->addNote('You have successfully imported ' . $fsip->returnFullCount($p_count, 'post') . '.', 'success');
 	header('Location: ' . BASE . ADMIN . 'posts' . URL_CAP);
 	exit();
 }
 elseif($p_count > 0){
-	$alkaline->addNote('You have also successfully imported ' . $alkaline->returnFullCount($p_count, 'post') . '.', 'success');
+	$fsip->addNote('You have also successfully imported ' . $fsip->returnFullCount($p_count, 'post') . '.', 'success');
 }
 
 define('TAB', 'shoebox');
-define('TITLE', 'Alkaline Shoebox');
+define('TITLE', 'Shoebox');
 require_once(PATH . ADMIN . 'includes/header.php');
 
 ?>
 
 <h1><img src="<?php echo BASE . ADMIN; ?>images/icons/shoebox.png" alt="" /> Shoebox (<?php echo $i_count; ?>)</h1>
 
-<div class="none get_location_set"><?php echo @$_SESSION['alkaline']['location']; ?></div>
+<div class="none get_location_set"><?php echo @$_SESSION['fsip']['location']; ?></div>
 
 <form action="" method="post">
 	<div id="privacy_html" class="none">
-		<?php echo $alkaline->showPrivacy('image--privacy'); ?>
+		<?php echo $fsip->showPrivacy('image--privacy'); ?>
 	</div>
 	
 	<div id="rights_html" class="none">
-		<?php echo $alkaline->showRights('right--id'); ?>
+		<?php echo $fsip->showRights('right--id'); ?>
 	</div>
 	
 	<div id="shoebox_images">
@@ -131,7 +131,7 @@ require_once(PATH . ADMIN . 'includes/header.php');
 
 	<p>
 		<input id="shoebox_image_ids" type="hidden" name="image_ids" value="" />
-		<input id="shoebox_add" type="submit" value="Save changes" /> or <a href="<?php echo $alkaline->back(); ?>">cancel</a>
+		<input id="shoebox_add" type="submit" value="Save changes" /> or <a href="<?php echo $fsip->back(); ?>">cancel</a>
 	</p>
 </form>
 	
