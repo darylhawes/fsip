@@ -14,6 +14,21 @@ $fsip = new FSIP;
 
 $_POST = array_map('strip_tags', $_POST);
 
+// Check that variables that we plan to use exist or clear them out to avoid PHP warnings.
+if( is_null($_POST['install'])){ $_POST['install'] = ""; }
+if( is_null($_POST['install_db_type'])){ $_POST['install_db_type'] = ""; }
+if( is_null($_POST['install_db_prefix'])){ $_POST['install_db_prefix'] = ""; }
+if( is_null($_POST['install_db_name'])){ $_POST['install_db_name'] = ""; }
+if( is_null($_POST['install_db_user'])){ $_POST['install_db_user'] = ""; }
+if( is_null($_POST['install_db_host'])){ $_POST['install_db_host'] = ""; }
+if( is_null($_POST['install_db_pass'])){ $_POST['install_db_pass'] = ""; }
+if( is_null($_POST['install_db_file'])){ $_POST['install_db_file'] = ""; }
+if( is_null($_POST['install_name'])){ $_POST['install_name'] = ""; }
+if( is_null($_POST['install_user'])){ $_POST['install_user'] = ""; }
+if( is_null($_POST['install_pass'])){ $_POST['install_pass'] = ""; }
+if( is_null($_POST['install_email'])){ $_POST['install_email'] = ""; }
+
+
 // Diagnostic checks
 
 if($fsip->checkPerm(PATH . DB) != '0777'){
@@ -36,7 +51,7 @@ if($fsip->checkPerm(PATH . 'config.php') == '0777'){
 }
 
 // Configuration setup
-if( is_null($_POST['install'])){ $_POST['install'] = ""; }
+
 if(@$_POST['install'] == 'Install'){
 	$type = $_POST['install_db_type'];
 	$name = $_POST['install_db_name'];
@@ -55,7 +70,6 @@ if(@$_POST['install'] == 'Install'){
 		$config = $fsip->replaceVar('$server_type', 'win', $config);
 	}
 	
-	if( is_null($_POST['install_db_type'])){ $_POST['install_db_type'] = ""; }
 	if($_POST['install_db_type'] == 'mysql') {
 		if(empty($name)){
 			$fsip->addNote('A database name is required for MySQL.', 'error');
