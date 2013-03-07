@@ -36,7 +36,7 @@ if($fsip->checkPerm(PATH . 'config.php') == '0777'){
 }
 
 // Configuration setup
-
+if( is_null($_POST['install'])){ $_POST['install'] = ""; }
 if(@$_POST['install'] == 'Install'){
 	$type = $_POST['install_db_type'];
 	$name = $_POST['install_db_name'];
@@ -50,11 +50,13 @@ if(@$_POST['install'] == 'Install'){
 	$config = $fsip->replaceVar('$base', $_POST['install_base'], $config);
 	$config = $fsip->replaceVar('$path', $_POST['install_path'], $config);
 	
-	if($_POST['install_server'] == 'win'){
+	if( is_null($_POST['install_server'])){ $_POST['install_server'] = ""; }
+	if($_POST['install_server'] == 'win') {
 		$config = $fsip->replaceVar('$server_type', 'win', $config);
 	}
 	
-	if($_POST['install_db_type'] == 'mysql'){
+	if( is_null($_POST['install_db_type'])){ $_POST['install_db_type'] = ""; }
+	if($_POST['install_db_type'] == 'mysql') {
 		if(empty($name)){
 			$fsip->addNote('A database name is required for MySQL.', 'error');
 		}
@@ -82,7 +84,7 @@ if(@$_POST['install'] == 'Install'){
 		$config = $fsip->replaceVar('$db_user', $username, $config);
 		$config = $fsip->replaceVar('$db_pass', $password, $config);
 	}
-	elseif($_POST['install_db_type'] == 'sqlite'){
+	elseif($_POST['install_db_type'] == 'sqlite') {
 		if(!empty($_POST['install_db_file'])){
 			$path = $_POST['install_db_file'];
 		}
