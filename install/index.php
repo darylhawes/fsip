@@ -15,18 +15,18 @@ $fsip = new FSIP;
 $_POST = array_map('strip_tags', $_POST);
 
 // Check that variables that we plan to use exist or clear them out to avoid PHP warnings.
-if( is_null($_POST['install'])){ $_POST['install'] = ""; }
-if( is_null($_POST['install_db_type'])){ $_POST['install_db_type'] = ""; }
-if( is_null($_POST['install_db_prefix'])){ $_POST['install_db_prefix'] = ""; }
-if( is_null($_POST['install_db_name'])){ $_POST['install_db_name'] = ""; }
-if( is_null($_POST['install_db_user'])){ $_POST['install_db_user'] = ""; }
-if( is_null($_POST['install_db_host'])){ $_POST['install_db_host'] = ""; }
-if( is_null($_POST['install_db_pass'])){ $_POST['install_db_pass'] = ""; }
-if( is_null($_POST['install_db_file'])){ $_POST['install_db_file'] = ""; }
-if( is_null($_POST['install_name'])){ $_POST['install_name'] = ""; }
-if( is_null($_POST['install_user'])){ $_POST['install_user'] = ""; }
-if( is_null($_POST['install_pass'])){ $_POST['install_pass'] = ""; }
-if( is_null($_POST['install_email'])){ $_POST['install_email'] = ""; }
+if( !isset($_POST['install'])){ $_POST['install'] = ""; }
+if( !isset($_POST['install_db_type'])){ $_POST['install_db_type'] = ""; }
+if( !isset($_POST['install_db_prefix'])){ $_POST['install_db_prefix'] = ""; }
+if( !isset($_POST['install_db_name'])){ $_POST['install_db_name'] = ""; }
+if( !isset($_POST['install_db_user'])){ $_POST['install_db_user'] = ""; }
+if( !isset($_POST['install_db_host'])){ $_POST['install_db_host'] = ""; }
+if( !isset($_POST['install_db_pass'])){ $_POST['install_db_pass'] = ""; }
+if( !isset($_POST['install_db_file'])){ $_POST['install_db_file'] = ""; }
+if( !isset($_POST['install_name'])){ $_POST['install_name'] = ""; }
+if( !isset($_POST['install_user'])){ $_POST['install_user'] = ""; }
+if( !isset($_POST['install_pass'])){ $_POST['install_pass'] = ""; }
+if( !isset($_POST['install_email'])){ $_POST['install_email'] = ""; }
 
 
 // Diagnostic checks
