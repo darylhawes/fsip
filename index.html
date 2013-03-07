@@ -1,73 +1,93 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-
   <head>
-    <meta charset='utf-8' />
-    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="Fsip : fsip - Free Stock Image Project, a micro stock photo/image CMS. Based on Alkaline - A content management system (CMS) for creative professionals." />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>fsip by darylhawes</title>
 
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
-    <title>Fsip</title>
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
   </head>
-
   <body>
+    <div class="wrapper">
+      <header>
+        <h1>fsip</h1>
+        <p>fsip - Free Stock Image Project, a micro stock photo/image CMS. Based on Alkaline - A content management system (CMS) for creative professionals.</p>
+        <p class="view"><a href="https://github.com/darylhawes/fsip">View the Project on GitHub <small>darylhawes/fsip</small></a></p>
+        <ul>
+          <li><a href="https://github.com/darylhawes/fsip/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/darylhawes/fsip/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/darylhawes/fsip">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>FSIP</h1>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/darylhawes/fsip">View on GitHub</a>
+<p>Free Stock Image Project</p>
 
-          <h1 id="project_title">Fsip</h1>
-          <h2 id="project_tagline">fsip - Free Stock Image Project, a micro stock photo/image CMS. Based on Alkaline - A content management system (CMS) for creative professionals.</h2>
+<p>Drag-and-drop uploading, automatic metadata retrieval, and deceptively simple theming are just the beginning. Based on Alkaline.</p>
 
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/darylhawes/fsip/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/darylhawes/fsip/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
+<p>Alkaline was developed by <a href="http://www.budinltd.com/">Budin Ltd.</a> as a commercial PHP content management system from February 2011 to August 2012. It has since been discontinued, and is now available as open source software under the MIT license. A license is no longer required to use the application. You can learn more about Alkaline at <a href="http://www.alkalineapp.com/">alkalineapp.com</a>.</p>
 
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h3>Welcome to GitHub Pages.</h3>
+<h2>Features &amp; Documentation</h2>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+<p>See docs folder in your installation.</p>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
+<h2>Requirements</h2>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+<ul>
+<li>PHP 5.2+ with modules: GD, JSON, PDO (with appropriate database driver), SimpleXML</li>
+<li>A MySQL 5.x or PostgreSQL 8.x database, or SQLite 3.x support</li>
+</ul><p>Unsure if your site is compatible? Use the <a href="/compatibility/">compatibility suite</a> to check your configuration automatically. The site admin installing FSIP should also have rudimentary knowledge of HTML and previous experience transferring files via FTP. Also, additional RAM may need to be allocated to PHP in order for FSIP to process very large images; your Web hosting provider should be able to do this for you if you're unable to do so on your own.</p>
 
-<h3>Designer Templates</h3>
+<h2>Installation</h2>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+<ol>
+<li><p>Download FSIP <a href="https://github.com/darylhawes/fsip">available for free on GitHub</a>.</p></li>
+<li><p>Unpack the archive (usually by double-clicking on it).</p></li>
+<li>
+<p>Use an FTP application to move the contents of the folder <code>fsip/</code> from your computer to your Web site.</p>
 
-<h3>Rather Drive Stick?</h3>
+<ul>
+<li>Set the permissions on the folders: <code>cache/</code>, <code>db/</code>, <code>images/</code>, and <code>shoebox/</code> to <code>0777</code> (read, write, and execute), also set the same permissions to the file <code>config.json</code>
+</li>
+<li>Delete the <code>update/</code> folder</li>
+<li>
+<em>Recommended:</em> Remove the included themes and extesions by deleting the folders within <code>extensions/</code> and <code>themes/</code> (except <code>themes/p1/</code>)</li>
+</ul>
+</li>
+<li><p>Once you're done uploading the files visit the <code>install/</code> directory of your Web site where you installed Alkaline to complete your installation.</p></li>
+</ol><h2>Support</h2>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+<p>No support is offered for this product. "Swim at your own risk."</p>
 
-<h3>Authors and Contributors</h3>
+<h2>Contributing</h2>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+<p>Alkaline is no longer undergoing active development. At this time, no new features will be added, but I encourage users to submit reasonable pull requests that improve its compatibility or reliability.</p>
 
-<h3>Support or Contact</h3>
+<h2>License</h2>
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+<p>The MIT License (MIT)<br>
+Copyright (c) 2010-2012 Budin Ltd.</p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
       </section>
     </div>
-
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">Fsip maintained by <a href="https://github.com/darylhawes">darylhawes</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
-      </footer>
-    </div>
-
+    <footer>
+      <p>Project maintained by <a href="https://github.com/darylhawes">darylhawes</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
               <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
@@ -78,7 +98,6 @@ $ git checkout gh-pages
             pageTracker._trackPageview();
             } catch(err) {}
           </script>
-
 
   </body>
 </html>
