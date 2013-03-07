@@ -1,6 +1,6 @@
 ### Metadata (EXIF, IPTC, and Geolocation)
 
-By default, Alkaline will automatically import all EXIF, IPTC, and geolocation metadata associated with your images when you process them in your **Shoebox**. You will be given a chance to augment, modify, or erase this data before you publish your photos. You can change this behavior by choosing **Settings > Configuration**.
+By default, FSIP will automatically import all EXIF, IPTC, and geolocation metadata associated with your images when you process them in your **Shoebox**. You will be given a chance to augment, modify, or erase this data before you publish your photos. You can change this behavior by choosing **Settings > Configuration**.
 
 ###### EXIF Data
 
@@ -12,4 +12,4 @@ Most applications including Aperture, Lightroom, Photoshop (as well as even basi
 
 ###### Geolocation
 
-If any geolocation data is found during processing, Alkaline will automatically use the best mix of EXIF and IPTC data (as well as its internal geographic database) to determine your image's exact location, and assign it a city name, country name, latitude, and longitude.
+If any geolocation data is found during processing, FSIP will automatically use the best mix of EXIF and IPTC data (as well as its internal geographic database) to determine your image's exact location, and assign it a city name, country name, latitude, and longitude.

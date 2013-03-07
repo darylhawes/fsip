@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<theme xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="theme.xsd" xmlns:p="http://www.alkalineapp.com/themes">
+<theme xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="theme.xsd" xmlns:p="http://fsip.sdelargy.com/themes">
 	<uid>16bd1cd43e9bb4aee7cb81136dece076b8b2176f</uid>
 	<title>Onyx Pro</title>
 	<build>1</build>

@@ -1,16 +1,16 @@
 ### Themes and the Canvas Engine
 
-Alkaline offers full customization of the look-and-feel of your image library. The various elements that make up your Web site's style: typefaces, colors, sizes, images, and so forth collectively are a theme. By changing your Alkaline theme, you instantly alter all of these elements.
+FSIP offers full customization of the look-and-feel of your image library. The various elements that make up your Web site's style: typefaces, colors, sizes, images, and so forth collectively are a theme. By changing your FSIP theme, you instantly alter all of these elements.
 
 ##### Installing Themes
 
-You can download additional themes at the [Alkaline Lounge](/users/). You can install most themes by dragging an extension's folder to your `/themes/` folder, choosing **Configuration > Themes**, and clicking Install Themes. Once your new theme is listed, you can change your theme by choosing **Configuration > Settings**.
+You can install most themes by dragging an extension's folder to your `/themes/` folder, choosing **Configuration > Themes**, and clicking Install Themes. Once your new theme is listed, you can change your theme by choosing **Configuration > Settings**.
 
 ##### Designing A Theme
 
 *Note: Familiarity with HTML and CSS is required to design your own theme. You will only be able to create a theme as complex as your mastery of these markup languages.*
 
-First, take a look at a theme in your `/themes/` folder. Basic themes, including the default theme that ships with Alkaline, are a series of HTML files as well as a CSS and XML file. The HTML files contain the basic layout of the page. The CSS file contains all of the font, color, and positioning rules. The XML file contains information Alkaline needs to import your theme--ignore it for now.
+First, take a look at a theme in your `/themes/` folder. Basic themes, including the default themes that ship with FSIP, are a series of HTML files as well as a CSS and XML file. The HTML files contain the basic layout of the page. The CSS file contains all of the font, color, and positioning rules. The XML file contains information FSIP needs to import your theme -- you should ignore that for now.
 
 Most themes are made up of three files. For example, your theme's home page:
 
@@ -18,11 +18,11 @@ Most themes are made up of three files. For example, your theme's home page:
 - index.html
 - footer.html
 
-Your header.html and footer.html files span across your entire library and are a good place to start.
+Your header.html and footer.html files span across your entire library and are a good place to start customizing.
 
 ###### Insertions
 
-Insertions are the most basic component of your theme. They tell Alkaline where to insert data, and are found between curved brackets, like so: `{Insertion}`. You can optionally specify and if/else statement if the data is unavailable. For example:
+Insertions are the most basic component of your theme. They tell FSIP where to insert data, and are found between curved brackets, like so: `{Insertion}`. You can optionally specify and if/else statement if the data is unavailable. For example:
 
 	{if:Image_Title}
 		{Image_Title}
@@ -51,7 +51,7 @@ Filters modify the data to be inserted and are appear after the insertion, follo
 
 ###### Blocks
 
-Blocks display a series of data in a loop. There are seven major blocks in Alkaline: Comments, Images, Pages, Posts, Sets, Sizes, and Tags. For example:
+Blocks display a series of data in a loop. There are seven major blocks in FSIP: Comments, Images, Pages, Posts, Sets, Sizes, and Tags. For example:
 
 	{block:Images}
 		{Image_Title}
@@ -63,15 +63,15 @@ You can count blocks outside the loop by like so: `{count:Block}`.
 
 ###### PHP Constants
 
-You can access PHP constants (created using `define()`) within templates like so `{define:Constant}`. Alkaline will search for case-matching constants first, then all-uppercase, then all-lowercase.
+You can access PHP constants (created using `define()`) within templates like so `{define:Constant}`. FSIP will search for case-matching constants first, then all-uppercase, then all-lowercase.
 
 ###### Includes
 
-Alkaline lets you include arbitrary HTML, PHP, or other data, like so: `{include:Filename}`.
+FSIP lets you include arbitrary HTML, PHP, or other data, like so: `{include:Filename}`.
 
 ###### Extension Hooks
 
-Hooks tell Alkaline when to execute extensions. Alkaline extension developers can use this functionality to call their extension and execute code, like so: `{hook:Hookname}`.
+Hooks tell FSIP when to execute extensions. FSIP extension developers can use this functionality to call their extension and execute code, like so: `{hook:Hookname}`.
 
 ##### Slideshow
 

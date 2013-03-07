@@ -1,13 +1,13 @@
-### How to Backup Alkaline
+### How to Backup FSIP
 
-You'll need access to both your Web and database data to perform a complete backup of Alkaline.
+You'll need access to both your Web and database data to perform a complete backup of FSIP.
 
 1. Download your Web directory.
 2. Download your database contents.
 
 ##### Download your Web directory
 
-Using an FTP, SFTP, WebDAV or other client, download your entire Alkaline installation. For quicker backups, the essential files are `config.php`, `config.json`, `/extensions`, `/includes`, and `/themes`. Optionally, you may or may not want to backup `/images` (likely the largest directory) depending on whether you have copies of your images elsewhere.
+Using an FTP, SFTP, WebDAV or other client, download your entire FSIP installation. For quicker backups, the essential files are `config.php`, `config.json`, `/extensions`, `/includes`, and `/themes`. Optionally, you may or may not want to backup `/images` (likely the largest directory) depending on whether you have copies of your images elsewhere.
 
 <div class="note">
 	<strong>Tip</strong>
@@ -30,4 +30,4 @@ Go to your Web host&#8217;s control panel and look for an automated method to pe
 
 ###### SQLite
 
-Download the file `/db/alkaline_??????.db`. That&#8217;s it.
+Download the file `/db/fsip_??????.db`. That&#8217;s it.

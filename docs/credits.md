@@ -2,7 +2,9 @@
 
 ##### Developer and publisher
 
-[Budin Ltd.](http://www.budinltd.com/), Brooklyn, NY, USA--Copyright &#0169; 2010-2011, all rights reserved.
+FSIP - Daryl Hawes, UK
+
+Alkaline (which FSIP is derived from) - [Budin Ltd.](http://www.budinltd.com/), Brooklyn, NY, USA--Copyright &#0169; 2010-2012, all rights reserved.
 
 ##### Design elements
 

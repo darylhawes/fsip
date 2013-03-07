@@ -18,8 +18,3 @@ The Alkaline Reference is an auto-generated listing of all classes and methods o
 	- `Pile`
 	- `Stat`
 	- `User`
-
-
-###### Documentation
-
-Proceed to the <a href="/docs">documentation</a>.

@@ -1,7 +1,6 @@
 /*!
- * Alkaline
- * Copyright (c) 2010-2011 by Budin Ltd. All rights reserved.
- * Do not redistribute this code without written permission from Budin Ltd.
+ * FSIP based on Alkaline
+ * Alkaline Copyright (c) 2010-2012 by Budin Ltd. Released to the wild under MIT license.
  * http://www.alkalineapp.com/
  */
 

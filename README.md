@@ -1,27 +1,33 @@
-# Alkaline
+# FSIP
 
-"Finally, a CMS for creative pros. Drag-and-drop uploading, automatic metadata retrieval, and deceptively simple theming are just the beginning. Treat your Web site to Alkaline." 
+Free Stock Image Project
 
-Alkaline was developed by [Budin Ltd.](http://www.budinltd.com/) as a commerical PHP content management system from February 2011 to August 2012. It has since been discontinued, and is now available as open source software. A license is no longer required to use the application.
+Drag-and-drop uploading, automatic metadata retrieval, and deceptively simple theming are just the beginning. Based on Alkaline.
+
+Alkaline was developed by [Budin Ltd.](http://www.budinltd.com/) as a commercial PHP content management system from February 2011 to August 2012. It has since been discontinued, and is now available as open source software under the MIT license. A license is no longer required to use the application. You can learn more about Alkaline at [alkalineapp.com](http://www.alkalineapp.com/).
 
 ## Features & Documentation
 
-You can learn more about Alkaline at [alkalineapp.com](http://www.alkalineapp.com/).
+See docs folder in your installation.
 
 ## Requirements
 
 - PHP 5.2+ with modules: GD, JSON, PDO (with appropriate database driver), SimpleXML
 - A MySQL 5.x or PostgreSQL 8.x database, or SQLite 3.x support
 
+Unsure if your site is compatible? Use the [compatibility suite](/compatibility/) to check your configuration automatically. The site admin installing FSIP should also have rudimentary knowledge of HTML and previous experience transferring files via FTP. Also, additional RAM may need to be allocated to PHP in order for FSIP to process very large images; your Web hosting provider should be able to do this for you if you're unable to do so on your own.
+
+
 ## Installation
 
-1. Download Alkaline.
-2. Unpack the .zip archive (usually by double-clicking on it).
-3. Use an FTP application to move the contents of the folder `alkaline/` from your computer to your Web site.
+1. Download FSIP <a href="https://github.com/darylhawes/fsip">available for free on GitHub</a>.
+
+2. Unpack the archive (usually by double-clicking on it).
+3. Use an FTP application to move the contents of the folder `fsip/` from your computer to your Web site.
 	- Set the permissions on the folders: `cache/`, `db/`, `images/`, and `shoebox/` to `0777` (read, write, and execute), also set the same permissions to the file `config.json`
 	- Delete the `update/` folder
 	- *Recommended:* Remove the included themes and extesions by deleting the folders within `extensions/` and `themes/` (except `themes/p1/`)
-4. Once your done uploading the files, using your Web browser, visit the `install/` directory of your Web site where you installed Alkaline to complete your installation.
+4. Once you're done uploading the files visit the `install/` directory of your Web site where you installed Alkaline to complete your installation.
 
 ## Support
 

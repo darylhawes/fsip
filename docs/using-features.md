@@ -28,7 +28,7 @@ Static sets never change without a user manually adding or removing a photo. Aut
 
 ##### Comments
 
-Comments are user-contributed notes to your photo. They may be positive, negative, constructive, or otherwise. Some may be spam. You can label and remove comments as necessary. To control spam, use the Alkaline Labs' [Akismet]() extension.
+Comments are user-contributed notes to your photo. They may be positive, negative, constructive, or otherwise. Some may be spam. You can label and remove comments as necessary. To control spam you can use the Akismet [Akismet]() extension.
 
 <a href="/images/features/screen5_l.jpg" class="zoom screen_box">
 	<img src="/images/zoom.png" alt="" class="zoom_icon" />
@@ -37,7 +37,7 @@ Comments are user-contributed notes to your photo. They may be positive, negativ
 
 ##### Pages
 
-Pages are static displays of content. Use pages to quickly add information to your Web site. You can use HTML to markup your pages. Alkaline extensions can add new markup languages and other functionality to Pages.
+Pages are static displays of content. Use pages to quickly add information to your Web site. You can use HTML to markup your pages. FSIP extensions can add new markup languages and other functionality to Pages.
 
 ##### Right Sets
 

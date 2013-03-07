@@ -1,14 +1,14 @@
 <?php
 
 /*
-// Alkaline
-// Copyright (c) 2010-2012 by Budin Ltd. Some rights reserved.
+// FSIP based on Alkaline
+// Alkaline Copyright (c) 2010-2012 by Budin Ltd. Released to the wild under MIT license.
 // http://www.alkalineapp.com/
 */
 
 class AlkalineCS{
 	const build = 3;
-	const copyright = 'Powered by <a href="http://www.alkalineapp.com/">Alkaline</a>. Copyright &copy; 2010-2011 by <a href="http://www.budinltd.com/">Budin Ltd.</a> All rights reserved.';
+	const copyright = 'Powered by <a href="http://github.com/darylhawes/fsip">FSIP</a> based on <a href="http://www.alkalineapp.com/">Alkaline</a> under MIT license.';
 	const version = '1.1';
 	
 	public $compatible;

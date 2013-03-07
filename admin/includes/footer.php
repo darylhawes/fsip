@@ -1,7 +1,7 @@
 		</div>
 		<hr class="invisible" />
 		<div id="footer" class="span-24 last">
-			Powered by <a href="http://www.alkalineapp.com/">Alkaline</a>. Copyright &#0169; 2010-2011 by <a href="http://www.budinltd.com/">Budin Ltd.</a> All rights reserved.
+			Powered by <a href="http://github.com/darylhawes/fsip">FSIP</a> based on <a href="http://www.alkalineapp.com/">Alkaline</a> under MIT license.
 			<?php 
 			
 			if(!empty($alkaline)){

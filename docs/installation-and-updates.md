@@ -2,36 +2,34 @@
 
 ##### Installation
 
-Experienced individuals, such as Web developers, should be able to install Alkaline in 5-10 minutes. Novices should allocate as much as an hour.
+Experienced individuals, such as Web developers, should be able to install FSIP pretty quickly. Novices should allocate an hour or more for the process.
 
-1. [Log in](/users/) to your Alkaline Lounge account.
-	- If you don't have one, [create an account](/users/login/) using the same email address you used to purchase Alkaline.
-2. Download Alkaline from the [licenses page](/users/licenses/) in the users lounge.
-3. Unpack the .zip archive by double-clicking on it.
-4. Use an FTP application to move the contents of the folder `/alkaline/` from your computer to your Web site.
+1. Take a deep breath.
+2. Download FSIP from <a href="https://github.com/darylhawes/fsip"> GitHub</a>.
+3. Unpack the archive by double-clicking on it.
+4. Use an FTP application to move the contents of the folder `/fsip/` from your computer to your Web site.
 	- Set the permissions on the folders: `/cache/`, `/db/`, `/images/`, and `/shoebox/` to 777 (read, write, and execute), also set the same permissions to the file `config.json`
 	- Delete the `/update/` folder
-5. Once your done uploading the files, using your Web browser, visit the `/install/` directory of your Web site where you installed Alkaline.
+5. Once your done uploading the files, using your Web browser, visit the `/install/` directory of your Web site where you installed FSIP.
 
-**Having issues?** Try our [troubleshooting](/guide/troubleshooting/) guide.
 
-From here, Alkaline will ask you to supply information to complete the installation. Afterwards, you may want:
+From here, FSIP will ask you to supply information to complete the installation. Afterwards, you may want:
 
-- **To enable vector support,** choose Dashboard > Configuration and enable ImageMagick.
-- **To enable smart URLs,** [read our quick how-to guide](/guide/howto/enable-url-rewriting/).
+- **To enable vector support,** choose Dashboard > Configuration and enable ImageMagick if available.
+- **To enable smart URLs,** [read our quick how-to guide](/docs/howto/enable-url-rewriting.md).
 - **To load the internal geo database,** choose Dashboard > Maintenance and click "Rebuild geographic library".
 
-You should delete the `/install/` folder once you're happy with your new Alkaline installation.
+You should delete the `/install/` folder once you're happy with your new FSIP installation.
 
 ###### Choosing the database type
 
-Alkaline supports [MySQL](http://www.mysql.com/), [PostgreSQL](http://www.postgresql.org/), and [SQLite](http://www.sqlite.org/), but you should only use the database types that were indicated satisfactory in the compatibility suite. (For instance, having access to a PostgreSQL database does not mean you have the PDO driver necessary for Alkaline to utilize it.) When it's available, we recommend choosing MySQL.
+FSIP supports [MySQL](http://www.mysql.com/), [PostgreSQL](http://www.postgresql.org/), and [SQLite](http://www.sqlite.org/), but you should only use the database types that were indicated satisfactory in the compatibility suite. (For instance, having access to a PostgreSQL database does not mean you have the PDO driver necessary for FSIP to utilize it.) When it's available we recommend choosing MySQL.
 
 ###### A quick note on security
 
 Your Web server may allow for more restrictive file and folder permissions than those indicated above. Alkaline only checks for (and warns of) incorrect permissions during installation. If you so desire and your Web server allows, you may make these permissions more restrictive once installed.
 
-If you're using SQLite, you should ensure wherever you located your database file (`alkaline.db`) that it cannot be accessed or downloaded from the outside world. You should move this file to at least one level below the public HTTP directory.
+If you're using SQLite, you should ensure wherever you located your database file (`fsip`) that it cannot be accessed or downloaded from the outside world. You should move this file to at least one level below the public HTTP/public_html directory.
 
 ##### Updates
 
