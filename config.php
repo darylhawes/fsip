@@ -66,4 +66,7 @@ else{
 	define('THEMES', FOLDER_PREFIX . 'themes/');	
 }
 
+define('DOMAIN', $_SERVER['SERVER_NAME']);
+define('LOCATION', 'http://' . DOMAIN);
+
 ?>
