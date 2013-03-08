@@ -1033,7 +1033,7 @@ class Canvas extends FSIP{
 	public function generate(){
 		// Add copyright information
 		$this->assign('Copyright', parent::copyright);
-		$this->assign('Powered_by', 'Powered by <a href="http://github.com/darylhawes/fsip">FSIP</a> based on <a href="http://www.alkalineapp.com/">Alkaline</a> under MIT license. <!-- ' . LICENSE_HASH . ' -->');
+		$this->assign('Powered_by', 'Powered by <a href="http://github.com/darylhawes/fsip">FSIP</a> based on <a href="http://www.alkalineapp.com/">Alkaline</a> under MIT license.');
 		$this->assign('Search_Uri', LOCATION . BASE . 'search' . URL_CAP);
 		$this->assign('Results_Uri', LOCATION . BASE . 'results' . URL_CAP);
 		$this->assign('Atom_Uri', LOCATION . BASE . 'atom' . URL_CAP);
