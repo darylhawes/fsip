@@ -108,7 +108,7 @@ if(preg_match('#iphone|ipad#si', $_SERVER['HTTP_USER_AGENT']) and !isset($_GET['
 				sort($sizes);
 				echo bytes($sizes[0]). '<span class="quiet"> (<a href="../docs/faq.md#file-size-limit-uploads">Why?</a>)</span>';
 				echo "<br /><br />$size_info";
-
+			?>
 		</p>
 
 	</div>
