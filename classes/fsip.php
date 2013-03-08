@@ -421,25 +421,28 @@ class FSIP{
 	 * @return int Number of notifications
 	 */
 	public function countNotes($type=null){
-		if(!empty($type)){
-			$notifications = @$_SESSION['fsip']['notifications'];
-			$count = @count($notifications);
-			if($count > 0){
-				$count = 0;
-				foreach($notifications as $notification){
-					if($notification['type'] == $type){
-						$count++;
+		if( isset($_SESSION['fsip']) && isset($_SESSION['fsip']['notifications'])) {
+			$notifications = @$_SESSION['fsip']['notifications']
+			if(!empty($type)){
+				$notifications = @$_SESSION['fsip']['notifications'];
+				$count = @count($notifications);
+				if($count > 0){
+					$count = 0;
+					foreach($notifications as $notification){
+						if($notification['type'] == $type){
+							$count++;
+						}
 					}
-				}
+					if($count > 0){
+						return $count;
+					}
+				}			
+			}
+			else{
+				$count = @count($_SESSION['fsip']['notifications']);
 				if($count > 0){
 					return $count;
 				}
-			}			
-		}
-		else{
-			$count = @count($_SESSION['fsip']['notifications']);
-			if($count > 0){
-				return $count;
 			}
 		}
 		

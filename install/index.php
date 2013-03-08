@@ -24,6 +24,7 @@ if( !isset($_POST['install_db_host'])){ $_POST['install_db_host'] = ""; }
 if( !isset($_POST['install_db_pass'])){ $_POST['install_db_pass'] = ""; }
 if( !isset($_POST['install_db_port'])){ $_POST['install_db_port'] = ""; }
 if( !isset($_POST['install_db_file'])){ $_POST['install_db_file'] = ""; }
+if( !isset($_POST['install_db_empty'])){ $_POST['install_db_empty'] = ""; }
 if( !isset($_POST['install_name'])){ $_POST['install_name'] = ""; }
 if( !isset($_POST['install_user'])){ $_POST['install_user'] = ""; }
 if( !isset($_POST['install_pass'])){ $_POST['install_pass'] = ""; }
