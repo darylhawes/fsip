@@ -78,13 +78,20 @@ if(preg_match('#iphone|ipad#si', $_SERVER['HTTP_USER_AGENT']) and !isset($_GET['
 		</form>
 	</div>
 	<div class="span-5 append-top last">
+
 		<h3>Status</h3>
-		<p>You have uploaded <span id="upload_count_text">0 files</span>.</p>
-		
+		<p>You have uploaded <span id="upload_count_text">0 files</span> this session.</p>
+				
+		<h3>Instructions</h3>
+		<p>Drag images from a folder on your computer or directly from most applications into the grey retaining area. You can also drag and drop text files to create new posts.</p>
+	
+		<p>You can also browse your computer and select the files you wish to upload by clicking the &#8220;Choose File&#8221; button.</p>
+	
+		<p>Once you&#8217;ve finished uploading, go to your <a href="<?php echo BASE . ADMIN . 'shoebox' . URL_CAP; ?>">shoebox</a> to process your files.</p>
+
 		<h3>File size limit</h3>
 		<p>
 			<?php
-			
 				function bytes($a) {
 					$unim = array("B","KB","MB","GB","TB","PB");
 					$c = 0;
@@ -97,20 +104,13 @@ if(preg_match('#iphone|ipad#si', $_SERVER['HTTP_USER_AGENT']) and !isset($_GET['
 				$sizes = array('post_max_size', 'upload_max_filesize', 'memory_limit');
 				$sizes = array_map('ini_get', $sizes);
 				$sizes = array_map(array($fsip, 'convertToBytes'), $sizes);
+				$size_info = '<span class="max_sizes">Max post: '.bytes($sizes[0])."<br />Max upload: ".bytes($sizes[1])."<br />Max memory: ".bytes($sizes[2])."</span>";
 				sort($sizes);
-				echo bytes($sizes[0]);			
-			?>
-			<span class="quiet"> (<a href="../docs/faq.md#file-size-limit-uploads">Why?</a>)
-			</span>
+				echo bytes($sizes[0]). '<span class="quiet"> (<a href="../docs/faq.md#file-size-limit-uploads">Why?</a>)</span>';
+				echo "<br /><br />$size_info";
 
 		</p>
-		
-		<h3>Instructions</h3>
-		<p>Drag images from a folder on your computer or directly from most applications into the grey retaining area. You can also drag and drop text files to create new posts.</p>
-	
-		<p>You can also browse your computer and select the files you wish to upload by clicking the &#8220;Choose File&#8221; button.</p>
-	
-		<p>Once you&#8217;ve finished uploading, go to your <a href="<?php echo BASE . ADMIN . 'shoebox' . URL_CAP; ?>">shoebox</a> to process your files.</p>
+
 	</div>
 </div>
 
