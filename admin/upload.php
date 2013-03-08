@@ -85,18 +85,24 @@ if(preg_match('#iphone|ipad#si', $_SERVER['HTTP_USER_AGENT']) and !isset($_GET['
 		<p>
 			<?php
 			
-			$sizes = array('post_max_size', 'upload_max_filesize', 'memory_limit');
-			$sizes = array_map('ini_get', $sizes);
-			$sizes = array_map(array($fsip, 'convertToBytes'), $sizes);
-			sort($sizes);
-			
-			echo str_replace(array('000000000', '000000', '000000'), array('GB', 'MB', 'KB'), $sizes[0]);
-			
+				function bytes($a) {
+					$unim = array("B","KB","MB","GB","TB","PB");
+					$c = 0;
+					while ($a>=1024) {
+						$c++;
+						$a = $a/1024;
+					}
+					return number_format($a,($c ? 2 : 0),".",".").$unim[$c];
+				}
+				$sizes = array('post_max_size', 'upload_max_filesize', 'memory_limit');
+				$sizes = array_map('ini_get', $sizes);
+				$sizes = array_map(array($alkaline, 'convertToBytes'), $sizes);
+				sort($sizes);
+				echo bytes($sizes[0]);			
 			?>
-<!-- DEH - remove dead link to missing guide
-			<span class="quiet">(<a href="http://www.alkalineapp.com/guide/faq/#file-size-limit-uploads">Why?</a>)
+			<span class="quiet"> (<a href="../docs/faq.md#file-size-limit-uploads">Why?</a>)
 			</span>
--->
+
 		</p>
 		
 		<h3>Instructions</h3>
