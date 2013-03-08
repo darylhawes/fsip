@@ -122,7 +122,8 @@ class User extends FSIP{
 	 */
 	private function prep($remember=false){
 		// Delete extra users on standard licenses
-		$this->deleteDisallowedUsers();
+		// DEH - remove commercial feature limitations
+		// $this->deleteDisallowedUsers();
 		
 		// If overlapping users exist, destroy object
 		if(count($this->user) != 1){
