@@ -96,7 +96,7 @@ if(preg_match('#iphone|ipad#si', $_SERVER['HTTP_USER_AGENT']) and !isset($_GET['
 				}
 				$sizes = array('post_max_size', 'upload_max_filesize', 'memory_limit');
 				$sizes = array_map('ini_get', $sizes);
-				$sizes = array_map(array($alkaline, 'convertToBytes'), $sizes);
+				$sizes = array_map(array($fsip, 'convertToBytes'), $sizes);
 				sort($sizes);
 				echo bytes($sizes[0]);			
 			?>
