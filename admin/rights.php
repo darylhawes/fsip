@@ -43,7 +43,7 @@ if(!empty($_POST['right_id'])){
 	// Delete rights set
 	if(!empty($_POST['right_delete']) and ($_POST['right_delete'] == 'delete')){
 		if($right->delete()){
-			$fsip->addNote('The right set has been deleted.', 'success');
+			$fsip->addNote('The rights set has been deleted.', 'success');
 		}
 	}
 	elseif(!empty($_POST['right_recover']) and ($_POST['right_recover'] == 'recover')){
@@ -102,16 +102,16 @@ if(empty($right_id)){
 	
 	$rights = new Right($right_ids);
 	
-	define('TITLE', 'Right Sets');
+	define('TITLE', 'Rights Sets');
 	require_once(PATH . ADMIN . 'includes/header.php');
 	
 	?>
 	
 	<div class="actions"><a href="<?php echo BASE . ADMIN . 'rights' . URL_ACT . 'add' . URL_RW; ?>"><button>Add rights set</button></a></div>
 
-	<h1><img src="<?php echo BASE . ADMIN; ?>images/icons/rights.png" alt="" /> Right Sets (<?php echo $rights->right_count; ?>)</h1>
+	<h1><img src="<?php echo BASE . ADMIN; ?>images/icons/rights.png" alt="" /> Rights Sets (<?php echo $rights->right_count; ?>)</h1>
 	
-	<p>Right sets clarify which copyrights you retain on your images to discourage illicit use.</p>
+	<p>Rights sets clarify which copyrights you retain on your images to discourage illicit use.</p>
 	
 	<p>
 		<input type="search" name="filter" placeholder="Filter" class="s" results="0" />
@@ -157,7 +157,7 @@ else{
 	$right = $fsip->makeHTMLSafe($right);
 
 	if(!empty($right['right_title'])){	
-		define('TITLE', 'Right Set: &#8220;' . $right['right_title']  . '&#8221;');
+		define('TITLE', 'Rights Set: &#8220;' . $right['right_title']  . '&#8221;');
 	}
 	require_once(PATH . ADMIN . 'includes/header.php');
 
@@ -168,10 +168,10 @@ else{
 	<?php
 	
 	if(empty($right['right_title'])){
-		echo '<h1><img src="' . BASE . ADMIN . 'images/icons/rights.png" alt="" /> New Right Set</h1>';
+		echo '<h1><img src="' . BASE . ADMIN . 'images/icons/rights.png" alt="" /> New Rights Set</h1>';
 	}
 	else{
-		echo '<h1><img src="' . BASE . ADMIN . 'images/icons/rights.png" alt="" /> Right Set: ' . $right['right_title'] . '</h1>';
+		echo '<h1><img src="' . BASE . ADMIN . 'images/icons/rights.png" alt="" /> Rights Set: ' . $right['right_title'] . '</h1>';
 	}
 	
 	?>
