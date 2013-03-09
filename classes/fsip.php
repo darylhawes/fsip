@@ -42,27 +42,26 @@ class FSIP {
 	 *
 	 * @return void
 	 **/
-	public function __construct(){
+	public function __construct() {
 		// Set error handlers
 		set_error_handler(array($this, 'addError'), E_ALL);
 		set_exception_handler(array($this, 'addException'));
 		
 		// Set error reporting
-		if(ini_get('error_reporting') > 30719){
+		if (ini_get('error_reporting') > 30719) {
 			error_reporting(E_ALL);
 		}
 				
 		// Disable magic_quotes
-		if(get_magic_quotes_gpc()){
+		if (get_magic_quotes_gpc()) {
 			$process = array(&$_GET, &$_POST, &$_COOKIE, &$_REQUEST);
-			while(list($key, $val) = each($process)){
-				foreach($val as $k => $v){
+			while(list($key, $val) = each($process)) {
+				foreach($val as $k => $v) {
 					unset($process[$key][$k]);
-					if(is_array($v)){
+					if(is_array($v)) {
 						$process[$key][stripslashes($k)] = $v;
 						$process[] = &$process[$key][stripslashes($k)];
-					}
-					else{
+					} else {
 						$process[$key][stripslashes($k)] = stripslashes($v);
 					}
 				}
@@ -74,31 +73,30 @@ class FSIP {
 		$class = get_class($this);
 		
 		// Begin a session, if one does not yet exist
-		if(session_id() == ''){ session_start(); }
+		if (session_id() == '') { session_start(); }
 		
 		// Debug info
 		$chief_classes = array('FSIP', 'XMLRPC');
-		if(in_array(get_class($this), $chief_classes)){
+		if (in_array(get_class($this), $chief_classes)) {
 			// Send browser headers
-			if(!headers_sent()){
+			if (!headers_sent()) {
 				header('Cache-Control: no-cache, must-revalidate', false);
 				header('Expires: Sat, 26 Jul 1997 05:00:00 GMT', false);
 			}
 			
 			$_SESSION['fsip']['debug']['start_time'] = microtime(true);
 			$_SESSION['fsip']['debug']['queries'] = 0;
-			if($contents = file_get_contents($this->correctWinPath(PATH . 'config.json'))){
+			if ($contents = file_get_contents($this->correctWinPath(PATH . 'config.json'))) {
 				$_SESSION['fsip']['config'] = json_decode($contents, true);
 			}	
 			
-			if(empty($_SESSION['fsip']['config'])){
+			if (empty($_SESSION['fsip']['config'])) {
 				$_SESSION['fsip']['config'] = array();
 			}
 			
-			if($timezone = $this->returnConf('web_timezone')){
+			if ($timezone = $this->returnConf('web_timezone')) {
 				date_default_timezone_set($timezone);
-			}
-			else{
+			} else {
 				date_default_timezone_set('GMT');
 			}
 		}
@@ -109,60 +107,56 @@ class FSIP {
 		$this->tables_index = array('comments', 'images', 'pages', 'posts', 'rights', 'sets', 'tags');
 		
 		// Check if in Dashboard
-		if(strpos($_SERVER['SCRIPT_FILENAME'], PATH . ADMIN) === 0){
+		if (strpos($_SERVER['SCRIPT_FILENAME'], PATH . ADMIN) === 0) {
 			$this->adminpath = true;
 		}
 		
 		// Set back link
-		if(!empty($_SERVER['HTTP_REFERER']) and ($_SERVER['HTTP_REFERER'] != LOCATION . $_SERVER['REQUEST_URI'])){
+		if (!empty($_SERVER['HTTP_REFERER']) and ($_SERVER['HTTP_REFERER'] != LOCATION . $_SERVER['REQUEST_URI'])) {
 			$_SESSION['fsip']['back'] = $_SERVER['HTTP_REFERER'];
 		} 
 		
 		// Initiate database connection, if necessary
 		$no_db_classes = array('Canvas');
 		
-		if(!in_array($class, $no_db_classes)){
-			if(defined('DB_TYPE') and defined('DB_DSN')){
+		if (!in_array($class, $no_db_classes)) {
+			if (defined('DB_TYPE') and defined('DB_DSN')) {
 				// Determine database type
 				$this->db_type = DB_TYPE;
 		
-				if($this->db_type == 'mssql'){
+				if ($this->db_type == 'mssql') {
 					// $this->db = new PDO(DB_DSN);
-				}
-				elseif($this->db_type == 'mysql'){
+				} elseif($this->db_type == 'mysql') {
 					$this->db = new PDO(DB_DSN, DB_USER, DB_PASS, array(PDO::ATTR_PERSISTENT => true, PDO::FETCH_ASSOC => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT));
-				}
-				elseif($this->db_type == 'pgsql'){
+				} elseif($this->db_type == 'pgsql') {
 					$this->db = new PDO(DB_DSN, DB_USER, DB_PASS);
 					$this->db->setAttribute(PDO::ATTR_ORACLE_NULLS, PDO::NULL_EMPTY_STRING);
-				}
-				elseif($this->db_type == 'sqlite'){
+				} elseif($this->db_type == 'sqlite') {
 					$this->db = new PDO(DB_DSN, null, null, array(PDO::ATTR_PERSISTENT => false, PDO::FETCH_ASSOC => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT));
-			
 					$this->db->sqliteCreateFunction('ACOS', 'acos', 1);
 					$this->db->sqliteCreateFunction('COS', 'cos', 1);
 					$this->db->sqliteCreateFunction('RADIANS', 'deg2rad', 1);
 					$this->db->sqliteCreateFunction('SIN', 'sin', 1);
 				}
 				
-				if(is_object($this->db)){
+				if (is_object($this->db)) {
 					$this->db_version = $this->db->getAttribute(PDO::ATTR_SERVER_VERSION);
 				}
 			}
 		}
 		
 		// Delete saved Orbit extension session references
-		if($class == 'FSIP'){
+		if ($class == 'FSIP') {
 			unset($_SESSION['fsip']['extensions']);
 			
 			// Log-in guests via cookie
-			if(!empty($_COOKIE['guest_key']) and !empty($_COOKIE['guest_id']) and empty($_SESSION['fsip']['guest'])){
+			if (!empty($_COOKIE['guest_key']) and !empty($_COOKIE['guest_id']) and empty($_SESSION['fsip']['guest'])) {
 				$query = $this->prepare('SELECT * FROM guests WHERE guest_id = :guest_id LIMIT 0, 1;');
 				$query->execute(array(':guest_id' => $_COOKIE['guest_id']));
 				$guests = $query->fetchAll();
 				$guest = $guests[0];
 				
-				if($_COOKIE['guest_key'] == sha1(PATH . BASE . DB_DSN . DB_TYPE . $guest['guest_key'])){
+				if ($_COOKIE['guest_key'] == sha1(PATH . BASE . DB_DSN . DB_TYPE . $guest['guest_key'])) {
 					$this->access($guest['guest_key']);
 				}
 			}
@@ -174,7 +168,7 @@ class FSIP {
 	 *
 	 * @return void
 	 **/
-	public function __destruct(){
+	public function __destruct() {
 		$this->db = null;
 	}
 	
@@ -186,8 +180,8 @@ class FSIP {
 	 * @param string $query Query
 	 * @return int Number of affected rows
 	 */
-	public function exec($query){
-		if(!$this->db){ $this->addError(E_USER_ERROR, 'No database connection'); }
+	public function exec($query) {
+		if (!$this->db) { $this->addError(E_USER_ERROR, 'No database connection'); }
 		
 		$this->prequery($query);
 		$response = $this->db->exec($query);
@@ -202,8 +196,8 @@ class FSIP {
 	 * @param string $query Query
 	 * @return PDOStatement
 	 */
-	public function prepare($query){
-		if(!$this->db){ $this->addError(E_USER_ERROR, 'No database connection'); }
+	public function prepare($query) {
+		if (!$this->db) { $this->addError(E_USER_ERROR, 'No database connection'); }
 		
 		$this->prequery($query);
 		$response = $this->db->prepare($query, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
@@ -220,10 +214,10 @@ class FSIP {
 	 * @param string $query Query
 	 * @return string Translated query
 	 */
-	public function prequery(&$query){
+	public function prequery(&$query) {
 		$_SESSION['fsip']['debug']['queries']++;
 		
-		if(TABLE_PREFIX != ''){
+		if (TABLE_PREFIX != '') {
 			// Add table prefix
 			$query = preg_replace('#(FROM|JOIN)\s+([\sa-z0-9_\-,]*)\s*(WHERE|GROUP|HAVING|ORDER)?#se', "'\\1 '.FSIP::appendTablePrefix('\\2').' \\3'", $query);
 			$query = preg_replace('#([a-z]+[a-z0-9-\_]*)\.#si', TABLE_PREFIX . '\\1.', $query);
@@ -231,7 +225,7 @@ class FSIP {
 			$query = preg_replace('#TABLE ([[:punct:]]*)(\w+)#s', 'TABLE \\1' . TABLE_PREFIX . '\\2', $query);
 		}
 		
-		if($this->db_type == 'mssql'){
+		if ($this->db_type == 'mssql') {
 			/*
 			preg_match('#GROUP BY (.*) ORDER BY#si', $query, $match);
 			$find = @$match[0];
@@ -253,15 +247,13 @@ class FSIP {
 				$query = 'SELECT * FROM (' . $query . ') AS temp WHERE temp.row_number > ' . $offset . ' AND temp.row_number <= ' . ($offset + $limit);
 			}
 			*/
-		}
-		elseif($this->db_type == 'pgsql'){
+		} elseif($this->db_type == 'pgsql') {
 			$query = preg_replace('#LIMIT[[:space:]]+([0-9]+),[[:space:]]*([0-9]+)#si', 'LIMIT \2 OFFSET \1', $query);
 			$query = str_replace('HOUR(', 'EXTRACT(HOUR FROM ', $query);
 			$query = str_replace('DAY(', 'EXTRACT(DAY FROM ', $query);
 			$query = str_replace('MONTH(', 'EXTRACT(MONTH FROM ', $query);
 			$query = str_replace('YEAR(', 'EXTRACT(YEAR FROM ', $query);
-		}
-		elseif($this->db_type == 'sqlite'){
+		} elseif($this->db_type == 'sqlite') {
 			$query = str_replace('HOUR(', 'strftime("%H",', $query);
 			$query = str_replace('DAY(', 'strftime("%d",', $query);
 			$query = str_replace('MONTH(', 'strftime("%m",', $query);
@@ -277,15 +269,14 @@ class FSIP {
 	 * @param string $tables Comma-separated tables
 	 * @return string Comma-separated tables
 	 */
-	protected function appendTablePrefix($tables){
-		if(strpos($tables, ',') === false){
+	protected function appendTablePrefix($tables) {
+		if (strpos($tables, ',') === false) {
 			$tables = trim($tables);
 			$tables = TABLE_PREFIX . $tables;
-		}
-		else{
+		} else {
 			$tables = explode(',', $tables);
 			$tables = array_map('trim', $tables);
-			foreach($tables as &$table){
+			foreach($tables as &$table) {
 				$table = TABLE_PREFIX . $table;
 			}
 			$tables = implode(', ', $tables);
@@ -300,23 +291,21 @@ class FSIP {
 	 * @param string $db 
 	 * @return bool True if successful
 	 */
-	public function postquery(&$query, $db=null){
-		if(empty($db)){ $db = $this->db; }
+	public function postquery(&$query, $db=null) {
+		if (empty($db)) { $db = $this->db; }
 		
 		$error = $db->errorInfo();
 		
-		if(isset($error[2])){
+		if (isset($error[2])) {
 			$code = $error[0];
 			$message = $query . ' ' . ucfirst(preg_replace('#^Error\:[[:space:]]+#si', '', $error[2])) . ' (' . $code . ').';
 			
-			if(substr($code, 0, 2) == '00'){
+			if (substr($code, 0, 2) == '00') {
 				$this->report($message, $code);
-			}
-			elseif($code == '23000'){
+			} elseif($code == '23000') {
 				$this->report($message, $code);
 				return false;
-			}
-			else{
+			} else {
 				$this->report($message, $code);
 				return false;
 			}
@@ -331,7 +320,7 @@ class FSIP {
 	 * @param string $input JSON input
 	 * @return string JSON ouput
 	 */
-	public function removeNull($input){
+	public function removeNull($input) {
 		return str_replace(':null', ':""', $input);
 	}
 	
@@ -363,12 +352,12 @@ class FSIP {
 	 * @param string $key Guest access key
 	 * @return void Redirects if unsuccessful
 	 */
-	public function access($key=null){
+	public function access($key=null) {
 		// Logout
 		unset($_SESSION['fsip']['guest']);
 		
 		// Error checking
-		if(empty($key)){
+		if (empty($key)) {
 			setcookie('guest_id', false, time()+$seconds, '/');
 			setcookie('guest_key', false, time()+$seconds, '/');
 			return false; 
@@ -381,11 +370,11 @@ class FSIP {
 		$guests = $query->fetchAll();
 		$guest = $guests[0];
 		
-		if(!$guest){
+		if (!$guest) {
 			$this->addError('Guest not found.', 'You are not authorized for this material.', null, null, 401);
 		}
 		
-		if($this->returnConf('guest_remember')){
+		if ($this->returnConf('guest_remember')) {
 			$seconds = $this->returnConf('guest_remember_time');
 			$key = sha1(PATH . BASE . DB_DSN . DB_TYPE . $guest['guest_key']);
 			setcookie('guest_id', $guest['guest_id'], time()+$seconds, '/');
@@ -398,47 +387,47 @@ class FSIP {
 	// NOTIFICATIONS
 	
 	/**
-	 * Add a notification
+	 * Add a notification to the current $_SESSION. These notifications are displayed
+	 * to the user with a call to returnNotes().
 	 *
 	 * @param string $message Message
 	 * @param string $type Notification type (usually 'success', 'error', or 'notice')
 	 * @return void
 	 */
-	public function addNote($message, $type=null){
+	public function addNote($message, $type=null) {
 		$message = strval($message);
 		$type = strval($type);
 		
-		if(!empty($message)){
+		if (!empty($message)) {
 			$_SESSION['fsip']['notifications'][] = array('message' => $message, 'type' => $type);
 		}
 	}
 	
 	/**
-	 * Check notifications
+	 * Check on number of notifications stored in the current $_SESSION
 	 *
 	 * @param string $type Notification type
 	 * @return int Number of notifications
 	 */
 	public function countNotes($type=null) {
 		if ( isset($_SESSION['fsip']) && isset($_SESSION['fsip']['notifications']) ) {
-			if (!empty($type)){
+			if (!empty($type)) {
 				$notifications = @$_SESSION['fsip']['notifications'];
 				$count = @count($notifications);
-				if($count > 0){
+				if ($count > 0) {
 					$count = 0;
-					foreach($notifications as $notification){
-						if($notification['type'] == $type){
+					foreach($notifications as $notification) {
+						if ($notification['type'] == $type) {
 							$count++;
 						}
 					}
-					if($count > 0){
+					if ($count > 0) {
 						return $count;
 					}
 				}			
-			}
-			else {
+			} else {
 				$count = @count($_SESSION['fsip']['notifications']);
-				if($count > 0){
+				if ($count > 0) {
 					return $count;
 				}
 			}
@@ -448,7 +437,7 @@ class FSIP {
 	}
 	
 	/**
-	 * View notifications
+	 * Return a string of the notifications currently in the $_SESSION and then remove them.
 	 *
 	 * @param string $type Notification type
 	 * @return string HTML-formatted notifications 
@@ -464,17 +453,17 @@ class FSIP {
 		
 		// Determine unique types
 		$types = array();
-		foreach($_SESSION['fsip']['notifications'] as $notifications){
+		foreach($_SESSION['fsip']['notifications'] as $notifications) {
 			$types[] = $notifications['type'];
 		}
 		$types = array_unique($types);
 		
 		// Produce HTML for display
-		foreach($types as $type){
+		foreach($types as $type) {
 			$return = '<p class="' . $type . '">';
 			$messages = array();
-			foreach($_SESSION['fsip']['notifications'] as $notification){
-				if($notification['type'] == $type){
+			foreach($_SESSION['fsip']['notifications'] as $notification) {
+				if ($notification['type'] == $type) {
 					$messages[] = $notification['message'];
 				}
 			}
@@ -499,9 +488,9 @@ class FSIP {
 	 * @param string $ext File extensions to seek
 	 * @return array Full paths of files
 	 */
-	public function seekDirectory($dir=null, $ext=IMG_EXT){
+	public function seekDirectory($dir=null, $ext=IMG_EXT) {
 		// Error checking
-		if(empty($dir)){
+		if (empty($dir)) {
 			return false;
 		}
 		
@@ -515,8 +504,8 @@ class FSIP {
 		$handle = opendir($dir);
 		
 		// Seek directory
-		while($filename = readdir($handle)){
-			if(!in_array($filename, $ignore)){ 
+		while($filename = readdir($handle)) {
+			if (!in_array($filename, $ignore)) { 
 				// Recusively check directories
 				/*
 				if(is_dir($dir . '/' . $filename)){
@@ -524,13 +513,12 @@ class FSIP {
 				}
 				*/
 				
-				if(!empty($ext)){
+				if (!empty($ext)) {
 					// Find files with proper extensions
-					if(preg_match('#^([^\.]+.*\.(' . $ext . '){1,1})$#si', $filename)){
+					if (preg_match('#^([^\.]+.*\.(' . $ext . '){1,1})$#si', $filename)) {
 						$files[] = $dir . $filename;
 					}
-				}
-				else{
+				} else {
 					$files[] = $dir . $filename;
 				}
 			}
@@ -549,9 +537,9 @@ class FSIP {
 	 * @param string $ext File extensions to seek
 	 * @return int Number of files
 	 */
-	public function countDirectory($dir=null, $ext=IMG_EXT){
+	public function countDirectory($dir=null, $ext=IMG_EXT) {
 		// Error checking
-		if(empty($dir)){
+		if (empty($dir)) {
 			return false;
 		}
 		
@@ -566,7 +554,7 @@ class FSIP {
 	 * @param string $file Full or relative file path
 	 * @return string|false Filename (including extension) or error
 	 */
-	public function getFilename($file){
+	public function getFilename($file) {
 		$matches = array();
 		
 		// Windows cheat
@@ -574,13 +562,13 @@ class FSIP {
 		
 		preg_match('#^(.*/)?(?:$|(.+?)(?:(\.[^.]*$)|$))#si', $file, $matches);
 		
-		if(count($matches) < 1){
+		if (count($matches) < 1) {
 			return false;
 		}
 		
 		$filename = $matches[2];
 		
-		if(isset($matches[3])){
+		if (isset($matches[3])) {
 			$filename .= $matches[3];
 		}
 		
@@ -588,20 +576,20 @@ class FSIP {
 	}
 	
 	/**
-	 * Empty a directory
+	 * Delete a directory and its contents.
 	 *
 	 * @param string $dir Full path to directory
 	 * @param bool $recursive Delete subdirectories
 	 * @param int $age Delete contents older than $age seconds old
 	 * @return void
 	 */
-	public function emptyDirectory($dir=null, $recursive=true, $age=0){
+	public function emptyDirectory($dir=null, $recursive=true, $age=0) {
 		// Error checking
-		if(empty($dir)){
+		if (empty($dir)) {
 			return false;
 		}
 		
-		if($age != 0){
+		if ($age != 0) {
 			$now = time();
 		}
 		
@@ -611,15 +599,14 @@ class FSIP {
 		$handle = opendir($dir);
 		
 		// Seek directory
-		while($filename = readdir($handle)){
-			if(!in_array($filename, $ignore)){
+		while($filename = readdir($handle)) {
+			if (!in_array($filename, $ignore)) {
 				// Delete directories
-				if(is_dir($dir . '/' . $filename) and ($recursive !== false)){
+				if (is_dir($dir . '/' . $filename) and ($recursive !== false)) {
 					self::emptyDirectory($dir . $filename . '/');
 					@rmdir($dir . $filename . '/');
-				}
-				// Delete files
-				else{
+				} else {
+					// Delete files
 					if($age != 0){
 						if($now < (filemtime($dir . $filename) + $age)){
 							continue;
@@ -641,7 +628,7 @@ class FSIP {
 	 * @param string $file Full path to file
 	 * @return string Octal value (e.g., 0644)
 	 */
-	public function checkPerm($file){
+	public function checkPerm($file) {
 		return substr(sprintf('%o', @fileperms($file)), -4);
 	}
 	
@@ -653,7 +640,7 @@ class FSIP {
 	 * @param string $subject Subject input
 	 * @return string Subject output
 	 */
-	public function replaceVar($var, $replacement, $subject){
+	public function replaceVar($var, $replacement, $subject) {
 		$replacement = str_replace('\\', '\\\\\\\\', $replacement);
 		return preg_replace('#^\s*(' . str_replace('$', '\$', $var) . ')\s*=(.*)$#mi', '\\1 = \'' . $replacement . '\';', $subject);
 	}
@@ -667,15 +654,13 @@ class FSIP {
 	 * @param mixed $default Return if unknown
 	 * @return boolean
 	 */
-	public function convertToBool(&$input, $default=''){
-		if(is_bool($input)){
+	public function convertToBool(&$input, $default='') {
+		if (is_bool($input)) {
 			return $input;
-		}
-		elseif(is_string($input)){
-			if($input == 'true'){
+		} elseif(is_string($input)) {
+			if($input == 'true') {
 				return true;
-			}
-			elseif($input == 'false'){
+			} elseif($input == 'false') {
 				return false;
 			}
 		}
@@ -689,18 +674,16 @@ class FSIP {
 	 * @param mixed $input
 	 * @return array
 	 */
-	public function convertToArray(&$input){
-		if(is_string($input)){
+	public function convertToArray(&$input) {
+		if (is_string($input)) {
 			$find = strpos($input, ',');
-			if($find === false){
+			if ($find === false) {
 				$input = array($input);
-			}
-			else{
+			} else {
 				$input = explode(',', $input);
 				$input = array_map('trim', $input);
 			}
-		}
-		elseif(is_int($input)){
+		} elseif(is_int($input)) {
 			$input = array($input);
 		}
 		return $input;
@@ -712,16 +695,14 @@ class FSIP {
 	 * @param mixed $input 
 	 * @return array
 	 */
-	public function convertToIntegerArray(&$input){
-		if(is_int($input)){
+	public function convertToIntegerArray(&$input) {
+		if (is_int($input)) {
 			$input = array($input);
-		}
-		elseif(is_string($input)){
+		} elseif(is_string($input)) {
 			$find = strpos($input, ',');
-			if($find === false){
+			if ($find === false) {
 				$input = array(intval($input));
-			}
-			else{
+			} else {
 				$input = explode(',', $input);
 				$input = array_map('trim', $input);
 			}
@@ -735,22 +716,36 @@ class FSIP {
 	 * @param mixed $input 
 	 * @return array
 	 */
-	public function convertToBytes(&$input){
-		if(is_string($input)){
-			if(stripos($input, 'K') !== false){
+	public function convertToBytes(&$input) {
+		if (is_string($input)) {
+			if (stripos($input, 'K') !== false) {
 				$input = intval($input) * 1000;
-			}
-			elseif(stripos($input, 'M') !== false){
+			} elseif (stripos($input, 'M') !== false) {
 				$input = intval($input) * 1000000;
-			}
-			elseif(stripos($input, 'G') !== false){
+			} elseif (stripos($input, 'G') !== false) {
 				$input = intval($input) * 1000000000;
 			}
 		}
 		
 		return intval($input);
 	}
-	
+
+	/**
+	 * Convert the bytes converted PHP configuration string to shortened string
+	 *
+	 * @param mixed $input 
+	 * @return array
+	 */
+	function convertBytesToShortString($a) {
+		$unim = array("B","KB","MB","GB","TB","PB");
+		$c = 0;
+		while ($a>=1024) {
+			$c++;
+			$a = $a/1024;
+		}
+		return number_format($a,($c ? 2 : 0),".",".").$unim[$c];
+	}	
+
 	/**
 	 * Change filename extension
 	 *

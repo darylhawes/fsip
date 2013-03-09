@@ -92,19 +92,12 @@ if(preg_match('#iphone|ipad#si', $_SERVER['HTTP_USER_AGENT']) and !isset($_GET['
 		<h3>File size limit</h3>
 		<p>
 			<?php
-				function bytes($a) {
-					$unim = array("B","KB","MB","GB","TB","PB");
-					$c = 0;
-					while ($a>=1024) {
-						$c++;
-						$a = $a/1024;
-					}
-					return number_format($a,($c ? 2 : 0),".",".").$unim[$c];
-				}
+
 				$sizes = array('post_max_size', 'upload_max_filesize', 'memory_limit');
 				$sizes = array_map('ini_get', $sizes);
 				$sizes = array_map(array($fsip, 'convertToBytes'), $sizes);
-				$size_info = '<span class="max_sizes">Max post: '.bytes($sizes[0])."<br />Max upload: ".bytes($sizes[1])."<br />Max memory: ".bytes($sizes[2])."</span>";
+				$sizes = array_map(array($fsip, 'convertBytesToShortString'), $sizes);
+				$size_info = '<span class="max_sizes">Max post: '.$sizes[0]."<br />Max upload: ".$sizes[1]."<br />Max memory: ".$sizes[2]."</span>";
 				sort($sizes);
 				echo bytes($sizes[0]). '<span class="quiet"> (<a href="../docs/faq.md#file-size-limit-uploads">Why?</a>)</span>';
 				echo "<br /><br />$size_info";
