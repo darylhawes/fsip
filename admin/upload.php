@@ -93,15 +93,15 @@ if(preg_match('#iphone|ipad#si', $_SERVER['HTTP_USER_AGENT']) and !isset($_GET['
 		<p>
 			<?php
 
-				$sizes = array('post_max_size', 'upload_max_filesize', 'memory_limit');
-				$sizes = array_map('ini_get', $sizes);
-
-				$smallestSize = $sizes;
+				$smallestSize = array('post_max_size', 'upload_max_filesize', 'memory_limit');
+				$smallestSize = array_map('ini_get', $smallestSize);
 				$smallestSize = array_map(array($fsip, 'convertToBytes'), $smallestSize);
+				sort($smallestSize); //sort the numbers before converting back to a string
 				$smallestSize = array_map(array($fsip, 'convertBytesToShortString'), $smallestSize);
-				sort($smallestSize); 
 				echo $smallestSize[0]. '<span class="quiet"> (<a href="../docs/faq.md#file-size-limit-uploads">Why?</a>)</span>';
 
+				$sizes = array('post_max_size', 'upload_max_filesize', 'memory_limit');
+				$sizes = array_map('ini_get', $sizes);
 				$sizes = array_map(array($fsip, 'convertToBytes'), $sizes);
 				$sizes = array_map(array($fsip, 'convertBytesToShortString'), $sizes);
 				$size_info = '<span class="max_sizes">Max post: '.$sizes[0]."<br />Max upload: ".$sizes[1]."<br />Max memory: ".$sizes[2]."</span>";
