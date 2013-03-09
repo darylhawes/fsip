@@ -1,9 +1,10 @@
 ### Frequently Asked Questions
-
 <h5>General</h5>
-
 <ul>
-	<li><a href="#how-much">How much does FSIP/Alkaline cost?</a></li>
+	<li><a href="#what-is">What is FSIP?</a></li>
+	<li><a href="#who-uses">Who uses FSIP?</a></li>
+	<li><a href="#why-choose">Why choose FSIP?</a></li>
+	<li><a href="#how-much">How much does FSIP cost?</a></li>
 	<li><a href="#why-web-site">Why do I need my own Web site?</a></li>
 	<li><a href="#how-difficult">How difficult is it to install? Can I do it myself?</a></li>
 	<li><a href="#how-many-images">How many images can my library contain?</a></li>
@@ -32,8 +33,19 @@
 <hr />
 
 ##### General
+<h6 id="what-is">What is FSIP?</h6>
 
-<h6 id="how-much">How much does FSIP/Alkaline cost?</h6>
+<p>FSIP is an application to upload, organize, and showcase images on the Internet. It's intended to be installed on your Web site--just like [WordPress](http://www.wordpress.org/). Most Web hosting providers are compatible with FSIP, and we have a [compatibility suite](/compatibility/) to automatically check for you. Installing and using FSIP does not require a Ph.D in computer science; if you know some HTML and have experience transferring files via FTP, you already know everything you need to hit the ground running.</p>
+
+<h6 id="who-uses">Who uses FSIP?</h6>
+
+<p>FSIP is intended for any person or organization that has a large collection of images. While originally built for photographers, the application can be used by illustrators, painters, and archivists as well as most industries from realtors to universities.</p>
+
+<h6 id="why-choose">Why choose FSIP?</h6>
+
+<p>Unlike most content management systems, FSIP was built for images, not text. As such, it works "out of the box" and requires no modification to efficiently handle large image collections. The project was developed in 2010 as Alkaline and then open sourced, under the MIT license, in 2012 and forked to FSIP in 2013. It has a larger, more robust toolkit of features for images than most other CMS tools.</p>
+
+<h6 id="how-much">How much does FSIP cost?</h6>
 
 <p>FSIP is open source software and <a href="https://github.com/darylhawes/fsip"> available for download for free on GitHub</a>.</p>
 
