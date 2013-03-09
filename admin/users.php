@@ -95,13 +95,7 @@ if(empty($user_db_id)){
 	define('TITLE', 'Users');
 	require_once(PATH . ADMIN . 'includes/header.php');
 	
-	if(FSIP::edition == 'multiuser'){
-		?>
-		<div class="actions"><a href="<?php echo BASE . ADMIN . 'users' . URL_ACT . 'add' . URL_RW; ?>"><button>Add user</button></a></div>
-		<?php
-	}
-	
-	?>
+	<div class="actions"><a href="<?php echo BASE . ADMIN . 'users' . URL_ACT . 'add' . URL_RW; ?>"><button>Add user</button></a></div>
 
 	<h1><img src="<?php echo BASE . ADMIN; ?>images/icons/users.png" alt="" /> Users (<?php echo $user_db_count; ?>)</h1>
 	

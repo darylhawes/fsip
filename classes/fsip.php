@@ -12,17 +12,16 @@
  * @version 1.0
  */
 
-function __autoload($class){
+function __autoload($class) {
 	$file = strtolower($class) . '.php';
-	if(file_exists(PATH . CLASSES . $file)){
+	if (file_exists(PATH . CLASSES . $file)) {
 		require_once(PATH . CLASSES . $file);
 	}
 }
 
-class FSIP{
+class FSIP {
 	const build = 1294;
 	const copyright = 'Powered by <a href="http://github.com/darylhawes/fsip">FSIP</a> based on <a href="http://www.alkalineapp.com/">Alkaline</a> under MIT license.';
-	const edition = 'multiuser';
 	const product = 'FSIP';
 	const version = '1.1.2.3';
 	
@@ -1754,8 +1753,6 @@ class FSIP{
 		unset($tables['items']);
 		unset($tables['trackbacks']);
 		
-		if(FSIP::edition == 'standard'){ unset($tables['users']); }
-		
 		// Run helper function
 		foreach($tables as $table => $selector){
 			$info[] = array('table' => $table, 'count' => self::countTable($table));
@@ -2469,7 +2466,6 @@ class FSIP{
 				if(empty($fields['trackback_created'])){ $fields['trackback_created'] = $now; }
 				break;
 			case 'users':
-				if(FSIP::edition == 'standard'){ return false; }
 				if(empty($fields['user_created'])){ $fields['user_created'] = $now; }
 				break;
 			default:
@@ -2670,44 +2666,42 @@ class FSIP{
 	// RECORD STATISTIC
 	// Record a visitor to statistics
 	public function recordStat($page_type=null) {
-		if(!$this->returnConf('stat_enabled')) {
+		if (!$this->returnConf('stat_enabled')) {
 			return false;
 		}
 		
-		if($this->returnConf('stat_ignore_user')){
+		if ($this->returnConf('stat_ignore_user')) {
 			$user = new User();
 			if($user->perm(false)){
 				return;
 			}
 		}
 		
-		if(empty($_SESSION['fsip']['duration_start']) or ((time() - @$_SESSION['fsip']['duration_recent']) > 3600)){
+		if (empty($_SESSION['fsip']['duration_start']) or ((time() - @$_SESSION['fsip']['duration_recent']) > 3600)) {
 			$duration = 0;
 			$_SESSION['fsip']['duration_start'] = time();
-		}
-		else{
+		} else{
 			$duration = time() - $_SESSION['fsip']['duration_start'];
 		}
 		
 		// Ignore bots
-		if(stripos($_SERVER['HTTP_USER_AGENT'], 'bot') !== false){ return; }
-		if(stripos($_SERVER['HTTP_USER_AGENT'], 'spider') !== false){ return; }
-		if(stripos($_SERVER['HTTP_USER_AGENT'], 'slurp') !== false){ return; }
-		if(stripos($_SERVER['HTTP_USER_AGENT'], 'crawl') !== false){ return; }
+		if (stripos($_SERVER['HTTP_USER_AGENT'], 'bot') !== false) { return; }
+		if (stripos($_SERVER['HTTP_USER_AGENT'], 'spider') !== false) { return; }
+		if (stripos($_SERVER['HTTP_USER_AGENT'], 'slurp') !== false) { return; }
+		if (stripos($_SERVER['HTTP_USER_AGENT'], 'crawl') !== false) { return; }
 		
 		$_SESSION['fsip']['duration_recent'] = time();
 		
 		$referrer = (!empty($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : null;
 		$page = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : null;
 		
-		if(stripos($referrer, LOCATION . BASE) === false){
+		if (stripos($referrer, LOCATION . BASE) === false) {
 			$local = 0;
-		}
-		else{
+		} else{
 			$local = 1;
 		}
 		
-		if((BASE != '/') and (stripos($page, BASE) === 0)){
+		if ((BASE != '/') and (stripos($page, BASE) === 0)) {
 			$page = substr($page, strlen(BASE) - 1);
 		}
 		
@@ -2715,7 +2709,7 @@ class FSIP{
 		
 		$query->execute(array(':stat_session' => session_id(), ':stat_date' => date('Y-m-d H:i:s'), ':stat_duration' => $duration, ':stat_referrer' => $referrer, ':stat_page' => $page, ':stat_page_type' => $page_type, ':stat_local' => $local));
 		
-		if(isset($_SESSION['fsip']['guest'])){
+		if (isset($_SESSION['fsip']['guest'])) {
 			$_SESSION['fsip']['guest']['guest_views']++;
 			$this->exec('UPDATE guests SET guest_views = ' . $_SESSION['fsip']['guest']['guest_views'] . ' WHERE guest_id = ' . $_SESSION['fsip']['guest']['guest_id'] . ';');
 		}
@@ -2731,16 +2725,14 @@ class FSIP{
 	 * @param string $unset 
 	 * @return void
 	 */
-	public function setForm(&$array, $name, $unset=''){
-		if(isset($_POST[$name])){
+	public function setForm(&$array, $name, $unset='') {
+		if (isset($_POST[$name])) {
 			$value = $_POST[$name];
-			if(empty($value)){
+			if (empty($value)) {
 				$array[$name] = '';
-			}
-			elseif($value == 'true'){
+			} elseif($value == 'true') {
 				$array[$name] = true;
-			}
-			else{
+			} else {
 				$array[$name] = $value;
 			}
 		}
@@ -2813,7 +2805,7 @@ class FSIP{
 	 * @param string $unset 
 	 * @return void
 	 */
-	public function setConf($name, $unset=''){
+	public function setConf($name, $unset='') {
 		return self::setForm($_SESSION['fsip']['config'], $name, $unset);
 	}
 	
@@ -2824,7 +2816,7 @@ class FSIP{
 	 * @param string $check 
 	 * @return string
 	 */
-	public function readConf($name, $check=true){
+	public function readConf($name, $check=true) {
 		return self::readForm($_SESSION['fsip']['config'], $name, $check);
 	}
 	
@@ -2834,7 +2826,7 @@ class FSIP{
 	 * @param string $name 
 	 * @return string
 	 */
-	public function returnConf($name){
+	public function returnConf($name) {
 		return self::makeHTMLSafe(self::returnForm($_SESSION['fsip']['config'], $name));
 	}
 	
@@ -2843,7 +2835,7 @@ class FSIP{
 	 *
 	 * @return int|false Bytes written or error
 	 */
-	public function saveConf(){
+	public function saveConf() {
 		return file_put_contents($this->correctWinPath(PATH . 'config.json'), json_encode(self::reverseHTMLSafe($_SESSION['fsip']['config'])));
 	}
 	
@@ -2856,18 +2848,15 @@ class FSIP{
 	 * @param string $numeric_required If true, will return false if number not found
 	 * @return int|string|false ID, string, or error
 	 */
-	public function findID($string, $numeric_required=false){
+	public function findID($string, $numeric_required=false) {
 		$matches = array();
-		if(is_numeric($string)){
+		if (is_numeric($string)) {
 			$id = intval($string);
-		}
-		elseif(preg_match('#^([0-9]+)#s', $string, $matches)){
+		} elseif (preg_match('#^([0-9]+)#s', $string, $matches)) {
 			$id = intval($matches[1]);
-		}
-		elseif($numeric_required === true){
+		} elseif ($numeric_required === true) {
 			return false;
-		}
-		else{
+		} else {
 			$id = $string;
 		}
 		return $id;
@@ -2879,12 +2868,12 @@ class FSIP{
 	 * @param string $str Input string
 	 * @return array Image IDs
 	 */
-	public function findIDRef($str){
+	public function findIDRef($str) {
 		preg_match_all('#["\']{1}(?=' . LOCATION . '/|/)[^"\']*?([0-9]+)[^/.]*\.(?:' . IMG_EXT . ')#si', $str, $matches, PREG_SET_ORDER);
 		
 		$image_ids = array();
 		
-		foreach($matches as $match){
+		foreach ($matches as $match) {
 			$image_ids[] = intval($match[1]);
 		}
 		
@@ -2899,20 +2888,18 @@ class FSIP{
 	 * @param string $html Input HTML string
 	 * @return array Associate array of data (site_name, title, url)
 	 */
-	public function findMetaRef($html){
+	public function findMetaRef($html) {
 		$array = array();
 		
 		preg_match_all('#<meta.*?>#', $html, $metas);
-		foreach($metas[0] as $meta){
-			if(stripos($meta, 'property="og:site_name"') !== false){
+		foreach ($metas[0] as $meta) {
+			if(stripos($meta, 'property="og:site_name"') !== false) {
 				preg_match('#content="(.*?)"#si', $meta, $match);
 				$array['site_name'] = $match[1];
-			}
-			elseif(stripos($meta, 'property="og:title"') !== false){
+			} elseif(stripos($meta, 'property="og:title"') !== false) {
 				preg_match('#content="(.*?)"#si', $meta, $match);
 				$array['title'] = $match[1];
-			}
-			elseif(stripos($meta, 'property="og:url"') !== false){
+			} elseif(stripos($meta, 'property="og:url"') !== false) {
 				preg_match('#content="(.*?)"#si', $meta, $match);
 				$array['url'] = $match[1];
 			}
@@ -2927,7 +2914,7 @@ class FSIP{
 	 * @param string $string
 	 * @return string
 	 */
-	public function makeURL($string){
+	public function makeURL($string) {
 		$string = html_entity_decode($string, 1, 'UTF-8');
 		$string = self::removeAccents($string);
 		$string = strtolower($string);
@@ -2945,12 +2932,12 @@ class FSIP{
 	 * @param string $string Text that might have accent characters
 	 * @return string Filtered string with replaced "nice" characters.
 	 */
-	public function removeAccents($string){
-		if(!preg_match('/[\x80-\xff]/', $string)){
+	public function removeAccents($string) {
+		if (!preg_match('/[\x80-\xff]/', $string)) {
 			return $string;
 		}
 
-		if($this->seems_utf8($string)){
+		if ($this->seems_utf8($string)) {
 			$chars = array(
 			// Decompositions for Latin-1 Supplement
 			chr(195).chr(128) => 'A', chr(195).chr(129) => 'A',
@@ -3052,8 +3039,7 @@ class FSIP{
 			chr(194).chr(163) => '');
 
 			$string = strtr($string, $chars);
-		}
-		else{
+		} else{
 	        // Assume ISO-8859-1 if not UTF-8
 	        $chars['in'] = chr(128).chr(131).chr(138).chr(142).chr(154).chr(158)
 	            .chr(159).chr(162).chr(165).chr(181).chr(192).chr(193).chr(194)
@@ -3073,24 +3059,26 @@ class FSIP{
 	        $double_chars['out'] = array('OE', 'oe', 'AE', 'DH', 'TH', 'ss', 'ae', 'dh', 'th');
 	        $string = str_replace($double_chars['in'], $double_chars['out'], $string);
 	    }
-
+	    
 	    return $string;
 	}
 	
-	public function seems_utf8($str){
+	public function seems_utf8($str) {
 		$length = strlen($str);
 		for ($i=0; $i < $length; $i++) {
 			$c = ord($str[$i]);
-			if ($c < 0x80) $n = 0; # 0bbbbbbb
-			elseif (($c & 0xE0) == 0xC0) $n=1; # 110bbbbb
-			elseif (($c & 0xF0) == 0xE0) $n=2; # 1110bbbb
-			elseif (($c & 0xF8) == 0xF0) $n=3; # 11110bbb
-			elseif (($c & 0xFC) == 0xF8) $n=4; # 111110bb
-			elseif (($c & 0xFE) == 0xFC) $n=5; # 1111110b
-			else return false; # Does not match any model
-			for ($j=0; $j<$n; $j++) { # n bytes matching 10bbbbbb follow ?
-				if ((++$i == $length) || ((ord($str[$i]) & 0xC0) != 0x80))
+			if ($c < 0x80) $n = 0; // 0bbbbbbb
+			elseif (($c & 0xE0) == 0xC0) $n=1; // 110bbbbb
+			elseif (($c & 0xF0) == 0xE0) $n=2; // 1110bbbb
+			elseif (($c & 0xF8) == 0xF0) $n=3; // 11110bbb
+			elseif (($c & 0xFC) == 0xF8) $n=4; // 111110bb
+			elseif (($c & 0xFE) == 0xFC) $n=5; // 1111110b
+			else return false; // Does not match any model
+			for ($j=0; $j<$n; $j++) { 
+				// n bytes matching 10bbbbbb follow ?
+				if ((++$i == $length) || ((ord($str[$i]) & 0xC0) != 0x80)) {
 					return false;
+				}
 			}
 		}
 		return true;
@@ -3102,7 +3090,7 @@ class FSIP{
 	 * @param string $url
 	 * @return string
 	 */
-	public function minimizeURL($url){
+	public function minimizeURL($url) {
 		$url = preg_replace('#^https?\:\/\/www\.#s', '', $url);
 		$url = preg_replace('#^https?\:\/\/#s', '', $url);
 		$url = preg_replace('#^www\.#s', '', $url);
@@ -3116,32 +3104,29 @@ class FSIP{
 	 * @param string $page 
 	 * @return void
 	 */
-	public function magicURL($page){
+	public function magicURL($page) {
 		$uri = $_SERVER['REQUEST_URI'];
 		
-		if((URL_RW == '/') and !strpos($uri, '?')){
+		if ((URL_RW == '/') and !strpos($uri, '?')) {
 			$uri = @preg_replace('#with/[^/]*(/)?#si', '', $uri);
 			$uri = @preg_replace('#(\?)?page\=[0-9]+#si', '', $uri);
 			if(preg_match('#page[0-9]+#si', $uri)){
 				$uri = preg_replace('#(/)?page[0-9]+(/)?#si', '\\1page' . $page . '\\2', $uri);
-			}
-			else{
+			} else {
 				$last_pos = strlen($uri) - 1;
-				if($uri[$last_pos] != '/'){
+				if ($uri[$last_pos] != '/') {
 					$uri .= '/';
 				}
 				$uri .= 'page' . $page . '/';
 			}
-		}
-		else{
+		} else {
 			$uri = @preg_replace('#[?&]{1,1}with=[^&]*(&)?#si', '\\1', $uri);
 			$uri = @preg_replace('#[\?\&]?page\=[0-9]+#si', '', $uri);
 			$uri = @preg_replace('#\/page[0-9]+(/)?#si', '', $uri);
 
-			if(strpos($uri, '?')){
+			if (strpos($uri, '?')) {
 				$uri .= '&';
-			}
-			else{
+			} else {
 				$uri .= '?';
 			}
 			
@@ -3159,12 +3144,12 @@ class FSIP{
 	 * @param string $length Maximum character length
 	 * @return string
 	 */
-	public function fitString($string, $length=50){
+	public function fitString($string, $length=50) {
 		$length = intval($length);
-		if($length < 3){ return false; }
+		if ($length < 3) { return false; }
 		
 		$string = trim($string);
-		if(strlen($string) > $length){
+		if (strlen($string) > $length) {
 			$string = rtrim(substr($string, 0, $length - 3)) . '&#0133;';
 			$string = self::closeTags($string);
 		}
@@ -3178,12 +3163,12 @@ class FSIP{
 	 * @param string $length Maximum character length
 	 * @return string 
 	 */
-	public function fitStringByWord($string, $length=50){
+	public function fitStringByWord($string, $length=50) {
 		$length = intval($length);
-		if($length < 3){ return false; }
+		if ($length < 3) { return false; }
 		
 		$string = trim($string);
-		if(strlen($string) > $length){
+		if (strlen($string) > $length) {
 			$space = strpos($string, ' ', $length);
 			if($space !== false){
 				$string = substr($string, 0, $space) . '&#0133;';
@@ -3199,7 +3184,7 @@ class FSIP{
 	 * @param string $str
 	 * @return string
 	 */
-	public function nl2br($str){
+	public function nl2br($str) {
 		$str = nl2br($str);
 		$str = str_replace('</p><br /><br />', '</p>', $str);
 		$str = str_replace('</ul><br /><br />', '</ul>', $str);
@@ -3751,34 +3736,7 @@ class FSIP{
 		}
 		fclose($handle);
 	}
-	
-/* DEH - remove old commercial code to limit user capabilities
-	public function deleteDisallowedUsers(){
-		if(FSIP::edition == 'multiuser'){ return false; }
 		
-		$query = $this->prepare('SELECT * FROM users ORDER BY user_id ASC;');
-		$query->execute();
-		$users = $query->fetchAll();
-		
-		foreach($users as $user){
-			$user_ids[] = $user['user_id'];
-		}
-		
-		$user_ids = array_splice($user_ids, 1);
-		
-		if(count($user_ids) < 1){ return false; }
-		
-		unset($_SESSION['fsip']['user']);
-		
-		unset($_COOKIE['uid']);
-		unset($_COOKIE['key']);
-		
-		$this->deleteRow('users', $user_ids);
-		$this->addError(E_USER_ERROR, 'Alkaline Multiuser is required for multiuser functionality');
-		
-		return true;
-	}*/
-	
 	/**
 	 * Compare two strings
 	 *
@@ -3786,7 +3744,7 @@ class FSIP{
 	 * @param string $string2 
 	 * @return string
 	 */
-	public function compare($string1, $string2){
+	public function compare($string1, $string2) {
 		require_once(PATH . CLASSES . 'text_diff/Diff.php');
 		require_once(PATH . CLASSES . 'text_diff/Diff/Renderer/inline.php');
 		
@@ -3799,19 +3757,18 @@ class FSIP{
 	}
 }
 
-class FSIPException extends Exception implements Serializable{
+class FSIPException extends Exception implements Serializable {
 	public $public_trace;
 	public $public_message;
 	
-	public function __construct($e){
+	public function __construct($e) {
 		parent::__construct($e);
 		
 		$this->public_trace = $this->getTrace();
 		
-		if(is_object($this->public_trace[0]['args'][0])){
+		if (is_object($this->public_trace[0]['args'][0])) {
 			$this->public_message = $this->public_trace[0]['args'][0]->message;
-		}
-		else{
+		} else {
 			$this->public_message = $this->message;
 		}
 		
@@ -3831,23 +3788,23 @@ class FSIPException extends Exception implements Serializable{
 		exit();
 		break;
 	}
-	public function serialize(){
+	
+	public function serialize() {
 		return serialize(array($this->validator, $this->arguments, $this->code, $this->message));
 	}
 
-	public function unserialize($serialized){
+	public function unserialize($serialized) {
 		list($this->validator, $this->arguments, $this->code, $this->message) = unserialize($serialized);
 	}
 	
-	public function getPublicMessage(){
+	public function getPublicMessage() {
 		return $this->public_message;
 	}
 	
-	public function getPublicTrace(){
-		if(is_object($this->public_trace[0]['args'][0])){
+	public function getPublicTrace() {
+		if (is_object($this->public_trace[0]['args'][0])) {
 			$trace = $this->public_trace[0]['args'][0]->getTrace();
-		}
-		else{
+		} else {
 			$trace = $this->public_trace;
 		}
 		
