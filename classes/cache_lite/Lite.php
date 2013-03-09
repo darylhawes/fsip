@@ -545,7 +545,8 @@ class Cache_Lite
     */
     function raiseError($msg, $code)
     {
-		return Alkaline::addError(E_USER_ERROR, $msg . ' (' . $code . ')', null, null, 500);
+//DEH - how does this file know where for find the FSIP class when it has not been required at all?
+		return FSIP::addError(E_USER_ERROR, $msg . ' (' . $code . ')', null, null, 500);
     }
     
     /**
