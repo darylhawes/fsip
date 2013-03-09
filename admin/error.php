@@ -8,7 +8,7 @@
 
 require_once('../config.php');
 
-if(session_id() == ''){ session_start(); }
+if (session_id() == '') { session_start(); }
 
 $e = $_SESSION['fsip']['exception'];
 

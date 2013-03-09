@@ -76,7 +76,7 @@
 				<ul>
 					<?php
 
-					if(@!defined('TAB') or (@TAB == 'dashboard') or (@TAB == 'upload') or (@TAB == 'shoebox') or (@TAB == 'library') or (@TAB == 'posts') or (@TAB == 'comments') or (@TAB == 'features') or (@TAB == 'settings')){
+					if (@!defined('TAB') or (@TAB == 'dashboard') or (@TAB == 'upload') or (@TAB == 'shoebox') or (@TAB == 'library') or (@TAB == 'posts') or (@TAB == 'comments') or (@TAB == 'features') or (@TAB == 'settings')) {
 						?>
 						<li id="tab_dashboard">
 							<a href="<?php echo BASE . ADMIN . 'dashboard' . URL_CAP; ?>"<?php if(@TAB == 'dashboard'){ echo ' class="selected"'; } ?>>Dashboard &#9662;</a>
