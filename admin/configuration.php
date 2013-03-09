@@ -287,6 +287,34 @@ require_once(PATH . ADMIN . 'includes/header.php');
 			</td>
 		</tr>
 	</table>
+		
+	<h3>Tags</h3>
+	
+	<table>
+		<tr>
+			<td class="input"><input type="checkbox" id="tag_alpha" name="tag_alpha" <?php echo $fsip->readConf('tag_alpha'); ?> value="true" /></td>
+			<td class="description">
+				<label for="tag_alpha">Sort tags in alphabetical order</label> (instead of by order added)
+			</td>
+		</tr>
+	</table>
+	
+	<h3>Pages</h3>
+	
+	<table>
+		<tr>
+			<td class="input middle"><input type="checkbox" id="page_size_id" name="page_size_id" disabled="disabled" checked="checked" /></td>
+			<td class="description">
+				<label for="page_size_id">Use the thumbnail size <?php echo $fsip->showSizes('page_size_id', $fsip->returnConf('page_size_id')); ?> when adding images by point-and-click</label>
+			</td>
+		</tr>
+		<tr>
+			<td class="input middle"><input type="checkbox" id="page_div_wrap" name="page_div_wrap" <?php echo $fsip->readConf('page_div_wrap'); ?> value="true" /></td>
+			<td>
+				<label for="page_div_wrap">Wrap thumbnails in a &#0060;div&#0062; wrapper with the classes:</label> <input type="text" id="page_div_wrap_class" name="page_div_wrap_class" value="<?php echo $fsip->returnConf('page_div_wrap_class'); ?>" class="xs" />
+			</td>
+		</tr>
+	</table>
 	
 	<h3>Posts</h3>
 	
@@ -378,35 +406,7 @@ require_once(PATH . ADMIN . 'includes/header.php');
 			</td>
 		</tr>
 	</table>
-	
-	<h3>Tags</h3>
-	
-	<table>
-		<tr>
-			<td class="input"><input type="checkbox" id="tag_alpha" name="tag_alpha" <?php echo $fsip->readConf('tag_alpha'); ?> value="true" /></td>
-			<td class="description">
-				<label for="tag_alpha">Sort tags in alphabetical order</label> (instead of by order added)
-			</td>
-		</tr>
-	</table>
-	
-	<h3>Pages</h3>
-	
-	<table>
-		<tr>
-			<td class="input middle"><input type="checkbox" id="page_size_id" name="page_size_id" disabled="disabled" checked="checked" /></td>
-			<td class="description">
-				<label for="page_size_id">Use the thumbnail size <?php echo $fsip->showSizes('page_size_id', $fsip->returnConf('page_size_id')); ?> when adding images by point-and-click</label>
-			</td>
-		</tr>
-		<tr>
-			<td class="input middle"><input type="checkbox" id="page_div_wrap" name="page_div_wrap" <?php echo $fsip->readConf('page_div_wrap'); ?> value="true" /></td>
-			<td>
-				<label for="page_div_wrap">Wrap thumbnails in a &#0060;div&#0062; wrapper with the classes:</label> <input type="text" id="page_div_wrap_class" name="page_div_wrap_class" value="<?php echo $fsip->returnConf('page_div_wrap_class'); ?>" class="xs" />
-			</td>
-		</tr>
-	</table>
-	
+
 	<h3>Comments</h3>
 	
 	<table>
