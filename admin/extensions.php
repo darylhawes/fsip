@@ -218,6 +218,8 @@ define('TAB', 'settings');
 
 if(empty($extension_id)){
 	// Check for updates
+/*
+//DEH remove the currently dead remote extension version checking
 	$latest_extensions = @$fsip->boomerang('latest-extensions');
 	if(!empty($latest_extensions)){
 		foreach($latest_extensions as $latest_extension){
@@ -239,7 +241,7 @@ if(empty($extension_id)){
 			}
 		}
 	}
-	
+*/	
 	$extensions = $fsip->getTable('extensions', null, null, null, array('extension_status DESC', 'extension_title ASC'));
 	$extensions_count = @count($extensions);
 	
