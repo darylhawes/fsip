@@ -1,26 +1,26 @@
-### Setup Sphinx Search with Alkaline
+### Setup Sphinx Search with FSIP
 
-Alkaline includes built-in support for the [Sphinx search engine server](http://sphinxsearch.com), which runs on your own server to process ultrafast, relevancy-based searches. Sphinx is superior to traditional SQL-based searches, because it can sort results by relevancy, search using related terms, and rapidly comb large datasets.
+FSIP includes built-in support for the [Sphinx search engine server](http://sphinxsearch.com), which runs on your own server to process ultrafast, relevancy-based searches. Sphinx is superior to traditional SQL-based searches, because it can sort results by relevancy, search using related terms, and rapidly comb large datasets.
 
 **Note: This article is technically complex and presumes you have knowledge of the command line.** It is intended for system administrators and similarly technically-savvy individuals, and is not for the faint of heart. Please read this entire document before deciding whether Sphinx is right for you or your organization.
 
-To get Sphinx and Alkaline running in tandem, you will need a VPS or dedicated server and root (SSH) access.
+To get Sphinx and FSIP running in tandem, you will need a VPS or dedicated server and root (SSH) access.
 
 ###### 1. Download and install Sphinx.
 
 Sphinx is free and open source. You can download it one of two ways. First, check your operating system's package management utility, such as `apt-get` or `yum`, for a readymade copy of Sphinx.
 
-Otherwise, if Sphinx is unavailable, download the latest stable version of [Sphinx](http://sphinxsearch.com/downloads/). Alkaline has been tested with Sphinx 0.9.9 and Sphinx 2.0.1, and works well with either. Follow the instructions that came with your copy of Sphinx to install it.
+Otherwise, if Sphinx is unavailable, download the latest stable version of [Sphinx](http://sphinxsearch.com/downloads/). FSIP has been tested with Sphinx 0.9.9 and Sphinx 2.0.1, and works well with either. Follow the instructions that came with your copy of Sphinx to install it.
 
 Next, download and install the [PHP PECL Sphinx package](http://pecl.php.net/package/sphinx). If you already have [PHP PEAR](http://pear.php.net/) installed, which many do, you should be able to install the PHP PECL Sphinx package by running this command: `pecl install sphinx`. If that is successful, continue. Otherwise, [install PHP PEAR](http://pear.php.net/manual/en/installation.introduction.php) and then issue the command above.
 
-You can ensure Sphinx has been installed by choosing **Settings** in Alkaline and looking under the "Environment" header.
+You can ensure Sphinx has been installed by choosing **Settings** in FSIP and looking under the "Environment" header.
 
 ###### 2. Configure Sphinx.
 
-Next, we need to tell Sphinx where to access and how to process the data in Alkaline. Locate Sphinx's configuration file (usually `/etc/sphinx/sphinx.conf`) and open it. Here's an example configuration:
+Next, we need to tell Sphinx where to access and how to process the data in FSIP. Locate Sphinx's configuration file (usually `/etc/sphinx/sphinx.conf`) and open it. Here's an example configuration:
 
-	source alkaline
+	source fsip
 	{
 		type				= xmlpipe2
 		xmlpipe_command		= php /usr/local/html/admin/sphinx-xmlpipe2.php
@@ -28,7 +28,7 @@ Next, we need to tell Sphinx where to access and how to process the data in Alka
 
 	index my_site
 	{
-		source			= alkaline
+		source			= fsip
 		path			= /var/lib/sphinx/my_site
 		docinfo			= extern
 		charset_type	= utf-8
@@ -37,18 +37,18 @@ Next, we need to tell Sphinx where to access and how to process the data in Alka
 
 Let's take a look at this file. There are two components: an index and a source. The source is where your data is coming from. The index is what will be searched (and derives its data from one or more sources).
 
-Our first (and only) source will be Alkaline:
+Our first (and only) source will be FSIP:
 
 1. `type = xmlpipe2`
-	- Alkaline sends its contents to Sphinx in an XML-based format
+	- FSIP sends its contents to Sphinx in an XML-based format
 2. `xmlpipe_command = php /usr/local/html/admin/sphinx-xmlpipe2.php`
-	- To locate Alkaline's contents, run the PHP file located at `/your_web_root/admin/sphinx-xmlpipe2.php`
-	- Be sure to change the root to the directory where Alkaline is installed
+	- To locate FSIP's contents, run the PHP file located at `/your_web_root/admin/sphinx-xmlpipe2.php`
+	- Be sure to change the root to the directory where FSIP is installed
 
 Our index will contain our one source:
 
-1. `source = alkaline`
-	- Include the source named `alkaline`
+1. `source = fsip`
+	- Include the source named `fsip`
 2. `path = /var/lib/sphinx/my_site`
 	- Store (and retrieve) the index from this location on my server
 	- Make sure Sphinx has sufficient privileges to read and write from this location
@@ -58,9 +58,9 @@ Our index will contain our one source:
 	- *(Optional)* Tell Sphinx to use Unicode character encoding
 5. `morphology = stem_en`
 	- *(Optional)* Tell Sphinx to normalize words (e.g., when searching "dog", results would include "dogs" and vice-versa)
-	- Replace or remove this variable your content is not in English
+	- Replace or remove this variable if your content is not in English
 
-Save this file.
+Save the file.
 
 ###### 3. Start Sphinx.
 
@@ -68,11 +68,11 @@ Like a Web server such as Apache or a database server such as MySQL, Sphinx is a
 
 ###### 4. Prepare Alkaline.
 
-Go to **Dashboard > Settings > Maintenance > "Build items table"** and wait for the task to complete. You have just created a new documents table that Sphinx and Alkaline can reference to locate the results.
+Go to **Dashboard > Settings > Maintenance > "Build items table"** and wait for the task to complete. You have just created a new documents table that Sphinx and FSIP can reference to locate the results.
 
 ###### 5. Test Sphinx
 
-From the command line, you should now be able to search Alkaline. First, tell Sphinx to create its first index: `indexer --all --rotate;`. Then, try a word you know you've used on your Alkaline-powered Web site, for example `search "New York"`. Sphinx should list one or more results.
+From the command line, you should now be able to search FSIP. First, tell Sphinx to create its first index: `indexer --all --rotate;`. Then, try a word you know you've used on your FSIP-powered Web site, for example `search "New York"`. Sphinx should list one or more results.
 
 ###### 6. Set up a Cron job.
 
@@ -83,7 +83,7 @@ In most cases, including this one, Sphinx does not index content in real-time. Y
 
 *Note: A shell script is just a list of commands that are the same as if you typed them into the shell yourself.*
 
-Save this file on your Web server, anywhere that is not publicly accessible. The first line tells Alkaline to update its documents table. The second line tells Sphinx that new content should be added to its index.
+Save this file on your Web server, anywhere that is not publicly accessible. The first line tells FSIP to update its documents table. The second line tells Sphinx that new content should be added to its index.
 
 You can choose to run this script as often as you wish. We recommend once every 20 minutes. Here's our Cron entry:
 
@@ -91,13 +91,13 @@ You can choose to run this script as often as you wish. We recommend once every 
 
 You can use the command `crontab -e` to edit your Cron configuration and add the line above. This line tells Cron to execute the script on the 5th, 25th, and 45th minute of every hour, every day, etc. It also says where to find the script, and the last two parts simply tell Cron to ignore any output that may be generated.
 
-###### 7. Tell Alkaline to use Sphinx.
+###### 7. Tell FSIP to use Sphinx.
 
-Now that you've got Sphinx up and running, you need to notify Alkaline that Sphinx is installed, configured, and ready for use. Go to **Dashboard > Settings > Configuration**. Scroll down to the "Sphinx" header and click "Use Sphinx to process search queries". Save your configuration.
+Now that you've got Sphinx up and running, you need to notify FSIP that Sphinx is installed, configured, and ready for use. Go to **Dashboard > Settings > Configuration**. Scroll down to the "Sphinx" header and click "Use Sphinx to process search queries". Save your configuration.
 
 ###### 8. Make sure it works.
 
-Ensure that Alkaline is delivering the search results you were expecting it to. You may want to turn it on and off and compare the results from traditional results to Sphinx results. If the results are not what you were expecting, you can disable Sphinx in the Alkaline configuration pane while you fine-tune Sphinx for your Web site's content.
+Ensure that FSIP is delivering the search results you were expecting it to. You may want to turn it on and off and compare the results from traditional results to Sphinx results. If the results are not what you were expecting, you can disable Sphinx in the FSIP configuration pane while you fine-tune Sphinx for your Web site's content.
 
 ###### 9. (Optional) Taking it the next level. 
 
