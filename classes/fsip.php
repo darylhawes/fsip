@@ -111,7 +111,7 @@ class FSIP{
 		
 		// Check if in Dashboard
 		if(strpos($_SERVER['SCRIPT_FILENAME'], PATH . ADMIN) === 0){
-			$this->admin = true;
+			$this->adminpath = true;
 		}
 		
 		// Set back link
@@ -454,12 +454,12 @@ class FSIP{
 	 * @param string $type Notification type
 	 * @return string HTML-formatted notifications 
 	 */
-	public function returnNotes($type=null){
-		if(!isset($_SESSION['fsip']['notifications'])){ return; }
+	public function returnNotes($type = null) {
+		if (!isset($_SESSION['fsip']) || !isset($_SESSION['fsip']['notifications']) ) { return; }
 		
 		$count = count($_SESSION['fsip']['notifications']);
 		
-		if($count == 0){ return; }
+		if ($count == 0) { return; }
 		
 		$return = '';
 		
@@ -2637,15 +2637,15 @@ class FSIP{
 		$table = $this->sanitize($table);
 		
 		$field = $this->tables[$table];
-		if(empty($field)){ return false; }
+		if (empty($field)) { return false; }
 		
 		$sql = '';
 		
 		// Don't show deleted items
 		$with_deleted_columns = array('images', 'posts', 'comments', 'sets', 'pages', 'rights');
-		if(in_array($table, $with_deleted_columns)){
+		if (in_array($table, $with_deleted_columns)) {
 			$show_deleted = false;
-			if($this->admin === true){
+			if($this->adminpath === true) {
 				$user = new User();
 				if(!empty($user) and $user->perm()){
 					if($user->returnPref('recovery_mode') === true){
@@ -2654,7 +2654,7 @@ class FSIP{
 				}
 			}
 			
-			if($show_deleted === false){
+			if ($show_deleted === false){
 				$sql = ' WHERE ' . $table . '.' . substr($field, 0, -2) . 'deleted IS NULL';
 			}
 		}
@@ -2669,8 +2669,8 @@ class FSIP{
 	
 	// RECORD STATISTIC
 	// Record a visitor to statistics
-	public function recordStat($page_type=null){
-		if(!$this->returnConf('stat_enabled')){
+	public function recordStat($page_type=null) {
+		if(!$this->returnConf('stat_enabled')) {
 			return false;
 		}
 		
@@ -2757,33 +2757,28 @@ class FSIP{
 	 * @param string $check 
 	 * @return string
 	 */
-	public function readForm($array=null, $name, $check=true){
-		if(is_array($array)){
-			if(isset($array[$name])){
+	public function readForm($array=null, $name, $check=true) {
+		if (is_array($array)) {
+			if (isset($array[$name])) {
 				$value = $array[$name];
-			}
-			else{
+			} else {
 				$value = null;
 			}
-		}
-		else{
+		} else {
 			$value = $name;
 		}
 		
-		if(!isset($value)){
+		if (!isset($value)) {
 			return false;
-		}
-		elseif($check === true){
-			if($value === true){
+		} elseif ($check === true) {
+			if ($value === true) {
 				return 'checked="checked"';
 			}
-		}
-		elseif(!empty($check)){
-			if($value == $check){
+		} elseif (!empty($check)) {
+			if ($value == $check) {
 				return 'selected="selected"';
 			}
-		}
-		else{
+		} else {
 			return 'value="' . $value . '"';
 		}
 	}
@@ -3669,16 +3664,19 @@ class FSIP{
 	 *
 	 * @return void|string HTML-formatted notifications 
 	 */
-	public static function returnErrors(){
-		if(!isset($_SESSION['fsip']['errors'])){ return; }
-		
+	public static function returnErrors() {
+		if (!isset($_SESSION['fsip']) || !isset($_SESSION['fsip']['errors'])) { return; }
+		//TODO check if admin user should be only one to see errors and if admin is logged in else return
+		//				$user = new User();
+//				if(!empty($user) and $user->perm()){
+//
 		$count = @count($_SESSION['fsip']['errors']);
 		
-		if(empty($count)){ return; }
+		if (empty($count)) { return; }
 		
 		// Determine unique types
 		$types = array();
-		foreach($_SESSION['fsip']['errors'] as $error){
+		foreach($_SESSION['fsip']['errors'] as $error) {
 			$types[] = $error['severity'];
 		}
 		$types = array_unique($types);
@@ -3687,24 +3685,24 @@ class FSIP{
 		$list = array();
 		
 		// Produce HTML for display
-		foreach($types as $type){
+		foreach($types as $type) {
 			$i = 0;
 			
-			foreach($_SESSION['fsip']['errors'] as $error){
+			foreach($_SESSION['fsip']['errors'] as $error) {
 				if($error['severity'] == $type){
 					$i++;
 				}
 			}
 			
-			if($i == 1){
+			if($i == 1) {
 				$overview[] = $i . ' ' . $type;
 			}
-			else{
+			else {
 				$overview[] = $i . ' ' . $type . 's';
 			}
 		}
 		
-		foreach($_SESSION['fsip']['errors'] as $error){
+		foreach($_SESSION['fsip']['errors'] as $error) {
 			$item = '<li><strong>' . ucwords($error['severity']) .':</strong> ' . $error['message'];
 			if(!empty($error['filename'])){
 				$item .= ' (' . $error['filename'] . ', line ' . $error['line_number'] .')';
