@@ -7,7 +7,7 @@
 */
 
 //Compatibility Suite
-class CS{
+class CS {
 	const build = 3;
 	const copyright = 'Powered by <a href="http://github.com/darylhawes/fsip">FSIP</a> based on <a href="http://www.alkalineapp.com/">Alkaline</a> under MIT license.';
 	const version = '1.2';
@@ -19,7 +19,7 @@ class CS{
 	public $phpinfo;
 	Public $php_pdo_drivers;
 	
-	function __construct(){
+	function __construct() {
 		$this->compatible = true;
 		$this->php_version = phpversion();
 		$this->php_extensions = get_loaded_extensions();
@@ -28,7 +28,7 @@ class CS{
 		$this->phpinfo = ob_get_contents(); 
 		ob_end_clean();
 		$php_pdo_drivers = @PDO::getAvailableDrivers();
-		foreach($php_pdo_drivers as $driver){
+		foreach($php_pdo_drivers as $driver) {
 			switch($driver){
 				case 'odbc':
 					// $this->php_pdo_drivers[] = 'Microsoft SQL Server';
@@ -48,104 +48,97 @@ class CS{
 		}
 	}
 	
-	public function isExt($ext, $req=true){
-		if(in_array($ext, $this->php_extensions)){
+	public function isExt($ext, $req=true) {
+		if (in_array($ext, $this->php_extensions)) {
 			return true;
-		}
-		else{
-			if($req == true){
+		} else {
+			if($req == true) {
 				$this->compatible = false;
 			}
 			return false;
 		}
 	}
 	
-	public function isVer($pat, $str){
-		if(preg_match($pat, $str)){
+	public function isVer($pat, $str) {
+		if (preg_match($pat, $str)) {
 			return true;
-		}
-		else{
+		} else {
 			$this->compatible = false;
 			return false;
 		}
 	}
 	
-	public function isThere($str){
-		if(stripos($this->phpinfo, $str)){
+	public function isThere($str) {
+		if (stripos($this->phpinfo, $str)) {
 			return true;
 		}
 	}
 	
-	public function isNet(){
+	public function isNet() {
 		$ip = gethostbyname('http://fsip.sdelargy.com/');
-		if(!empty($ip)){
+		if (!empty($ip)) {
 			return true;
-		}
-		else{
+		} else {
 			$this->compatible = false;
 			return false;
 		}
 	}
 	
-	public function boolToHTML($bool, $positive=null, $negative=null){
-		if(empty($positive)){
+	public function boolToHTML($bool, $positive=null, $negative=null) {
+		if (empty($positive)) {
 			$positive = '<strong>Installed</strong>';
 		}
-		if(empty($negative)){
+		if (empty($negative)) {
 			$negative = '<strong>Not installed</strong>';
 		}
 		
-		if($bool === true){
+		if ($bool === true) {
 			echo '<td class="center middle quiet" style="width: 20%">' . $positive . '</td>';
-		}
-		elseif($bool === false){
+		} elseif($bool === false) {
 			echo '<td class="center middle quiet" style="width: 20%">' . $negative . '</td>';
-		}
-		else{
+		} else {
 			echo '<td class="center middle quiet" style="width: 20%"><strong>Unknown</strong></td>';
 		}
 	}
 	
-	public function boolToIMG($bool){
-		if($bool === true){
+	public function boolToIMG($bool) {
+		if ($bool === true) {
 			echo '<td class="center middle" style="width: 2%"><img src="http://www.alkalineapp.com/remote/cs/images/positive.png" alt="" /></td>';
-		}
-		elseif($bool === false){
+		} elseif ($bool === false) {
 			echo '<td class="center middle" style="width: 2%"><img src="http://www.alkalineapp.com/remote/cs/images/negative.png" alt="" /></td>';
-		}
-		else{
+		} else {
 			echo '<td class="center middle" style="width: 2%"><img src="http://www.alkalineapp.com/remote/cs/images/unknown.png" alt="" /></td>';
 		}
 	}
 	
-	public function noteRAM(){
+	public function noteRAM() {
 		$ram = ini_get('memory_limit');
 		$value = substr($ram, 1, -1);
 		$unit = substr($ram, -1, 1);
 		
-		if($unit == 'm'){
+		if ($unit == 'm') {
 			$unit = 'MB';
-			if($value < 16){ return 'Your Web server has insufficient RAM allocated to PHP processes.'; $this->compatible = false; }
-			if($value >= 16){ $res = '1.5 megapixel'; }
-			if($value >= 32){ $res = '3 megapixel'; }
-			if($value >= 48){ $res = '4.5 megapixel'; }
-			if($value >= 64){ $res = '6 megapixel'; }
-			if($value >= 128){ $res = '12 megapixel'; }
-			if($value >= 256){ $res = '24 megapixel'; }
-			if($value >= 512){ $res = '48 megapixel'; }
-			if($value >= 1024){ $res = '96 megapixel'; }
+			if ($value < 16) { return 'Your Web server has insufficient RAM allocated to PHP processes.'; $this->compatible = false; }
+			if ($value >= 16) { $res = '1.5 megapixel'; }
+			if ($value >= 32) { $res = '3 megapixel'; }
+			if ($value >= 48) { $res = '4.5 megapixel'; }
+			if ($value >= 64) { $res = '6 megapixel'; }
+			if ($value >= 128) { $res = '12 megapixel'; }
+			if ($value >= 256) { $res = '24 megapixel'; }
+			if ($value >= 512) { $res = '48 megapixel'; }
+			if ($value >= 1024) { $res = '96 megapixel'; }
 		}
-		if($unit == 'g'){
-			if($value >= 1){ $res = '96 megapixel'; }
+		if ($unit == 'g') {
+			if ($value >= 1) { $res = '96 megapixel'; }
 		}
 		
-		if(empty($res)){ return false; }
+		if (empty($res)) { return false; }
 		
 		return '<p class="quiet"><em>Note: Your Web server allocates ' . $value . ' ' . $unit . ' to PHP processes&#8212;enough to process images of up to approx. ' . $res . ' resolution.</em></p>';
 	}
 }
 
-$test = new FSIP_CS();
+$test = new CS();
 
 ?>
 
@@ -243,7 +236,7 @@ $test = new FSIP_CS();
 			<h2>Optional</h2>
 			
 			<table>
-				<?php if($test->isThere('Apache/')){ ?>
+				<?php if ($test->isThere('Apache/')) { ?>
 					<tr>
 						<?php $result = $test->isThere('mod_rewrite'); echo $test->boolToIMG($result); ?>
 						<td>
@@ -299,13 +292,12 @@ $test = new FSIP_CS();
 			
 			<p class="center large">
 				<?php
-				if($test->compatible == true){
+				if ($test->compatible == true) {
 					?>
 					SUCCESS<br />
 					<strong>Good news, you can install here!</strong><br />
 					<?php
-				}
-				else{
+				} else {
 					?>
 					FAILURE!<br />
 					<strong>Uh-oh, you cannot install here.</strong><br />
