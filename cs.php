@@ -6,10 +6,11 @@
 // http://www.alkalineapp.com/
 */
 
-class AlkalineCS{
+//Compatibility Suite
+class CS{
 	const build = 3;
 	const copyright = 'Powered by <a href="http://github.com/darylhawes/fsip">FSIP</a> based on <a href="http://www.alkalineapp.com/">Alkaline</a> under MIT license.';
-	const version = '1.1';
+	const version = '1.2';
 	
 	public $compatible;
 	
@@ -158,7 +159,7 @@ $test = new FSIP_CS();
 	<link rel="stylesheet" href="admin/css/blueprint/screen.css" type="text/css" media="screen, projection" />
 	<link rel="stylesheet" href="admin/css/blueprint/print.css" type="text/css" media="print" />	
 	<!--[if lt IE 8]><link rel="stylesheet" href="admin/css/blueprint/ie.css" type="text/css" media="screen, projection" /><![endif]-->
-	<link rel="stylesheet" href="admin/css/alkaline.css" type="text/css" media="screen, projection" />
+	<link rel="stylesheet" href="admin/css/fsip.css" type="text/css" media="screen, projection" />
 	<link rel="shortcut icon" href="admin/images/favicon.ico" />
 </head>
 <body>
