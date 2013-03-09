@@ -12,22 +12,22 @@
  * @version 1.0
  */
 
-class User extends FSIP{
+class User extends FSIP {
 	public $user;
 	
 	/**
 	 * Initiate User object
 	 *
 	 */
-	public function __construct(){
+	public function __construct() {
 		parent::__construct();
 		
 		// Login user by session data
-		if(!empty($_SESSION['fsip']['user'])){
+		if (!empty($_SESSION['fsip']['user'])) {
 			$this->user = $_SESSION['fsip']['user'];
 		}
 		// Login user by ID, key
-		elseif(!empty($_COOKIE['uid']) and !empty($_COOKIE['key'])){
+		elseif (!empty($_COOKIE['uid']) and !empty($_COOKIE['key'])) {
 			$user_id = strip_tags($_COOKIE['uid']);
 			$user_key = strip_tags($_COOKIE['key']);
 			unset($_SESSION['fsip']['guest']);
@@ -40,9 +40,9 @@ class User extends FSIP{
 	 *
 	 * @return void
 	 */
-	public function __destruct(){
+	public function __destruct() {
 		// Store user to session data
-		if(isset($this->user)){
+		if (isset($this->user)) {
 			$_SESSION['fsip']['user'] = $this->user;
 		}
 		
@@ -55,8 +55,8 @@ class User extends FSIP{
 	 * @param Orbit $orbit 
 	 * @return void
 	 */
-	public function hook($orbit=null){
-		if(!is_object($orbit)){
+	public function hook($orbit=null) {
+		if (!is_object($orbit)) {
 			$orbit = new Orbit;
 		}
 		
@@ -73,9 +73,9 @@ class User extends FSIP{
 	 * @param bool $remember 
 	 * @return bool True if successful
 	 */
-	public function auth($username='', $password='', $remember=false){
+	public function auth($username='', $password='', $remember=false) {
 		// Error checking
-		if(empty($username) or empty($password)){
+		if (empty($username) or empty($password)) {
 			return false;
 		} 
 		
@@ -120,13 +120,13 @@ class User extends FSIP{
 	 * @param bool $remember 
 	 * @return bool True if successful
 	 */
-	private function prep($remember=false){
+	private function prep($remember=false) {
 		// Delete extra users on standard licenses
 		// DEH - remove commercial feature limitations
 		// $this->deleteDisallowedUsers();
 		
 		// If overlapping users exist, destroy object
-		if(count($this->user) != 1){
+		if (count($this->user) != 1) {
 			unset($this->user);
 			return false;
 		}
@@ -140,7 +140,7 @@ class User extends FSIP{
 		$key = '';
 		
 		// Store "remember me" data
-		if($remember == true){
+		if ($remember == true) {
 			$key = $this->user['user_id'] . $this->user['user_user'] . $this->user['user_pass'] . DB_DSN . time();
 			$key = sha1($key . SALT);
 			setcookie('uid', $this->user['user_id'], time()+USER_REMEMBER, BASE);
@@ -196,21 +196,19 @@ class User extends FSIP{
 	 * @param string $permission Permission string
 	 * @return void
 	 */
-	public function perm($required=false, $permission=null){
-		if(empty($this->user)){
-			if($required === true){
+	public function perm($required=false, $permission=null) {
+		if (empty($this->user)) {
+			if ($required === true) {
 				$_SESSION['fsip']['destination'] = $this->location();
 				session_write_close();
 				
 				header('Location: ' . LOCATION . BASE . ADMIN . 'login' . URL_CAP);
 				exit();
-			}
-			else{
+			} else {
 				return false;
 			}
-		}
-		else{
-			if(empty($permission)){
+		} else {
+			if (empty($permission)) {
 				return true;
 			}
 			elseif($this->user['user_id'] == 1){
