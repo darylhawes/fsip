@@ -99,7 +99,7 @@ if(preg_match('#iphone|ipad#si', $_SERVER['HTTP_USER_AGENT']) and !isset($_GET['
 				$sizes = array_map(array($fsip, 'convertBytesToShortString'), $sizes);
 				$size_info = '<span class="max_sizes">Max post: '.$sizes[0]."<br />Max upload: ".$sizes[1]."<br />Max memory: ".$sizes[2]."</span>";
 				sort($sizes);
-				echo bytes($sizes[0]). '<span class="quiet"> (<a href="../docs/faq.md#file-size-limit-uploads">Why?</a>)</span>';
+				echo $sizes[0]. '<span class="quiet"> (<a href="../docs/faq.md#file-size-limit-uploads">Why?</a>)</span>';
 				echo "<br /><br />$size_info";
 			?>
 		</p>
