@@ -6,23 +6,22 @@
 // http://www.alkalineapp.com/
 */
 
-echo "test";
 require_once('./../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
-echo "test";
+
 $fsip = new FSIP;
 $user = new User;
-echo "test";
+
 $user->perm(true, 'extensions');
-echo "test";
+
 if(!empty($_GET['id'])){
 	$extension_id = $fsip->findID($_GET['id']);
 }
-echo "test";
+
 if(!empty($_GET['act'])){
 	$extension_act = $_GET['act'];
 }
-echo "test";
+
 // SAVE CHANGES
 if(!empty($_POST['extension_id'])){
 	$extension_id = $fsip->findID($_POST['extension_id']);
