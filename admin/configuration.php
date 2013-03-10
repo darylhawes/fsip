@@ -585,7 +585,7 @@ require_once(PATH . ADMIN . 'includes/header.php');
 			</td>
 		</tr>
 		<tr>
-			<td class="input"><input type="checkbox" id="maint_disable" name="maint_disable" <?php echo $alkaline->readConf('maint_disable'); ?> value="true" /></td>
+			<td class="input"><input type="checkbox" id="maint_disable" name="maint_disable" <?php echo $fsip->readConf('maint_disable'); ?> value="true" /></td>
 			<td class="description">
 				<label for="maint_disable">Disable all extensions</label>
 			</td>
