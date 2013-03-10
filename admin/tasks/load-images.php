@@ -29,10 +29,6 @@ else{
 	$label = 'image_src_admin';
 }
 
-if($fsip->returnConf('post_div_wrap')){
-	echo '<div class="none wrap_class">' . $fsip->returnConf('post_div_wrap_class') . '</div>';
-}
-
 foreach($images->images as $image){
 	$image['image_title'] = $fsip->makeHTMLSafe($image['image_title']);
 	echo '<a href="' . $image[$label] . '"><img src="' . $image['image_src_square'] .'" alt="' . $image['image_title']  . '" class="frame" id="image-' . $image['image_id'] . '" /></a>';

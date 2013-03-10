@@ -74,7 +74,7 @@ $xml->endAttribute();
 	
 	$count = 0;
 	
-	while($count <= $item_ids->count){
+	while($count <= $item_ids->count) {
 		$ids = array_slice($item_ids->ids, $count, 1000);
 		
 		$items = $fsip->getTable('items', $ids);
@@ -83,7 +83,7 @@ $xml->endAttribute();
 		$item_table_ids = array();
 		$item_tables = array();
 		
-		foreach($items as $item){
+		foreach($items as $item) {
 			$item_table = $item['item_table'];
 			$table_int = array_search($item_table, $fsip->tables_index);
 			
@@ -94,14 +94,14 @@ $xml->endAttribute();
 		
 		$item_count = count($item_ids);
 		
-		for($i=0; $i < $item_count; $i++){
-			if($item_tables[$i][0] == 'comments'){
+		for($i=0; $i < $item_count; $i++) {
+			if ($item_tables[$i][0] == 'comments') {
 				$comments = $fsip->getTable('comments', $item_table_ids[$i]);
 				$comment_count = count($comments);
 				
 				$table_int = array_search('comments', $fsip->tables_index);
 				
-				for($j=0; $j < $comment_count; $j++){
+				for($j=0; $j < $comment_count; $j++) {
 					$xml->startElement('sphinx:document');
 						$xml->startAttribute('id');
 						$xml->text($item_ids[$i][$j]);
@@ -120,8 +120,7 @@ $xml->endAttribute();
 						$xml->endElement();
 					$xml->endElement();
 				}
-			}
-			elseif($item_tables[$i][0] == 'images'){
+			} elseif($item_tables[$i][0] == 'images') {
 				$images = $fsip->getTable('images', $item_table_ids[$i]);
 				$image_count = count($images);
 				
@@ -146,8 +145,7 @@ $xml->endAttribute();
 						$xml->endElement();
 					$xml->endElement();
 				}
-			}
-			elseif($item_tables[$i][0] == 'pages'){
+			} elseif($item_tables[$i][0] == 'pages') {
 				$pages = $fsip->getTable('pages', $item_table_ids[$i]);
 				$page_count = count($pages);
 				
@@ -172,34 +170,7 @@ $xml->endAttribute();
 						$xml->endElement();
 					$xml->endElement();
 				}
-			}
-			elseif($item_tables[$i][0] == 'posts'){
-				$posts = $fsip->getTable('posts', $item_table_ids[$i]);
-				$post_count = count($posts);
-				
-				$table_int = array_search('posts', $fsip->tables_index);
-				
-				for($j=0; $j < $post_count; $j++){
-					$xml->startElement('sphinx:document');
-						$xml->startAttribute('id');
-						$xml->text($item_ids[$i][$j]);
-						$xml->endAttribute();
-						$xml->startElement('title');
-						$xml->text($posts[$j]['post_title']);
-						$xml->endElement();
-						$xml->startElement('text');
-						$xml->text($posts[$j]['post_category'] . "\n\n" . $posts[$j]['post_text']);
-						$xml->endElement();
-						$xml->startElement('table');
-						$xml->text($table_int);
-						$xml->endElement();
-						$xml->startElement('table_id');
-						$xml->text($item_table_ids[$i][$j]);
-						$xml->endElement();
-					$xml->endElement();
-				}
-			}
-			elseif($item_tables[$i][0] == 'rights'){
+			} elseif($item_tables[$i][0] == 'rights') {
 				$rights = $fsip->getTable('rights', $item_table_ids[$i]);
 				$right_count = count($rights);
 				
@@ -224,8 +195,7 @@ $xml->endAttribute();
 						$xml->endElement();
 					$xml->endElement();
 				}
-			}
-			elseif($item_tables[$i][0] == 'sets'){
+			} elseif($item_tables[$i][0] == 'sets') {
 				$sets = $fsip->getTable('sets', $item_table_ids[$i]);
 				$set_count = count($sets);
 				

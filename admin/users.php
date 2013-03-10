@@ -47,7 +47,6 @@ if(!empty($_POST['user_id'])){
 		if(@$_POST['user_permission_sets'] == 'true'){ $permissions[] = 'sets'; $permissions[] = 'features'; }
 		if(@$_POST['user_permission_pages'] == 'true'){ $permissions[] = 'pages'; $permissions[] = 'features'; }
 		if(@$_POST['user_permission_rights'] == 'true'){ $permissions[] = 'rights'; $permissions[] = 'features'; }
-		if(@$_POST['user_permission_posts'] == 'true'){ $permissions[] = 'posts'; }
 		if(@$_POST['user_permission_comments'] == 'true'){ $permissions[] = 'comments'; }
 		if(@$_POST['user_permission_statistics'] == 'true'){ $permissions[] = 'statistics'; }
 		if(@$_POST['user_permission_thumbnails'] == 'true'){ $permissions[] = 'thumbnails'; $permissions[] = 'settings'; }
@@ -86,7 +85,6 @@ define('TAB', 'settings');
 if(empty($user_db_id)){
 	// Update image counts
 	$fsip->updateCounts('images', 'users', 'user_image_count');
-	$fsip->updateCounts('posts', 'users', 'user_post_count');
 	$fsip->updateCounts('comments', 'users', 'user_comment_count');
 	
 	$user_dbs = $fsip->getTable('users');
@@ -111,7 +109,7 @@ if(empty($user_db_id)){
 			<th>Name</th>
 			<th>Email</th>
 			<th class="center" style="width:10%">Images</th>
-			<th class="center" style="width:10%">Posts</th>
+			<th class="center" style="width:10%">Blog entries</th>
 			<th class="center" style="width:10%">Comments</th>
 			<th>Last login</th>
 		</tr>
@@ -123,7 +121,6 @@ if(empty($user_db_id)){
 				echo '<td>' . $user_db['user_name'] . '</td>';
 				echo '<td><a href="mailto:' . $user_db['user_email'] . '">' . $user_db['user_email'] . '</a></td>';
 				echo '<td class="center"><a href="' . BASE . ADMIN . 'search' . URL_ACT . 'users' . URL_AID . $user_db['user_id'] . URL_RW . '">' . number_format($user_db['user_image_count']) . '</a></td>';
-				echo '<td class="center"><a href="' . BASE . ADMIN . 'posts' . URL_ACT . 'users' . URL_AID . $user_db['user_id'] . URL_RW . '">' . number_format($user_db['user_post_count']) . '</a></td>';
 				echo '<td class="center"><a href="' . BASE . ADMIN . 'comments' . URL_ACT . 'users' . URL_AID . $user_db['user_id'] . URL_RW . '">' . number_format($user_db['user_comment_count']) . '</a></td>';
 				echo '<td>' . $fsip->formatTime($user_db['user_last_login'], null, '<em>Never</em>') . '</td>';
 			echo '</tr>';
@@ -217,13 +214,6 @@ else{
 							<tr>
 								<td class="input"><input type="checkbox" id="user_permission_library" name="user_permission_library" value="true" <?php if(in_array('library', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
 								<td><label for="user_permission_library">Library</label> (edit images)</td>
-							</tr>
-							<tr>
-								<td colspan="4"></td>
-							</tr>
-							<tr>
-								<td class="input"><input type="checkbox" id="user_permission_posts" name="user_permission_posts" value="true" <?php if(in_array('posts', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_posts">Posts</label></td>
 							</tr>
 							<tr>
 								<td colspan="4"></td>

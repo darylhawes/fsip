@@ -44,7 +44,7 @@ class Lessn extends Orbit{
 		}
 		
 		?>
-		<p>Every time you create, edit, or publish an image, post, or page, a shortened link will be generated if it does not already exist using your local <a href="http://www.shauninman.com/archive/2009/08/17/less_n">Lessn</a> installation. You can use <code>{Item_Lessn_URI}</code> (such as, <code>{Image_Lessn_URI}</code>) to use your new shortened links.</p>
+		<p>Every time you create, edit, or publish an image, or page, a shortened link will be generated if it does not already exist using your local <a href="http://www.shauninman.com/archive/2009/08/17/less_n">Lessn</a> installation. You can use <code>{Item_Lessn_URI}</code> (such as, <code>{Image_Lessn_URI}</code>) to use your new shortened links.</p>
 		
 		<table>
 			<tr>
@@ -72,10 +72,6 @@ class Lessn extends Orbit{
 							<td class="right" style="width: 20px;"><input type="checkbox" id="lessn_transmit_pages" name="lessn_transmit_pages" value="pages" <?php if(in_array('pages', $this->lessn_transmit)){ echo 'checked="checked"'; }; ?> /></td>
 							<td><label for="lessn_transmit_pages">Pages</label></td>
 						</tr>
-						<tr>
-							<td class="right" style="width: 20px;"><input type="checkbox" id="lessn_transmit_posts" name="lessn_transmit_posts" value="posts" <?php if(in_array('posts', $this->lessn_transmit)){ echo 'checked="checked"'; }; ?> /></td>
-							<td><label for="lessn_transmit_posts">Posts</label></td>
-						</tr>
 					</table>
 				</td>
 			</tr>
@@ -96,11 +92,7 @@ class Lessn extends Orbit{
 		if($_POST['lessn_transmit_pages'] == 'pages'){
 			$transmit[] = 'pages';
 		}
-		
-		if($_POST['lessn_transmit_posts'] == 'posts'){
-			$transmit[] = 'posts';
-		}
-		
+				
 		$this->setPref('lessn_transmit', $transmit);
 		
 		$this->savePref();
@@ -115,19 +107,6 @@ class Lessn extends Orbit{
 		foreach($images as $image){
 			if(empty($image['image_lessn_uri'])){
 				$this->storeTask(array($this, 'lessn'), $image, 'image_', 'images');
-			}
-		}
-	}
-	
-	public function orbit_post($posts){
-		if(!in_array('posts', $this->lessn_transmit)){ return; }
-		
-		if(count($posts) < 1){ return; }
-		
-		// Seek array for new post
-		foreach($posts as $post){
-			if(empty($post['post_lessn_uri'])){
-				$this->storeTask(array($this, 'lessn'), $post, 'post_', 'posts');
 			}
 		}
 	}

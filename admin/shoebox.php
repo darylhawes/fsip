@@ -74,32 +74,14 @@ if(!empty($_POST['image_ids'])){
 	exit();
 }
 
-// New posts
-$files = $fsip->seekDirectory(PATH . SHOEBOX, 'txt|mdown|md|markdown|textile');
-$p_count = count($files);
-
-foreach($files as $file){
-	$post = new Post();
-	$post->attachUser($user);
-	$post->import($file);
-}
-
-// New images
+// New images DEH - here is where we should be able to seek through subdirectories based on userid
 $files = $fsip->seekDirectory(PATH . SHOEBOX);
 $i_count = count($files);
 
-if(($i_count == 0) and ($p_count == 0)){
+if ($i_count == 0) {
 	$fsip->addNote('There are no files in your shoebox.', 'error');
 	header('Location: ' . BASE . ADMIN . 'upload' . URL_CAP);
 	exit();
-}
-elseif(($i_count == 0) and ($p_count > 0)){
-	$fsip->addNote('You have successfully imported ' . $fsip->returnFullCount($p_count, 'post') . '.', 'success');
-	header('Location: ' . BASE . ADMIN . 'posts' . URL_CAP);
-	exit();
-}
-elseif($p_count > 0){
-	$fsip->addNote('You have also successfully imported ' . $fsip->returnFullCount($p_count, 'post') . '.', 'success');
 }
 
 define('TAB', 'shoebox');

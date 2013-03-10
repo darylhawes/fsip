@@ -105,7 +105,7 @@ require_once(PATH . ADMIN . 'includes/header.php');
 				</li>
 				<li>
 					<strong><a href="#reset-markup">Reset markup</a></strong><br />
-					Resets markup on all images, posts, sets, etc. where not equal to the current markup language (not recommended)
+					Resets markup on all images, sets, etc. where not equal to the current markup language (not recommended)
 				</li>
 			</ul>
 		</div>

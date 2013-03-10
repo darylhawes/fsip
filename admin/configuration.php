@@ -64,9 +64,6 @@ if(!empty($_POST['configuration_save'])){
 	
 	$fsip->setConf('web_markup_ext', @$_POST['web_markup_ext']);
 	
-	$fsip->setConf('post_markup_ext', @$_POST['post_markup_ext']);
-	$fsip->setConf('post_div_wrap', @$_POST['post_div_wrap']);
-	$fsip->setConf('post_div_wrap_class', @$_POST['post_div_wrap_class']);
 	$fsip->setConf('bulk_delete', @$_POST['bulk_delete']);
 	
 	$fsip->setConf('thumb_imagick', @$_POST['thumb_imagick']);
@@ -90,10 +87,7 @@ if(!empty($_POST['configuration_save'])){
 	$fsip->setConf('comm_markup_ext', @$_POST['comm_markup_ext']);
 	$fsip->setConf('comm_allow_html', @$_POST['comm_allow_html']);
 	$fsip->setConf('comm_allow_html_tags', @$_POST['comm_allow_html_tags']);
-	
-	$fsip->setConf('trackback_enabled', @$_POST['trackback_enabled']);
-	$fsip->setConf('trackback_email', @$_POST['trackback_email']);
-	
+		
 	$fsip->setConf('guest_remember', @$_POST['guest_remember']);
 	$fsip->setConf('guest_remember_time', @$_POST['guest_remember_time']);
 	
@@ -315,20 +309,55 @@ require_once(PATH . ADMIN . 'includes/header.php');
 			</td>
 		</tr>
 	</table>
-	
-	<h3>Posts</h3>
+
+	<h3>Comments</h3>
 	
 	<table>
 		<tr>
-			<td class="input"><input type="checkbox" id="post_size_id" name="post_size_id" disabled="disabled" checked="checked" /></td>
+			<td class="input"><input type="checkbox" id="comm_enabled" name="comm_enabled" <?php echo $fsip->readConf('comm_enabled'); ?> value="true" /></td>
 			<td class="description">
-				<label for="post_size_id">Use the thumbnail size <?php echo $fsip->showSizes('post_size_id', $fsip->returnConf('post_size_id')); ?> when adding images by point-and-click</label>
+				<label for="comm_enabled">Enable comments</label>
 			</td>
 		</tr>
 		<tr>
-			<td class="input middle"><input type="checkbox" id="post_div_wrap" name="post_div_wrap" <?php echo $fsip->readConf('post_div_wrap'); ?> value="true" /></td>
+			<td class="input"><input type="checkbox" id="comm_email" name="comm_email" <?php echo $fsip->readConf('comm_email'); ?> value="true" /></td>
+			<td class="description">
+				<label for="comm_email">Email new comments to administrator</label>
+			</td>
+		</tr>
+		<tr>
+			<td class="input"><input type="checkbox" id="comm_mod" name="comm_mod" <?php echo $fsip->readConf('comm_mod'); ?> value="true" /></td>
+			<td class="description">
+				<label for="comm_mod">Moderate visitor comments</label><br />
+				Require administrator approval before visitor comments appear
+			</td>
+		</tr>
+		<tr>
+			<td class="input"><input type="checkbox" id="comm_markup" name="comm_markup" <?php echo $fsip->readConf('comm_markup'); ?> value="true" /></td>
 			<td>
-				<label for="post_div_wrap">Wrap thumbnails in a &#0060;div&#0062; wrapper with the classes:</label> <input type="text" id="post_div_wrap_class" name="post_div_wrap_class" value="<?php echo $fsip->returnConf('post_div_wrap_class'); ?>" class="xs" />
+				<label for="comm_markup">Markup visitor comments using <select name="comm_markup_ext" title="<?php echo $fsip->returnConf('comm_markup_ext'); ?>"><?php $orbit->hook('markup_html'); ?></select></label>
+			</td>
+		</tr>
+		<tr>
+			<td class="input"><input type="checkbox" id="comm_allow_html" name="comm_allow_html" <?php echo $fsip->readConf('comm_allow_html'); ?> value="true" /></td>
+			<td>
+				<label for="comm_allow_html">Allow only select HTML in comments</label><br />
+				Permit the following HTML tags (for example, &#0060;a&#0062;&#0060;em&#0062;&#0060;strong&#0062;): <input type="text" id="comm_allow_html_tags" name="comm_allow_html_tags" value="<?php echo $fsip->returnConf('comm_allow_html_tags'); ?>" class="s" />
+			</td>
+		</tr>
+		<tr>
+			<td class="input"><input type="checkbox" id="comm_close" name="comm_close" <?php echo $fsip->readConf('comm_close'); ?> value="true" /></td>
+			<td class="description">
+				<label for="comm_close">Automatically close items to new comments
+					<select name="comm_close_time">
+						<option value="86400" <?php echo $user->readConf('comm_close_time', '86400'); ?>>24 hours</option>
+						<option value="259200" <?php echo $user->readConf('comm_close_time', '259200'); ?>>three days</option>
+						<option value="604800" <?php echo $user->readConf('comm_close_time', '604800'); ?>>one week</option>
+						<option value="2592000" <?php echo $user->readConf('comm_close_time', '2592000'); ?>>one month</option>
+						<option value="7776000" <?php echo $user->readConf('comm_close_time', '7776000'); ?>>three months</option>
+						<option value="31536000" <?php echo $user->readConf('comm_close_time', '31536000'); ?>>one year</option>
+					</select>
+				after the item&#8217;s publication date</label>
 			</td>
 		</tr>
 	</table>
@@ -403,77 +432,6 @@ require_once(PATH . ADMIN . 'includes/header.php');
 					<option value="100" <?php echo $user->readConf('thumb_watermark_margin', '100'); ?>>100</option>
 				</select>
 				pixel margin
-			</td>
-		</tr>
-	</table>
-
-	<h3>Comments</h3>
-	
-	<table>
-		<tr>
-			<td class="input"><input type="checkbox" id="comm_enabled" name="comm_enabled" <?php echo $fsip->readConf('comm_enabled'); ?> value="true" /></td>
-			<td class="description">
-				<label for="comm_enabled">Enable comments</label>
-			</td>
-		</tr>
-		<tr>
-			<td class="input"><input type="checkbox" id="comm_email" name="comm_email" <?php echo $fsip->readConf('comm_email'); ?> value="true" /></td>
-			<td class="description">
-				<label for="comm_email">Email new comments to administrator</label>
-			</td>
-		</tr>
-		<tr>
-			<td class="input"><input type="checkbox" id="comm_mod" name="comm_mod" <?php echo $fsip->readConf('comm_mod'); ?> value="true" /></td>
-			<td class="description">
-				<label for="comm_mod">Moderate visitor comments</label><br />
-				Require administrator approval before visitor comments appear
-			</td>
-		</tr>
-		<tr>
-			<td class="input"><input type="checkbox" id="comm_markup" name="comm_markup" <?php echo $fsip->readConf('comm_markup'); ?> value="true" /></td>
-			<td>
-				<label for="comm_markup">Markup visitor comments using <select name="comm_markup_ext" title="<?php echo $fsip->returnConf('comm_markup_ext'); ?>"><?php $orbit->hook('markup_html'); ?></select></label>
-			</td>
-		</tr>
-		<tr>
-			<td class="input"><input type="checkbox" id="comm_allow_html" name="comm_allow_html" <?php echo $fsip->readConf('comm_allow_html'); ?> value="true" /></td>
-			<td>
-				<label for="comm_allow_html">Allow only select HTML in comments</label><br />
-				Permit the following HTML tags (for example, &#0060;a&#0062;&#0060;em&#0062;&#0060;strong&#0062;): <input type="text" id="comm_allow_html_tags" name="comm_allow_html_tags" value="<?php echo $fsip->returnConf('comm_allow_html_tags'); ?>" class="s" />
-			</td>
-		</tr>
-		<tr>
-			<td class="input"><input type="checkbox" id="comm_close" name="comm_close" <?php echo $fsip->readConf('comm_close'); ?> value="true" /></td>
-			<td class="description">
-				<label for="comm_close">Automatically close items to new comments
-					<select name="comm_close_time">
-						<option value="86400" <?php echo $user->readConf('comm_close_time', '86400'); ?>>24 hours</option>
-						<option value="259200" <?php echo $user->readConf('comm_close_time', '259200'); ?>>three days</option>
-						<option value="604800" <?php echo $user->readConf('comm_close_time', '604800'); ?>>one week</option>
-						<option value="2592000" <?php echo $user->readConf('comm_close_time', '2592000'); ?>>one month</option>
-						<option value="7776000" <?php echo $user->readConf('comm_close_time', '7776000'); ?>>three months</option>
-						<option value="31536000" <?php echo $user->readConf('comm_close_time', '31536000'); ?>>one year</option>
-					</select>
-				after the item&#8217;s publication date</label>
-			</td>
-		</tr>
-	</table>
-	
-	<h3>Trackbacks</h3>
-	
-	<p>Trackbacks allow you to monitor discussion of your posts on other Web sites.</p>
-	
-	<table>
-		<tr>
-			<td class="input"><input type="checkbox" id="trackback_enabled" name="trackback_enabled" <?php echo $fsip->readConf('trackback_enabled'); ?> value="true" /></td>
-			<td class="description">
-				<label for="trackback_enabled">Enable trackbacks</label>
-			</td>
-		</tr>
-		<tr>
-			<td class="input"><input type="checkbox" id="trackback_email" name="trackback_email" <?php echo $fsip->readConf('trackback_email'); ?> value="true" /></td>
-			<td class="description">
-				<label for="trackback_email">Email new trackbacks to administrator</label>
 			</td>
 		</tr>
 	</table>
@@ -560,8 +518,8 @@ require_once(PATH . ADMIN . 'includes/header.php');
 		<tr>
 			<td class="input"><input type="checkbox" id="syndication_summary_only" name="syndication_summary_only" <?php echo $fsip->readConf('syndication_summary_only'); ?> value="true" /></td>
 			<td class="description">
-				<label for="syndication_summary_only">Only include post summaries</label><br />
-				Requires visitors to click through to read full posts
+				<label for="syndication_summary_only">Only include blog entry summaries</label><br />
+				Requires visitors to click through to read full blog entries.
 			</td>
 		</tr>
 	</table>

@@ -66,7 +66,7 @@ Save the file.
 
 Like a Web server such as Apache or a database server such as MySQL, Sphinx is a *search* server. Its daemon must be running continuously to accept and process searches. Start Sphinx now. Also, make sure Sphinx is loaded when your Web server is restarted.
 
-###### 4. Prepare Alkaline.
+###### 4. Prepare FSIP.
 
 Go to **Dashboard > Settings > Maintenance > "Build items table"** and wait for the task to complete. You have just created a new documents table that Sphinx and FSIP can reference to locate the results.
 
@@ -98,45 +98,3 @@ Now that you've got Sphinx up and running, you need to notify FSIP that Sphinx i
 ###### 8. Make sure it works.
 
 Ensure that FSIP is delivering the search results you were expecting it to. You may want to turn it on and off and compare the results from traditional results to Sphinx results. If the results are not what you were expecting, you can disable Sphinx in the FSIP configuration pane while you fine-tune Sphinx for your Web site's content.
-
-###### 9. (Optional) Taking it the next level. 
-
-As an enterprise-grade search engine, Sphinx has many options and should be configured for the best performance and results. Read the documentation that correlates to your version of Sphinx for more information.
-
-Additionally, many users will want to show and highlight excerpts from their results. Here's how in `results.php`:
-
-	// This code is being placed after we've retrieved our posts, like so:
-	// $posts = new Post($post_ids);
-	
-	// Let's store our what will be our new excerpts in a new array that's derived from the post's text
-	$docs = array();
-	
-	// For each post, we'll convert the HTML entities to ensure they're processed correctly
-	for ($i=0; $i < $posts->post_count; $i++) { 
-		$docs[] = html_entity_decode(strip_tags($posts->posts[$i]['post_text']), ENT_QUOTES, 'UTF-8');
-	}
-	
-	// We need to load a new SphinxClient class, even though we won't be doing an searching
-	// Here's the documentation for the class:
-	// http://us.php.net/manual/en/class.sphinxclient.php
-	$sphinx = new SphinxClient;
-	
-	// Tell Sphinx to use the new array we created to generate excerpts
-	// 'my_site' is the name of our Sphinx index
-	// $_REQUEST['q'] is the search term our user was seeking
-	// The fourth parameter is an associate array with various options
-	$docs = $sphinx->buildExcerpts($docs,
-		'my_site',
-		strip_tags($_REQUEST['q']),
-		array('before_match' => '[[[', 'after_match' => ']]]', 'around' => 20));
-	
-	// Let us format all the data and save it to the object, which we can then use in our Canvas templates
-	for ($i=0; $i < $posts->post_count; $i++) { 
-		// Convert back the HTML entities
-		$posts->posts[$i]['post_text'] = htmlentities($docs[$i], ENT_QUOTES, 'UTF-8');
-		
-		// Let's wrap the words in the excerpts that match our search term with <span> tags
-		$posts->posts[$i]['post_text'] = str_replace(array('[[[', ']]]'),
-			array('<span class="highlight">', '</span>'),
-			$posts->posts[$i]['post_text']);
-	}

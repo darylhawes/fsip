@@ -224,7 +224,7 @@ class Akismet
 	}
 	
 	/**
-	 *	A permanent URL referencing the blog post the comment was submitted to.
+	 *	A permanent URL referencing the page that the comment was submitted to.
 	 *
 	 *	@param string $permalink	The URL.  Optional.
 	 */
@@ -235,7 +235,7 @@ class Akismet
 	/**
 	 *	The type of comment being submitted.  
 	 *
-	 *	May be blank, comment, trackback, pingback, or a made up value like "registration" or "wiki".
+	 *	May be blank, comment or a made up value like "registration" or "wiki".
 	 */
 	public function setCommentType($commentType) {
 		$this->comment['comment_type'] = $commentType;

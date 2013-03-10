@@ -70,42 +70,7 @@ else{
 	{/block:Images}');
 	$image_entries->loop($images);
 
-	// Gather posts
-
-	$post_ids = new Find('posts');
-	$post_ids->sort('posts.post_published', 'DESC');
-	$post_ids->page(1,10);
-	$post_ids->published();
-	$post_ids->find();
-
-	$posts = new Post($post_ids);
-	$posts->formatTime('c');
-
-	if($fsip->returnConf('syndication_summary_only')){
-		foreach($posts->posts as &$post){
-			$post['post_text'] = $fsip->fitStringByWord($post['post_text'], 400);
-		}
-	}
-
-	$post_entries = new Canvas('
-	{block:Posts}
-		<entry>
-			<title type="text">{if:Post_Title}{Post_Title}{else:Post_Title}(Untitled){/if:Post_Title}</title>
-			<link href="{Post_URI}" />
-			<id>{Post_URI}</id>
-			<updated>{Post_Modified_Format}</updated>
-			<published>{Post_Published_Format}</published>
-			<content type="xhtml">
-				<div xmlns="http://www.w3.org/1999/xhtml">
-					{Post_Text}
-				</div>
-			</content>
-		</entry>
-	{/block:Posts}');
-	$post_entries->loop($posts);
-
 	$updated['image'] = strtotime($images->images[0]['image_published']);
-	$updated['post'] = strtotime($posts->posts[0]['post_published']);
 
 	$last_updated = 0;
 
@@ -131,8 +96,6 @@ else{
 		</author>
 
 		<?php echo $image_entries; ?>
-
-		<?php echo $post_entries; ?>
 
 	</feed>
 	

@@ -219,16 +219,6 @@ div.comments.box{
 	line-height: 1.3em;
 }
 
-.post img{
-	border: solid 3px #222;
-	margin-bottom: 1.5em;
-}
-
-.post .comments img{
-	border: none;
-	margin-bottom: 0;
-}
-
 img.small{
 	margin-right: 1.6em;
 }

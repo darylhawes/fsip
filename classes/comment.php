@@ -17,7 +17,6 @@ class Comment extends FSIP{
 	public $comment_ids;
 	public $comment_count = 0;
 	public $image_ids = array();
-	public $post_ids = array();
 
 	protected $sql;
 	
@@ -84,23 +83,17 @@ class Comment extends FSIP{
 		$this->comment_count = count($this->comments);
 		
 		// Attach additional fields
-		for($i = 0; $i < $this->comment_count; ++$i){
-			if($this->comments[$i]['image_id'] != 0){
+		for ($i = 0; $i < $this->comment_count; ++$i) {
+			if($this->comments[$i]['image_id'] != 0) {
 				$this->image_ids[] = $this->comments[$i]['image_id'];
-			}
-			if($this->comments[$i]['post_id'] != 0){
-				$this->post_ids[] = $this->comments[$i]['post_id'];
 			}
 		}
 	
 		$this->image_ids = array_unique($this->image_ids, SORT_NUMERIC);
 		$this->image_ids = array_values($this->image_ids);
-
-		$this->post_ids = array_unique($this->post_ids, SORT_NUMERIC);
-		$this->post_ids = array_values($this->post_ids);
 	}
 	
-	public function __destruct(){
+	public function __destruct() {
 		parent::__destruct();
 	}
 	
@@ -110,8 +103,8 @@ class Comment extends FSIP{
 	 * @param Orbit $orbit 
 	 * @return void
 	 */
-	public function hook($orbit=null){
-		if(!is_object($orbit)){
+	public function hook($orbit=null) {
+		if (!is_object($orbit)) {
 			$orbit = new Orbit;
 		}
 		

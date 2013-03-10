@@ -44,7 +44,6 @@ require_once(PATH . ADMIN . 'includes/header.php');
 
 <div class="actions">
 	<a href="<?php echo BASE . ADMIN . 'upload' . URL_CAP; ?>"><button>Upload file</button></a>
-	<a href="<?php echo BASE . ADMIN . 'posts' . URL_ACT . 'add' . URL_RW; ?>"><button>Write post</button></a>
 </div>
 
 <h1><img src="<?php echo BASE . ADMIN; ?>images/icons/dashboard.png" alt="" /> Dashboard</h1>
@@ -73,7 +72,6 @@ require_once(PATH . ADMIN . 'includes/header.php');
 				echo '<tr><td class="right">' . number_format($table['count']) . '</td><td><a href="' . BASE . ADMIN . $table['table'] . URL_CAP . '">' . $table['display'] . '</a></td></tr>';
 				
 				if($table['table'] == 'images'){ $image_count = $table['count']; }
-				if($table['table'] == 'posts'){ $post_count = $table['count']; }
 			}
 			?>
 		</table>
@@ -85,7 +83,7 @@ require_once(PATH . ADMIN . 'includes/header.php');
 
 <div class="span-24 prepend-top last">
 	<div class="actions">
-		<a href="<?php echo BASE . ADMIN . 'atom' . URL_CAP; ?>" class="tip" title="Keep track of new comments, trackbacks, and daily stats from your newsreader."><button>Subscribe to dashboard</button></a>
+		<a href="<?php echo BASE . ADMIN . 'atom' . URL_CAP; ?>" class="tip" title="Keep track of new comments and daily stats from your newsreader."><button>Subscribe to dashboard</button></a>
 	</div>
 	
 	<h1><img src="<?php echo BASE . ADMIN; ?>images/icons/timeline.png" alt="" /> Timeline</h1><br />
@@ -123,20 +121,6 @@ require_once(PATH . ADMIN . 'includes/header.php');
 		$timestamps[] = strtotime($images->images[$i]['image_modified']);
 		$items[] = $images->images[$i];
 		$types[] = 'image';
-	}
-
-	$post_ids = new Find('posts');
-	$post_ids->sort('posts.post_modified', 'DESC');
-	$post_ids->page(1, 60);
-	$post_ids->find();
-
-	$posts = new Post($post_ids);
-
-	for($i=0; $i < $posts->post_count; $i++){
-		if(empty($posts->posts[$i]['post_modified'])){ continue; }
-		$timestamps[] = strtotime($posts->posts[$i]['post_modified']);
-		$items[] = $posts->posts[$i];
-		$types[] = 'post';
 	}
 
 	array_multisort($timestamps, SORT_DESC, $items, $types);
@@ -192,11 +176,6 @@ require_once(PATH . ADMIN . 'includes/header.php');
 		
 				$timeline[$modified][] = ob_get_contents();
 			}
-			elseif($type == 'post'){
-				echo '<p><strong class="large"><a href="' . BASE . ADMIN . 'posts' . URL_ID . $items[$i]['post_id'] . URL_RW . '" title="' . $fsip->makeHTMLSafe($fsip->fitStringByWord(strip_tags($items[$i]['post_text']), 150)) . '" class="tip">' . $items[$i]['post_title'] . '</a></strong></p>';
-		
-				$timeline[$modified][] = ob_get_contents();
-			}
 	
 			ob_end_clean();
 		}
@@ -240,7 +219,6 @@ if(($user->returnConf('maint_reports') === true) && ($user->returnConf('maint_re
 			'db_server_version' => $fsip->db_version,
 			'php_version' => phpversion(),
 			'image_count' => $image_count,
-			'post_count' => $post_count,
 	    )
 	);
 

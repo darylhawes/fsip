@@ -7,7 +7,6 @@ DROP TABLE guests;
 DROP TABLE links;
 DROP TABLE pages;
 DROP TABLE images;
-DROP TABLE posts;
 DROP TABLE rights;
 DROP TABLE sets;
 DROP TABLE sizes;

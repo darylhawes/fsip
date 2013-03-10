@@ -196,7 +196,7 @@ else{
 	<form id="page" action="<?php echo BASE . ADMIN . 'pages' . URL_CAP; ?>" method="post">
 		<div class="span-24 last">
 			<div class="span-15 append-1">
-				<input type="text" id="page_title" name="page_title" placeholder="Title" <?php if(empty($post['page_title'])){ echo 'autofocus="autofocus"'; }; ?> value="<?php echo @$page['page_title']; ?>" class="title notempty" />
+				<input type="text" id="page_title" name="page_title" placeholder="Title" autofocus="autofocus" value="<?php echo @$page['page_title']; ?>" class="title notempty" />
 				<textarea id="page_text_raw" name="page_text_raw" placeholder="Text" style="height: 500px;" class="<?php if($user->returnPref('text_code')){ echo $user->returnPref('text_code_class'); } ?>"><?php echo @$page['page_text_raw']; ?></textarea>
 				<p class="info_bar">
 					
@@ -345,11 +345,7 @@ else{
 				else{
 					$label = 'image_src_admin';
 				}
-	
-				if($fsip->returnConf('post_div_wrap')){
-					echo '<div class="none wrap_class">' . $fsip->returnConf('post_div_wrap_class') . '</div>';
-				}
-	
+		
 				foreach($images->images as $image){
 					$image['image_title'] = $fsip->makeHTMLSafe($image['image_title']);
 					echo '<a href="' . $image[$label] . '"><img src="' . $image['image_src_square'] .'" alt="' . $image['image_title']  . '" class="frame" id="image-' . $image['image_id'] . '" /></a>';

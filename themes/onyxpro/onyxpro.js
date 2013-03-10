@@ -6,9 +6,8 @@ $(document).ready(function(){
 		author_name = parent.find('.comment_author_name').val();
 		author_email = parent.find('.comment_author_email').val();
 		image_id = parent.find('input[name="image_id"]').val();
-		post_id = parent.find('input[name="post_id"]').val();
 		if(!empty(text) && !empty(author_name) && !empty(author_email)){
-			$.post(BASE + 'themes/onyxpro/tasks/add-comment.php', { text: text, author_name: author_name, author_email: author_email, image_id: image_id, post_id: post_id }, function(comment){
+			$.post(BASE + 'themes/onyxpro/tasks/add-comment.php', { text: text, author_name: author_name, author_email: author_email, image_id: image_id }, function(comment){
 				if(!empty(comment)){
 					$('table.comments').append('<tr><td></td><td>' + comment + '<p class="quiet">&#8212; ' + author_name + ', just now (may await moderation)</p></td></tr>');
 					$('.comments.box').slideUp();

@@ -16,21 +16,6 @@ $user->perm(true);
 
 $markup = $fsip->returnConf('web_markup_ext');
 
-$query = $fsip->prepare('SELECT post_id FROM posts WHERE post_markup != :post_markup;');
-$query->execute(array(':post_markup' => $markup));
-$posts = $query->fetchAll();
-
-$post_ids = array();
-
-foreach($posts as $post){
-	$post_ids[] = $post['post_id'];
-}
-
-if(count($post_ids) > 0){
-	$query = $fsip->prepare('UPDATE posts SET post_text_raw = post_text, post_markup = :post_markup WHERE (post_id IN (' . implode(', ', $post_ids) . '));');
-	$query->execute(array(':post_markup' => $markup));
-}
-
 $query = $fsip->prepare('SELECT image_id FROM images WHERE image_markup != :image_markup;');
 $query->execute(array(':image_markup' => $markup));
 $images = $query->fetchAll();

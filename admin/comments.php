@@ -39,16 +39,12 @@ if(!empty($_POST['comment_id'])){
 	
 	$comment = new Comment($comment_id);
 	
-	if(!empty($_POST['post_response_raw'])){
-		$comment_text_raw = $_POST['post_response_raw'];
+	if(!empty($_POST['raw_response'])){
+		$comment_text_raw = $_POST['raw_response'];
 		
 		if(!empty($_POST['image_id'])){
 			$id = $fsip->findID($_POST['image_id']);
 			$id_type = 'image_id';
-		}
-		elseif(!empty($_POST['post_id'])){
-			$id = $fsip->findID($_POST['post_id']);
-			$id_type = 'post_id';
 		}
 		
 		// Configuration: comm_markup
@@ -76,18 +72,15 @@ if(!empty($_POST['comment_id'])){
 		$fields = $orbit->hook('comment_add', $fields, $fields);
 		
 		if(!$comment_id = $fsip->addRow($fields, 'comments')){
-			$fsip->addNote('The response could not be posted.', 'error');
+			$fsip->addNote('The response could not be added.', 'error');
 		}
 		else{
 			// Update comment counts
 			if($id_type == 'image_id'){
 				$fsip->updateCount('comments', 'images', 'image_comment_count', $id);
 			}
-			elseif($id_type == 'post_id'){
-				$fsip->updateCount('comments', 'posts', 'post_comment_count', $id);
-			}
 			
-			$fsip->addNote('The response was successfully posted.', 'success');
+			$fsip->addNote('The response was successfully added.', 'success');
 		}
 	}
 	
@@ -101,16 +94,9 @@ if(!empty($_POST['comment_id'])){
 			$id = $fsip->findID($_POST['image_id']);
 			$id_type = 'image_id';
 		}
-		elseif(!empty($_POST['post_id'])){
-			$id = $fsip->findID($_POST['post_id']);
-			$id_type = 'post_id';
-		}
 		
 		if($id_type == 'image_id'){
 			$fsip->updateCount('comments', 'images', 'image_comment_count', $id);
-		}
-		elseif($id_type == 'post_id'){
-			$fsip->updateCount('comments', 'posts', 'post_comment_count', $id);
 		}
 	}
 	elseif(isset($_POST['comment_recover']) and ($_POST['comment_recover'] == 'recover')){
@@ -123,25 +109,14 @@ if(!empty($_POST['comment_id'])){
 			$id = $fsip->findID($_POST['image_id']);
 			$id_type = 'image_id';
 		}
-		elseif(!empty($_POST['post_id'])){
-			$id = $fsip->findID($_POST['post_id']);
-			$id_type = 'post_id';
-		}
 		
 		if($id_type == 'image_id'){
 			$fsip->updateCount('comments', 'images', 'image_comment_count', $id);
-		}
-		elseif($id_type == 'post_id'){
-			$fsip->updateCount('comments', 'posts', 'post_comment_count', $id);
 		}
 	}
 	elseif(!empty($_POST['comment_quick'])){
 		if($_POST['comment_quick'] == 'go_image'){
 			header('Location: ' . BASE . ADMIN . 'image' . URL_ID . $comment->comments[0]['image_id'] . URL_RW);
-			exit();
-		}
-		elseif($_POST['comment_quick'] == 'go_post'){
-			header('Location: ' . BASE . ADMIN . 'posts' . URL_ID . $comment->comments[0]['post_id'] . URL_RW);
 			exit();
 		}
 		elseif($_POST['comment_quick'] == 'publish'){
@@ -166,16 +141,9 @@ if(!empty($_POST['comment_id'])){
 				$id = $fsip->findID($_POST['image_id']);
 				$id_type = 'image_id';
 			}
-			elseif(!empty($_POST['post_id'])){
-				$id = $fsip->findID($_POST['post_id']);
-				$id_type = 'post_id';
-			}
 
 			if($id_type == 'image_id'){
 				$fsip->updateCount('comments', 'images', 'image_comment_count', $id);
-			}
-			elseif($id_type == 'post_id'){
-				$fsip->updateCount('comments', 'posts', 'post_comment_count', $id);
 			}
 		}
 	}
@@ -370,9 +338,6 @@ if(empty($comment_id)){
 			if(is_int($key)){
 				echo '<option value="go_image">Go to image</option>';
 			}
-			else{
-				echo '<option value="go_post">Go to post</option>';
-			}
 			echo '</select> <input type="hidden" name="comment_id" value="' . $comment['comment_id'] . '" /><input type="submit" value="Do" /></form>\'></button></div>';
 			echo '<strong><a href="' . BASE . ADMIN . 'comments' . URL_ID . $comment['comment_id'] . URL_RW . '" class="large tip" title="' . $fsip->makeHTMLSafe($fsip->fitStringByWord(strip_tags($comment['comment_text']), 150)) . '">';
 			echo $fsip->fitStringByWord(strip_tags($comment['comment_text']), 50);
@@ -448,12 +413,6 @@ else{
 			<a href="<?php echo BASE . ADMIN . 'images' . URL_ID . $comment['image_id'] . URL_RW; ?>"><button>Go to image</button></a>
 			<a href="<?php echo BASE . 'image' . URL_ID . $comment['image_id'] . URL_RW; ?>"><button>Launch image</button></a>
 		</div>
-	<?php } if($comment['post_id'] != 0){ ?>
-		<div class="actions">
-			<?php echo $email_action; ?>
-			<a href="<?php echo BASE . ADMIN . 'posts' . URL_ID . $comment['post_id'] . URL_RW; ?>"><button>Go to post</button></a>
-			<a href="<?php echo BASE . 'post' . URL_ID . $comment['post_id'] . URL_RW; ?>"><button>Launch post</button></a>
-		</div>
 	<?php } ?>
 	
 	<h1><img src="<?php echo BASE . ADMIN; ?>images/icons/comments.png" alt="" /> Comment</h1>
@@ -464,10 +423,10 @@ else{
 				<textarea id="comment_text_raw" name="comment_text_raw" placeholder="Text" style="height: 300px;" class="<?php if($user->returnPref('text_code')){ echo $user->returnPref('text_code_class'); } ?>"><?php echo @$comment['comment_text_raw']; ?></textarea>
 				
 				<p>
-					<span class="switch">&#9656;</span> <a href="#" class="show">Post response</a> <span class="quiet">(response will become new comment)</span>
+					<span class="switch">&#9656;</span> <a href="#" class="show">Leave response</a> <span class="quiet">(response will become a new comment)</span>
 				</p>
 				<div class="reveal">
-					<textarea id="post_response_raw" name="post_response_raw" style="height: 150px;" class="<?php if($user->returnPref('text_code')){ echo $user->returnPref('text_code_class'); } ?>"></textarea>
+					<textarea id="raw_response" name="raw_response" style="height: 150px;" class="<?php if($user->returnPref('text_code')){ echo $user->returnPref('text_code_class'); } ?>"></textarea>
 				</div>
 			</div>
 			<div class="span-8 last">
@@ -547,7 +506,6 @@ else{
 		<p>
 			<input type="hidden" name="comment_id" value="<?php echo $comment['comment_id']; ?>" />
 			<input type="hidden" name="image_id" value="<?php echo $comment['image_id']; ?>" />
-			<input type="hidden" name="post_id" value="<?php echo $comment['post_id']; ?>" />
 			<input type="hidden" id="comm_markup" name="comm_markup" value="<?php echo $comment['comment_markup']; ?>" />
 			<input type="submit" value="<?php echo (($comment['comment_status'] == 0) ? 'Publish' : 'Save changes'); ?>" />
 			and

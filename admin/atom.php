@@ -83,41 +83,8 @@ else{
 	$comment_entries->assign('Location', LOCATION);
 	$comment_entries->loop($comments);
 
-	// Gather trackbacks
-
-	$trackback_ids = new Find('trackbacks');
-	$trackback_ids->sort('trackbacks.trackback_created', 'DESC');
-	$trackback_ids->page(1,10);
-	$trackback_ids->find();
-
-	$trackbacks = $fsip->getTable('trackbacks', $trackback_ids->trackback_ids);
-	foreach($trackbacks as &$trackback){
-		$trackback['trackback_created_format'] = date('c', strtotime($trackback['trackback_created']));
-	}
-
-	$trackbacks['trackback_ids'] = $trackback_ids->trackback_ids;
-	$trackbacks['trackbacks'] = $trackbacks;
-	$trackbacks = (object) $trackbacks;
-
-	$trackback_entries = new Canvas('
-	{block:Trackbacks}
-		<entry>
-			<title type="text">New trackback ({Trackback_Title})</title>
-			<link href="{Trackback_URI}" />
-			<id>{Trackback_URI}</id>
-			<updated>{Trackback_Created_Format}</updated>
-			<published>{Trackback_Created_Format}</published>
-			<content type="xhtml">
-				<div xmlns="http://www.w3.org/1999/xhtml">
-					{Trackback_Excerpt}
-				</div>
-			</content>
-		</entry>
-	{/block:Trackbacks}');
-	$trackback_entries->loop($trackbacks);
 
 	$updated['comment'] = strtotime($images->images[0]['comment_created']);
-	$updated['trackback'] = strtotime($trackbacks->trackbacks[0]['trackback_created']);
 
 	$last_updated = 0;
 
@@ -153,8 +120,6 @@ else{
 	
 		<?php echo $comment_entries; ?>
 	
-		<?php echo $trackback_entries; ?>
-
 	</feed>
 	
 	<?php

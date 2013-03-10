@@ -30,8 +30,7 @@
 # WordPress settings:
 #
 
-# Change to false to remove Markdown from posts and/or comments.
-@define( 'MARKDOWN_WP_POSTS',      true );
+# Change to false to remove Markdown from comments.
 @define( 'MARKDOWN_WP_COMMENTS',   true );
 
 

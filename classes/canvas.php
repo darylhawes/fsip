@@ -269,9 +269,6 @@ class Canvas extends FSIP{
 				if(($match[1] == 'images') and ($this->form_wrap === true)){
 					$match[2] = '<form action="" method="post">' . $match[2] . '</form>';
 				}
-				elseif(($match[1] == 'posts') and ($this->form_wrap === true)){
-					$match[2] = '<form action="" method="post">' . $match[2] . '</form>';
-				}
 				elseif(($match[1] == 'images') and ($this->slideshow === true)){
 					$match[2] = '<li><!-- ' . $match[2] . ' --></li>';
 				}
@@ -354,9 +351,6 @@ class Canvas extends FSIP{
 						// If tied to image array (either sub or super), execute inner blocks
 						if(!empty($reel[$i]['image_id'])){
 							$loop_template = self::loopSub($object, $loop_template, 'image_id', $reel[$i]['image_id']);
-						}
-						if(!empty($reel[$i]['post_id'])){
-							$loop_template = self::loopSub($object, $loop_template, 'post_id', $reel[$i]['post_id']);
 						}
 						if(!empty($reel[$i]['set_id'])){
 							$loop_template = self::loopSub($object, $loop_template, 'set_id', $reel[$i]['set_id']);

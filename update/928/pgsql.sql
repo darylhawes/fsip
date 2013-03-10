@@ -1,1 +1,0 @@
-ALTER TABLE "posts" ADD "user_id" INTEGER;

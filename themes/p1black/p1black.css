@@ -143,7 +143,7 @@ img.large{
 	text-align: right;
 }
 
-#blog img, #post img, #page img, #results-posts img{
+#page img {
 	margin-bottom: 1.5em;
 	-webkit-box-shadow: 0 0 10px #000;
 	-moz-box-shadow: 0 0 10px #000;
@@ -200,7 +200,7 @@ p.slim{
 td.right{ text-align: right; vertical-align: middle; }
 
 #page, .big { font-size: 1.2em; line-height: 1.6em; }
-#results-images, #results-posts { margin-bottom: 1.5em; }
+#results-images { margin-bottom: 1.5em; }
 
 img.ftr{ float: right; margin: 0 0 1.5em 1.5em; }
 img.ftl{ float: left; margin: 0 1.5em 1.5em 0; }

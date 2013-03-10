@@ -796,13 +796,12 @@ $(document).ready(function(){
 	$(".reveal").hide();
 	
 	$("a.show").toggle(
-		function(){
+		function() {
 			var original = $(this).text();
-			if(original.match('Show')){
+			if (original.match('Show')) {
 				var re = /Show(.*)/;
 				var modified = 'Hide' + original.replace(re, "$1");
-			}
-			else{
+			} else {
 				var modified = original;
 			}
 			
@@ -811,13 +810,12 @@ $(document).ready(function(){
 			$(this).text(modified);
 			event.preventDefault();
 		},
-		function(){
+		function() {
 			var new_original = $(this).text();
-			if(new_original.match('Hide')){
+			if (new_original.match('Hide')) {
 				var new_re = /Hide(.*)/;
 				var new_modified = 'Show' + new_original.replace(new_re, "$1");
-			}
-			else{
+			} else {
 				var new_modified = new_original;
 			}
 			
@@ -828,20 +826,19 @@ $(document).ready(function(){
 		}
 	);
 	
-	$("input[name='install']").click(function(){
+	$("input[name='install']").click(function() {
 		$(this).hide();
 		$(this).after('<input type="submit" name="install" value="Installing..." disabled="disabled" />');
 	});
 	
 	// GEOLOCATION
-	$('a.get_location').live('click', function(event){
+	$('a.get_location').live('click', function(event) {
 		pos = $('.get_location_set').text();
-		if(pos.length > 0){
+		if (pos.length > 0) {
 			pos = pos.trim();
 			$(this).siblings('input.get_location_result').val(pos);
-		}
-		else{
-			if(navigator.geolocation){
+		} else {
+			if (navigator.geolocation) {
 				geo_selector = $(this);
 				geo_selector.siblings('input.get_location_result').attr('placeholder', 'Locating...');
 				navigator.geolocation.getCurrentPosition(function(pos){
@@ -952,15 +949,6 @@ $(document).ready(function(){
 			delay: 200,
 			minLength: 2,
 			select: function(event, ui) { $(this).parent().submit(); }
-		});
-	});
-	
-	// PRIMARY - POST CATEGORY HINTING
-	$(".post_category").live('focus', function(){
-		$(this).autocomplete({
-			source: BASE + ADMIN + 'tasks/hint-post-cat.php',
-			delay: 200,
-			minLength: 2
 		});
 	});
 	
@@ -1113,7 +1101,7 @@ $(document).ready(function(){
 	
 	// PREVIEWING
 	
-	if((page == 'Post') || (page == 'Page') || (page == 'Image')){
+	if((page == 'Page') || (page == 'Image')){
 		$('#preview').click(function(){
 			newwin = window.open(null, 'preview', null, true);
 			object = {};
@@ -1139,9 +1127,9 @@ $(document).ready(function(){
 		});
 	}
 	
-	// VERSIONS & CITATIONS & TRACKBACKS
+	// VERSIONS & CITATIONS
 	
-	if((page == 'Post') || (page == 'Page')){
+	if (page == 'Page') {
 		autosave();
 		
 		$('a[href="#revert"]').live('click', function(){
@@ -1227,23 +1215,7 @@ $(document).ready(function(){
 		}
 
 		$('.info_bar').text(chars + ' characters, ' + words + ' words, ' + paras + ' paragraphs');
-		
-		$('#trackbacks img').hover(function() {
-			recall_src = $(this).attr('src');
-			$(this).attr('src', BASE + ADMIN + 'images/icons/trash.png');
-			$(this).css('cursor', 'pointer');
-		}, function() {
-			$(this).attr('src', recall_src);
-			$(this).css('cursor', '');
-		});
-		
-		$('#trackbacks img').click(function(){
-			id = $(this).attr('id');
-			id = findID(id);
-			$(this).parents('tr').fadeOut();
-			$.post(BASE + ADMIN + 'tasks/delete-trackback.php', {id: id});
-		});
-		
+
 		text_raw.keyup(function(event){
 			// Count words
 			contents = text_raw.val();

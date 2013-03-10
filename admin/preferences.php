@@ -25,7 +25,6 @@ if(!empty($_POST['preferences_save'])){
 	$user->setPref('recent_images_limit', @$_POST['recent_images_limit']);
 	$user->setPref('shoe_pub', @$_POST['shoe_pub']);
 	$user->setPref('shoe_to_bulk', @$_POST['shoe_to_bulk']);
-	$user->setPref('post_pub', @$_POST['post_pub']);
 	$user->savePref();
 	
 	$fsip->addNote('Your preferences have been saved.', 'success');
@@ -120,17 +119,6 @@ require_once(PATH . ADMIN . 'includes/header.php');
 			<td class="input"><input type="checkbox" id="shoe_to_bulk" name="shoe_to_bulk" <?php echo $user->readPref('shoe_to_bulk'); ?> value="true" /></td>
 			<td class="description">
 				<label for="shoe_to_bulk">Send images to bulk editor after processing</label>
-			</td>
-		</tr>
-	</table>
-	
-	<h3>Posts</h3>
-	
-	<table>
-		<tr>
-			<td class="input"><input type="checkbox" id="post_pub" name="post_pub" <?php echo $user->readPref('post_pub'); ?> value="true" /></td>
-			<td class="description">
-				<label for="post_pub">Set all posts to be published immediately after creating by default</label>
 			</td>
 		</tr>
 	</table>

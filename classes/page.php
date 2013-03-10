@@ -154,8 +154,8 @@ class Page extends FSIP{
 			}
 			
 			// Create version
-			if(!empty($fields['page_text_raw']) and (($fields['page_text_raw'] != $this->pages[$i]['page_text_raw']) or ($fields['page_title'] != $this->pages[$i]['page_title'])) and ($version == true)){
-				similar_text($fields['post_text_raw'], $this->posts[$i]['post_text_raw'], $version_similarity);
+			if(!empty($fields['page_text_raw']) and (($fields['page_text_raw'] != $this->pages[$i]['page_text_raw']) or ($fields['page_title'] != $this->pages[$i]['page_title'])) and ($version == true)) {
+//				similar_text($fields['post_text_raw'], $this->posts[$i]['post_text_raw'], $version_similarity);
 				$version_fields = array('page_id' => $this->pages[$i]['page_id'],
 					'user_id' => $this->user['user_id'],
 					'version_title' => $page_title,

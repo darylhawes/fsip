@@ -7,13 +7,10 @@
 */
 
 require_once('./../../../config.php');
-require_once(PATH . CLASSES . 'alkaline.php');
+require_once(PATH . CLASSES . 'fsip.php');
 
 if(!empty($_POST['image_id'])){
 	$id = $_POST['image_id'];
-}
-elseif(!empty($_POST['post_id'])){
-	$id = $_POST['post_id'];
 }
 
 $comment_text = 'comment_' . $id . '_text';
@@ -26,11 +23,11 @@ $_POST[$comment_author_name] = $_POST['author_name'];
 $_POST[$comment_author_email] = $_POST['author_email'];
 $_POST[$comment_author_uri] = $_POST['author_uri'];
 
-$alkaline = new Alkaline;
+$fsip = new FSIP;
 $comment_id = $alkaline->addComments();
 
 if($comment_id > 0){
-	$comment = $alkaline->getRow('comments', $comment_id);
+	$comment = $fsip->getRow('comments', $comment_id);
 	echo $comment['comment_text'];
 }
 

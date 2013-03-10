@@ -12,12 +12,12 @@ require_once(PATH . CLASSES . 'fsip.php');
 $fsip = new FSIP;
 $fsip->recordStat('home');
 
-if(empty($_SESSION['fsip']['search']['table'])){
+if (empty($_SESSION['fsip']['search']['table'])) {
 	header('Location: ' . LOCATION . BASE . 'search' . URL_CAP);
 	exit();
 }
 
-if($_SESSION['fsip']['search']['table'] == 'images'){
+if ($_SESSION['fsip']['search']['table'] == 'images') {
 	$image_ids = new Find('images', $_SESSION['fsip']['search']['images']['ids']);
 	$image_ids->page();
 	$image_ids->find();
@@ -32,28 +32,6 @@ if($_SESSION['fsip']['search']['table'] == 'images'){
 
 	$content = new Canvas;
 	$content->load('results-images');
-}
-elseif($_SESSION['fsip']['search']['table'] == 'posts'){
-	$post_ids = new Find('posts', $_SESSION['fsip']['search']['posts']['ids']);
-	$post_ids->page(null, 3);
-	$post_ids->find();
-	
-	$posts = new Post($post_ids);
-	$posts->formatTime();
-	$posts->addSequence('last', 2);
-
-	for ($i=0; $i < $posts->post_count; $i++) { 
-		if($i > 1){
-			$posts->posts[$i]['post_hr'] = '<hr />';
-		}
-	}
-	
-	$count = $post_ids->count;
-	$model = $post_ids;
-	$loop = $posts;
-	
-	$content = new Canvas;
-	$content->load('results-posts');
 }
 
 $header = new Canvas;

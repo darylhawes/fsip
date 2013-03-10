@@ -51,7 +51,7 @@ Filters modify the data to be inserted and are appear after the insertion, follo
 
 ###### Blocks
 
-Blocks display a series of data in a loop. There are seven major blocks in FSIP: Comments, Images, Pages, Posts, Sets, Sizes, and Tags. For example:
+Blocks display a series of data in a loop. There are seven major blocks in FSIP: Comments, Images, Pages, Sets, Sizes, and Tags. For example:
 
 	{block:Images}
 		{Image_Title}
@@ -182,26 +182,6 @@ EXIF values vary by image (use **Show EXIF Data** to reveal your options), but c
 - `image_exif_model` (e.g., Nikon D200)
 - `image_exif_software` (e.g., Adobe Imageshop CS5 Macintosh)
 - And so on...
-
-###### Post
-
-- `post_id`
-- `post_title`
-- `post_title_url`
-- `post_text`
-- `post_text_raw`
-- `post_markup`
-- `post_images`
-- `post_views`
-- `post_words`
-- `post_created`
-- `post_created_format`
-- `post_published`
-- `post_published_format`
-- `post_modified`
-- `post_modified_format`
-- `post_comment_count`
-- `post_comment_disabled`
 
 ###### Set
 

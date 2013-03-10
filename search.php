@@ -9,15 +9,9 @@
 require_once('config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
-if(isset($_REQUEST['type'])){
+if (isset($_REQUEST['type'])) {
 	$type = $_REQUEST['type'];
-	if($type == 'posts'){
-		$ids = new Find('posts');
-		$ids->sort('posts.post_published', 'DESC');
-		$ids->published();
-	}
-	else{
-		$type = 'images';
+	if ($type == 'images') {
 		$ids = new Find('images');
 		$ids->sort('images.image_published', 'DESC');
 		$ids->published();

@@ -31,10 +31,10 @@ if(isset($_REQUEST['recovery'])){
 }
 
 if($user->returnPref('recovery_mode') == true){
-	$recovery_action = '<a href="?recovery=0" title="Recovery mode allows you to recover deleted images, posts, and more." class="tip"><button>Exit recovery mode</button></a>';
+	$recovery_action = '<a href="?recovery=0" title="Recovery mode allows you to recover deleted images, blog entries, and more." class="tip"><button>Exit recovery mode</button></a>';
 }
 else{
-	$recovery_action = '<a href="?recovery=1" title="Recovery mode allows you to recover deleted images, posts, and more." class="tip"><button>Enter recovery mode</button></a>';
+	$recovery_action = '<a href="?recovery=1" title="Recovery mode allows you to recover deleted images, blog entries, and more." class="tip"><button>Enter recovery mode</button></a>';
 }
 
 

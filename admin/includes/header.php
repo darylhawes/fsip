@@ -38,7 +38,6 @@
 							<?php echo $user->user['user_user']; ?>
 						</strong> &#0160;
 						<a href="<?php echo BASE . ADMIN . 'search' . URL_ACT . 'me' . URL_RW; ?>">My Images</a>,
-						<a href="<?php echo BASE . ADMIN . 'posts' . URL_ACT . 'me' . URL_RW; ?>">Posts</a>,
 						<a href="<?php echo BASE . ADMIN . 'comments' . URL_ACT . 'me' . URL_RW; ?>">Comments</a> &#0160;
 						<a href="<?php echo BASE . ADMIN . 'preferences' . URL_CAP; ?>">Preferences</a> &#0160;
 						<a href="<?php echo BASE . ADMIN . 'logout' . URL_CAP; ?>">Logout</a>
@@ -59,7 +58,6 @@
 							<form action="<?php echo BASE . ADMIN . 'search' . URL_CAP; ?>" method="post">
 								<select name="search_type" id="search_type">
 									<option value="images">Images</option>
-									<option value="posts">Posts</option>
 									<option value="comments">Comments</option>
 								</select>
 								<input type="search" name="q" results="10" />
@@ -76,7 +74,7 @@
 				<ul>
 					<?php
 
-					if (@!defined('TAB') or (@TAB == 'dashboard') or (@TAB == 'upload') or (@TAB == 'shoebox') or (@TAB == 'library') or (@TAB == 'posts') or (@TAB == 'comments') or (@TAB == 'features') or (@TAB == 'settings')) {
+					if (@!defined('TAB') or (@TAB == 'dashboard') or (@TAB == 'upload') or (@TAB == 'shoebox') or (@TAB == 'library') or (@TAB == 'comments') or (@TAB == 'features') or (@TAB == 'settings')) {
 						?>
 						<li id="tab_dashboard">
 							<a href="<?php echo BASE . ADMIN . 'dashboard' . URL_CAP; ?>"<?php if(@TAB == 'dashboard'){ echo ' class="selected"'; } ?>>Dashboard &#9662;</a>
@@ -85,7 +83,7 @@
 								<li id="sub_preferences"><a href="<?php echo BASE . ADMIN; ?>preferences<?php echo URL_CAP; ?>"><img src="<?php echo BASE . ADMIN; ?>images/minis/preferences.png" alt="" /> Preferences</a></li>
 							</ul>
 						</li>
-						<?php if(($badges['images'] > 0) or ($badges['posts'] > 0)){ ?>
+						<?php if($badges['images'] > 0 ){ ?>
 						<li id="tab_shoebox" class="alt">
 							<a href="<?php echo BASE . ADMIN . 'shoebox' . URL_CAP; ?>"<?php if(@TAB == 'shoebox'){ echo ' class="selected"'; } ?>>Shoebox</a>
 						</li>
@@ -96,9 +94,6 @@
 						<?php } ?>
 						<li id="tab_library">
 							<a href="<?php echo BASE . ADMIN . 'library' . URL_CAP; ?>"<?php if(@TAB == 'library'){ echo ' class="selected"'; } ?>>Images<?php if($badges['images'] > 0){ echo ' (' . number_format($badges['images']) . ')'; } ?></a>
-						</li>
-						<li id="tab_posts">
-							<a href="<?php echo BASE . ADMIN . 'posts' . URL_CAP; ?>"<?php if(@TAB == 'posts'){ echo ' class="selected"'; } ?>>Posts<?php if($badges['posts'] > 0){ echo ' (' . number_format($badges['posts']) . ')'; } ?></a>
 						</li>
 						<li id="tab_comments">
 							<a href="<?php echo BASE . ADMIN . 'comments' . URL_CAP; ?>"<?php if(@TAB == 'comments'){ echo ' class="selected"'; } ?>>Comments<?php if($badges['comments'] > 0){ echo ' (' . number_format($badges['comments']) . ')'; } ?></a>
@@ -124,8 +119,6 @@
 								<li id="sub_maintenance"><a href="<?php echo BASE . ADMIN . 'maintenance' . URL_CAP; ?>"><img src="<?php echo BASE . ADMIN; ?>images/minis/maintenance.png" alt="" /> Maintenance</a></li>
 							</ul>
 						</li>
-<!-- DEH remove dead guide link
-						<li id="tab_help"><a href="http://www.alkalineapp.com/guide/" target="_blank">Help</a></li>-->
 						<?php
 					}
 					else{
