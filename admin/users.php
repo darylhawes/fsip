@@ -25,7 +25,7 @@ if (!empty($_GET['act'])) {
 // SAVE CHANGES
 if (!empty($_POST['user_id'])) {
 	$user_db_id = $fsip->findID($_POST['user_id']);
-	if (isset($_POST['user_delete']) and ($_POST['user_delete'] == 'delete')) {
+	if (isset($_POST['user_delete']) and $_POST['user_delete'] == 'delete') {
 		$fsip->deleteRow('users', $user_db_id);
 	} else {
 		if ($_POST['user_reset_pass'] == 'reset_pass') {
@@ -62,7 +62,7 @@ if (!empty($_POST['user_id'])) {
 			'user_user' => $_POST['user_user'],
 			'user_email' => $_POST['user_email'],
 			'user_permissions' => serialize($permissions));
-		if (!empty($_POST['user_pass']) and ($_POST['user_pass'] != '********')) {
+		if (!empty($_POST['user_pass']) and $_POST['user_pass'] != '********') {
 			$fields['user_pass'] = sha1($_POST['user_pass']);
 		}
 		$fsip->updateRow($fields, 'users', $user_db_id);
@@ -73,7 +73,7 @@ if (!empty($_POST['user_id'])) {
 }
 
 // CREATE User
-if (!empty($user_db_act) and ($user_db_act == 'add')) {
+if (!empty($user_db_act) and $user_db_act == 'add') {
 	$user_db_id = $fsip->addRow(null, 'users');
 }
 
@@ -91,6 +91,7 @@ if (empty($user_db_id)) {
 	define('TITLE', 'Users');
 	require_once(PATH . ADMIN . 'includes/header.php');
 	
+?>	
 	<div class="actions"><a href="<?php echo BASE . ADMIN . 'users' . URL_ACT . 'add' . URL_RW; ?>"><button>Add user</button></a></div>
 
 	<h1><img src="<?php echo BASE . ADMIN; ?>images/icons/users.png" alt="" /> Users (<?php echo $user_db_count; ?>)</h1>
@@ -110,8 +111,7 @@ if (empty($user_db_id)) {
 			<th class="center" style="width:10%">Comments</th>
 			<th>Last login</th>
 		</tr>
-		<?php
-	
+<?php	
 		foreach($user_dbs as $user_db) {
 			echo '<tr class="ro">';
 				echo '<td><strong class="large"><a href="' . BASE . ADMIN . 'users' . URL_ID . $user_db['user_id'] . URL_RW . '">' . $user_db['user_user'] . '</a></strong></td>';
@@ -123,10 +123,10 @@ if (empty($user_db_id)) {
 			echo '</tr>';
 		}
 	
-		?>
+?>
 	</table>
 	
-	<?php
+<?php
 	
 	require_once(PATH . ADMIN . 'includes/footer.php');
 	
@@ -151,14 +151,14 @@ if (empty($user_db_id)) {
 	}
 	require_once(PATH . ADMIN . 'includes/header.php');
 
-	?>
+?>
 	
 	<div class="actions">
 		<a href="mailto:<?php echo $user_db['user_email']; ?>"><button>Email user</button></a>
 		<a href="<?php echo BASE . ADMIN . 'search' . URL_ACT . 'users' . URL_AID . $user_db['user_id'] . URL_RW; ?>"><button>View images (<?php echo $user_image_count; ?>)</button></a>
 	</div>
 	
-	<?php
+<?php
 	
 	if (empty($user_db['user_name'])) {
 		echo '<h1><img src="' . BASE . ADMIN . 'images/icons/users.png" alt="" /> New User</h1>';
@@ -166,7 +166,7 @@ if (empty($user_db_id)) {
 		echo '<h1><img src="' . BASE . ADMIN . 'images/icons/users.png" alt="" /> User: ' . $user_db['user_name'] . '</h1>';
 	}
 	
-	?>
+?>
 	
 	<form id="user" action="<?php echo BASE . ADMIN . 'users' . URL_CAP; ?>" method="post">
 		<table>
@@ -192,9 +192,9 @@ if (empty($user_db_id)) {
 				<td class="right middle"><label for="user_uri">Web site:</label></td>
 				<td><input type="text" id="user_uri" name="user_uri" placeholder="http://www.johnsmith.com/" value="<?php echo $user_db['user_uri']; ?>" class="m" /></td>
 			</tr>
-			<?php
+<?php
 			if (($user_db['user_id'] != 1) and ($user_db['user_id'] != $user->user['user_id'])) {
-				?>
+?>
 				<tr>
 					<td class="right pad"><label>Access control:</label></td>
 					<td>
@@ -265,9 +265,9 @@ if (empty($user_db_id)) {
 						</table>
 					</td>
 				</tr>
-				<?php
+<?php
 			}
-			?>
+?>
 			<tr>
 				<td class="right"><input type="checkbox" id="user_reset_pass" name="user_reset_pass" value="reset_pass" /></td>
 				<td><strong><label for="user_reset_pass">Reset password.</label></strong> This action cannot be undone.</td>
@@ -283,7 +283,7 @@ if (empty($user_db_id)) {
 		</table>
 	</form>
 
-	<?php
+<?php
 	
 	require_once(PATH . ADMIN . 'includes/footer.php');
 	
