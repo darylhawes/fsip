@@ -15,58 +15,55 @@ $orbit = new Orbit;
 
 $user->perm(true, 'sets');
 
-if(!empty($_GET['id'])){
+if (!empty($_GET['id'])) {
 	$set_id = $fsip->findID($_GET['id']);
 }
 
-if(!empty($_GET['act'])){
+if (!empty($_GET['act'])) {
 	$set_act = $_GET['act'];
+} else {
+	$set_act = "";
 }
 
 // SAVE CHANGES
-if(!empty($_POST['set_id'])){
+if (!empty($_POST['set_id'])) {
 	$set_id = $fsip->findID($_POST['set_id']);
 	
 	$set = new Set($set_id);
 	
-	if(@$_POST['set_delete'] == 'delete'){
-		if($set->delete()){
+	if (@$_POST['set_delete'] == 'delete') {
+		if ($set->delete()) {
 			$fsip->addNote('The set has been deleted.', 'success');
 		}
-	}
-	elseif(@$_POST['set_recover'] == 'recover'){
+	} elseif(@$_POST['set_recover'] == 'recover') {
 		if($set->recover()){
 			$fsip->addNote('The set has been recovered.', 'success');
 		}
-	}
-	else{
+	} else {
 		$set_title = trim($_POST['set_title']);
 		$set_description_raw = $_POST['set_description_raw'];
 		
-		if(!empty($_POST['set_title_url'])){
+		if (!empty($_POST['set_title_url'])) {
 			$set_title_url = $fsip->makeURL($_POST['set_title_url']);
-		}
-		else{
+		} else {
 			$set_title_url = $fsip->makeURL($set_title);
 		}
 		
 		// Configuration: set_markup
-		if(!empty($_POST['set_markup'])){
+		if (!empty($_POST['set_markup'])) {
 			$set_markup_ext = $_POST['set_markup_ext'];
 			$set_description = $orbit->hook('markup_' . $set_markup_ext, $set_description_raw, $set_description_raw);
 			$set_title = $orbit->hook('markup_title_' . $set_markup_ext, $set_title, $set_title);
-		}
-		elseif($fsip->returnConf('web_markup')){
+		} elseif($fsip->returnConf('web_markup')) {
 			$set_markup_ext = $fsip->returnConf('web_markup_ext');
 			$set_description = $orbit->hook('markup_' . $set_markup_ext, $set_description_raw, $set_description_raw);
 			$set_title = $orbit->hook('markup_title_' . $set_markup_ext, $set_title, $set_title);
-		}
-		else{
+		} else {
 			$set_markup_ext = '';
 			$set_description = $fsip->nl2br($set_description_raw);
 		}
 		
-		if($_POST['set_type'] == 'auto'){
+		if ($_POST['set_type'] == 'auto') {
 			// Rebuild pile with new data
 			$image_ids = new Find('images');
 			$image_ids->find();
@@ -82,33 +79,31 @@ if(!empty($_POST['set_id'])){
 			'set_description' => $fsip->makeUnicode($set_description),
 			'set_markup' => $set_markup_ext);
 		
-		if($_POST['set_type'] == 'auto'){
+		if ($_POST['set_type'] == 'auto') {
 			$fields['set_images'] = @implode(', ', $image_ids->ids);
 			$fields['set_image_count'] = $image_ids->count;
 		}
 		
-		if(isset($_POST['set_images'])){
+		if (isset($_POST['set_images'])) {
 			$fields['set_images'] = $_POST['set_images'];
 		}
 		
 		$set->updateFields($fields);
 	}
 	unset($set_id);
-}
-else{
+} else {
 	$fsip->deleteEmptyRow('sets', array('set_title'));
 }
 
 // CREATE PILE
-if($set_act == 'build'){
+if ($set_act == 'build') {
 	$image_ids = new Find('images');
 	$set_call = $image_ids->recentMemory();
-	if(!empty($set_call)){
+	if (!empty($set_call)) {
 		$fields = array('set_call' => serialize($set_call),
 			'set_request' => serialize($_SESSION['fsip']['search']['images']['request']),
 			'set_type' => 'auto');
-	}
-	else{
+	} else {
 		$fields = array('set_type' => 'static');
 	}
 	$set_id = $fsip->addRow($fields, 'sets');
@@ -128,7 +123,7 @@ if($set_act == 'build'){
 define('TAB', 'features');
 
 // GET PILES TO VIEW OR PILE TO EDIT
-if(empty($set_id)){
+if (empty($set_id)) {
 	unset($_REQUEST);
 	$set_ids = new Find('sets');
 	$set_ids->sort('set_modified', 'DESC');
@@ -139,7 +134,7 @@ if(empty($set_id)){
 	define('TITLE', 'Sets');
 	require_once(PATH . ADMIN . 'includes/header.php');
 	
-	?>
+?>
 	
 	<div class="actions">
 		<a href="<?php echo BASE . ADMIN . 'sets' . URL_ACT . 'build' . URL_RW; ?>"><button>Build set</button></a>
@@ -162,9 +157,8 @@ if(empty($set_id)){
 			<th>Created</th>
 			<th>Last modified</th>
 		</tr>
-		<?php
-	
-		foreach($sets->sets as $set){
+<?php	
+		foreach($sets->sets as $set) {
 			echo '<tr class="ro">';
 				echo '<td><strong class="large"><a href="' . BASE . ADMIN . 'sets' . URL_ID . $set['set_id'] . URL_RW . '">' . $set['set_title'] . '</a></strong><br /><a href="' . BASE . 'set' . URL_ID . $set['set_title_url'] . URL_RW . '" class="nu quiet">' . $set['set_title_url'] . '</td>';
 				echo '<td class="center">' . ucwords($set['set_type']) . '</td>';
@@ -175,15 +169,14 @@ if(empty($set_id)){
 			echo '</tr>';
 		}
 	
-		?>
+?>
 	</table>
 
-	<?php
+<?php
 	
 	require_once(PATH . ADMIN . 'includes/footer.php');
 	
-}
-else{
+} else {
 	// Get set
 	$sets = new Set($set_id);
 	$set = $sets->sets[0];
@@ -195,28 +188,26 @@ else{
 	$image_ids->sets($set_id);
 	$image_ids->find();
 	
-	if(!empty($set['set_title'])){	
+	if (!empty($set['set_title'])) {
 		define('TITLE', 'Set: &#8220;' . $set['set_title']  . '&#8221;');
-	}
-	else{
+	} else {
 		define('TITLE', 'Set');
 	}
 	require_once(PATH . ADMIN . 'includes/header.php');
 
-	?>
+?>
 	
 	<div class="actions"><a href="<?php echo BASE . ADMIN . 'search' . URL_ACT . 'sets' . URL_AID . $set['set_id'] . URL_RW; ?>"><button>View images (<?php echo $image_ids->count; ?>)</button></a> <a href="<?php echo BASE . 'set' . URL_ID . $set['set_id'] . URL_RW; ?>"><button>Launch set</button></a></div>
 	
-	<?php
+<?php
 	
-	if(empty($set['set_title'])){
+	if (empty($set['set_title'])) {
 		echo '<h1><img src="' . BASE . ADMIN . 'images/icons/sets.png" alt="" /> New Set</h1>';
-	}
-	else{
+	} else {
 		echo '<h1><img src="' . BASE . ADMIN . 'images/icons/sets.png" alt="" /> Set: ' . $set['set_title'] . '</h1>';
 	}
 	
-	?>
+?>
 	
 	<form id="set" action="<?php echo BASE . ADMIN . 'sets' . URL_CAP; ?>" method="post">
 		<div class="span-24 last">
@@ -420,7 +411,7 @@ else{
 		</p>
 
 		<div class="reveal load" <?php if($set['set_type'] == 'static'){ ?>id="set_image_sort"<?php } ?>>
-			<?php
+<?php
 		
 			$images = new Image($image_ids);
 			$images->getSizes('square');
@@ -429,7 +420,8 @@ else{
 				echo '<img src="' . $image['image_src_square'] .'" alt="" class="frame" id="image-' . $image['image_id'] . '" />';
 			}
 		
-			?><br /><br />
+?>
+			<br /><br />
 		</div>
 		
 		<input type="hidden" id="set_markup" name="set_markup" value="<?php echo $set['set_markup']; ?>" />
@@ -440,7 +432,7 @@ else{
 		</p>
 	</form>
 
-	<?php
+<?php
 	
 	require_once(PATH . ADMIN . 'includes/footer.php');
 	

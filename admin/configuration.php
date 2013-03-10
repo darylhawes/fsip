@@ -526,9 +526,9 @@ require_once(PATH . ADMIN . 'includes/header.php');
 			<td class="input"><input type="checkbox" id="sphinx_enabled" name="sphinx_enabled" <?php echo $fsip->readConf('sphinx_enabled'); ?> <?php if(!class_exists('SphinxClient', false)){ echo 'disabled="disabled"'; } ?> value="true" /></td>
 			<td class="description">
 				<label for="sphinx_enabled">Use Sphinx to process search queries</label>
-				<?php if(class_exists('SphinxClient', false)){ ?>
+				<?php if (class_exists('SphinxClient', false)) { ?>
 					(if installed and configured)
-				<?php } else{ ?>
+				<?php } else { ?>
 					(not installed)
 				<?php } ?>
 				
