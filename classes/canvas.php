@@ -1031,7 +1031,6 @@ class Canvas extends FSIP{
 		$this->assign('Search_Uri', LOCATION . BASE . 'search' . URL_CAP);
 		$this->assign('Results_Uri', LOCATION . BASE . 'results' . URL_CAP);
 		$this->assign('Atom_Uri', LOCATION . BASE . 'atom' . URL_CAP);
-		$this->assign('Blog_Uri', LOCATION . BASE . 'blog' . URL_CAP);
 		
 		// Process Counts, Blocks, Orbit, Config
 		$this->initDefines();

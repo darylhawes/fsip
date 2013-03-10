@@ -271,14 +271,6 @@ $test = new CS();
 					<?php echo $test->boolToHTML($result); ?>
 				</tr>
 				<tr>
-					<?php $result = $test->isExt('xmlrpc', false); echo $test->boolToIMG($result); ?>
-					<td>
-						<strong>PHP XML-RPC support</strong><br />
-						<span class="quiet">PHP XML-RPC is used to interact with third-party blogging clients.</span>
-					</td>
-					<?php echo $test->boolToHTML($result); ?>
-				</tr>
-				<tr>
 					<?php $result = $test->isExt('sphinx', false); echo $test->boolToIMG($result); ?>
 					<td>
 						<strong>Sphinx server</strong><br />

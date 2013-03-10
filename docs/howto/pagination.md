@@ -1,6 +1,6 @@
 ### Change Pagination of Images
 
-FSIP lets you paginate images and blog entries however you choose, regardless of the theme you're using. 
+FSIP lets you paginate images however you choose regardless of the theme you're using. 
 Let's take a look at the `page()` method of the `Find` classes, the method works the same for images.
 
 Let's open `index.php`, you should see a line like this:

@@ -31,10 +31,10 @@ if(isset($_REQUEST['recovery'])){
 }
 
 if($user->returnPref('recovery_mode') == true){
-	$recovery_action = '<a href="?recovery=0" title="Recovery mode allows you to recover deleted images, blog entries, and more." class="tip"><button>Exit recovery mode</button></a>';
+	$recovery_action = '<a href="?recovery=0" title="Recovery mode allows you to recover deleted images and more." class="tip"><button>Exit recovery mode</button></a>';
 }
 else{
-	$recovery_action = '<a href="?recovery=1" title="Recovery mode allows you to recover deleted images, blog entries, and more." class="tip"><button>Enter recovery mode</button></a>';
+	$recovery_action = '<a href="?recovery=1" title="Recovery mode allows you to recover deleted images and more." class="tip"><button>Enter recovery mode</button></a>';
 }
 
 
@@ -42,7 +42,8 @@ else{
 /* DEH remove all dead boomerang remote calls
 $latest = @$fsip->boomerang('latest');
 if($latest['build'] > FSIP::build){
-	$alkaline->addNote('A new version of Alkaline (v' . $latest['version'] . ') is available. Learn more and download the update at <a href="http://www.alkalineapp.com/">alkalineapp.com</a>.', 'notice');
+	$fsip->addNote('A new version of FSIP (v' . $latest['version'] . ') is available. 
+	Learn more and download the update at <a href="http://github.com/darylhawes/fsip">github.com</a>.', 'notice');
 } */
 
 define('TAB', 'settings');

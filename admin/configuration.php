@@ -512,14 +512,7 @@ require_once(PATH . ADMIN . 'includes/header.php');
 						<option value="300" <?php echo $user->readConf('syndication_cache_time', '300'); ?>>5 minutes</option>
 					</select>
 				</label><br />
-				Caching the newsfeed longer improves performance at the expense of being out of date
-			</td>
-		</tr>
-		<tr>
-			<td class="input"><input type="checkbox" id="syndication_summary_only" name="syndication_summary_only" <?php echo $fsip->readConf('syndication_summary_only'); ?> value="true" /></td>
-			<td class="description">
-				<label for="syndication_summary_only">Only include blog entry summaries</label><br />
-				Requires visitors to click through to read full blog entries.
+				Caching the newsfeed for a longer period improves performance at the expense of being out of date.
 			</td>
 		</tr>
 	</table>

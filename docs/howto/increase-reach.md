@@ -8,7 +8,10 @@ Let's look at three different ways you can use FSIP to increase your reach: news
 
 Newsfeeds (also know as XML, Atom, or RSS feeds) are summaries of what's been recently added and updated on your Web site. People use newsreaders such as Google Reader and NetNewsWire to subscribe to the newsfeeds of their favorite Web sites so they know when new content is available. Typically, newsfeeds only provide a summary of the content, forcing interested users to clickthrough to read the entire article, view the full-size image, and so on. (If you sell advertising on your Web site, posting only summaries can be very advantageous to drive traffic to your site.)
 
-FSIP automatically generates a newsfeed based on your latest blog entries and images. You simply need to publicize it, so that your readers know when new content is available on your site. FSIP automatically notifies compatible Web browsers that a newsfeed is available, but you should also link to your newsfeed on your Web site (link to file `atom.php`). You can also configure FSIP to automatically summarize blog entries by choosing **Settings > Configuration** and checking “Only include blog entry summaries.”
+FSIP automatically generates a newsfeed based on your latest images. 
+You simply need to publicize the link so that your readers know when new content is available on your site.
+FSIP automatically notifies compatible Web browsers that a newsfeed is available, 
+but you should also link to your newsfeed on your Web site (link to file `atom.php`). 
 
 ###### Newsletters
 

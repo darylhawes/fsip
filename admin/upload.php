@@ -83,7 +83,7 @@ if(preg_match('#iphone|ipad#si', $_SERVER['HTTP_USER_AGENT']) and !isset($_GET['
 		<p>You have uploaded <span id="upload_count_text">0 files</span> this session.</p>
 				
 		<h3>Instructions</h3>
-		<p>Drag images from a folder on your computer or directly from most applications into the grey retaining area. You can also drag and drop text files to create new blog entries.</p>
+		<p>Drag images from a folder on your computer or directly from most applications into the grey retaining area.</p>
 	
 		<p>You can also browse your computer and select the files you wish to upload by clicking the &#8220;Choose File&#8221; button.</p>
 	

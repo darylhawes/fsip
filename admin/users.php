@@ -14,22 +14,21 @@ $user = new User;
 
 $user->perm(true, 'users');
 
-if(!empty($_GET['id'])){
+if (!empty($_GET['id'])) {
 	$user_db_id = $fsip->findID($_GET['id']);
 }
 
-if(!empty($_GET['act'])){
+if (!empty($_GET['act'])) {
 	$user_db_act = $_GET['act'];
 }
 
 // SAVE CHANGES
-if(!empty($_POST['user_id'])){
+if (!empty($_POST['user_id'])) {
 	$user_db_id = $fsip->findID($_POST['user_id']);
-	if(isset($_POST['user_delete']) and ($_POST['user_delete'] == 'delete')){
+	if (isset($_POST['user_delete']) and ($_POST['user_delete'] == 'delete')) {
 		$fsip->deleteRow('users', $user_db_id);
-	}
-	else{
-		if($_POST['user_reset_pass'] == 'reset_pass'){
+	} else {
+		if ($_POST['user_reset_pass'] == 'reset_pass') {
 			$rand = $fsip->randInt();
 			echo $rand;
 			$pass = substr(sha1($rand), 0, 8);
@@ -39,23 +38,23 @@ if(!empty($_POST['user_id'])){
 		
 		$permissions = array();
 		
-		if(@$_POST['user_permission_upload'] == 'true'){ $permissions[] = 'upload'; $permissions[] = 'library'; }
-		if(@$_POST['user_permission_shoebox'] == 'true'){ $permissions[] = 'shoebox'; $permissions[] = 'library'; }
-		if(@$_POST['user_permission_library'] == 'true'){ $permissions[] = 'images'; $permissions[] = 'library'; }
-		if(@$_POST['user_permission_editor'] == 'true'){ $permissions[] = 'editor'; $permissions[] = 'features'; }
-		if(@$_POST['user_permission_tags'] == 'true'){ $permissions[] = 'tags'; $permissions[] = 'features'; }
-		if(@$_POST['user_permission_sets'] == 'true'){ $permissions[] = 'sets'; $permissions[] = 'features'; }
-		if(@$_POST['user_permission_pages'] == 'true'){ $permissions[] = 'pages'; $permissions[] = 'features'; }
-		if(@$_POST['user_permission_rights'] == 'true'){ $permissions[] = 'rights'; $permissions[] = 'features'; }
-		if(@$_POST['user_permission_comments'] == 'true'){ $permissions[] = 'comments'; }
-		if(@$_POST['user_permission_statistics'] == 'true'){ $permissions[] = 'statistics'; }
-		if(@$_POST['user_permission_thumbnails'] == 'true'){ $permissions[] = 'thumbnails'; $permissions[] = 'settings'; }
-		if(@$_POST['user_permission_users'] == 'true'){ $permissions[] = 'users'; $permissions[] = 'settings'; }
-		if(@$_POST['user_permission_guests'] == 'true'){ $permissions[] = 'guests'; $permissions[] = 'settings'; }
-		if(@$_POST['user_permission_themes'] == 'true'){ $permissions[] = 'themes'; $permissions[] = 'settings'; }
-		if(@$_POST['user_permission_extensions'] == 'true'){ $permissions[] = 'extensions'; $permissions[] = 'settings'; }
-		if(@$_POST['user_permission_configuration'] == 'true'){ $permissions[] = 'configuration'; $permissions[] = 'settings'; }
-		if(@$_POST['user_permission_maintenance'] == 'true'){ $permissions[] = 'maintenance'; $permissions[] = 'settings'; }
+		if (@$_POST['user_permission_upload'] == 'true') { $permissions[] = 'upload'; $permissions[] = 'library'; }
+		if (@$_POST['user_permission_shoebox'] == 'true') { $permissions[] = 'shoebox'; $permissions[] = 'library'; }
+		if (@$_POST['user_permission_library'] == 'true') { $permissions[] = 'images'; $permissions[] = 'library'; }
+		if (@$_POST['user_permission_editor'] == 'true') { $permissions[] = 'editor'; $permissions[] = 'features'; }
+		if (@$_POST['user_permission_tags'] == 'true') { $permissions[] = 'tags'; $permissions[] = 'features'; }
+		if (@$_POST['user_permission_sets'] == 'true') { $permissions[] = 'sets'; $permissions[] = 'features'; }
+		if (@$_POST['user_permission_pages'] == 'true') { $permissions[] = 'pages'; $permissions[] = 'features'; }
+		if (@$_POST['user_permission_rights'] == 'true') { $permissions[] = 'rights'; $permissions[] = 'features'; }
+		if (@$_POST['user_permission_comments'] == 'true') { $permissions[] = 'comments'; }
+		if (@$_POST['user_permission_statistics'] == 'true') { $permissions[] = 'statistics'; }
+		if (@$_POST['user_permission_thumbnails'] == 'true') { $permissions[] = 'thumbnails'; $permissions[] = 'settings'; }
+		if (@$_POST['user_permission_users'] == 'true') { $permissions[] = 'users'; $permissions[] = 'settings'; }
+		if (@$_POST['user_permission_guests'] == 'true') { $permissions[] = 'guests'; $permissions[] = 'settings'; }
+		if (@$_POST['user_permission_themes'] == 'true') { $permissions[] = 'themes'; $permissions[] = 'settings'; }
+		if (@$_POST['user_permission_extensions'] == 'true') { $permissions[] = 'extensions'; $permissions[] = 'settings'; }
+		if (@$_POST['user_permission_configuration'] == 'true') { $permissions[] = 'configuration'; $permissions[] = 'settings'; }
+		if (@$_POST['user_permission_maintenance'] == 'true') { $permissions[] = 'maintenance'; $permissions[] = 'settings'; }
 		
 		$permissions = array_unique($permissions);
 		
@@ -63,26 +62,25 @@ if(!empty($_POST['user_id'])){
 			'user_user' => $_POST['user_user'],
 			'user_email' => $_POST['user_email'],
 			'user_permissions' => serialize($permissions));
-		if(!empty($_POST['user_pass']) and ($_POST['user_pass'] != '********')){
+		if (!empty($_POST['user_pass']) and ($_POST['user_pass'] != '********')) {
 			$fields['user_pass'] = sha1($_POST['user_pass']);
 		}
 		$fsip->updateRow($fields, 'users', $user_db_id);
 	}
 	unset($user_db_id);
-}
-else{
+} else { //$_POST['user_id'] is empty
 	$fsip->deleteEmptyRow('users', array('user_user', 'user_pass', 'user_name'));
 }
 
 // CREATE User
-if(!empty($user_db_act) and ($user_db_act == 'add')){
+if (!empty($user_db_act) and ($user_db_act == 'add')) {
 	$user_db_id = $fsip->addRow(null, 'users');
 }
 
 define('TAB', 'settings');
 
 // GET USERS TO VIEW OR USER TO EDIT
-if(empty($user_db_id)){
+if (empty($user_db_id)) {
 	// Update image counts
 	$fsip->updateCounts('images', 'users', 'user_image_count');
 	$fsip->updateCounts('comments', 'users', 'user_comment_count');
@@ -109,13 +107,12 @@ if(empty($user_db_id)){
 			<th>Name</th>
 			<th>Email</th>
 			<th class="center" style="width:10%">Images</th>
-			<th class="center" style="width:10%">Blog entries</th>
 			<th class="center" style="width:10%">Comments</th>
 			<th>Last login</th>
 		</tr>
 		<?php
 	
-		foreach($user_dbs as $user_db){
+		foreach($user_dbs as $user_db) {
 			echo '<tr class="ro">';
 				echo '<td><strong class="large"><a href="' . BASE . ADMIN . 'users' . URL_ID . $user_db['user_id'] . URL_RW . '">' . $user_db['user_user'] . '</a></strong></td>';
 				echo '<td>' . $user_db['user_name'] . '</td>';
@@ -133,8 +130,7 @@ if(empty($user_db_id)){
 	
 	require_once(PATH . ADMIN . 'includes/footer.php');
 	
-}
-else{
+} else { //$user_db_id not empty
 	// Update image count
 	$fsip->updateCount('images', 'users', 'user_image_count', $user_db_id);
 	
@@ -144,14 +140,13 @@ else{
 	$user_db = $fsip->makeHTMLSafe($user_db);
 	$user_image_count = $user_db['user_image_count'];
 	
-	if(empty($user_image_count)){
+	if (empty($user_image_count)) {
 		$user_image_count = 0;
 	}
 	
-	if(!empty($user_db['user_name'])){
+	if (!empty($user_db['user_name'])) {
 		define('TITLE', 'User: ' . $user_db['user_name']);
-	}
-	else{
+	} else {
 		define('TITLE', 'User');
 	}
 	require_once(PATH . ADMIN . 'includes/header.php');
@@ -165,10 +160,9 @@ else{
 	
 	<?php
 	
-	if(empty($user_db['user_name'])){
+	if (empty($user_db['user_name'])) {
 		echo '<h1><img src="' . BASE . ADMIN . 'images/icons/users.png" alt="" /> New User</h1>';
-	}
-	else{
+	} else {
 		echo '<h1><img src="' . BASE . ADMIN . 'images/icons/users.png" alt="" /> User: ' . $user_db['user_name'] . '</h1>';
 	}
 	
@@ -199,7 +193,7 @@ else{
 				<td><input type="text" id="user_uri" name="user_uri" placeholder="http://www.johnsmith.com/" value="<?php echo $user_db['user_uri']; ?>" class="m" /></td>
 			</tr>
 			<?php
-			if(($user_db['user_id'] != 1) and ($user_db['user_id'] != $user->user['user_id'])){
+			if (($user_db['user_id'] != 1) and ($user_db['user_id'] != $user->user['user_id'])) {
 				?>
 				<tr>
 					<td class="right pad"><label>Access control:</label></td>
