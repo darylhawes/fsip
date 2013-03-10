@@ -42,8 +42,8 @@
  * @package PhpThumb
  * @subpackage Core
  */
-class PhpThumb
-{
+class PhpThumb {
+
 	/**
 	 * Instance of self
 	 * 

@@ -12,7 +12,7 @@
  * @version 1.0
  */
 
-class Right extends FSIP{
+class Right extends FSIP {
 	public $images;
 	public $right_ids;
 	public $right_count = 0;
@@ -25,14 +25,14 @@ class Right extends FSIP{
 	 *
 	 * @param array|int|string $right_ids Search rights (right IDs, right titles)
 	 */
-	public function __construct($right_ids=null){
+	public function __construct($right_ids=null) {
 		parent::__construct();
 		
 		// Reright right array
 		$this->rights = array();
 		
 		// Input handling
-		if(is_object($right_ids)){
+		if (is_object($right_ids)) {
 			$last_modified = $right_ids->last_modified;
 			$right_ids = $right_ids->ids;
 		}
@@ -41,7 +41,7 @@ class Right extends FSIP{
 		
 		// Error checking
 		$this->sql = ' WHERE (rights.right_id IS NULL)';
-		if(count($this->right_ids) > 0){
+		if (count($this->right_ids) > 0) {
 			$this->sql = ' WHERE (rights.right_id IN (' . implode(', ', $this->right_ids) . '))';
 		}
 		
@@ -57,19 +57,19 @@ class Right extends FSIP{
 		// Create a Cache_Lite object
 		$cache = new Cache_Lite($options);
 		
-		if(($rights = $cache->get('rights:' . implode(',', $this->right_ids), 'rights')) && !empty($last_modified) && ($cache->lastModified() > $last_modified)){
+		if (($rights = $cache->get('rights:' . implode(',', $this->right_ids), 'rights')) 
+			&& !empty($last_modified) && ($cache->lastModified() > $last_modified)) {
 			$this->rights = unserialize($rights);
-		}
-		else{
-			if(count($this->right_ids) > 0){			
+		} else {
+			if (count($this->right_ids) > 0) {			
 				$query = $this->prepare('SELECT * FROM rights' . $this->sql . ';');
 				$query->execute();
 				$rights = $query->fetchAll();
 		
 				// Ensure rights array correlates to right_ids array
-				foreach($this->right_ids as $right_id){
-					foreach($rights as $right){
-						if($right_id == $right['right_id']){
+				foreach($this->right_ids as $right_id) {
+					foreach($rights as $right) {
+						if ($right_id == $right['right_id']) {
 							$this->rights[] = $right;
 						}
 					}
@@ -83,7 +83,7 @@ class Right extends FSIP{
 		$this->right_count = count($this->rights);
 	}
 	
-	public function __destruct(){
+	public function __destruct() {
 		parent::__destruct();
 	}
 	
@@ -93,8 +93,8 @@ class Right extends FSIP{
 	 * @param Orbit $orbit 
 	 * @return void
 	 */
-	public function hook($orbit=null){
-		if(!is_object($orbit)){
+	public function hook($orbit=null) {
+		if (!is_object($orbit)) {
 			$orbit = new Orbit;
 		}
 		
@@ -107,9 +107,9 @@ class Right extends FSIP{
 	 * @param array $fields Associate array of columns and fields
 	 * @return void
 	 */
-	public function updateFields($fields){
+	public function updateFields($fields) {
 		$ids = array();
-		foreach($this->rights as $right){
+		foreach($this->rights as $right) {
 			$ids[] = $right['right_id'];
 		}
 		return parent::updateRow($fields, 'rights', $ids);
@@ -121,11 +121,10 @@ class Right extends FSIP{
 	 * @param bool Delete permanently (and therefore cannot be recovered)
 	 * @return void
 	 */
-	public function delete($permanent=false){
-		if($permanent === true){
+	public function delete($permanent=false) {
+		if ($permanent === true) {
 			$this->deleteRow('rights', $this->right_ids);
-		}
-		else{
+		} else {
 			$fields = array('right_deleted' => date('Y-m-d H:i:s'));
 			$this->updateFields($fields);
 		}
@@ -138,7 +137,7 @@ class Right extends FSIP{
 	 * 
 	 * @return bool
 	 */
-	public function recover(){
+	public function recover() {
 		$fields = array('right_deleted' => null);
 		$this->updateFields($fields);
 		
@@ -151,8 +150,8 @@ class Right extends FSIP{
 	 * @param string $format Same format as date();
 	 * @return void
 	 */
-	public function formatTime($format=null){
-		foreach($this->rights as &$right){
+	public function formatTime($format=null) {
+		foreach($this->rights as &$right) {
 			$right['right_created_format'] = parent::formatTime($right['right_created'], $format);
 			$right['right_modified_format'] = parent::formatTime($right['right_modified'], $format);
 		}
@@ -164,14 +163,13 @@ class Right extends FSIP{
 	 * @param null|int $right_id 
 	 * @return void
 	 */
-	public function merge($right_id=null){
+	public function merge($right_id=null) {
 		$right_id = intval($right_id);
 		
-		if($right_id == 0){
+		if ($right_id == 0) {
 			$query = $this->prepare('UPDATE images SET right_id = ? WHERE right_id = ' . implode(' OR right_id = ', $this->right_ids) . ';');
 			$query->execute(array(null));
-		}
-		else{
+		} else {
 			$query = $this->prepare('UPDATE images SET right_id = ? WHERE right_id = ' . implode(' OR right_id = ', $this->right_ids) . ';');
 			$query->execute(array($right_id));
 		}

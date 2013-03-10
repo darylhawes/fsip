@@ -12,7 +12,7 @@
  * @version 1.0
  */
 
-class Stat extends FSIP{
+class Stat extends FSIP {
 	public $durations;
 	public $pages;
 	public $page_types;
@@ -32,26 +32,22 @@ class Stat extends FSIP{
 	 * @param int|string $stat_begin Date begin
 	 * @param int|string $stat_end Date end
 	 */
-	public function __construct($stat_begin=null, $stat_end=null){
+	public function __construct($stat_begin=null, $stat_end=null) {
 		parent::__construct();
 		
-		if(empty($stat_begin)){
+		if (empty($stat_begin)) {
 			$this->stat_begin_ts = strtotime('-60 days');
-		}
-		elseif(is_int($stat_begin)){
+		} elseif(is_int($stat_begin)) {
 			$this->stat_begin_ts = $stat_begin;
-		}
-		else{
+		} else {
 			$this->stat_begin_ts = strtotime($stat_begin);
 		}
 		
-		if(empty($stat_end)){
+		if (empty($stat_end)) {
 			$this->stat_end_ts = time();
-		}
-		elseif(is_int($stat_end)){
+		} elseif(is_int($stat_end)) {
 			$this->stat_end_ts = $stat_end;
-		}
-		else{
+		} else {
 			$this->stat_end_ts = strtotime($stat_end);
 		}
 		
@@ -59,7 +55,7 @@ class Stat extends FSIP{
 		$this->stat_end = date('Y-m-d H:i:s', $this->stat_end_ts);
 	}
 	
-	public function __destruct(){
+	public function __destruct() {
 		parent::__destruct();
 	}
 	
@@ -69,8 +65,8 @@ class Stat extends FSIP{
 	 * @param Orbit $orbit 
 	 * @return void
 	 */
-	public function hook($orbit=null){
-		if(!is_object($orbit)){
+	public function hook($orbit=null) {
+		if (!is_object($orbit)) {
 			$orbit = new Orbit;
 		}
 		
@@ -82,7 +78,7 @@ class Stat extends FSIP{
 	 *
 	 * @return void
 	 */
-	public function getMonthly(){
+	public function getMonthly() {
 		$this->views = 0;
 		$this->visitors = 0;
 		
@@ -92,7 +88,7 @@ class Stat extends FSIP{
 		
 		$stats_count = count($stats);
 		
-		for($i=0; $i < $stats_count; $i++){
+		for($i=0; $i < $stats_count; $i++) {
 			$stats[$i]['stat_ts_js'] = strtotime($stats[$i]['stat_month'] . '-' . $stats[$i]['stat_month'] . '-15') * 1000;
 			$stats[$i]['stat_views'] = intval($stats[$i]['stat_views']);
 		}
@@ -106,20 +102,20 @@ class Stat extends FSIP{
 		$current_month = intval(substr($this->stat_begin, 5, 2));
 		$current_year = intval(substr($this->stat_begin, 0, 4));
 		
-		while(!(($next_month <= $current_month) and ($next_year <= $current_year))){
+		while(!(($next_month <= $current_month) and ($next_year <= $current_year))) {
 			$stat_ts_js = strtotime($current_year . '-' . $current_month) * 1000;
 			$this->stats[] = array('stat_month' => $current_month, 'stat_year' => $current_year, 'stat_views' => 0, 'stat_visitors' => 0, 'stat_ts_js' => $stat_ts_js);
 			$current_month++;
 			
-			if($current_month == 13){
+			if ($current_month == 13) {
 				$current_year++;
 				$current_month = 1;
 			}
 		}
 		
-		foreach($this->stats as &$monthly){
-			foreach($stats as $stat){
-				if(($stat['stat_month'] == $monthly['stat_month']) and ($stat['stat_year'] == $monthly['stat_year'])){
+		foreach($this->stats as &$monthly) {
+			foreach($stats as $stat) {
+				if (($stat['stat_month'] == $monthly['stat_month']) and ($stat['stat_year'] == $monthly['stat_year'])) {
 					$monthly['stat_views'] = $stat['stat_views'];
 				}
 			}
@@ -131,13 +127,13 @@ class Stat extends FSIP{
 		
 		$stats_count = count($stats);
 		
-		for($i=0; $i < $stats_count; $i++){
+		for($i=0; $i < $stats_count; $i++) {
 			$stats[$i]['stat_visitors'] = intval($stats[$i]['stat_visitors']);
 		}
 		
-		foreach($this->stats as &$monthly){
-			foreach($stats as $stat){
-				if(($stat['stat_month'] == $monthly['stat_month']) and ($stat['stat_year'] == $monthly['stat_year'])){
+		foreach($this->stats as &$monthly) {
+			foreach($stats as $stat) {
+				if (($stat['stat_month'] == $monthly['stat_month']) and ($stat['stat_year'] == $monthly['stat_year'])) {
 					$monthly['stat_visitors'] = $stat['stat_visitors'];
 				}
 			}
@@ -152,7 +148,7 @@ class Stat extends FSIP{
 	 *
 	 * @return void
 	 */
-	public function getDaily(){
+	public function getDaily() {
 		$this->views = 0;
 		$this->visitors = 0;
 		
@@ -161,7 +157,7 @@ class Stat extends FSIP{
 		$stats = $query->fetchAll();
 		
 		$stats_count = count($stats);
-		for($i=0; $i < $stats_count; $i++){
+		for($i=0; $i < $stats_count; $i++) {
 			$stats[$i]['stat_ts_js'] = strtotime($stats[$i]['stat_month'] . '-' . $stats[$i]['stat_month'] . '-' . $stats[$i]['stat_day']) * 1000;
 			$stats[$i]['stat_views'] = intval($stats[$i]['stat_views']);
 		}
@@ -177,24 +173,24 @@ class Stat extends FSIP{
 		$current_month = intval(substr($this->stat_begin, 5, 2));
 		$current_year = intval(substr($this->stat_begin, 0, 4));
 		
-		while(!(($next_day <= $current_day) and ($next_month <= $current_month) and ($next_year <= $current_year))){			
+		while(!(($next_day <= $current_day) and ($next_month <= $current_month) and ($next_year <= $current_year))) {			
 			$stat_ts_js = strtotime($current_year . '-' . $current_month . '-' . $current_day) * 1000;
 			$this->stats[] = array('stat_day' => $current_day, 'stat_month' => $current_month, 'stat_year' => $current_year, 'stat_views' => 0, 'stat_visitors' => 0, 'stat_ts_js' => $stat_ts_js);
 			$current_day++;
 			
-			if(!checkdate($current_month, $current_day, $current_year)){
+			if (!checkdate($current_month, $current_day, $current_year)) {
 				$current_month++;
 				$current_day = 1;
-				if(!checkdate($current_month, $current_day, $current_year)){
+				if (!checkdate($current_month, $current_day, $current_year)) {
 					$current_year++;
 					$current_month = 1;
 				}
 			}
 		}
 		
-		foreach($this->stats as &$daily){
-			foreach($stats as $stat){
-				if(($stat['stat_day'] == $daily['stat_day']) and ($stat['stat_month'] == $daily['stat_month']) and ($stat['stat_year'] == $daily['stat_year'])){
+		foreach($this->stats as &$daily) {
+			foreach($stats as $stat) {
+				if (($stat['stat_day'] == $daily['stat_day']) and ($stat['stat_month'] == $daily['stat_month']) and ($stat['stat_year'] == $daily['stat_year'])) {
 					$daily['stat_views'] = $stat['stat_views'];
 				}
 			}
@@ -206,13 +202,13 @@ class Stat extends FSIP{
 		
 		$stats_count = count($stats);
 		
-		for($i=0; $i < $stats_count; $i++){
+		for($i=0; $i < $stats_count; $i++) {
 			$stats[$i]['stat_visitors'] = intval($stats[$i]['stat_visitors']);
 		}
 		
-		foreach($this->stats as &$daily){
-			foreach($stats as $stat){
-				if(($stat['stat_day'] == $daily['stat_day']) and ($stat['stat_month'] == $daily['stat_month']) and ($stat['stat_year'] == $daily['stat_year'])){
+		foreach($this->stats as &$daily) {
+			foreach($stats as $stat) {
+				if (($stat['stat_day'] == $daily['stat_day']) and ($stat['stat_month'] == $daily['stat_month']) and ($stat['stat_year'] == $daily['stat_year'])) {
 					$daily['stat_visitors'] = $stat['stat_visitors'];
 				}
 			}
@@ -227,7 +223,7 @@ class Stat extends FSIP{
 	 *
 	 * @return void
 	 */
-	public function getHourly(){
+	public function getHourly() {
 		$this->views = 0;
 		$this->visitors = 0;
 		
@@ -237,7 +233,7 @@ class Stat extends FSIP{
 		
 		$stats_count = count($stats);
 		
-		for($i=0; $i < $stats_count; $i++){
+		for($i=0; $i < $stats_count; $i++) {
 			$stats[$i]['stat_ts_js'] = strtotime($stats[$i]['stat_month'] . '-' . $stats[$i]['stat_month'] . '-' . $stats[$i]['stat_day'] . ' ' . $stats[$i]['stat_hour'] . ':30:00') * 1000;
 			$stats[$i]['stat_views'] = intval($stats[$i]['stat_views']);
 		}
@@ -254,18 +250,18 @@ class Stat extends FSIP{
 		$current_month = intval(substr($this->stat_begin, 5, 2));
 		$current_year = intval(substr($this->stat_begin, 0, 4));
 		
-		while(!(($next_hour == $current_hour) and ($next_day == $current_day) and ($next_month == $current_month) and ($next_year == $current_year))){
+		while(!(($next_hour == $current_hour) and ($next_day == $current_day) and ($next_month == $current_month) and ($next_year == $current_year))) {
 			$stat_ts_js = (strtotime($current_year . '-' . $current_month . '-' . $current_day . ' ' . $current_hour . ':00:00') - 18000) * 1000;
 			$this->stats[] = array('stat_hour' => $current_hour, 'stat_day' => $current_day, 'stat_month' => $current_month, 'stat_year' => $current_year, 'stat_views' => 0, 'stat_visitors' => 0, 'stat_ts_js' => $stat_ts_js);
 			$current_hour++;
 			
-			if($current_hour == 24){
+			if ($current_hour == 24) {
 				$current_hour = 0;
 				$current_day++;
-				if(!checkdate($current_month, $current_day, $current_year)){
+				if (!checkdate($current_month, $current_day, $current_year)) {
 					$current_month++;
 					$current_day = 1;
-					if(!checkdate($current_month, $current_day, $current_year)){
+					if (!checkdate($current_month, $current_day, $current_year)) {
 						$current_year++;
 						$current_month = 1;
 					}
@@ -273,9 +269,9 @@ class Stat extends FSIP{
 			}
 		}
 		
-		foreach($this->stats as &$hourly){
-			foreach($stats as $stat){
-				if(($stat['stat_hour'] == $hourly['stat_hour']) and ($stat['stat_day'] == $hourly['stat_day']) and ($stat['stat_month'] == $hourly['stat_month']) and ($stat['stat_year'] == $hourly['stat_year'])){
+		foreach($this->stats as &$hourly) {
+			foreach($stats as $stat) {
+				if (($stat['stat_hour'] == $hourly['stat_hour']) and ($stat['stat_day'] == $hourly['stat_day']) and ($stat['stat_month'] == $hourly['stat_month']) and ($stat['stat_year'] == $hourly['stat_year'])) {
 					$hourly['stat_views'] = $stat['stat_views'];
 				}
 			}
@@ -287,13 +283,13 @@ class Stat extends FSIP{
 		
 		$stats_count = count($stats);
 		
-		for($i=0; $i < $stats_count; $i++){
+		for($i=0; $i < $stats_count; $i++) {
 			$stats[$i]['stat_visitors'] = intval($stats[$i]['stat_visitors']);
 		}
 		
-		foreach($this->stats as &$hourly){
-			foreach($stats as $stat){
-				if(($stat['stat_hour'] == $hourly['stat_hour']) and ($stat['stat_day'] == $hourly['stat_day']) and ($stat['stat_month'] == $hourly['stat_month']) and ($stat['stat_year'] == $hourly['stat_year'])){
+		foreach($this->stats as &$hourly) {
+			foreach($stats as $stat) {
+				if (($stat['stat_hour'] == $hourly['stat_hour']) and ($stat['stat_day'] == $hourly['stat_day']) and ($stat['stat_month'] == $hourly['stat_month']) and ($stat['stat_year'] == $hourly['stat_year'])) {
 					$hourly['stat_visitors'] = $stat['stat_visitors'];
 				}
 			}
@@ -310,9 +306,9 @@ class Stat extends FSIP{
 	 * @param string $key 
 	 * @return int Cumulative count
 	 */
-	protected function getCumulative($array, $key){
+	protected function getCumulative($array, $key) {
 		$count = 0;
-		foreach($array as $value){
+		foreach($array as $value) {
 			$count += $value[$key];
 		}
 		return $count;
@@ -323,7 +319,7 @@ class Stat extends FSIP{
 	 *
 	 * @return void
 	 */
-	public function getDurations(){
+	public function getDurations() {
 		$query = $this->prepare('SELECT MAX(stat_duration) AS stat_duration FROM stats WHERE stat_date >= :stat_date_begin AND stat_date <= :stat_date_end GROUP BY stat_session');
 		$query->execute(array(':stat_date_begin' => $this->stat_begin, ':stat_date_end' => $this->stat_end));
 		$this->durations = $query->fetchAll();
@@ -335,7 +331,7 @@ class Stat extends FSIP{
 	 * @param int $limit Number of results
 	 * @return void
 	 */
-	public function getPages($limit=10){
+	public function getPages($limit=10) {
 		$limit = intval($limit);
 		$query = $this->prepare('SELECT COUNT(stat_page) as stat_count, stat_page FROM stats WHERE stat_date >= :stat_date_begin AND stat_date <= :stat_date_end GROUP BY stat_page ORDER BY stat_count DESC LIMIT 0, ' . $limit . ';');
 		$query->execute(array(':stat_date_begin' => $this->stat_begin, ':stat_date_end' => $this->stat_end));
@@ -348,7 +344,7 @@ class Stat extends FSIP{
 	 * @param int $limit Number of results
 	 * @return void
 	 */
-	public function getPageTypes($limit=10){
+	public function getPageTypes($limit=10) {
 		$limit = intval($limit);
 		$query = $this->prepare('SELECT COUNT(stat_page) as stat_count, stat_page_type FROM stats WHERE stat_date >= :stat_date_begin AND stat_date <= :stat_date_end GROUP BY stat_page_type ORDER BY stat_count DESC LIMIT 0, ' . $limit . ';');
 		$query->execute(array(':stat_date_begin' => $this->stat_begin, ':stat_date_end' => $this->stat_end));
@@ -362,9 +358,9 @@ class Stat extends FSIP{
 	 * @param string $include_local Include local refferers
 	 * @return void
 	 */
-	public function getRecentReferrers($limit=20, $include_local=true){
+	public function getRecentReferrers($limit=20, $include_local=true) {
 		$limit = intval($limit);
-		if($include_local === false){
+		if ($include_local === false) {
 			$where_local = 'AND stat_local = 0';
 		}
 		$query = $this->prepare('SELECT stat_referrer, stat_date FROM stats WHERE stat_referrer != :stat_referrer AND stat_date >= :stat_date_begin AND stat_date <= :stat_date_end ' . @$where_local . ' ORDER BY stat_date DESC LIMIT 0, ' . $limit . ';');
@@ -379,9 +375,9 @@ class Stat extends FSIP{
 	 * @param string $include_local Include local refferers
 	 * @return void
 	 */
-	public function getPopularReferrers($limit=20, $include_local=true){
+	public function getPopularReferrers($limit=20, $include_local=true) {
 		$limit = intval($limit);
-		if($include_local === false){
+		if ($include_local === false) {
 			$where_local = 'AND stat_local = 0';
 		}
 		$query = $this->prepare('SELECT stat_referrer, COUNT(stat_referrer) as stat_referrer_count FROM stats WHERE stat_referrer != :stat_referrer AND stat_date >= :stat_date_begin AND stat_date <= :stat_date_end ' . @$where_local . ' GROUP BY stat_referrer ORDER BY stat_referrer_count DESC LIMIT 0, ' . $limit . ';');
@@ -396,7 +392,7 @@ class Stat extends FSIP{
 	 * @param string $length Desired length of integer
 	 * @return void
 	 */
-	public function padZero($int, $length){
+	public function padZero($int, $length) {
 	    $sPrintfString = '%0' . (int)$length . 's';
 	    return sprintf($sPrintfString, $int);
 	}

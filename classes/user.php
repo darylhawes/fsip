@@ -168,7 +168,7 @@ class User extends FSIP {
 	 *
 	 * @return void
 	 */
-	public function deauth(){
+	public function deauth() {
 		unset($this->user);
 		
 		$now = time();
@@ -179,7 +179,7 @@ class User extends FSIP {
 		// Destroy session
 		$_SESSION = array();
 		
-		if(isset($_COOKIE[session_name()])){
+		if (isset($_COOKIE[session_name()])) {
 			setcookie(session_name(), '', $now-42000, BASE);
 		}
 		
@@ -210,19 +210,15 @@ class User extends FSIP {
 		} else {
 			if (empty($permission)) {
 				return true;
-			}
-			elseif($this->user['user_id'] == 1){
+			} elseif($this->user['user_id'] == 1) {
 				return true;
-			}
-			elseif(in_array($permission, $this->user['user_permissions'])){
+			} elseif(in_array($permission, $this->user['user_permissions'])) {
 				return true;
-			}
-			else{
-				if($required === true){
+			} else {
+				if ($required === true) {
 					$this->addError(E_USER_ERROR, 'You do not have permission to access this module', null, null, 401);
 					exit();
-				}
-				else{
+				} else {
 					return false;
 				}
 			}
@@ -238,8 +234,8 @@ class User extends FSIP {
 	 * @param string $unset 
 	 * @return void
 	 */
-	public function setPref($name='', $unset=''){
-		if(!$this->perm(true)){ return false; }
+	public function setPref($name='', $unset='') {
+		if (!$this->perm(true)) { return false; }
 		
 		return parent::setForm($this->user['user_preferences'], $name, $unset);
 	}
@@ -251,8 +247,8 @@ class User extends FSIP {
 	 * @param string $check 
 	 * @return void
 	 */
-	public function readPref($name='', $check=true){
-		if(!$this->perm(true)){ return false; }
+	public function readPref($name='', $check=true) {
+		if (!$this->perm(true)) { return false; }
 		
 		return parent::readForm($this->user['user_preferences'], $name, $check);
 	}
@@ -264,8 +260,8 @@ class User extends FSIP {
 	 * @param string $default 
 	 * @return void
 	 */
-	public function returnPref($name='', $default=null){
-		if(!$this->perm(true)){ return false; }
+	public function returnPref($name='', $default=null) {
+		if (!$this->perm(true)) { return false; }
 		
 		return parent::returnForm($this->user['user_preferences'], $name, $default);
 	}
@@ -275,8 +271,8 @@ class User extends FSIP {
 	 *
 	 * @return void
 	 */
-	public function savePref(){
-		if(!$this->perm(true)){ return false; }
+	public function savePref() {
+		if (!$this->perm(true)) { return false; }
 		
 		$fields = array('user_preferences' => serialize($this->user['user_preferences']));
 		
@@ -292,20 +288,20 @@ class User extends FSIP {
 	 * @return void
 	 */
 	public function updateFields($fields=array(), $overwrite=true){
-		if(!$this->perm(true)){ return false; }
+		if (!$this->perm(true)) { return false; }
 		
 		// Verify each key has changed; if not, unset the key
-		foreach($fields as $key => $value){
-			if($fields[$key] == $this->user[$key]){
+		foreach($fields as $key => $value) {
+			if ($fields[$key] == $this->user[$key]) {
 				unset($fields[$key]);
 			}
-			if(!empty($this->user[$key]) and ($overwrite === false)){
+			if (!empty($this->user[$key]) and ($overwrite === false)) {
 				unset($fields[$key]);
 			}
 		}
 		
 		// If no keys have changed, break
-		if(count($fields) == 0){ return false; }
+		if (count($fields) == 0) { return false; }
 		
 		// Update database
 		return $this->updateRow($fields, 'users', $this->user['user_id']);
@@ -320,8 +316,8 @@ class User extends FSIP {
 	 * @param string $message 
 	 * @return void
 	 */
-	public function email($subject='', $message=''){
-		if(!$this->perm(true)){ return false; }
+	public function email($subject='', $message='') {
+		if (!$this->perm(true)) { return false; }
 		
 		return parent::email($this->user['user_email'], $subject, $message);
 	}

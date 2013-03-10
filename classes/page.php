@@ -12,7 +12,7 @@
  * @version 1.0
  */
 
-class Page extends FSIP{
+class Page extends FSIP {
 	public $images;
 	public $page_ids;
 	public $page_count = 0;
@@ -25,14 +25,14 @@ class Page extends FSIP{
 	 *
 	 * @param int|array|string $page Page search (IDs or page title)
 	 */
-	public function __construct($page_ids=null){
+	public function __construct($page_ids=null) {
 		parent::__construct();
 		
 		// Repage page array
 		$this->pages = array();
 		
 		// Input handling
-		if(is_object($page_ids)){
+		if (is_object($page_ids)) {
 			$last_modified = $page_ids->last_modified;
 			$page_ids = $page_ids->ids;
 		}
@@ -41,7 +41,7 @@ class Page extends FSIP{
 		
 		// Error checking
 		$this->sql = ' WHERE (pages.page_id IS NULL)';
-		if(count($this->page_ids) > 0){
+		if (count($this->page_ids) > 0) {
 			$this->sql = ' WHERE (pages.page_id IN (' . implode(', ', $this->page_ids) . '))';
 		}
 		
@@ -57,19 +57,18 @@ class Page extends FSIP{
 		// Create a Cache_Lite object
 		$cache = new Cache_Lite($options);
 		
-		if(($pages = $cache->get('pages:' . implode(',', $this->page_ids), 'pages')) && !empty($last_modified) && ($cache->lastModified() > $last_modified)){
+		if (($pages = $cache->get('pages:' . implode(',', $this->page_ids), 'pages')) && !empty($last_modified) && ($cache->lastModified() > $last_modified)){
 			$this->pages = unserialize($pages);
-		}
-		else{
-			if(count($this->page_ids) > 0){			
+		} else {
+			if (count($this->page_ids) > 0) {			
 				$query = $this->prepare('SELECT * FROM pages' . $this->sql . ';');
 				$query->execute();
 				$pages = $query->fetchAll();
 		
 				// Ensure pages array correlates to page_ids array
-				foreach($this->page_ids as $page_id){
-					foreach($pages as $page){
-						if($page_id == $page['page_id']){
+				foreach($this->page_ids as $page_id) {
+					foreach($pages as $page) {
+						if ($page_id == $page['page_id']) {
 							$this->pages[] = $page;
 						}
 					}
@@ -79,11 +78,10 @@ class Page extends FSIP{
 				$page_count = count($this->pages);
 		
 				// Attach additional fields
-				for($i = 0; $i < $page_count; ++$i){
-					if(empty($this->pages[$i]['page_title_url']) or (URL_RW != '/')){
+				for($i = 0; $i < $page_count; ++$i) {
+					if (empty($this->pages[$i]['page_title_url']) or (URL_RW != '/')) {
 						$this->pages[$i]['page_uri_rel'] = BASE . 'page' . URL_ID . $this->pages[$i]['page_id'] . URL_RW;
-					}
-					else{
+					} else {
 						$this->pages[$i]['page_uri_rel'] = BASE . 'page' . URL_ID . $this->pages[$i]['page_id'] . '-' . $this->pages[$i]['page_title_url'] . URL_RW;
 					}
 
@@ -98,7 +96,7 @@ class Page extends FSIP{
 		$this->page_count = count($this->pages);
 	}
 	
-	public function __destruct(){
+	public function __destruct() {
 		parent::__destruct();
 	}
 	
@@ -108,8 +106,8 @@ class Page extends FSIP{
 	 * @param string $orbit 
 	 * @return void
 	 */
-	public function hook($orbit=null){
-		if(!is_object($orbit)){
+	public function hook($orbit=null) {
+		if (!is_object($orbit)) {
 			$orbit = new Orbit;
 		}
 		
@@ -124,37 +122,37 @@ class Page extends FSIP{
 	 * @param bool $version If post_text_raw changed, create a new version
 	 * @return PDOStatement
 	 */
-	public function updateFields($fields, $overwrite=true, $version=true){
+	public function updateFields($fields, $overwrite=true, $version=true) {
 		// Error checking
-		if(!is_array($fields)){
+		if (!is_array($fields)) {
 			return false;
 		}
 		
 		$fields_original = $fields;
 		
-		for($i=0; $i < $this->page_count; $i++){
+		for($i=0; $i < $this->page_count; $i++) {
 			$fields = $fields_original;
 			
 			$page_title = $fields['page_title'];
 			$page_text_raw = $fields['page_text_raw'];
 			
 			// Verify each key has changed; if not, unset the key
-			foreach($fields as $key => $value){
-				if($fields[$key] == $this->pages[$i][$key]){
+			foreach($fields as $key => $value) {
+				if ($fields[$key] == $this->pages[$i][$key]) {
 					unset($fields[$key]);
 				}
-				if(!empty($this->pages[$i][$key]) and ($overwrite === false)){
+				if (!empty($this->pages[$i][$key]) and ($overwrite === false)) {
 					unset($fields[$key]);
 				}
 			}
 			
 			// If no keys have changed, break
-			if(count($fields) == 0){
+			if (count($fields) == 0) {
 				continue;
 			}
 			
 			// Create version
-			if(!empty($fields['page_text_raw']) and (($fields['page_text_raw'] != $this->pages[$i]['page_text_raw']) or ($fields['page_title'] != $this->pages[$i]['page_title'])) and ($version == true)) {
+			if (!empty($fields['page_text_raw']) and (($fields['page_text_raw'] != $this->pages[$i]['page_text_raw']) or ($fields['page_title'] != $this->pages[$i]['page_title'])) and ($version == true)) {
 //				similar_text($fields['post_text_raw'], $this->posts[$i]['post_text_raw'], $version_similarity);
 				$version_fields = array('page_id' => $this->pages[$i]['page_id'],
 					'user_id' => $this->user['user_id'],
@@ -177,11 +175,10 @@ class Page extends FSIP{
 	 * @param bool Delete permanently (and therefore cannot be recovered)
 	 * @return void
 	 */
-	public function delete($permanent=false){
-		if($permanent === true){
+	public function delete($permanent=false) {
+		if ($permanent === true) {
 			$this->deleteRow('pages', $this->page_ids);
-		}
-		else{
+		} else {
 			$fields = array('page_deleted' => date('Y-m-d H:i:s'));
 			$this->updateFields($fields);
 		}
@@ -194,7 +191,7 @@ class Page extends FSIP{
 	 * 
 	 * @return bool
 	 */
-	public function recover(){
+	public function recover() {
 		$fields = array('page_deleted' => null);
 		$this->updateFields($fields);
 		
@@ -206,8 +203,8 @@ class Page extends FSIP{
 	 *
 	 * @return void
 	 */
-	public function updateViews(){
-		for($i = 0; $i < $this->page_count; ++$i){
+	public function updateViews() {
+		for($i = 0; $i < $this->page_count; ++$i) {
 			$this->pages[$i]['page_views']++;
 			$this->exec('UPDATE pages SET page_views = ' . $this->pages[$i]['page_views'] . ' WHERE page_id = ' . $this->pages[$i]['page_id'] . ';');
 		}
@@ -219,8 +216,8 @@ class Page extends FSIP{
 	 * @param string $format Same format as date();
 	 * @return void
 	 */
-	public function formatTime($format=null){
-		foreach($this->pages as &$page){
+	public function formatTime($format=null) {
+		foreach($this->pages as &$page) {
 			$page['page_created_format'] = parent::formatTime($page['page_created'], $format);
 			$page['page_modified_format'] = parent::formatTime($page['page_modified'], $format);
 		}
@@ -233,22 +230,20 @@ class Page extends FSIP{
 	 * @param bool $asc Sequence order (false if DESC)
 	 * @return void
 	 */
-	public function getSeries($start=null, $asc=true){
-		if(!ispage($start)){
+	public function getSeries($start=null, $asc=true) {
+		if (!ispage($start)) {
 			$start = 1;
-		}
-		else{
+		} else {
 			$start = intval($start);
 		}
 		
-		if($asc === true){
+		if ($asc === true) {
 			$values = range($start, $start+$this->page_count);
-		}
-		else{
+		} else {
 			$values = range($start, $start-$this->page_count);
 		}
 		
-		for($i = 0; $i < $this->page_count; ++$i){
+		for($i = 0; $i < $this->page_count; ++$i) {
 			$this->pages[$i]['page_numeric'] = $values[$i];
 			$this->pages[$i]['page_alpha'] = ucwords($this->numberToWords($values[$i]));
 		}
@@ -262,26 +257,23 @@ class Page extends FSIP{
 	 * @param bool $start_first True if first page should be selected and begin sequence
 	 * @return void
 	 */
-	public function addSequence($label, $frequency, $start_first=false){
-		if($start_first === false){
+	public function addSequence($label, $frequency, $start_first=false) {
+		if ($start_first === false) {
 			$i = 1;
-		}
-		else{
+		} else {
 			$i = $frequency;
 		}
 		
 		// Store page comment fields
-		foreach($this->pages as &$page){
-			if($i == $frequency){
-				if(empty($page['page_sequence'])){
+		foreach($this->pages as &$page) {
+			if ($i == $frequency) {
+				if (empty($page['page_sequence'])) {
 					$page['page_sequence'] = $label;
-				}
-				else{
+				} else {
 					$page['page_sequence'] .= ' ' . $label;
 				}
 				$i = 1;
-			}
-			else{
+			} else {
 				$i++;
 			}
 		}
@@ -295,7 +287,7 @@ class Page extends FSIP{
 	 * @param User $user User object
 	 * @return void
 	 */
-	public function attachUser($user){
+	public function attachUser($user) {
 		$this->user = $user->user;
 	}
 	
@@ -304,7 +296,7 @@ class Page extends FSIP{
 	 *
 	 * @return array Array of version data
 	 */
-	public function getVersions(){
+	public function getVersions() {
 		$query = $this->prepare('SELECT versions.* FROM versions, pages' . $this->sql . ' AND versions.page_id = pages.page_id ORDER BY versions.version_created DESC;');
 		$query->execute();
 		$this->versions = $query->fetchAll();
@@ -317,16 +309,16 @@ class Page extends FSIP{
 	 *
 	 * @return array Array of version data
 	 */
-	public function getCitations(){
+	public function getCitations() {
 		$query = $this->prepare('SELECT citations.* FROM citations, pages' . $this->sql . ' AND citations.page_id = pages.page_id;');
 		$query->execute();
 		$this->citations = $query->fetchAll();
 		
 		$citation_count = count($this->citations);
 		
-		for($i=0; $i < $citation_count; $i++){
+		for($i=0; $i < $citation_count; $i++) {
 			$domain = $this->siftDomain($this->citations[$i]['citation_uri_requested']);
-			if(file_exists(PATH . CACHE . 'favicons/' . $this->makeFilenameSafe($domain) . '.png')){
+			if (file_exists(PATH . CACHE . 'favicons/' . $this->makeFilenameSafe($domain) . '.png')) {
 				$this->citations[$i]['citation_favicon_uri'] = LOCATION . BASE . CACHE . 'favicons/' . $this->makeFilenameSafe($domain) . '.png';
 			}
 		}
@@ -339,31 +331,31 @@ class Page extends FSIP{
 	 *
 	 * @return void
 	 */
-	public function updateCitations(){
+	public function updateCitations() {
 		$this->getCitations();
 		
 		$citations = array();
 		$to_delete = array();
 		
-		foreach($this->citations as $citation){
+		foreach($this->citations as $citation) {
 			$citations[$citation['page_id']][] = $citation['citation_uri_requested'];
 			$key = array_search($citation['page_id'], $this->page_ids);
-			if($key !== false){
-				if(strpos($this->pages[$key]['page_text_raw'], $citation['citation_uri_requested']) === false){
+			if ($key !== false) {
+				if (strpos($this->pages[$key]['page_text_raw'], $citation['citation_uri_requested']) === false) {
 					$to_delete[] = $citation['citation_id'];
 				}
 			}
 		}
 		
-		if(count($to_delete) > 0){
+		if (count($to_delete) > 0) {
 			$this->deleteRow('citations', $to_delete);
 		}
 		
-		foreach($this->pages as $page){
+		foreach($this->pages as $page) {
 			preg_match_all('#\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?«»“”‘’]))#si', $page['page_text_raw'], $matches);
-			foreach($matches[1] as $match){
-				if(isset($citations[$page['page_id']])){
-					if(in_array($matches[1], $citations[$page['page_id']])){ continue; }
+			foreach($matches[1] as $match) {
+				if (isset($citations[$page['page_id']])) {
+					if (in_array($matches[1], $citations[$page['page_id']])) { continue; }
 				}
 				$this->loadCitation($match, 'page_id', $page['page_id']);
 			}
@@ -375,9 +367,9 @@ class Page extends FSIP{
 			$page_citations = array();
 			$ignore_keys = array('citation_created', 'citation_modified');
 			
-			foreach($citations as $citation){
-				foreach($citation as $key => $value){
-					if(is_numeric($key) or is_numeric($value) or empty($value) or in_array($key, $ignore_keys)){ continue; }
+			foreach($citations as $citation) {
+				foreach($citation as $key => $value) {
+					if (is_numeric($key) or is_numeric($value) or empty($value) or in_array($key, $ignore_keys)) { continue; }
 					$page_citations[] = $value;
 				}
 			}
