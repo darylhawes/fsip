@@ -25,14 +25,14 @@ class Comment extends FSIP{
 	 *
 	 * @param string|int|array $comment_ids Limit results to select comment IDs
 	 */
-	public function __construct($comment_ids=null){
+	public function __construct($comment_ids=null) {
 		parent::__construct();
 		
 		// Recomment comment array
 		$this->comments = array();
 		
 		// Input handling
-		if(is_object($comment_ids)){
+		if (is_object($comment_ids)) {
 			$last_modified = $comment_ids->last_modified;
 			$comment_ids = $comment_ids->ids;
 		}
@@ -41,7 +41,7 @@ class Comment extends FSIP{
 		
 		// Error checking
 		$this->sql = ' WHERE (comments.comment_id IS NULL)';
-		if(count($this->comment_ids) > 0){
+		if (count($this->comment_ids) > 0) {
 			$this->sql = ' WHERE (comments.comment_id IN (' . implode(', ', $this->comment_ids) . '))';
 		}
 		
@@ -57,19 +57,18 @@ class Comment extends FSIP{
 		// Create a Cache_Lite object
 		$cache = new Cache_Lite($options);
 		
-		if(($comments = $cache->get('comments:' . implode(',', $this->comment_ids), 'comments')) && !empty($last_modified) && ($cache->lastModified() > $last_modified)){
+		if (($comments = $cache->get('comments:' . implode(',', $this->comment_ids), 'comments')) && !empty($last_modified) && ($cache->lastModified() > $last_modified)) {
 			$this->comments = unserialize($comments);
-		}
-		else{
-			if(count($this->comment_ids) > 0){
+		} else {
+			if (count($this->comment_ids) > 0) {
 				$query = $this->prepare('SELECT * FROM comments' . $this->sql . ';');
 				$query->execute();
 				$comments = $query->fetchAll();
 		
 				// Ensure comments array correlates to comment_ids array
-				foreach($this->comment_ids as $comment_id){
-					foreach($comments as $comment){
-						if($comment_id == $comment['comment_id']){
+				foreach($this->comment_ids as $comment_id) {
+					foreach($comments as $comment) {
+						if ($comment_id == $comment['comment_id']) {
 							$this->comments[] = $comment;
 						}
 					}
@@ -84,7 +83,7 @@ class Comment extends FSIP{
 		
 		// Attach additional fields
 		for ($i = 0; $i < $this->comment_count; ++$i) {
-			if($this->comments[$i]['image_id'] != 0) {
+			if ($this->comments[$i]['image_id'] != 0) {
 				$this->image_ids[] = $this->comments[$i]['image_id'];
 			}
 		}
@@ -117,11 +116,10 @@ class Comment extends FSIP{
 	 * @param bool Delete permanently (and therefore cannot be recovered)
 	 * @return void
 	 */
-	public function delete($permanent=false){
-		if($permanent === true){
+	public function delete($permanent=false) {
+		if ($permanent === true) {
 			$this->deleteRow('comments', $this->comment_ids);
-		}
-		else{
+		} else {
 			$fields = array('comment_deleted' => date('Y-m-d H:i:s'));
 			$this->updateFields($fields);
 		}
@@ -134,7 +132,7 @@ class Comment extends FSIP{
 	 * 
 	 * @return bool
 	 */
-	public function recover(){
+	public function recover() {
 		$fields = array('comment_deleted' => null);
 		$this->updateFields($fields);
 		
@@ -147,9 +145,9 @@ class Comment extends FSIP{
 	 * @param string $fields Associative array of columns and fields
 	 * @return PDOStatement
 	 */
-	public function updateFields($fields){
+	public function updateFields($fields) {
 		$ids = array();
-		foreach($this->comments as $comment){
+		foreach($this->comments as $comment) {
 			$ids[] = $comment['comment_id'];
 		}
 		return parent::updateRow($fields, 'comments', $ids);
@@ -161,8 +159,8 @@ class Comment extends FSIP{
 	 * @param string $format Format as in date();
 	 * @return void
 	 */
-	public function formatTime($format=null){
-		foreach($this->comments as &$comment){
+	public function formatTime($format=null) {
+		foreach($this->comments as &$comment) {
 			$comment['comment_created_format'] = parent::formatTime($comment['comment_created'], $format);
 			$comment['comment_modified_format'] = parent::formatTime($comment['comment_modified'], $format);
 		}
@@ -176,22 +174,20 @@ class Comment extends FSIP{
 	 * @param bool $asc Sequence order (false if DESC)
 	 * @return void
 	 */
-	public function getSeries($start=null, $asc=true){
-		if(!is_numeric($start)){
+	public function getSeries($start=null, $asc=true) {
+		if (!is_numeric($start)) {
 			$start = 1;
-		}
-		else{
+		} else {
 			$start = intval($start);
 		}
 		
-		if($asc === true){
+		if ($asc === true) {
 			$values = range($start, $start+$this->comment_count);
-		}
-		else{
+		} else {
 			$values = range($start, $start-$this->comment_count);
 		}
 		
-		for($i = 0; $i < $this->comment_count; ++$i){
+		for($i = 0; $i < $this->comment_count; ++$i) {
 			$this->comments[$i]['comment_numeric'] = $values[$i];
 			$this->comments[$i]['comment_alpha'] = ucwords($this->numberToWords($values[$i]));
 		}
@@ -205,30 +201,26 @@ class Comment extends FSIP{
 	 * @param bool $start_first True if first comment should be selected and begin sequence
 	 * @return void
 	 */
-	public function addSequence($label, $frequency, $start_first=false){
-		if($start_first === false){
+	public function addSequence($label, $frequency, $start_first=false) {
+		if ($start_first === false) {
 			$i = 1;
-		}
-		else{
+		} else {
 			$i = $frequency;
 		}
 		
 		// Store comment comment fields
-		foreach($this->comments as &$comment){
-			if($i == $frequency){
-				if(empty($comment['comment_sequence'])){
+		foreach($this->comments as &$comment) {
+			if ($i == $frequency) {
+				if (empty($comment['comment_sequence'])) {
 					$comment['comment_sequence'] = $label;
-				}
-				else{
+				} else {
 					$comment['comment_sequence'] .= ' ' . $label;
 				}
 				$i = 1;
-			}
-			else{
+			} else {
 				$i++;
 			}
 		}
-		
 		return true;
 	}
 }

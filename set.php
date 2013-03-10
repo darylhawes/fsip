@@ -13,11 +13,11 @@ $fsip = new FSIP;
 $fsip->recordStat('set');
 
 $id = $fsip->findID($_GET['id']);
-if(!$id){ $fsip->addError('No set was found.', 'Try searching for the set you were seeking.', null, null, 404); }
+if (!$id) { $fsip->addError('No set was found.', 'Try searching for the set you were seeking.', null, null, 404); }
 
 $set = new Set($id);
 $set = @$set->sets[0];
-if(!$set){ $fsip->addError('No set was found.', 'Try searching for the set you were seeking.', null, null, 404); }
+if (!$set) { $fsip->addError('No set was found.', 'Try searching for the set you were seeking.', null, null, 404); }
 
 $set['set_created'] = $fsip->formatTime($set['set_created']);
 $set['set_modified'] = $fsip->formatTime($set['set_modified']);

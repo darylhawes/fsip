@@ -13,14 +13,14 @@ $fsip = new FSIP;
 $fsip->recordStat('page');
 
 $id = $fsip->findID($_GET['id']);
-if(!$id){ $fsip->addError('No page was found.', 'Try searching for the page you were seeking.', null, null, 404); }
+if (!$id) { $fsip->addError('No page was found.', 'Try searching for the page you were seeking.', null, null, 404); }
 
 $pages = new Page($id);
 $pages->formatTime();
 $pages->updateViews();
 $page = $pages->pages[0];
 
-if(!$page){ $fsip->addError('No page was found.', 'Try searching for the page you were seeking.', null, null, 404); }
+if (!$page) { $fsip->addError('No page was found.', 'Try searching for the page you were seeking.', null, null, 404); }
 
 $header = new Canvas;
 $header->load('header');
@@ -29,6 +29,7 @@ $header->assign('Canonical', $page['page_uri']);
 $header->display();
 
 $content = new Canvas;
+
 $content->load('page');
 $content->loop($pages);
 $content->assignArray($page);

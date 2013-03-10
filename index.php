@@ -15,11 +15,11 @@ $fsip->recordStat('home');
 if (!empty($_GET['with']) {
 	$with_id = $fsip->findID($_GET['with'], true);
 }
-if(!$with_id and !empty($_GET['with'])){ $fsip->addError('No image was found.', 'Try searching for the image you were seeking.', null, null, 404); }
+if (!$with_id and !empty($_GET['with'])) { $fsip->addError('No image was found.', 'Try searching for the image you were seeking.', null, null, 404); }
 
 $image_ids = new Find('images');
 $image_ids->page(null, 12, 1);
-if($with_id){ $image_ids->with($with_id); }
+if ($with_id) { $image_ids->with($with_id); }
 $image_ids->published();
 $image_ids->privacy('public');
 $image_ids->sort('image_published', 'DESC');
@@ -60,12 +60,13 @@ $directory->loop($sets);
 $directory->display();
 
 $index = new Canvas;
-if($image_ids->page == 1){
+
+if ($image_ids->page == 1) {
 	$index->load('index');
-}
-else{
+} else {
 	$index->load('index_sub');
 }
+
 $index->assign('Page_Next', $image_ids->page_next);
 $index->assign('Page_Previous', $image_ids->page_previous);
 $index->assign('Page_Next_URI', $image_ids->page_next_uri);

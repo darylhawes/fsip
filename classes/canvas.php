@@ -12,7 +12,7 @@
  * @version 1.0
  */
 
-class Canvas extends FSIP{
+class Canvas extends FSIP {
 	public $form_wrap;
 	public $slideshow;
 	public $tables;
@@ -25,14 +25,14 @@ class Canvas extends FSIP{
 	 *
 	 * @param string $template Template
 	 */
-	public function __construct($template=null){
+	public function __construct($template=null) {
 		parent::__construct();
 		
 		$this->objects = array();
 		$this->template = (empty($template)) ? '' : $template . "\n";
 	}
 	
-	public function __destruct(){
+	public function __destruct() {
 		parent::__destruct();
 	}
 	
@@ -41,7 +41,7 @@ class Canvas extends FSIP{
 	 *
 	 * @return string
 	 */
-	public function __toString(){
+	public function __toString() {
 		self::generate();
 		
 		// Return unevaluated
@@ -54,8 +54,8 @@ class Canvas extends FSIP{
 	 * @param Orbit $orbit 
 	 * @return void
 	 */
-	public function hook($orbit=null){
-		if(!is_object($orbit)){
+	public function hook($orbit=null) {
+		if (!is_object($orbit)) {
 			$orbit = new Orbit;
 		}
 		
@@ -68,7 +68,7 @@ class Canvas extends FSIP{
 	 * @param string $template String to append
 	 * @return void
 	 */
-	public function append($template){
+	public function append($template) {
 		 $this->template .= $template . "\n";
 	}
 	
@@ -78,24 +78,22 @@ class Canvas extends FSIP{
 	 * @param string $filename Filename (pulled from the installation's theme folder)
 	 * @return void
 	 */
-	public function load($filename){
-		if(!empty($_REQUEST['theme'])){
+	public function load($filename) {
+		if (!empty($_REQUEST['theme'])) {
 			$theme_folder = strip_tags($_REQUEST['theme']);
-		}
-		else{
+		} else {
 			$theme_folder = $this->returnConf('theme_folder');
 		}
 		
-		if(empty($theme_folder)){
+		if (empty($theme_folder)) {
 			$this->addError(E_USER_ERROR, 'No default theme selected');
 		}
 		
 		$path = $this->correctWinPath(PATH . THEMES . $theme_folder . '/' . $filename . TEMP_EXT);
 		
-		if(is_file($path)){
+		if (is_file($path)) {
 			$this->template .= file_get_contents($path) . "\n";
-		}
-		else{
+		} else {
 			$this->addError(E_USER_ERROR, 'Cannot locate theme file');
 		}
 	}
@@ -108,9 +106,9 @@ class Canvas extends FSIP{
 	 * @param string $empty Assign empty (but set) variables such as the integer zero
 	 * @return bool True if successful
 	 */
-	public function assign($var, $value, $empty=false){
+	public function assign($var, $value, $empty=false) {
 		// Error checking
-		if(empty($value) and ($empty === false)){
+		if (empty($value) and ($empty === false)) {
 			return false;
 		}
 		
@@ -120,13 +118,13 @@ class Canvas extends FSIP{
 		
 		preg_match_all('#\{' . $var . '\|([^\}]+)\}#si', $this->template, $vars_full, PREG_SET_ORDER);
 		
-		foreach($vars_full as $var_full){
+		foreach($vars_full as $var_full) {
 			$this->value = $value;
 			$this->value = $this->filter($var_full[1]);
 			$this->template = str_ireplace($var_full[0], $this->value, $this->template);
 		}
 		
-		if(!empty($this->value) or ($empty !== false)){
+		if (!empty($this->value) or ($empty !== false)) {
 			$this->template = self::scrub($var, $this->template);
 		}
 		
@@ -142,36 +140,35 @@ class Canvas extends FSIP{
 	 * @param string $empty Assign empty (but set) variables such as the integer zero
 	 * @return bool True if successful
 	 */
-	public function assignArray($array, $empty=false){
+	public function assignArray($array, $empty=false) {
 		// Error checking
-		if(empty($array)){
+		if (empty($array)) {
 			return false;
 		}
 		
-		if(is_array($array)){
-			foreach($array as $key => $value){
-				if(isset($value) and !is_array($value) and !is_object($value)){
+		if (is_array($array)) {
+			foreach($array as $key => $value) {
+				if (isset($value) and !is_array($value) and !is_object($value)) {
 					// Set variable, scrub to remove conditionals
 					$this->template = str_ireplace('{' . $key . '}', $value, $this->template);
 					$this->template = self::scrub($key, $this->template);
 					
 					preg_match_all('#\{' . $key . '\|([^\}]+)\}#si', $this->template, $keys_full, PREG_SET_ORDER);
 					
-					foreach($keys_full as $key_full){
+					foreach($keys_full as $key_full) {
 						$this->value = $value;
 						$this->value = $this->filter($key_full[1]);
 						$this->template = str_ireplace($key_full[0], $this->value, $this->template);
 					}
 					
-					if(!empty($this->value) or ($empty !== false)){
+					if (!empty($this->value) or ($empty !== false)) {
 						$this->template = self::scrub($key, $this->template);
 					}
 					
 					unset($this->value);
 				}
 			}
-		}
-		else{
+		} else {
 			return false;
 		}
 		
@@ -184,18 +181,16 @@ class Canvas extends FSIP{
 	 * @param string $title
 	 * @return bool True if successful
 	 */
-	public function setTitle($title=null){
+	public function setTitle($title=null) {
 		$source = $this->returnConf('web_title');
 		
-		if(empty($title)){
+		if (empty($title)) {
 			$title = $source;
-		}
-		else{
+		} else {
 			$format = $this->returnConf('web_title_format');
 			if($format == 'emdash'){
 				$title .= ' &#8212; ' . $source;
-			}
-			else{
+			} else {
 				$title = $source . ': ' . $title;
 			}
 		}
@@ -210,20 +205,20 @@ class Canvas extends FSIP{
 	 * @param array $links Associative array of links (title => URI)
 	 * @return bool True if successful
 	 */
-	public function setBreadcrumb($array){
+	public function setBreadcrumb($array) {
 		$source = $this->returnConf('web_title');
 		
 		$j = 0;
 		$breadcrumb = '<div itemscope itemtype="http://data-vocabulary.org/Breadcrumb" class="breadcrumb">' . "\n\t";
 		$breadcrumb .= '<a href="' . LOCATION . BASE . '" itemprop="url"><span itemprop="title">' . $source . '</span></a>' . "\n\t\t";
 		
-		foreach($array as $key => $value){
+		foreach($array as $key => $value) {
 			$j++;
 			$breadcrumb .= '<div itemprop="child" itemscope itemtype="http://data-vocabulary.org/Breadcrumb" class="breadcrumb_child">' . "\n\t";
 			$breadcrumb .= '<a href="' . $value . '" itemprop="url"><span itemprop="title">' . $key . '</span></a>' . "\n\t\t";
 		}
 		
-		for($i=0; $i < $j; $i++){ 
+		for($i=0; $i < $j; $i++) {
 			$breadcrumb .= '</div>';
 		}
 		
@@ -239,20 +234,20 @@ class Canvas extends FSIP{
 	 * @param Image $object Image object
 	 * @return bool True if successful
 	 */
-	public function loop($object, $offset=0, $length=null){
-		if(empty($offset)){ $offset = 0; }
+	public function loop($object, $offset=0, $length=null) {
+		if (empty($offset)) { $offset = 0; }
 		
 		$table_regex = implode('|', array_keys($this->tables));
 		$table_regex = strtoupper($table_regex);
 		
-		if(!empty($_SESSION['fsip']['preview']['object'])){
+		if (!empty($_SESSION['fsip']['preview']['object'])) {
 			$this->assignArray($_SESSION['fsip']['preview']['object']);
 		}
 		
 		$class = strtolower(get_class($object));
 		$this->objects[$class] = $object;
 		
-		if($this->slideshow === true){
+		if ($this->slideshow === true) {
 			$this->template = '<ul id="slideshow">' . $this->template . '</ul>';
 		}
 		
@@ -261,30 +256,28 @@ class Canvas extends FSIP{
 		
 		$loops = array();
 		
-		if(count($matches) > 0){
-			foreach($matches as $match){
+		if (count($matches) > 0) {
+			foreach($matches as $match) {
 				$match[1] = strtolower($match[1]);
 				
 				// Wrap in <form> for commenting
-				if(($match[1] == 'images') and ($this->form_wrap === true)){
+				if (($match[1] == 'images') and ($this->form_wrap === true)) {
 					$match[2] = '<form action="" method="post">' . $match[2] . '</form>';
-				}
-				elseif(($match[1] == 'images') and ($this->slideshow === true)){
+				} elseif(($match[1] == 'images') and ($this->slideshow === true)) {
 					$match[2] = '<li><!-- ' . $match[2] . ' --></li>';
 				}
 				$loops[] = array('replace' => $match[0], 'reel' => $match[1], 'template' => $match[2], 'replacement' => '');
 			}
-		}
-		else{
+		} else {
 			return false;
 		}
 		
 		
 		$loop_count = count($loops);
 		
-		for($j = 0; $j < $loop_count; ++$j){
-			if($loops[$j]['reel'] != $class . 's'){ continue; }
-			if(!isset($object->$loops[$j]['reel'])){ continue; }
+		for($j = 0; $j < $loop_count; ++$j) {
+			if ($loops[$j]['reel'] != $class . 's') { continue; }
+			if (!isset($object->$loops[$j]['reel'])) { continue; }
 			
 			$replacement = '';
 			$reel = $object->$loops[$j]['reel'];
@@ -297,34 +290,33 @@ class Canvas extends FSIP{
 			
 			
 			// Determine if block has items
-			if($reel_count > 0){
+			if ($reel_count > 0) {
 				$done_once = array();
 				
-				if(!is_int($length)){
+				if (!is_int($length)) {
 					$finish = $reel_count;
-				}
-				else{
+				} else {
 					$finish = $offset + $length;
 				}
 				
-				for($i = $offset; $i < $finish; ++$i){
+				for($i = $offset; $i < $finish; ++$i) {
 					$field_label = substr($field, 0, -3);
 					
-					if($i == 0){
+					if ($i == 0) {
 						$first_label = $field_label . '_first';
 						$reel[$i][$first_label] = 1;
 					}
 					
-					if($i == ($reel_count - 1)){
+					if ($i == ($reel_count - 1)) {
 						$last_label = $field_label . '_last';
 						$reel[$i][$last_label] = 1;
 					}
 					
-					if(!empty($reel[$i][$field]) and !in_array($reel[$i][$field], $done_once)){
+					if (!empty($reel[$i][$field]) and !in_array($reel[$i][$field], $done_once)) {
 						$loop_template = $loops[$j]['template'];
 			
-						foreach($reel[$i] as $key => $value){
-							if(is_array($value)){
+						foreach($reel[$i] as $key => $value) {
+							if (is_array($value)) {
 								$value = var_export($value, true);
 							}
 							
@@ -335,13 +327,13 @@ class Canvas extends FSIP{
 							
 							preg_match_all('#\{' . $key . '\|([^\}]+)\}#si', $loop_template, $keys_full, PREG_SET_ORDER);
 							
-							foreach($keys_full as $key_full){
+							foreach($keys_full as $key_full) {
 								$this->value = $value;
 								$this->value = $this->filter($key_full[1]);
 								$loop_template = str_ireplace($key_full[0], $this->value, $loop_template);
 							}
 							
-							if(!empty($this->value)){
+							if (!empty($this->value)) {
 								$loop_template = self::scrub($key, $loop_template);
 							}
 							
@@ -349,18 +341,17 @@ class Canvas extends FSIP{
 						}
 						
 						// If tied to image array (either sub or super), execute inner blocks
-						if(!empty($reel[$i]['image_id'])){
+						if (!empty($reel[$i]['image_id'])) {
 							$loop_template = self::loopSub($object, $loop_template, 'image_id', $reel[$i]['image_id']);
 						}
-						if(!empty($reel[$i]['set_id'])){
+						if (!empty($reel[$i]['set_id'])) {
 							$loop_template = self::loopSub($object, $loop_template, 'set_id', $reel[$i]['set_id']);
 						}
-						if(!empty($reel[$i]['page_id'])){
+						if (!empty($reel[$i]['page_id'])) {
 							$loop_template = self::loopSub($object, $loop_template, 'page_id', $reel[$i]['page_id']);
 						}
 						$done_once[] = $reel[$i][$field];
-					}
-					else{
+					} else {
 						$loop_template = '';
 					}
 					$replacement .= $loop_template;
@@ -368,8 +359,7 @@ class Canvas extends FSIP{
 				
 				$this->template = str_replace($loops[$j]['replace'], $replacement, $this->template, $int);
 				$this->template = self::scrub($loops[$j]['reel'], $this->template);
-			}
-			else{
+			} else {
 				$this->template = str_replace($loops[$j]['replace'], '', $this->template);
 			}
 		}
@@ -386,7 +376,7 @@ class Canvas extends FSIP{
 	 * @param string $id 
 	 * @return void
 	 */
-	protected function loopSub($array, $template, $field, $id){
+	protected function loopSub($array, $template, $field, $id) {
 		$loops = array();
 		
 		$table_regex = implode('|', array_keys($this->tables));
@@ -395,55 +385,54 @@ class Canvas extends FSIP{
 		
 		preg_match_all('#{block:(' . $table_regex . ')}(.*?){/block:\1}#si', $template, $matches, PREG_SET_ORDER);
 		
-		if(count($matches) > 0){
+		if (count($matches) > 0) {
 			$loops = array();
 			
-			foreach($matches as $match){
+			foreach($matches as $match) {
 				$match[1] = strtolower($match[1]);
 				$loops[] = array('replace' => $match[0], 'reel' => $match[1], 'template' => $match[2], 'replacement' => '');
 			}
-		}
-		else{
+		} else {
 			return $template;
 		}
 		
 		$loop_count = count($loops);
 		
-		for($j = 0; $j < $loop_count; ++$j){
+		for($j = 0; $j < $loop_count; ++$j) {
 			$replacement = '';
 			
 			$reel = $array->$loops[$j]['reel'];
 			
-			if(is_object($reel)){
+			if (is_object($reel)) {
 				$reel = $reel->$loops[$j]['reel'];
 			}
 			
 			$reel_count = count($reel);
 			
-			if($reel_count > 0){
-				for($i = 0; $i < $reel_count; ++$i){
+			if ($reel_count > 0) {
+				for($i = 0; $i < $reel_count; ++$i) {
 					$loop_template = '';
 					
 					$sub_field = $this->tables[$loops[$j]['reel']];
 					$sub_field_label = substr($sub_field, 0, -3);
 					
-					if($i == 0){
+					if ($i == 0) {
 						$first_label = $sub_field_label . '_first';
 						$reel[$i][$first_label] = 1;
 					}
 					
-					if($i == ($reel_count - 1)){
+					if ($i == ($reel_count - 1)) {
 						$last_label = $sub_field_label . '_last';
 						$reel[$i][$last_label] = 1;
 					}
 					
-					if(!empty($reel[$i][$field])){
-						if($reel[$i][$field] == $id){
-							if(empty($loop_template)){
+					if (!empty($reel[$i][$field])) {
+						if ($reel[$i][$field] == $id) {
+							if (empty($loop_template)) {
 								$loop_template = $loops[$j]['template'];
 							}
-							foreach($reel[$i] as $key => $value){
-								if(is_array($value)){
+							foreach($reel[$i] as $key => $value) {
+								if (is_array($value)) {
 									$value = var_export($value, true);
 								}
 								
@@ -454,21 +443,20 @@ class Canvas extends FSIP{
 								
 								preg_match_all('#\{' . $key . '\|([^\}]+)\}#si', $loop_template, $keys_full, PREG_SET_ORDER);
 								
-								foreach($keys_full as $key_full){
+								foreach($keys_full as $key_full) {
 									$this->value = $value;
 									$this->value = $this->filter($key_full[1]);
 									$loop_template = str_ireplace($key_full[0], $this->value, $loop_template);
 								}
 													
-								if(!empty($this->value)){
+								if (!empty($this->value)) {
 									$loop_template = self::scrub($key, $loop_template);
 								}
 								
 								unset($this->value);
 							}
 						}
-					}
-					else{
+					} else {
 						$loop_template = '';
 					}
 					$replacement .= $loop_template;
@@ -480,8 +468,8 @@ class Canvas extends FSIP{
 		
 		$reels = array();
 		
-		foreach($loops as $loop){
-			if(!empty($loop['replacement'])){
+		foreach($loops as $loop) {
+			if (!empty($loop['replacement'])) {
 				$template = str_replace($loop['replace'], $loop['replacement'], $template);
 				$template = self::scrub($loop['reel'], $template);
 			}
@@ -492,22 +480,22 @@ class Canvas extends FSIP{
 		
 		$loops = array();
 		
-		if(count($matches) > 0){
-			foreach($matches as $match){
+		if (count($matches) > 0) {
+			foreach($matches as $match) {
 				$loops[] = array('replace' => $match[0], 'var' => $match[1], 'template' => $match[2], 'replacement' => '');
 			}
 		}
 		
 		$loop_count = count($loops);
 		
-		for($j = 0; $j < $loop_count; ++$j){
-			if(stripos($loops[$j]['template'], '{else:' . $loops[$j]['var'] . '}') !== false){
+		for($j = 0; $j < $loop_count; ++$j) {
+			if (stripos($loops[$j]['template'], '{else:' . $loops[$j]['var'] . '}') !== false) {
 				$loops[$j]['replacement'] = $loops[$j]['template'];
 				$loops[$j]['replacement'] = preg_replace('#(?:.*){else:' . $loops[$j]['var'] . '}(.*)#is', '$1', $loops[$j]['replacement']);
 			}
 		}
 		
-		foreach($loops as $loop){
+		foreach($loops as $loop) {
 			$template = str_replace($loop['replace'], $loop['replacement'], $template);
 		}
 		
@@ -520,8 +508,8 @@ class Canvas extends FSIP{
 	 * @param bool $bool True if slideshow
 	 * @return bool True if successful
 	 */
-	public function slideshow($bool=true){
-		if(!is_bool($bool)){ return false; }
+	public function slideshow($bool=true) {
+		if (!is_bool($bool)) { return false; }
 		
 		$this->slideshow = $bool;
 		return true;
@@ -533,8 +521,8 @@ class Canvas extends FSIP{
 	 * @param bool $bool True if wrap in <form> for comments
 	 * @return bool True if successful
 	 */
-	public function wrapForm($bool=true){
-		if(!is_bool($bool)){ return false; }
+	public function wrapForm($bool=true) {
+		if (!is_bool($bool)) { return false; }
 		
 		$this->form_wrap = $bool;
 		return true;
@@ -545,35 +533,32 @@ class Canvas extends FSIP{
 	 *
 	 * @return void
 	 */
-	public function initDefines(){
+	public function initDefines() {
 		$loops = array();
 		
 		$matches = array();
 		preg_match_all('#{define:([a-z0-9\_\-]+)}#si', $this->template, $matches, PREG_SET_ORDER);
 		
-		if(count($matches) > 0){
-			foreach($matches as $match){
+		if (count($matches) > 0) {
+			foreach($matches as $match) {
 				$loops[] = $match[1];
 			}
-		}
-		else{
+		} else {
 			return;
 		}
 		
 		$loops = array_unique($loops);
 		
-		foreach($loops as $define){
-			if(defined($define)){
+		foreach($loops as $define) {
+			if (defined($define)) {
 				$definition = constant($define);
-			}
-			elseif(defined(strtoupper($define))){
+			} elseif(defined(strtoupper($define))) {
 				$definition = constant(strtoupper($define));
-			}
-			elseif(defined(strtolower($define))){
+			} elseif(defined(strtolower($define))) {
 				$definition = constant(strtolower($define));
 			}
 			
-			if(isset($definition)){
+			if (isset($definition)) {
 				$this->template = str_ireplace('{define:' . $define . '}', $definition, $this->template);
 			}
 		}
@@ -584,7 +569,7 @@ class Canvas extends FSIP{
 	 *
 	 * @return void
 	 */
-	public function initCounts(){
+	public function initCounts() {
 		$loops = array();
 		
 		$table_regex = implode('|', array_keys($this->tables));
@@ -593,33 +578,31 @@ class Canvas extends FSIP{
 		$matches = array();
 		preg_match_all('#{count:(' . $table_regex . ')}#si', $this->template, $matches, PREG_SET_ORDER);
 		
-		if(count($matches) > 0){
-			foreach($matches as $match){
+		if (count($matches) > 0) {
+			foreach($matches as $match) {
 				$loops[] = strtolower($match[1]);
 			}
-		}
-		else{
+		} else {
 			return;
 		}
 		
 		$loops = array_unique($loops);
 		
-		foreach($loops as $reel){
+		foreach($loops as $reel) {
 			$count = 0;
-			foreach($this->objects as $object){
-				if(property_exists($object, $reel)){
+			foreach($this->objects as $object) {
+				if (property_exists($object, $reel)) {
 					$field = $this->tables[$reel];
 					$ids = array();
-					if(!is_array($object->$reel)){ continue; }
-					foreach($object->$reel as $item){
+					if (!is_array($object->$reel)) { continue; }
+					foreach($object->$reel as $item) {
 						$ids[] = $item[$field];
 					}
 					$replacement = count(array_unique($ids));
-				}
-				else{
+				} else {
 					$replacement = 0;
 				}
-				if($replacement > $count){
+				if ($replacement > $count) {
 					$count = $replacement;
 				}
 			}
@@ -636,10 +619,10 @@ class Canvas extends FSIP{
 	 * @param string $filters Filters 
 	 * @return void
 	 */
-	public function filter($filters){
+	public function filter($filters) {
 		$filters = explode('|', $filters);
 		foreach($filters as $filter){
-			if(method_exists('Canvas', $filter)){
+			if (method_exists('Canvas', $filter)) {
 				$this->value = Canvas::$filter();
 			}
 		}
@@ -651,7 +634,7 @@ class Canvas extends FSIP{
 	 *
 	 * @return string
 	 */
-	public function urlencode(){
+	public function urlencode() {
 		return urlencode($this->value);
 	}
 	
@@ -660,7 +643,7 @@ class Canvas extends FSIP{
 	 *
 	 * @return void
 	 */
-	public function fit50(){
+	public function fit50() {
 		return FSIP::fitStringByWord($this->value, 50);
 	}
 	
@@ -669,7 +652,7 @@ class Canvas extends FSIP{
 	 *
 	 * @return void
 	 */
-	public function reltime(){
+	public function reltime() {
 		return FSIP::formatRelTime($this->value, null, '(Unknown)');
 	}
 	
@@ -678,7 +661,7 @@ class Canvas extends FSIP{
 	 *
 	 * @return void
 	 */
-	public function fit100(){
+	public function fit100() {
 		return FSIP::fitStringByWord($this->value, 100);
 	}
 	
@@ -687,7 +670,7 @@ class Canvas extends FSIP{
 	 *
 	 * @return void
 	 */
-	public function fit250(){
+	public function fit250() {
 		return FSIP::fitStringByWord($this->value, 250);
 	}
 	
@@ -696,7 +679,7 @@ class Canvas extends FSIP{
 	 *
 	 * @return void
 	 */
-	public function fit500(){
+	public function fit500() {
 		return FSIP::fitStringByWord($this->value, 500);
 	}
 	
@@ -705,7 +688,7 @@ class Canvas extends FSIP{
 	 *
 	 * @return void
 	 */
-	public function fit1000(){
+	public function fit1000() {
 		return FSIP::fitStringByWord($this->value, 1000);
 	}
 	
@@ -714,7 +697,7 @@ class Canvas extends FSIP{
 	 *
 	 * @return string
 	 */
-	public function urlize(){
+	public function urlize() {
 		return FSIP::makeURL($this->value);
 	}
 	
@@ -724,7 +707,7 @@ class Canvas extends FSIP{
 	 *
 	 * @return string
 	 */
-	public function excerpt(){
+	public function excerpt() {
 		$position = stripos($this->value, "\n\n");
 		$this->value = substr($this->value, 0, $position);
 		
@@ -736,7 +719,7 @@ class Canvas extends FSIP{
 	 *
 	 * @return string
 	 */
-	public function alpha(){
+	public function alpha() {
 		return FSIP::numberToWords($this->value);
 	}
 	
@@ -745,8 +728,8 @@ class Canvas extends FSIP{
 	 *
 	 * @return string
 	 */
-	public function alpha0(){
-		if($this->value != 0){
+	public function alpha0() {
+		if ($this->value != 0) {
 			$this->value = FSIP::numberToWords($this->value);
 		}
 		return $this->value;
@@ -757,11 +740,10 @@ class Canvas extends FSIP{
 	 *
 	 * @return void
 	 */
-	public function pluralize(){
-		if($this->value != 1){
+	public function pluralize() {
+		if ($this->value != 1) {
 			$this->value = 's';
-		}
-		else{
+		} else {
 			$this->value = '';
 		}
 		return $this->value;
@@ -772,7 +754,7 @@ class Canvas extends FSIP{
 	 *
 	 * @return string
 	 */
-	public function upperwords(){
+	public function upperwords() {
 		return ucwords($this->value);
 	}
 	
@@ -781,7 +763,7 @@ class Canvas extends FSIP{
 	 *
 	 * @return string
 	 */
-	public function upperfirst(){
+	public function upperfirst() {
 		return ucfirst($this->value);
 	}
 	
@@ -790,7 +772,7 @@ class Canvas extends FSIP{
 	 *
 	 * @return string
 	 */
-	public function sterilize(){
+	public function sterilize() {
 		return FSIP::stripTags($this->value);
 	}
 	
@@ -805,13 +787,13 @@ class Canvas extends FSIP{
 	 * @param string $suffix Suffix ('Class' as {ifClass:})
 	 * @return string Template
 	 */
-	public function scrub($var, $template, $suffix=null){
-		if(!empty($suffix)){
+	public function scrub($var, $template, $suffix=null) {
+		if (!empty($suffix)) {
 			$suffix = ucfirst($suffix);
 		}
 		
 		$template = str_ireplace('{if' . $suffix . ':' . $var . '}', '', $template);
-		if(stripos($template, '{else' . $suffix .  ':' . $var . '}') !== false){
+		if (stripos($template, '{else' . $suffix .  ':' . $var . '}') !== false) {
 			$template = preg_replace('#{else' . $suffix . ':' . $var . '}(.*?){/if' . $suffix . ':' . $var . '}#is', '', $template);
 		}
 		$template = str_ireplace('{/if' . $suffix . ':' . $var . '}', '', $template);
@@ -825,21 +807,21 @@ class Canvas extends FSIP{
 	 * @param string $template Template
 	 * @return string Template
 	 */
-	public function scrubEmpty($template){
+	public function scrubEmpty($template) {
 		preg_match_all('#{if:([a-z0-9\_\-]*)}(.*?){/if:\1}#si', $template, $matches, PREG_SET_ORDER);
 		
 		$loops = array();
 		
-		if(count($matches) > 0){
-			foreach($matches as $match){
+		if (count($matches) > 0) {
+			foreach($matches as $match) {
 				$loops[] = array('replace' => $match[0], 'var' => $match[1], 'template' => $match[2], 'replacement' => '');
 			}
 		}
 		
 		$loop_count = count($loops);
 		
-		for($j = 0; $j < $loop_count; ++$j){
-			if(stripos($loops[$j]['template'], '{else:' . $loops[$j]['var'] . '}') !== false){
+		for($j = 0; $j < $loop_count; ++$j) {
+			if (stripos($loops[$j]['template'], '{else:' . $loops[$j]['var'] . '}') !== false) {
 				$loops[$j]['replacement'] = $loops[$j]['template'];
 				$loops[$j]['replacement'] = preg_replace('#(?:.*){else:' . $loops[$j]['var'] . '}(.*)#is', '$1', $loops[$j]['replacement'], -1, $count);
 			}
@@ -853,11 +835,11 @@ class Canvas extends FSIP{
 		// 
 		// array_multisort($lengths, SORT_ASC, $loops);
 		
-		foreach($loops as $loop){
+		foreach($loops as $loop) {
 			$template = preg_replace('#{if:' . $loop['var'] . '}(.*?){/if:' . $loop['var'] . '}#si', $loop['replacement'], $template, 1);
 		}
 		
-		if($this->returnConf('canvas_remove_unused') or !empty($_SESSION['fsip']['preview']['object'])){
+		if ($this->returnConf('canvas_remove_unused') or !empty($_SESSION['fsip']['preview']['object'])) {
 			$template = preg_replace('#\{.*?}#si', '', $template);
 		}
 		
@@ -869,25 +851,24 @@ class Canvas extends FSIP{
 	 *
 	 * @return void
 	 */
-	protected function initOrbit(){
+	protected function initOrbit() {
 		$orbit = new Orbit();
 		
 		$matches = array();
 		preg_match_all('#{hook:([a-z0-9_\-]*)}#is', $this->template, $matches, PREG_SET_ORDER);
 		
-		if(count($matches) > 0){
+		if (count($matches) > 0) {
 			$hooks = array();
 			
-			foreach($matches as $match){
+			foreach($matches as $match) {
 				$hook = strtolower($match[1]);
 				$hooks[] = array('replace' => $match[0], 'hook' => $hook);
 			}
-		}
-		else{
+		} else {
 			return false;
 		}
 		
-		foreach($hooks as $hook){
+		foreach($hooks as $hook) {
 			ob_start();
 			
 			// Execute Orbit hook
@@ -905,23 +886,22 @@ class Canvas extends FSIP{
 	 *
 	 * @return void
 	 */
-	protected function initConfig(){
+	protected function initConfig() {
 		$matches = array();
 		preg_match_all('#{config:([a-z0-9_\-]*)}#is', $this->template, $matches, PREG_SET_ORDER);
 		
-		if(count($matches) > 0){
+		if (count($matches) > 0) {
 			$configs = array();
 			
-			foreach($matches as $match){
+			foreach($matches as $match) {
 				$config = strtolower($match[1]);
 				$configs[] = array('replace' => $match[0], 'config' => $config);
 			}
-		}
-		else{
+		} else {
 			return false;
 		}
 		
-		foreach($configs as $config){
+		foreach($configs as $config) {
 			// Return configuration
 			$content = $this->returnConf($config['config']);
 			
@@ -935,26 +915,25 @@ class Canvas extends FSIP{
 	 *
 	 * @return void
 	 */
-	protected function initIncludes(){
+	protected function initIncludes() {
 		$matches = array();
 		preg_match_all('#{include:([a-z0-9_\-]*)}#is', $this->template, $matches, PREG_SET_ORDER);
 		
-		if(count($matches) > 0){
+		if (count($matches) > 0) {
 			$includes = array();
 			
-			foreach($matches as $match){
+			foreach($matches as $match) {
 				$include = strtolower($match[1]);
 				$includes[] = array('replace' => $match[0], 'include' => $include);
 			}
-		}
-		else{
+		} else {
 			return false;
 		}
 		
-		foreach($includes as $include){
+		foreach($includes as $include) {
 			$path = PATH . INCLUDES . $include['include'] . '.php';
 			
-			if(is_file($path)){
+			if (is_file($path)) {
 				ob_start();
 
 				// Include include
@@ -974,11 +953,11 @@ class Canvas extends FSIP{
 	 * @param string $template Template
 	 * @return string Template
 	 */
-	public function scrubClasses($template){
+	public function scrubClasses($template) {
 		$orbit = new Orbit;
 		
 		$extension_classes = array();
-		foreach($orbit->extensions as $extension){
+		foreach($orbit->extensions as $extension) {
 			$extension_classes[] = $extension['extension_class'];
 		}
 		
@@ -986,31 +965,29 @@ class Canvas extends FSIP{
 		
 		$loops = array();
 		
-		if(count($matches) > 0){
-			foreach($matches as $match){
+		if (count($matches) > 0) {
+			foreach($matches as $match) {
 				$loops[] = array('replace' => $match[0], 'var' => $match[1], 'template' => $match[2], 'replacement' => '');
 			}
 		}
 		
 		$loop_count = count($loops);
 		
-		for($j = 0; $j < $loop_count; ++$j){
+		for($j = 0; $j < $loop_count; ++$j) {
 			
-			if(!class_exists($loops[$j]['var']) and !in_array($loops[$j]['var'], $extension_classes)){
-				if(stripos($loops[$j]['template'], '{elseClass:' . $loops[$j]['var'] . '}') !== false){
+			if (!class_exists($loops[$j]['var']) and !in_array($loops[$j]['var'], $extension_classes)) {
+				if (stripos($loops[$j]['template'], '{elseClass:' . $loops[$j]['var'] . '}') !== false) {
 					$loops[$j]['replacement'] = $loops[$j]['template'];
 					$loops[$j]['replacement'] = preg_replace('#(?:.*){elseClass:' . $loops[$j]['var'] . '}(.*)#is', '$1', $loops[$j]['replacement'], -1, $count);
-				}
-				else{
+				} else {
 					$loops[$j]['replacement'] = '';
 				}
-			}
-			else{
+			} else {
 				$loops[$j]['replacement'] = $this->scrub($loops[$j]['var'], $loops[$j]['replace'], 'class');
 			}
 		}
 		
-		foreach($loops as $loop){
+		foreach($loops as $loop) {
 			$template = str_replace($loop['replace'], $loop['replacement'], $template);
 		}
 		
@@ -1024,7 +1001,7 @@ class Canvas extends FSIP{
 	 *
 	 * @return void
 	 */
-	public function generate(){
+	public function generate() {
 		// Add copyright information
 		$this->assign('Copyright', parent::copyright);
 		$this->assign('Powered_by', 'Powered by <a href="http://github.com/darylhawes/fsip">FSIP</a> based on <a href="http://www.alkalineapp.com/">Alkaline</a> under MIT license.');
@@ -1049,7 +1026,7 @@ class Canvas extends FSIP{
 	 *
 	 * @return string
 	 */
-	public function display(){
+	public function display() {
 		self::generate();
 		
 		// Echo after evaluating

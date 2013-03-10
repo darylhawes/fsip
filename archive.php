@@ -17,8 +17,8 @@ $month = intval($_REQUEST['m']);
 $day = intval($_REQUEST['d']);
 
 $date = $year;
-if(!empty($month)){ $date .= '-' . $month; }
-if(!empty($day)){ $date .= '-' . $day; }
+if (!empty($month)) { $date .= '-' . $month; }
+if (!empty($day)) { $date .= '-' . $day; }
 
 $image_ids = new Find('images');
 $image_ids->page(null, 12);
@@ -27,7 +27,7 @@ $image_ids->privacy('public');
 $image_ids->sort('image_published', 'ASC');
 $image_ids->find();
 
-if(empty($image_ids)){ $fsip->addError('No images were found.', 'Try searching for the images you were seeking.', null, null, 404); }
+if (empty($image_ids)) { $fsip->addError('No images were found.', 'Try searching for the images you were seeking.', null, null, 404); }
 
 $images = new Image($image_ids);
 $images->formatTime();
@@ -64,6 +64,7 @@ $directory->loop($sets);
 $directory->display();
 
 $index = new Canvas;
+
 $index->load('index_sub');
 $index->assign('Page_Next', $image_ids->page_next);
 $index->assign('Page_Previous', $image_ids->page_previous);
@@ -71,6 +72,7 @@ $index->assign('Page_Next_URI', $image_ids->page_next_uri);
 $index->assign('Page_Previous_URI', $image_ids->page_previous_uri);
 $index->assign('Page_Current', $image_ids->page);
 $index->assign('Page_Count', $image_ids->page_count);
+
 $index->loop($images);
 $index->display();
 

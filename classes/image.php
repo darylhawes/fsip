@@ -12,7 +12,7 @@
  * @version 1.0
  */
 
-class Image extends FSIP{
+class Image extends FSIP {
 	public $comments;
 	public $db;
 	public $images = array();
@@ -35,14 +35,14 @@ class Image extends FSIP{
 	 *
 	 * @param array|int|string $image_ids Image IDs (use Find class to locate them)
 	 */
-	public function __construct($image_ids=null){
+	public function __construct($image_ids=null) {
 		parent::__construct();
 		
 		// Reset image array
 		$this->images = array();
 		
 		// Input handling
-		if(is_object($image_ids)){
+		if (is_object($image_ids)) {
 			$last_modified = $image_ids->last_modified;
 			$image_ids = $image_ids->ids;
 		}
@@ -51,7 +51,7 @@ class Image extends FSIP{
 		
 		// Error checking
 		$this->sql = ' WHERE (images.image_id IS NULL)';
-		if(count($this->image_ids) > 0){	
+		if (count($this->image_ids) > 0) {	
 			$this->sql = ' WHERE (images.image_id IN (' . implode(', ', $this->image_ids) . '))';
 		}
 		
@@ -67,19 +67,18 @@ class Image extends FSIP{
 		// Create a Cache_Lite object
 		$cache = new Cache_Lite($options);
 		
-		if(!empty($this->image_ids) && ($images = $cache->get('images:' . implode(',', $this->image_ids), 'images')) && !empty($last_modified) && ($cache->lastModified() > $last_modified)){
+		if (!empty($this->image_ids) && ($images = $cache->get('images:' . implode(',', $this->image_ids), 'images')) && !empty($last_modified) && ($cache->lastModified() > $last_modified)) {
 			$this->images = unserialize($images);
-		}
-		else{
+		} else {
 			if(count($this->image_ids) > 0){
 				$query = $this->prepare('SELECT * FROM images' . $this->sql . ';');
 				$query->execute();
 				$images = $query->fetchAll();
 
 				// Ensure images array correlates to image_ids array
-				foreach($this->image_ids as $image_id){
-					foreach($images as $image){
-						if($image_id == $image['image_id']){
+				foreach($this->image_ids as $image_id) {
+					foreach($images as $image) {
+						if ($image_id == $image['image_id']) {
 							$this->images[] = $image;
 						}
 					}
@@ -89,29 +88,26 @@ class Image extends FSIP{
 				$image_count = count($this->images);
 
 				// Attach additional fields
-				for($i = 0; $i < $image_count; ++$i){
-					if(empty($this->images[$i]['image_directory'])){	
+				for($i = 0; $i < $image_count; ++$i) {
+					if (empty($this->images[$i]['image_directory'])) {	
 						$this->images[$i]['image_file'] = parent::correctWinPath(PATH . IMAGES . $this->images[$i]['image_id'] . '.' . $this->images[$i]['image_ext']);
-					}
-					else{
+					} else {
 						$this->images[$i]['image_file'] = parent::correctWinPath(PATH . IMAGES . $this->images[$i]['image_directory'] . $this->images[$i]['image_id'] . '.' . $this->images[$i]['image_ext']);
 					}
 					$this->images[$i]['image_src'] = BASE . IMAGES . $this->images[$i]['image_id'] . '.' . $this->images[$i]['image_ext'];
 					$title_url = $this->makeURL($this->images[$i]['image_title']);
-					if(empty($title_url) or (URL_RW != '/')){
+					if (empty($title_url) or (URL_RW != '/')) {
 						$this->images[$i]['image_uri_rel'] = BASE . 'image' . URL_ID . $this->images[$i]['image_id'] . URL_RW;
-					}
-					else{
+					} else {
 						$this->images[$i]['image_uri_rel'] = BASE . 'image' . URL_ID . $this->images[$i]['image_id'] . '-' . $title_url . URL_RW;
 					}
 
 					$this->images[$i]['image_uri'] = LOCATION . $this->images[$i]['image_uri_rel'];
 
-					if($this->returnConf('comm_enabled') != true){
+					if($this->returnConf('comm_enabled') != true) {
 						$this->images[$i]['image_comment_disabled'] = 1;
-					}
-					elseif($this->returnConf('comm_close') == true){
-						if((time() - strtotime($this->images[$i]['image_published'])) > $this->returnConf('comm_close_time')){
+					} elseif($this->returnConf('comm_close') == true) {
+						if((time() - strtotime($this->images[$i]['image_published'])) > $this->returnConf('comm_close_time')) {
 							$this->images[$i]['image_comment_disabled'] = 1;
 						}
 					}
@@ -124,7 +120,7 @@ class Image extends FSIP{
 		$this->image_count = count($this->images);
 	}
 	
-	public function __destruct(){
+	public function __destruct() {
 		parent::__destruct();
 	}
 	
@@ -134,8 +130,8 @@ class Image extends FSIP{
 	 * @param Object $orbit 
 	 * @return void
 	 */
-	public function hook($orbit=null){
-		if(!is_object($orbit)){
+	public function hook($orbit=null) {
+		if (!is_object($orbit)) {
 			$orbit = new Orbit;
 		}
 		
@@ -148,7 +144,7 @@ class Image extends FSIP{
 	 * @param User $user User object
 	 * @return void
 	 */
-	public function attachUser($user){
+	public function attachUser($user) {
 		$this->user = $user->user;
 	}
 	
@@ -158,19 +154,19 @@ class Image extends FSIP{
 	 * @param array|string $files Full path to image files
 	 * @return void
 	 */
-	public function import($files){
-		if(empty($files)){
+	public function import($files) {
+		if (empty($files)) {
 			return false;
 		}
 		
-		if(is_string($files)){
+		if (is_string($files)) {
 			$files = array($files);
 		}
 		
 		$image_ids = array();
 		
-		foreach($files as $file){
-			if(!is_file($file)){
+		foreach($files as $file) {
+			if (!is_file($file)) {
 				return false;
 			}
 			
@@ -182,7 +178,7 @@ class Image extends FSIP{
 			$image_size = $this->getSize($file, $image_ext);
 			
 			// Configuration: default rights set
-			if($this->returnConf('rights_default')){
+			if ($this->returnConf('rights_default')) {
 				$right_id = $this->returnConf('rights_default_id');
 			}
 			
@@ -212,22 +208,22 @@ class Image extends FSIP{
 		// Process imported images
 		$this->findColors();
 		
-		if($this->returnConf('shoe_exif')){
+		if ($this->returnConf('shoe_exif')) {
 			$this->readEXIF();
 		}
 		
-		if($this->returnConf('shoe_iptc')){
+		if ($this->returnConf('shoe_iptc')) {
 			$this->readIPTC();
 		}
 		
-		if($this->returnConf('shoe_geo')){
+		if ($this->returnConf('shoe_geo')) {
 			$this->readGeo();
 		}
 		
 		$this->sizeImage();
 		
 		// Combine existing and imported image_ids arrays
-		if(!empty($existing_image_ids)){
+		if (!empty($existing_image_ids)) {
 			$this->image_ids = array_merge($existing_image_ids, $this->image_ids);
 		}
 		
@@ -242,16 +238,15 @@ class Image extends FSIP{
 	 * @param array|int $size_ids Size IDs (else all sizes)
 	 * @return void
 	 */
-	public function sizeImage($images=null, $size_ids=null){
-		if(empty($images)){
+	public function sizeImage($images=null, $size_ids=null) {
+		if (empty($images)) {
 			$images = $this->images;
 			$image_count = $this->image_count;
-		}
-		else{
+		} else {
 			$image_count = count($images);
 		}
 		
-		if(!empty($size_ids)){
+		if (!empty($size_ids)) {
 			$size_ids = parent::convertToIntegerArray($size_ids);
 		}
 		
@@ -261,12 +256,12 @@ class Image extends FSIP{
 		$sizes = $query->fetchAll();
 		
 		// Generate thumbnails
-		for($i = 0; $i < $image_count; ++$i){
-			foreach($sizes as $size){
+		for($i = 0; $i < $image_count; ++$i) {
+			foreach($sizes as $size) {
 				$size_id = $size['size_id'];
 				
-				if(!empty($size_ids)){
-					if(!in_array($size_id, $size_ids)){
+				if (!empty($size_ids)) {
+					if (!in_array($size_id, $size_ids)) {
 						continue;
 					}
 				}
@@ -280,11 +275,11 @@ class Image extends FSIP{
 				$size_label = $size['size_label'];
 				$size_dest = parent::correctWinPath(PATH . IMAGES . $images[$i]['image_directory'] . $size_prepend . $images[$i]['image_id'] . $size_append . '.' . $images[$i]['image_ext']);
 				
-				if(in_array($images[$i]['image_ext'], array('pdf', 'svg'))){
+				if (in_array($images[$i]['image_ext'], array('pdf', 'svg'))) {
 					$size_dest = $this->changeExt($size_dest, 'png');
 				}
 				
-				switch($size_type){
+				switch($size_type) {
 					case 'fill':
 						$thumbnail = new Thumbnail($images[$i]['image_file']);
 						$thumbnail->adaptiveResize($size_width, $size_height);
@@ -300,16 +295,16 @@ class Image extends FSIP{
 				}
 				
 				// Apply watermark
-				if($this->returnConf('thumb_watermark') and ($size_watermark == 1)){
+				if ($this->returnConf('thumb_watermark') and ($size_watermark == 1)) {
 					$watermark = parent::correctWinPath(PATH . WATERMARKS . $size_label . '.png');
-					if(!file_exists($watermark)){
+					if (!file_exists($watermark)) {
 						$watermark = parent::correctWinPath(PATH . WATERMARKS . 'watermark.png');
 					}
 					$thumbnail->watermark($watermark);
 				}
 				
 				// Apply metadata
-				if($this->returnConf('thumb_metadata')){
+				if ($this->returnConf('thumb_metadata')) {
 					$thumbnail->metadata();
 				}
 				
@@ -325,81 +320,73 @@ class Image extends FSIP{
 	 * @param bool $overwrite 
 	 * @return void
 	 */
-	public function updateFields($array, $overwrite=true){
+	public function updateFields($array, $overwrite=true) {
 		// Error checking
-		if(!is_array($array)){
+		if (!is_array($array)) {
 			return false;
 		}
 		
 		$array_original = $array;
 				
-		for($i = 0; $i < $this->image_count; ++$i){
+		for($i = 0; $i < $this->image_count; ++$i) {
 			 $array = $array_original;
 			
 			// Verify each key has changed; if not, unset the key
-			foreach($array as $key => $value){
-				if($array[$key] == $this->images[$i][$key]){
+			foreach($array as $key => $value) {
+				if ($array[$key] == $this->images[$i][$key]) {
 					unset($array[$key]);
 				}
-				if(!empty($this->images[$i][$key]) and ($overwrite === false)){
+				if (!empty($this->images[$i][$key]) and ($overwrite === false)) {
 					unset($array[$key]);
 				}
 			}
 			
 			// If no keys have changed, break
-			if(count($array) == 0){
+			if (count($array) == 0) {
 				continue;
 			}
 			
 			$fields = array();
 			
 			// Prepare input
-			foreach($array as $key => $value){
-				if($key == 'image_published'){
-					if(empty($value)){
+			foreach($array as $key => $value) {
+				if ($key == 'image_published') {
+					if (empty($value)) {
 						$fields[$key] = null;
-					}
-					elseif(trim(strtolower($value)) == 'now'){
+					} elseif(trim(strtolower($value)) == 'now') {
 						$value = date('Y-m-d H:i:s');
 						$fields[$key] = $value;
-					}
-					else{
+					} else {
 						$value = str_ireplace(' on ', ', ', $value);
 						$value = str_ireplace(' at ', ', ', $value);
 						$value = strtotime($value);
-						if($value !== false){
+						if ($value !== false) {
 							$value = date('Y-m-d H:i:s', $value);
-						}
-						else{
+						} else {
 							$this->addNote('The image&#8217;s publish date could not be determined, and was left unpublished.', 'error');
 							$value = '';
 						}
 						$fields[$key] = $value;
 					}
-				}
-				elseif($key == 'image_geo'){
+				} elseif($key == 'image_geo') {
 					$geo = new Geo($value);
-					if(!empty($geo->city)){
-						if($geo->city['country_name'] == 'United States'){
+					if (!empty($geo->city)) {
+						if ($geo->city['country_name'] == 'United States') {
 							$fields['image_geo'] = $geo->city['city_name'] . ', ' . $geo->city['city_state'] .', ' . $geo->city['country_name'];
-						}
-						else{
+						} else {
 							$fields['image_geo'] = $geo->city['city_name'] . ', ' . $geo->city['country_name'];
 						}
-					}
-					elseif(!empty($geo->raw)){
+					} elseif(!empty($geo->raw)) {
 						$fields['image_geo'] = ucwords($geo->raw);
-					}
-					else{
+					} else {
 						$fields['image_geo'] = '';
 					}
 					
-					if(!empty($geo->lat) and !empty($geo->long)){
+					if (!empty($geo->lat) and !empty($geo->long)) {
 						$fields['image_geo_lat'] = $geo->lat;
 						$fields['image_geo_long'] = $geo->long;
 					}
-				}
-				else{
+				} else {
 					$fields[$key] = $value;
 				}
 			}
@@ -412,7 +399,7 @@ class Image extends FSIP{
 
 			// Add row to database
 			$query = $this->prepare('UPDATE images SET ' . implode(' = ?, ', $columns) . ' = ? WHERE image_id = ' . $this->images[$i]['image_id'] . ';');
-			if(!$query->execute($values)){
+			if (!$query->execute($values)) {
 				return false;
 			}
 		}
@@ -426,9 +413,9 @@ class Image extends FSIP{
 	 * @param array $tags 
 	 * @return void
 	 */
-	public function updateTags($tags){
+	public function updateTags($tags) {
 		// Error checking
-		if(!is_array($tags)){
+		if (!is_array($tags)) {
 			return false;
 		}
 		
@@ -441,8 +428,8 @@ class Image extends FSIP{
 		$sql_params = array();
 		$tag_count = count($tags);
 		
-		if($tag_count > 0){
-			for($j=0; $j<$tag_count; ++$j){
+		if ($tag_count > 0) {
+			for($j=0; $j<$tag_count; ++$j) {
 				$sql_params[':tag' . $j] = $tags[$j];
 			}
 		
@@ -455,11 +442,11 @@ class Image extends FSIP{
 
 			$tags_db_parents = array();
 
-			foreach($tags_db as $tag_db){
-				if(!empty($tag_db['tag_parents'])){
+			foreach($tags_db as $tag_db) {
+				if (!empty($tag_db['tag_parents'])) {
 					$tag_db['tag_parents'] = unserialize($tag_db['tag_parents']);
-					if(is_array($tag_db['tag_parents'])){
-						foreach($tag_db['tag_parents'] as $tag){
+					if (is_array($tag_db['tag_parents'])) {
+						foreach($tag_db['tag_parents'] as $tag) {
 							$tags[] = $tag;
 						}
 					}
@@ -475,7 +462,7 @@ class Image extends FSIP{
 			$tags = array_merge($tags);
 			$tag_count = count($tags);
 
-			for($j=0; $j<$tag_count; ++$j){
+			for($j=0; $j<$tag_count; ++$j) {
 				$sql_params[':tag' . $j] = $tags[$j];
 			}
 
@@ -486,7 +473,7 @@ class Image extends FSIP{
 			$tags_db = $query->fetchAll();
 			$tags_db_names = array();
 		
-			foreach($tags_db as $tag_db){
+			foreach($tags_db as $tag_db) {
 				$tags_db_names[] = $tag_db['tag_name'];
 			}
 		}
@@ -501,19 +488,18 @@ class Image extends FSIP{
 		$affected_image_ids = array();
 		
 		// Loop through images
-		for($i = 0; $i < $this->image_count; ++$i){
+		for($i = 0; $i < $this->image_count; ++$i) {
 			// Duplicate tags so unsetting doesn't affect loop
 			$tags = $tags_to_update;
 			
 			// Verify tags have changed; if not, unset the key
-			foreach($this->tags as $tag){
-				if($tag['image_id'] == $this->images[$i]['image_id']){
+			foreach($this->tags as $tag) {
+				if ($tag['image_id'] == $this->images[$i]['image_id']) {
 					$tag_key = array_search($tag['tag_name'], $tags);
-					if($tag_key !== false){
+					if ($tag_key !== false){
 						unset($tags[$tag_key]);
 						continue;
-					}
-					else{
+					} else {
 						$query = 'DELETE FROM links WHERE image_id = ' . $tag['image_id'] . ' AND tag_id = ' . $tag['tag_id'] . ';';
 						$this->exec($query);
 						
@@ -522,7 +508,7 @@ class Image extends FSIP{
 						$tag_exists = $query->fetchAll();
 						$tag_count = $tag_exists[0]['count'];
 						
-						if($tag_count < 1){
+						if ($tag_count < 1) {
 							$query = 'DELETE FROM tags WHERE tag_id = ' . $tag['tag_id'] . ';';
 							$this->exec($query);
 						}
@@ -533,19 +519,18 @@ class Image extends FSIP{
 			$tags = array_merge($tags);
 			
 			// If no tags have changed, break
-			if(count($tags) == 0){
+			if (count($tags) == 0) {
 				continue;
 			}
 			
 			$affected_image_ids[] = $this->images[$i]['image_id'];
 			
-			foreach($tags as $tag){
+			foreach($tags as $tag) {
 				$key = array_search($tag, $tags_db_names);
-				if($key !== false){
+				if ($key !== false) {
 					$query = 'INSERT INTO links (image_id, tag_id) VALUES (' . $this->images[$i]['image_id'] . ', ' . $tags_db[$key]['tag_id'] . ');';
 					$this->exec($query);
-				}
-				else{
+				} else {
 					$query = $this->prepare('INSERT INTO tags (tag_name) VALUES (:tag);');
 					$query->execute(array(':tag' => $tag));
 					$tag_id = intval($this->db->lastInsertId(TABLE_PREFIX . 'tags_tag_id_seq'));
@@ -559,11 +544,11 @@ class Image extends FSIP{
 			}
 		}
 		
-		if(count($affected_image_ids) > 0){
+		if (count($affected_image_ids) > 0) {
 			$now = date('Y-m-d H:i:s');
 			$image_tags = implode('; ', $tags_to_update);
 			$query = $this->prepare('UPDATE images SET image_modified = :image_modified, image_tags = :image_tags, image_tag_count = :image_tag_count WHERE image_id = :image_id;');
-			foreach($affected_image_ids as $image_id){
+			foreach($affected_image_ids as $image_id) {
 				$query->execute(array(':image_modified' => $now, ':image_tags' => $image_tags, ':image_tag_count' => count($tags_to_update), ':image_id' => $image_id));
 			}
 		}
@@ -579,12 +564,12 @@ class Image extends FSIP{
 	 * @param array|string $tags Tags names
 	 * @return array Affected tag IDs
 	 */
-	public function addTags($tags){
+	public function addTags($tags) {
 		// Error checking
-		if(!is_array($tags)){
+		if (!is_array($tags)) {
 			return false;
 		}
-		if(empty($tags)){
+		if (empty($tags)) {
 			return false;
 		}
 		
@@ -599,7 +584,7 @@ class Image extends FSIP{
 		$tags = array_merge($tags);
 		$tag_count = count($tags);
 		
-		for($j=0; $j<$tag_count; ++$j){
+		for($j=0; $j<$tag_count; ++$j) {
 			$sql_params[':tag' . $j] = $tags[$j];
 		}
 	
@@ -612,11 +597,11 @@ class Image extends FSIP{
 		
 		$tags_db_parents = array();
 		
-		foreach($tags_db as $tag_db){
-			if(!empty($tag_db['tag_parents'])){
+		foreach($tags_db as $tag_db) {
+			if (!empty($tag_db['tag_parents'])) {
 				$tag_db['tag_parents'] = unserialize($tag_db['tag_parents']);
-				if(is_array($tag_db['tag_parents'])){
-					foreach($tag_db['tag_parents'] as $tag){
+				if (is_array($tag_db['tag_parents'])) {
+					foreach($tag_db['tag_parents'] as $tag) {
 						$tags[] = $tag;
 					}
 				}
@@ -632,7 +617,7 @@ class Image extends FSIP{
 		$tags = array_merge($tags);
 		$tag_count = count($tags);
 		
-		for($j=0; $j<$tag_count; ++$j){
+		for($j=0; $j<$tag_count; ++$j) {
 			$sql_params[':tag' . $j] = $tags[$j];
 		}
 	
@@ -645,7 +630,7 @@ class Image extends FSIP{
 		$tags_db_ids = array();
 		$tags_db_names = array();
 		
-		foreach($tags_db as $tag_db){
+		foreach($tags_db as $tag_db) {
 			$tags_db_ids[] = $tag_db['tag_id'];
 			$tags_db_names[] = $tag_db['tag_name'];
 		}
@@ -659,15 +644,15 @@ class Image extends FSIP{
 		$affected_image_ids = array();
 		
 		// Loop through images
-		for($i = 0; $i < $this->image_count; ++$i){
+		for($i = 0; $i < $this->image_count; ++$i) {
 			// Duplicate tags so unsetting doesn't affect loop
 			$tags = $tags_to_add;
 			
 			// Verify tags have changed; if not, unset the key
-			foreach($this->tags as $tag){
-				if($tag['image_id'] == $this->images[$i]['image_id']){
+			foreach($this->tags as $tag) {
+				if ($tag['image_id'] == $this->images[$i]['image_id']) {
 					$tag_key = array_search($tag['tag_name'], $tags, true);
-					if($tag_key !== false){
+					if ($tag_key !== false) {
 						unset($tags[$tag_key]);
 					}
 				}
@@ -676,19 +661,18 @@ class Image extends FSIP{
 			$tags = array_merge($tags);
 			
 			// If no tags have changed, break
-			if(count($tags) == 0){
+			if (count($tags) == 0) {
 				continue;
 			}
 			
 			$affected_image_ids[] = $this->images[$i]['image_id'];
 			
-			foreach($tags as $tag){
+			foreach($tags as $tag) {
 				$key = array_search($tag, $tags_db_names);
-				if($key !== false){
+				if ($key !== false) {
 					$query = 'INSERT INTO links (image_id, tag_id) VALUES (' . $this->images[$i]['image_id'] . ', ' . $tags_db[$key]['tag_id'] . ');';
 					$this->exec($query);
-				}
-				else{
+				} else {
 					$query = $this->prepare('INSERT INTO tags (tag_name) VALUES (:tag);');
 					$query->execute(array(':tag' => $tag));
 					$tag_id = intval($this->db->lastInsertId(TABLE_PREFIX . 'tags_tag_id_seq'));
@@ -703,7 +687,7 @@ class Image extends FSIP{
 			}
 		}
 		
-		if(count($affected_image_ids) > 0){
+		if (count($affected_image_ids) > 0) {
 			$now = date('Y-m-d H:i:s');
 			
 			$affected_images = new Image($affected_image_ids);
@@ -711,7 +695,7 @@ class Image extends FSIP{
 			
 			$query = $this->prepare('UPDATE images SET image_modified = :image_modified, image_tags = :image_tags, image_tag_count = :image_tag_count WHERE image_id = :image_id;');
 			
-			foreach($affected_images->images as $image){
+			foreach($affected_images->images as $image) {
 				$query->execute(array(':image_modified' => $now, ':image_tags' => implode('; ', $image['image_tags_array']), ':image_tag_count' => count($image['image_tags']), ':image_id' => $image['image_id']));
 			}
 			
@@ -733,9 +717,9 @@ class Image extends FSIP{
 	 * @param array|string $tags Tags names
 	 * @return array Affected tag IDs
 	 */
-	public function removeTags($tags){
+	public function removeTags($tags) {
 		// Error checking
-		if(!is_array($tags)){
+		if (!is_array($tags)) {
 			return false;
 		}
 		
@@ -750,12 +734,12 @@ class Image extends FSIP{
 		$tags_db_ids = array();
 		$affected_image_ids = array();
 		
-		for($i = 0; $i < $this->image_count; ++$i){
+		for($i = 0; $i < $this->image_count; ++$i) {
 			// Verify tags have changed; if not, unset the key
-			foreach($this->tags as $tag){
-				if($tag['image_id'] == $this->images[$i]['image_id']){
+			foreach($this->tags as $tag) {
+				if ($tag['image_id'] == $this->images[$i]['image_id']) {
 					$tag_key = array_search($tag['tag_name'], $tags);
-					if($tag_key !== false){			
+					if ($tag_key !== false) {			
 						$query = 'DELETE FROM links WHERE image_id = ' . $tag['image_id'] . ' AND tag_id = ' . $tag['tag_id'] . ';';
 						$this->exec($query);
 						$tags_db_ids[] = $tag['tag_id'];
@@ -789,16 +773,16 @@ class Image extends FSIP{
 	 * @param string $file Full path to file
 	 * @return string|false Extension
 	 */
-	public function getExt($file){
+	public function getExt($file) {
 		// Error checking
-		if(empty($file)){
+		if (empty($file)) {
 			return false;
 		}
 		
-		if(function_exists('exif_imagetype')){
+		if (function_exists('exif_imagetype')) {
 			$type = exif_imagetype($file);
 			
-			switch($type){
+			switch($type) {
 				case 1:
 					return 'gif'; break;
 				case 2:
@@ -810,8 +794,11 @@ class Image extends FSIP{
 		
 		preg_match('#\.([a-z0-9]*)$#si', $file, $matches);
 		$type = $matches[1];
-		if($type == 'jpeg'){ return 'jpg'; }
-		else{ return $type; }
+		if ($type == 'jpeg') { 
+			return 'jpg'; 
+		} else { 
+			return $type; 
+		}
 	}
 	
 	/**
@@ -820,15 +807,15 @@ class Image extends FSIP{
 	 * @param string $file Full path to file
 	 * @return string|false MIME type
 	 */
-	public function getMIME($file){
+	public function getMIME($file) {
 		// Error checking
-		if(empty($file)){
+		if (empty($file)) {
 			return false;
 		}
 		
-		if(function_exists('exif_imagetype')){
+		if (function_exists('exif_imagetype')) {
 			$type = exif_imagetype($file);
-			switch($type){
+			switch($type) {
 				case 1:
 					return 'image/gif'; break;
 				case 2:
@@ -840,10 +827,10 @@ class Image extends FSIP{
 		
 		preg_match('#\.([a-z0-9]*)$#si', $file, $matches);
 		$type = $matches[1];
-		if($type == 'jpg'){ return 'image/jpeg'; }
-		elseif($type == 'svg'){ return 'image/svg+xml'; }
-		elseif($type == 'pdf'){ return 'application/pdf'; }
-		else{ return 'image/' . $type; }
+		if ($type == 'jpg') { return 'image/jpeg'; }
+		elseif ($type == 'svg') { return 'image/svg+xml'; }
+		elseif ($type == 'pdf') { return 'application/pdf'; }
+		else { return 'image/' . $type; }
 	}
 	
 	/**
@@ -852,24 +839,22 @@ class Image extends FSIP{
 	 * @param string $file Full path to file
 	 * @return array Associative array with heigh and width keys
 	 */
-	public function getSize($file, $ext=null){
+	public function getSize($file, $ext=null) {
 		// Error checking
-		if(empty($file)){
+		if (empty($file)) {
 			return false;
 		}
 		
-		if(empty($ext)){ $ext = self::getExt($src); }
+		if (empty($ext)) { $ext = self::getExt($src); }
 		
 		$size = array();
 		
 		// ImageMagick version
-		if(class_exists('Imagick', false) and ($this->returnConf('thumb_imagick') or in_array($ext, array('pdf', 'svg')))){
+		if (class_exists('Imagick', false) and ($this->returnConf('thumb_imagick') or in_array($ext, array('pdf', 'svg')))) {
 			$image = new Imagick($file);
 			$size['width'] = $image->getImageWidth();
 			$size['height'] = $image->getImageHeight();
-		}
-		// GD version
-		else{
+		} else { // GD version
 			$info = getimagesize($file);
 			$size['width'] = $info[0];
 			$size['height'] = $info[1];
@@ -884,22 +869,21 @@ class Image extends FSIP{
 	 * @param array $images 
 	 * @return void
 	 */
-	public function findColors($images=null){
-		if(empty($images)){
+	public function findColors($images=null) {
+		if (empty($images)) {
 			$images = $this->images;
 			$image_count = $this->image_count;
-		}
-		else{
+		} else {
 			$image_count = count($images);
 		}
-		for($i = 0; $i < $image_count; ++$i){		
+		for($i = 0; $i < $image_count; ++$i) {	
 			$dest = preg_replace('/(.*[0-9]+)(\..+)/', '$1-tmp$2', $images[$i]['image_file']);
 			
 			$thumbnail = new Thumbnail($images[$i]['image_file']);
 			$thumbnail->resize(50, 50);
 			$thumbnail->save($dest);
 		
-			switch($images[$i]['image_ext']){
+			switch($images[$i]['image_ext']) {
 				case 'jpg':
 					$image = imagecreatefromjpeg($dest);
 					break;
@@ -919,8 +903,8 @@ class Image extends FSIP{
 			$width = imagesx($image);
 			$height = imagesy($image);
 		
-			for($x = 0; $x < $width; ++$x){
-				for($y = 0; $y < $height; ++$y){
+			for($x = 0; $x < $width; ++$x) {
+				for($y = 0; $y < $height; ++$y) {
 					$rgb = imagecolorat($image, $x, $y);
 					$r = ($rgb >> 16) & 0xFF;
 					$g = ($rgb >> 8) & 0xFF;
@@ -930,10 +914,10 @@ class Image extends FSIP{
 					$color_present = false;
 				
 					// See if it's in the same color class
-					for($k = 0; $k < count($colors); ++$k){
-						if((abs($colors[$k]['r'] - $r) < COLOR_TOLERANCE) and (abs($colors[$k]['g'] - $g) < COLOR_TOLERANCE) and (abs($colors[$k]['b'] - $b) < COLOR_TOLERANCE)){
+					for($k = 0; $k < count($colors); ++$k) {
+						if ((abs($colors[$k]['r'] - $r) < COLOR_TOLERANCE) and (abs($colors[$k]['g'] - $g) < COLOR_TOLERANCE) and (abs($colors[$k]['b'] - $b) < COLOR_TOLERANCE)) {
 							//If a more saturated color comes along in same color class, replace color
-							if($diff > $colors[$k]['diff']){
+							if ($diff > $colors[$k]['diff']) {
 								$colors[$k]['r'] = $r;
 								$colors[$k]['g'] = $g;
 								$colors[$k]['b'] = $b;
@@ -946,7 +930,7 @@ class Image extends FSIP{
 						}
 					}
 				
-					if($color_present === false){
+					if ($color_present === false) {
 						$colors[] = array('r' => $r, 'g' => $g, 'b' => $b, 'diff' => $diff, 'count' => 1);
 					}
 				}
@@ -954,7 +938,7 @@ class Image extends FSIP{
 		
 			$diffs = array();
 		
-			foreach($colors as $key => $row){
+			foreach($colors as $key => $row) {
 			    $diffs[$key] = $row['diff'];
 			}
 		
@@ -964,7 +948,7 @@ class Image extends FSIP{
 		
 			$counts = 0;
 		
-			for($j = 0; $j < count($colors); ++$j){
+			for ($j = 0; $j < count($colors); ++$j) {
 				$colors[$j]['count'] = intval(pow($colors[$j]['count'], .35));
 				$counts += $colors[$j]['count'];
 			}
@@ -974,7 +958,7 @@ class Image extends FSIP{
 			$total = 0;
 			$rgb_last = '';
 		
-			foreach($colors as $color){
+			foreach($colors as $color) {
 				$rgb = $color['r'] . ',' . $color['g'] . ',' . $color['b'];
 				$percent = strval(round((($color['count'] / $counts) * 100), 1));
 				$total += $percent;
@@ -982,7 +966,7 @@ class Image extends FSIP{
 				$rgb_last = $rgb;
 			}
 		
-			if($total != 100){
+			if ($total != 100) {
 				$remaining = 100 - $total;
 				$rgbs[$rgb_last] += strval($remaining);
 				$rgbs[$rgb_last] = strval(floatval(round($rgbs[$rgb_last], 1)));
@@ -994,8 +978,8 @@ class Image extends FSIP{
 			// Calculate dominant color (RGB)
 			
 			$rgb_dom_percent = 0;
-			foreach($rgbs as $rgb => $percent){
-				if($percent > $rgb_dom_percent){
+			foreach($rgbs as $rgb => $percent) {
+				if ($percent > $rgb_dom_percent) {
 					$rgb_dom = $rgb;
 				}
 			}
@@ -1015,11 +999,10 @@ class Image extends FSIP{
 
 			$V = $max;
 
-			if($delta == 0){ 
+			if($delta == 0) { 
 				$H = 0;
 				$S = 0;
-			} 
-			else{ 
+			}  else { 
 				$S = $delta / $max;
 
 				$del_R = ((($max - $R ) / 6) + ($delta / 2 )) / $delta;
@@ -1057,31 +1040,30 @@ class Image extends FSIP{
 	 * @param array $images 
 	 * @return void
 	 */
-	public function readEXIF($images=null){
-		if(!function_exists('exif_read_data')){ return false; }
+	public function readEXIF($images=null) {
+		if (!function_exists('exif_read_data')) { return false; }
 		
-		if(empty($images)){
+		if (empty($images)) {
 			$images = $this->images;
 			$image_count = $this->image_count;
-		}
-		else{
+		} else {
 			$image_count = count($images);
 		}
 		
-		for($i = 0; $i < $image_count; ++$i){
+		for($i = 0; $i < $image_count; ++$i) {
 			// Read EXIF data
 			$exif = @exif_read_data($images[$i]['image_file'], 0, true, false);
 			
 			// If EXIF data exists, add each key (group), name, value to database
-			if((count($exif) > 0) and is_array($exif)){
+			if ((count($exif) > 0) and is_array($exif)) {
 				$inserts = array();
-				foreach(@$exif as $key => $section){
-				    foreach($section as $name => $value){
+				foreach(@$exif as $key => $section) {
+				    foreach($section as $name => $value) {
 						// Check for empty EXIF data entries
-						if(is_string($value)){
+						if (is_string($value)) {
 							$value = trim($value);
 						}
-						if(empty($value)){
+						if (empty($value)) {
 							continue;
 						}
 						
@@ -1093,7 +1075,7 @@ class Image extends FSIP{
 						$this->addRow($fields, 'exifs');
 						
 						// Check for date taken, insert to images table
-						if(($key == 'IFD0') and ($name == 'DateTime')){
+						if (($key == 'IFD0') and ($name == 'DateTime')) {
 							$query = $this->prepare('UPDATE images SET image_taken = :image_taken WHERE image_id = ' . $images[$i]['image_id'] . ';');
 							$query->execute(array(':image_taken' => date('Y-m-d H:i:s', strtotime($value))));
 						}
@@ -1109,21 +1091,19 @@ class Image extends FSIP{
 	 * @param array $images 
 	 * @return void
 	 */
-	public function readIPTC($images=null){
-		if(empty($images)){
+	public function readIPTC($images=null) {
+		if (empty($images)) {
 			$images = $this->images;
 			$image_count = $this->image_count;
-		}
-		else{
+		} else {
 			$image_count = count($images);
 		}
 		
-		for($i = 0; $i < $image_count; ++$i){
+		for($i = 0; $i < $image_count; ++$i) {
 			// Read IPTC data
 			$size = getimagesize($images[$i]['image_file'], $info);
 			
-			if(isset($info['APP13']))
-			{
+			if (isset($info['APP13'])) {
 				// Parse IPTC data
 			    $iptc = iptcparse($info['APP13']);
 				
@@ -1159,30 +1139,29 @@ class Image extends FSIP{
 	 * @param array $images 
 	 * @return void
 	 */
-	public function readGeo($images=null){
-		if(empty($images)){
+	public function readGeo($images=null) {
+		if (empty($images)) {
 			$images = $this->images;
 			$image_count = $this->image_count;
-		}
-		else{
+		} else {
 			$image_count = count($images);
 		}
 		
-		for($i = 0; $i < $image_count; ++$i){
+		for($i = 0; $i < $image_count; ++$i) {
 			$found_exif = 0;
 			
-			if(function_exists('exif_read_data')){
+			if (function_exists('exif_read_data')) {
 				// Read EXIF data
 				$exif = @exif_read_data($images[$i]['image_file'], 0, true, false);
 				
 				// If EXIF data exists, add each key (group), name, value to database
-				if((count($exif) > 0) and is_array($exif)){
+				if ((count($exif) > 0) and is_array($exif)) {
 					$inserts = array();
-					foreach(@$exif as $key => $section){
+					foreach(@$exif as $key => $section) {
 						array_multisort($section, SORT_DESC);
-					    foreach($section as $name => $value){
+					    foreach($section as $name => $value) {
 							// Check for geo data
-							if(($key == 'GPS') and ($name == 'GPSLatitude')){
+							if (($key == 'GPS') and ($name == 'GPSLatitude')) {
 								$lat_d = $value[0];
 							
 								$lat_m = $value[1];
@@ -1195,7 +1174,7 @@ class Image extends FSIP{
 							
 								$found_exif++;
 							}
-							if(($key == 'GPS') and ($name == 'GPSLatitudeRef')){
+							if (($key == 'GPS') and ($name == 'GPSLatitudeRef')) {
 								if(strtolower($value) == 's'){
 									$lat_d = 0 - $lat_d;
 									$lat_m = 0 - $lat_m;
@@ -1203,7 +1182,7 @@ class Image extends FSIP{
 								}
 								$found_exif++;
 							}
-							if(($key == 'GPS') and ($name == 'GPSLongitude')){
+							if (($key == 'GPS') and ($name == 'GPSLongitude')) {
 								$long_d = $value[0];
 							
 								$long_m = $value[1];
@@ -1216,7 +1195,7 @@ class Image extends FSIP{
 							
 								$found_exif++;
 							}
-							if(($key == 'GPS') and ($name == 'GPSLongitudeRef')){
+							if (($key == 'GPS') and ($name == 'GPSLongitudeRef')) {
 								if(strtolower($value) == 'w'){
 									$long_d = 0 - $long_d;
 									$long_m = 0 - $long_m;
@@ -1229,7 +1208,7 @@ class Image extends FSIP{
 				}
 			
 				// Did it find all 4 EXIF GPS tags?
-				if($found_exif == 4){
+				if ($found_exif == 4) {
 					$geo_lat = $lat_d + ($lat_m / 60) + ($lat_s / 3600);
 					$geo_long = $long_d + ($long_m / 60) + ($long_s / 3600);
 				}
@@ -1238,8 +1217,7 @@ class Image extends FSIP{
 			// Read IPTC data
 			$size = getimagesize($images[$i]['image_file'], $info);
 			
-			if(isset($info['APP13']))
-			{
+			if (isset($info['APP13'])) {
 				// Parse IPTC data
 			    $iptc = iptcparse($info['APP13']);
 				
@@ -1249,42 +1227,40 @@ class Image extends FSIP{
 			}
 			
 			// Determine if there's geo data in IPTC
-			if(!empty($city)){
+			if (!empty($city)) {
 				// Require geography class
 				require_once('geo.php');
 				
 				$place = $city;
 				
-				if(!empty($state)){
+				if (!empty($state)) {
 					$place .= ', ' . $state;
 				}
 				
-				if(!empty($country)){
+				if (!empty($country)) {
 					$place .= ', ' . $country;
 				}
 				
 				// Locate place
 				$place = new Geo($place);
-			}
-			elseif($found_exif == 4){
+			} elseif($found_exif == 4) {
 				// Require geography class
 				require_once('geo.php');
 				
 				$place = new Geo(strval($geo_lat) . ', ' . strval($geo_long));
 			}
 			
-			if(!empty($place->city)){
+			if (!empty($place->city)) {
 				$geo = $place->city['city_name'];
-				if(!empty($place->city['city_state'])){
+				if (!empty($place->city['city_state'])) {
 					$geo .= ', ' . $place->city['city_state'];
 				}
 				$geo .= ', ' . $place->city['country_name'];
-			}
-			elseif(!empty($place->raw)){
+			} elseif(!empty($place->raw)) {
 				$geo = $place->raw;
 			}
 			
-			if(!empty($place->lat) or !empty($place->long)){
+			if (!empty($place->lat) or !empty($place->long)) {
 				$geo_lat = $place->lat;
 				$geo_long = $place->long;
 			}
@@ -1304,7 +1280,7 @@ class Image extends FSIP{
 	 * @return void
 	 */
 	public function updateViews(){
-		for($i = 0; $i < $this->image_count; ++$i){
+		for($i = 0; $i < $this->image_count; ++$i) {
 			$this->images[$i]['image_views']++;
 			$this->exec('UPDATE images SET image_views = ' . $this->images[$i]['image_views'] . ' WHERE image_id = ' . $this->images[$i]['image_id'] . ';');
 		}
@@ -1316,18 +1292,17 @@ class Image extends FSIP{
 	 * @param bool Delete permanently (and therefore cannot be recovered)
 	 * @return void
 	 */
-	public function delete($permanent=false){
-		if($permanent === true){
+	public function delete($permanent=false) {
+		if ($permanent === true) {
 			$this->deSizeImage(true);
 		
-			for($i = 0; $i < $this->image_count; ++$i){
+			for($i = 0; $i < $this->image_count; ++$i) {
 				@$this->exec('DELETE FROM images WHERE image_id = ' . $this->images[$i]['image_id'] . ';');
 				@$this->exec('DELETE FROM comments WHERE image_id = ' . $this->images[$i]['image_id'] . ';');
 				@$this->exec('DELETE FROM exifs WHERE image_id = ' . $this->images[$i]['image_id'] . ';');
 				@$this->exec('DELETE FROM links WHERE image_id = ' . $this->images[$i]['image_id'] . ';');
 			}
-		}
-		else{
+		} else {
 			$query = $this->prepare('UPDATE comments SET comment_deleted = ? WHERE image_id = ' . implode(' OR image_id = ', $this->image_ids) . ';');
 			$query->execute(array(date('Y-m-d H:i:s')));
 			
@@ -1337,7 +1312,7 @@ class Image extends FSIP{
 		
 		$this->getSets();
 		
-		foreach($this->sets as $set){
+		foreach($this->sets as $set) {
 			$a_set = new Set($set['set_id']);
 			$a_set->rebuild();
 		}
@@ -1350,8 +1325,8 @@ class Image extends FSIP{
 	 * 
 	 * @return bool
 	 */
-	public function recover(){
-		for($i = 0; $i < $this->image_count; ++$i){
+	public function recover() {
+		for($i = 0; $i < $this->image_count; ++$i) {
 			$query = $this->prepare('UPDATE comments SET comment_deleted = ? WHERE image_id = ' . $this->images[$i]['image_id'] . ' AND comment_deleted = ?;');
 			$query->execute(array(null, $this->images[$i]['image_deleted']));
 		}
@@ -1361,7 +1336,7 @@ class Image extends FSIP{
 		
 		$this->getSets();
 		
-		foreach($this->sets as $set){
+		foreach($this->sets as $set) {
 			$a_set = new Set($set['set_id']);
 			$a_set->rebuild();
 		}
@@ -1375,10 +1350,10 @@ class Image extends FSIP{
 	 * @param array|string $sizes Size titles (or else all sizes)
 	 * @return void
 	 */
-	public function getSizes($sizes=null){
+	public function getSizes($sizes=null) {
 		$sizes = $this->convertToArray($sizes);
 		
-		if(empty($sizes)){
+		if (empty($sizes)) {
 			$sizes = array();
 		}
 		
@@ -1395,18 +1370,17 @@ class Image extends FSIP{
 		$cache = new Cache_Lite($options);
 		$sizes_request = $sizes;
 		
-		if($sizes = $cache->get('sizes:' . implode(',', $sizes_request), 'sizes')){
+		if ($sizes = $cache->get('sizes:' . implode(',', $sizes_request), 'sizes')) {
 			$sizes = unserialize($sizes);
-		}
-		else{
+		} else {
 			// Find size's prefix and suffix
-			if(!empty($sizes_request)){
+			if (!empty($sizes_request)) {
 				$sizes = array_map('strtolower', $sizes_request);
 				$sizes_count = count($sizes);
 			
 				$sizes_new = array();
 			
-				foreach($sizes as $size){
+				foreach($sizes as $size) {
 					$sizes_new[] = $size;
 					$sizes_new[] = $size;
 				}
@@ -1417,8 +1391,7 @@ class Image extends FSIP{
 			
 				$query = $this->prepare('SELECT * FROM sizes WHERE LOWER(size_title) = ' . implode(' OR LOWER(size_title) = ', $value_slots) . ' OR LOWER(size_label) = ' . implode(' OR LOWER(size_label) = ', $value_slots) . ' ORDER BY (size_width*size_height) DESC');
 				$query->execute($sizes);
-			}
-			else{
+			} else {
 				$query = $this->prepare('SELECT * FROM sizes ORDER BY (size_width*size_height) DESC');
 				$query->execute();
 			}
@@ -1429,8 +1402,8 @@ class Image extends FSIP{
 		
 		$this->sizes = array();
 		
-		for($j=0; $j < $this->image_count; $j++){
-			foreach($sizes as $size){
+		for($j=0; $j < $this->image_count; $j++) {
+			foreach($sizes as $size) {
 				$size['image_id'] = $this->images[$j]['image_id'];
 				$image_ext = $this->images[$j]['image_ext'];
 				
@@ -1442,11 +1415,11 @@ class Image extends FSIP{
 				$size_width = $size['size_width'];
 				$size_height = $size['size_height'];
 
-				if(in_array($image_ext, array('pdf', 'svg'))){
+				if (in_array($image_ext, array('pdf', 'svg'))) {
 					$image_ext = 'png';
 				}
 				
-				if(empty($this->images[$j]['image_directory'])){
+				if (empty($this->images[$j]['image_directory'])) {
 					$this->images[$j]['image_directory'] = '';
 				}
 				
@@ -1463,9 +1436,9 @@ class Image extends FSIP{
 				$width_orig = $this->images[$j]['image_width'];
 				$height_orig = $this->images[$j]['image_height'];
 				
-				if($size_type == 'scale'){
-					if(($width_orig <= $width) and ($height_orig <= $height)){
-						switch($image_ext){
+				if ($size_type == 'scale') {
+					if (($width_orig <= $width) and ($height_orig <= $height)) {
+						switch($image_ext) {
 							case 'jpg':
 								$size['size_height'] = $this->images[$j]['image_height'];
 								$size['size_width'] = $this->images[$j]['image_width'];
@@ -1484,21 +1457,22 @@ class Image extends FSIP{
 					$ratio_orig = $width_orig / $height_orig;
 					$ratio = $width / $height;
 
-					if($ratio_orig > $ratio){ $height = $width / $ratio_orig; }
-					else{ $width = $height * $ratio_orig; }
-					
+					if ($ratio_orig > $ratio) { 
+						$height = $width / $ratio_orig; 
+					} else { 
+						$width = $height * $ratio_orig; 
+					}
+
 					$size['size_height'] = floor($height);
 					$size['size_width'] = floor($width);
-				}
-				elseif($size_type == 'fill'){
-					if($size_height < $height){
+				} elseif ($size_type == 'fill') {
+					if ($size_height < $height) {
 						$size['size_height'] = $size_height;
-					}
-					else{
+					} else {
 						$size['size_height'] = $height;
 					}
 					
-					if($size_width < $width){
+					if ($size_width < $width) {
 						$size['size_width'] = $size_width;
 					}
 					else{
@@ -1517,15 +1491,15 @@ class Image extends FSIP{
 	 *
 	 * @return array Associative array of EXIFs
 	 */
-	public function getEXIF(){
+	public function getEXIF() {
 		$query = $this->prepare('SELECT exifs.* FROM exifs, images' . $this->sql . ' AND images.image_id = exifs.image_id;');
 		$query->execute();
 		$exifs = $query->fetchAll();
 		
-		foreach($exifs as $exif){
+		foreach($exifs as $exif) {
 			$image_id = intval($exif['image_id']);
 			$key = array_search($image_id, $this->image_ids);
-			if(@$image_id = $this->image_ids[$key]){
+			if (@$image_id = $this->image_ids[$key]){
 				@$this->images[$key]['image_exif_' . strtolower($exif['exif_key']) . '_' . strtolower($exif['exif_name'])] = unserialize($exif['exif_value']);
 			}
 		}
@@ -1539,23 +1513,20 @@ class Image extends FSIP{
 	 * @param bool $show_hidden_tags Include hidden tags
 	 * @return array Associative array of tags
 	 */
-	public function getTags($show_hidden_tags=false){
+	public function getTags($show_hidden_tags=false) {
 		// Sort by tag name
-		if($this->returnConf('tag_alpha')){
+		if ($this->returnConf('tag_alpha')) {
 			$query = $this->prepare('SELECT tags.tag_name, tags.tag_id, images.image_id FROM tags, links, images' . $this->sql . ' AND tags.tag_id = links.tag_id AND links.image_id = images.image_id ORDER BY tags.tag_name;');
-		}
-		// Sort by order added
-		else{
+		} else {// Sort by order added
 			$query = $this->prepare('SELECT tags.tag_name, tags.tag_id, images.image_id FROM tags, links, images' . $this->sql . ' AND tags.tag_id = links.tag_id AND links.image_id = images.image_id ORDER BY links.link_id;');
 		}
 		$query->execute();
 		$tags = $query->fetchAll();
 		unset($query);
 		
-		if($show_hidden_tags === true){
+		if ($show_hidden_tags === true) {
 			$this->tags = $tags;
-		}
-		else{
+		} else {
 			foreach($tags as $tag){
 				if($tag['tag_name'][0] != '!'){
 					$this->tags[] = $tag;
@@ -1566,26 +1537,25 @@ class Image extends FSIP{
 		$this->tag_count = count($this->tags);
 		
 		// Attach additional fields
-		for($i = 0; $i < $this->tag_count; ++$i){
+		for($i = 0; $i < $this->tag_count; ++$i) {
 			$title_url = $this->makeURL($this->tags[$i]['tag_name']);
-			if(empty($title_url) or (URL_RW != '/')){
+			if (empty($title_url) or (URL_RW != '/')) {
 				$this->tags[$i]['tag_uri_rel'] = BASE . 'tag' . URL_ID . $this->tags[$i]['tag_id'] . URL_RW;
-			}
-			else{
+			} else {
 				$this->tags[$i]['tag_uri_rel'] = BASE . 'tag' . URL_ID . $this->tags[$i]['tag_id'] . '-' . $title_url . URL_RW;
 			}
 			
 			$this->tags[$i]['tag_uri'] = LOCATION . $this->tags[$i]['tag_uri_rel'];
 		}
 		
-		foreach($this->images as &$image){
+		foreach($this->images as &$image) {
 			$image['image_tags_array'] = array();
 		}
 		
-		foreach($tags as $tag){
+		foreach($tags as $tag) {
 			$image_id = intval($tag['image_id']);
 			$key = array_search($image_id, $this->image_ids);
-			if($image_id = $this->image_ids[$key]){
+			if ($image_id = $this->image_ids[$key]) {
 				$this->images[$key]['image_tags_array'][] = $tag['tag_name'];
 			}
 		}
@@ -1598,16 +1568,16 @@ class Image extends FSIP{
 	 *
 	 * @return array Associative array of rights sets
 	 */
-	public function getRights(){
+	public function getRights() {
 		$query = $this->prepare('SELECT rights.*, images.image_id FROM rights, images' . $this->sql . ' AND rights.right_id = images.right_id AND rights.right_deleted IS NULL;');
 		$query->execute();
 		$rights = $query->fetchAll();
 		
-		foreach($rights as $right){
+		foreach($rights as $right) {
 			$image_id = intval($right['image_id']);
 			$key = array_search($image_id, $this->image_ids);
-			if($image_id = $this->image_ids[$key]){
-				foreach($right as $right_key => $right_value){
+			if ($image_id = $this->image_ids[$key]) {
+				foreach($right as $right_key => $right_value) {
 					$this->images[$key][$right_key] = $right_value;
 				}
 			}
@@ -1621,16 +1591,16 @@ class Image extends FSIP{
 	 *
 	 * @return array Associative array of sets
 	 */
-	public function getSets(){
+	public function getSets() {
 		$set_ids = new Find('sets');
 		$set_ids->find();
 		
 		$sets = new Set($set_ids);
 		
-		foreach($sets->sets as &$set){
+		foreach($sets->sets as &$set) {
 			$set_images = explode(', ', $set['set_images']);
-			foreach($this->image_ids as $image_id){
-				if(in_array($image_id, $set_images)){
+			foreach($this->image_ids as $image_id) {
+				if (in_array($image_id, $set_images)) {
 					$set['image_id'] = $image_id;
 					$this->sets[] = $set;
 				}
@@ -1645,10 +1615,10 @@ class Image extends FSIP{
 	 *
 	 * @return void
 	 */
-	public function getUsers(){
+	public function getUsers() {
 		$ids = array();
 		
-		for($i = 0; $i < $this->image_count; ++$i){
+		for ($i = 0; $i < $this->image_count; ++$i) {
 			$ids[] = $this->images[$i]['user_id'];
 		}
 		
@@ -1658,16 +1628,16 @@ class Image extends FSIP{
 		
 		$user_ids = array();
 		
-		foreach($users as $user){
+		foreach($users as $user) {
 			$user_ids[] = $user['user_id'];
 		}
 		
 		$no_save = array('user_key', 'user_pass', 'user_pass_salt');
 		
-		for($i = 0; $i < $this->image_count; ++$i){
+		for($i = 0; $i < $this->image_count; ++$i) {
 			$key = array_search($this->images[$i]['user_id'], $user_ids);
-			foreach($users[$key] as $field => $value){
-				if(in_array($field, $no_save)){ continue; }
+			foreach($users[$key] as $field => $value) {
+				if (in_array($field, $no_save)) { continue; }
 				$this->images[$i][$field] = $users[$key][$field];
 			}
 		}
@@ -1680,19 +1650,19 @@ class Image extends FSIP{
 	 *
 	 * @return array Associative array of pages
 	 */
-	public function getPages(){
+	public function getPages() {
 		$page_ids = new Find('pages');
 		$page_ids->find();
 		
 		$pages = new Page($page_ids);
 		
-		foreach($pages->pages as &$page){
+		foreach($pages->pages as &$page) {
 			$page_images = $page['page_images'];
 			if(empty($page_images)){ continue; }
 			
 			$page_images = explode(', ', $page_images);
-			foreach($this->image_ids as $image_id){
-				if(in_array($image_id, $page_images)){
+			foreach($this->image_ids as $image_id) {
+				if (in_array($image_id, $page_images)) {
 					$page['image_id'] = $image_id;
 					$this->pages[] = $page;
 				}
@@ -1709,22 +1679,20 @@ class Image extends FSIP{
 	 * @param bool $asc Sequence order (false if DESC)
 	 * @return void
 	 */
-	public function getSeries($start=null, $asc=true){
-		if(!isset($start)){
+	public function getSeries($start=null, $asc=true) {
+		if (!isset($start)) {
 			$start = 1;
-		}
-		else{
+		} else {
 			$start = intval($start);
 		}
 		
-		if($asc === true){
+		if ($asc === true) {
 			$values = range($start, $start+$this->image_count);
-		}
-		else{
+		} else {
 			$values = range($start, $start-$this->image_count);
 		}
-		
-		for($i = 0; $i < $this->image_count; ++$i){
+
+		for($i = 0; $i < $this->image_count; ++$i) {
 			$this->images[$i]['image_numeric'] = $values[$i];
 			$this->images[$i]['image_alpha'] = ucwords($this->numberToWords($values[$i]));
 		}
@@ -1737,20 +1705,20 @@ class Image extends FSIP{
 	 * @param int $height Height (in pixels) 
 	 * @return void
 	 */
-	public function getColorkey($width=null, $height=null){
+	public function getColorkey($width=null, $height=null) {
 		// Error handling
-		if(!isset($width)){ $width = 300; }
-		if(!isset($height)){ $height = 40; }
+		if (!isset($width)) { $width = 300; }
+		if (!isset($height)) { $height = 40; }
 		
-		for($i = 0; $i < $this->image_count; ++$i){
+		for($i = 0; $i < $this->image_count; ++$i) {
 			$image_colors = unserialize($this->images[$i]['image_colors']);
 			
-			if(empty($image_colors)){ $this->images[$i]['image_colorkey'] = ''; continue; }
+			if (empty($image_colors)) { $this->images[$i]['image_colorkey'] = ''; continue; }
 
 			$image_colors_colors = array();
 			$image_colors_percents = array();
 
-			foreach($image_colors as $color => $percent){
+			foreach($image_colors as $color => $percent) {
 				$image_colors_colors[] = $color;
 				$image_colors_percents[] = $percent;
 			}
@@ -1774,26 +1742,23 @@ class Image extends FSIP{
 	 * @param bool $start_first True if first image should be selected and begin sequence
 	 * @return void
 	 */
-	public function addSequence($label, $frequency, $start_first=false){
-		if($start_first === false){
+	public function addSequence($label, $frequency, $start_first=false) {
+		if ($start_first === false) {
 			$i = 1;
-		}
-		else{
+		} else {
 			$i = $frequency;
 		}
 		
 		// Store image comment fields
-		foreach($this->images as &$image){
+		foreach($this->images as &$image) {
 			if($i == $frequency){
-				if(empty($image['image_sequence'])){
+				if (empty($image['image_sequence'])) {
 					$image['image_sequence'] = $label;
-				}
-				else{
+				} else {
 					$image['image_sequence'] .= ' ' . $label;
 				}
 				$i = 1;
-			}
-			else{
+			} else {
 				$i++;
 			}
 		}
@@ -1808,11 +1773,10 @@ class Image extends FSIP{
 	 * @param bool Inline responses (responses directly follow) or force chronological (false)
 	 * @return array Associative array of comments
 	 */
-	public function getComments($published=true, $inline_responses=true){
-		if($published == true){
+	public function getComments($published=true, $inline_responses=true) {
+		if ($published == true) {
 			$query = $this->prepare('SELECT * FROM comments, images' . $this->sql . ' AND comments.image_id = images.image_id AND  comments.comment_deleted IS NULL AND comments.comment_status > 0 ORDER BY comments.comment_created ASC;');
-		}
-		else{
+		} else {
 			$query = $this->prepare('SELECT * FROM comments, images' . $this->sql . ' AND comments.image_id = images.image_id AND comments.comment_deleted IS NULL ORDER BY comments.comment_created ASC;');
 		}		
 		$query->execute();
@@ -1820,37 +1784,36 @@ class Image extends FSIP{
 		
 		$comment_count = count($this->comments);
 		
-		foreach($this->comments as &$comment){
-			if(!empty($comment['comment_author_avatar'])){
+		foreach($this->comments as &$comment) {
+			if (!empty($comment['comment_author_avatar'])) {
 				$comment['comment_author_avatar'] = '<img src="' . $comment['comment_author_avatar'] . '" alt="" />';
 			}
 			$comment['comment_created'] = parent::formatTime($comment['comment_created']);
 		}
 		
 		// Convert to inline
-		if($inline_responses == true){
+		if ($inline_responses == true) {
 			$comments = array();
-			for($i=0; $i < $comment_count; $i++){
-				if(empty($this->comments[$i]['comment_response'])){
+			for($i=0; $i < $comment_count; $i++) {
+				if (empty($this->comments[$i]['comment_response'])) {
 					$comments[$this->comments[$i]['comment_id']] = array();
 					$comments[$this->comments[$i]['comment_id']][] = $this->comments[$i];
-				}
-				else{
+				} else {
 					$comments[$this->comments[$i]['comment_response']][] = $this->comments[$i];
 				}
 			}
 			
 			$this->comments = array();
 			
-			foreach($comments as $key => $value){
-				foreach($value as $comment){
+			foreach($comments as $key => $value) {
+				foreach($value as $comment) {
 					$this->comments[] = $comment;
 				}
 			}
 		}
 		
 		// Store image comment fields
-		for($i = 0; $i < $this->image_count; ++$i){
+		for($i = 0; $i < $this->image_count; ++$i) {
 			$this->images[$i]['image_comment_text'] = '<textarea id="comment_' . $this->images[$i]['image_id'] . '_text" name="comment_' . $this->images[$i]['image_id'] . '_text" class="comment_text"></textarea>';
 			
 			$this->images[$i]['image_comment_author_name'] = '<input type="text" id="comment_' . $this->images[$i]['image_id'] . '_author_name" name="comment_' . $this->images[$i]['image_id'] . '_author_name" class="comment_author_name" />';
@@ -1871,10 +1834,10 @@ class Image extends FSIP{
 	 * @param int $limit Number of images to retrieve
 	 * @return Image
 	 */
-	public function getRelated($limit=null){
+	public function getRelated($limit=null) {
 		$ids = array();
 		
-		foreach($this->images as $image){
+		foreach($this->images as $image) {
 			$ids = array_merge($ids, explode(', ', $image['image_related']));
 		}
 		
@@ -1892,7 +1855,7 @@ class Image extends FSIP{
 	 * @param int $limit Number of images to find 
 	 * @return void
 	 */
-	public function updateRelated($limit=100){
+	public function updateRelated($limit=100) {
 		$this->getTags();
 		
 		$now = date('Y-m-d H:i:s');
@@ -1900,10 +1863,10 @@ class Image extends FSIP{
 		$query = $this->prepare('UPDATE images SET image_modified = :image_modified, image_related = :image_related, image_related_hash = :image_related_hash WHERE image_id = :image_id;');
 		
 		// Check to see if recently updated
-		for($i=0; $i < $this->image_count; $i++){ 
+		for($i=0; $i < $this->image_count; $i++) { 
 			$image_related_hash = substr(md5($this->images[$i]['image_tags']), 0, 16);
-			if($image_related_hash != $this->images[$i]['image_related_hash']){
-				if(!empty($this->images[$i]['image_tags_array'])){
+			if ($image_related_hash != $this->images[$i]['image_related_hash']) {
+				if (!empty($this->images[$i]['image_tags_array'])) {
 					$image_related = array();
 					
 					$related_image_ids = new Find('images');
@@ -1913,7 +1876,7 @@ class Image extends FSIP{
 					
 					$key = array_search($this->images[$i]['image_id'], $related_image_ids->ids);
 				
-					if($key !== false){
+					if ($key !== false) {
 						unset($related_image_ids->ids[$key]);
 					}
 					
@@ -1923,7 +1886,7 @@ class Image extends FSIP{
 					$related_images = new Image($ids);
 					$related_images->getTags();
 					
-					foreach($related_images->images as $image){
+					foreach($related_images->images as $image) {
 						$image_related[$image['image_id']] = count(array_intersect($this->images[$i]['image_tags_array'], $image['image_tags_array']));
 					}
 					unset($related_images);
@@ -1931,8 +1894,7 @@ class Image extends FSIP{
 					arsort($image_related);
 					
 					$image_related = implode(', ', array_keys($image_related));
-				}
-				else{
+				} else {
 					$image_related = '';
 				}
 				
@@ -1948,7 +1910,7 @@ class Image extends FSIP{
 	 * @param array|true $save_labels Save these thumbnail labels, or true to save all
 	 * @return void
 	 */
-	public function deSizeImage($original=false, $save_labels=null){
+	public function deSizeImage($original=false, $save_labels=null) {
 		// Open image directory
 		$dir = parent::correctWinPath(PATH . IMAGES);
 		$handle = opendir($dir);
@@ -1956,27 +1918,27 @@ class Image extends FSIP{
 		
 		$save_me = array();
 		
-		if(!empty($save_labels)){
+		if (!empty($save_labels)) {
 			$sizes = $this->getTable('sizes');
-			foreach($sizes as $size){
-				if(($save_labels === true) or in_array($size['size_label'], $save_labels)){
-					for($i = 0; $i < $this->image_count; ++$i){
+			foreach($sizes as $size) {
+				if (($save_labels === true) or in_array($size['size_label'], $save_labels)) {
+					for($i = 0; $i < $this->image_count; ++$i) {
 						$save_me[] = $size['size_prepend'] . $this->images[$i]['image_id'] . $size['size_append'] . '.' . $this->images[$i]['image_ext'];
 					}
 				}
 			}
 		}
 		
-		while($filename = readdir($handle)){
-			for($i = 0; $i < $this->image_count; ++$i){
+		while($filename = readdir($handle)) {
+			for($i = 0; $i < $this->image_count; ++$i) {
 				// Find image thumnails
-				if(preg_match('/^((.*[\D]+' . $this->images[$i]['image_id'] . '|' . $this->images[$i]['image_id'] . '[\D]+.*|.*[\D]+' . $this->images[$i]['image_id'] . '[\D]+.*)\..+)$/', $filename)){
-					if(!in_array($filename, $save_me)){
+				if (preg_match('/^((.*[\D]+' . $this->images[$i]['image_id'] . '|' . $this->images[$i]['image_id'] . '[\D]+.*|.*[\D]+' . $this->images[$i]['image_id'] . '[\D]+.*)\..+)$/', $filename)) {
+					if (!in_array($filename, $save_me)) {
 						$images[] = $dir . $filename;
 					}
 				}
-				if($original === true){
-					if(preg_match('/^' . $this->images[$i]['image_id'] . '\..+$/', $filename)){
+				if ($original === true) {
+					if (preg_match('/^' . $this->images[$i]['image_id'] . '\..+$/', $filename)) {
 						$images[] = $dir . $filename;
 					}
 				}
@@ -1986,7 +1948,7 @@ class Image extends FSIP{
 		closedir($handle);
 		
 		// Delete image thumbnails
-		foreach($images as $image){
+		foreach($images as $image) {
 			unlink($image);
 		}
 	}
@@ -1997,8 +1959,8 @@ class Image extends FSIP{
 	 * @param string $format Same format as date();
 	 * @return void
 	 */
-	public function formatTime($format=null){
-		foreach($this->images as &$image){
+	public function formatTime($format=null) {
+		foreach($this->images as &$image) {
 			$image['image_taken_format'] = parent::formatTime($image['image_taken'], $format);
 			$image['image_uploaded_format'] = parent::formatTime($image['image_uploaded'], $format);
 			$image['image_published_format'] = parent::formatTime($image['image_published'], $format);

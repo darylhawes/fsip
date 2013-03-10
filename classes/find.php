@@ -12,7 +12,7 @@
  * @version 1.0
  */
 
-class Find extends FSIP{
+class Find extends FSIP {
 	public $admin;
 	public $cache;
 	public $ids;
@@ -78,7 +78,7 @@ class Find extends FSIP{
 		parent::__construct();
 		
 		// Error handling
-		if(empty($table)){ return false; }
+		if (empty($table)) { return false; }
 		
 		// Store data to object
 		$this->call = array();
@@ -108,113 +108,111 @@ class Find extends FSIP{
 		$this->sql_where = '';
 		
 		// Cache these tables
-		if(in_array($this->table, $this->tables_cache)){
+		if (in_array($this->table, $this->tables_cache)) {
 			$this->sql .= ', ' . $this->table . '.' . $this->table_prefix . 'modified AS last_modified';
 			$this->cache = true;
 		}
 		
 		// Optional starter set
-		if(isset($ids)){
+		if (isset($ids)) {
 			$ids = parent::convertToIntegerArray($ids);
 			$this->sql_conds[] = $this->table . '.' . $this->table_id . ' IN (' . implode(', ', $ids) . ')';
 		}
 		
 		// Don't show deleted items
 		$with_deleted_columns = array('images', 'comments', 'sets', 'pages', 'rights');
-		if(in_array($this->table, $with_deleted_columns)){
+		if (in_array($this->table, $with_deleted_columns)) {
 			$show_deleted = false;
 			
-			if($ignore_deleted === false){
+			if ($ignore_deleted === false) {
 				$show_deleted = true;
-			}
-			elseif($this->admin == true){
+			} elseif ($this->admin == true) {
 				$user = new User();
-				if(!empty($user) and $user->perm()){
-					if($user->returnPref('recovery_mode') === true){
+				if (!empty($user) and $user->perm()) {
+					if ($user->returnPref('recovery_mode') === true) {
 						$show_deleted = true;
 					}
 				}
 			}
 			
-			if($show_deleted === false){
+			if ($show_deleted === false) {
 				$this->null($this->table . '.' . $this->table_prefix . 'deleted');
 			}
 		}
 		
-		if(($auto_guest == true) and ($this->table == 'images')){
+		if (($auto_guest == true) and ($this->table == 'images')) {
 			// Guest access
-			if(isset($_SESSION['fsip']['guest']) and ($this->admin != true)){
-				if($_SESSION['fsip']['guest']['guest_inclusive']){
+			if (isset($_SESSION['fsip']['guest']) and ($this->admin != true)) {
+				if ($_SESSION['fsip']['guest']['guest_inclusive']) {
 					$this->privacy(2, true, false);
-				}
-				else{
+				} else {
 					$this->privacy(2, false, false);
 				}
-				if(!empty($_SESSION['fsip']['guest']['guest_sets'])){
+				if (!empty($_SESSION['fsip']['guest']['guest_sets'])) {
 					$this->sets(intval($_SESSION['fsip']['guest']['guest_sets']));
 				}
 			}
 		}
 		
-		if($process_request == true){
-			if(!empty($_REQUEST)){
+		if ($process_request == true) {
+			if (!empty($_REQUEST)) {
 				// Process browser requests
 				$_REQUEST = array_map('strip_tags', $_REQUEST);
 			}
 
 			// Smart search
-			if(!empty($_REQUEST['act'])){
+			if (!empty($_REQUEST['act'])) {
 				$this->smart($_REQUEST['act']);
 			}
 
 			// Title and description
-			if(!empty($_REQUEST['q'])){ 
+			if (!empty($_REQUEST['q'])) { 
 				$this->_search($_REQUEST['q']);
 			}
 
 			// Tags
-			if(!empty($_REQUEST['tags'])){
+			if (!empty($_REQUEST['tags'])) {
 				$this->_tags($_REQUEST['tags']);
 			}
 			
 			// Category
-			if(!empty($_REQUEST['category'])){
+			if (!empty($_REQUEST['category'])) {
 				$this->_category($_REQUEST['category']);
 			}
 
 			// Rights set
-			if(!empty($_REQUEST['rights'])){
+			if (!empty($_REQUEST['rights'])) {
 				$this->_rights(intval($_REQUEST['rights']));
 			}
 			
 			// Date created
-			if(!empty($_REQUEST['created_begin']) or !empty($_REQUEST['created_end'])){
+			if (!empty($_REQUEST['created_begin']) or !empty($_REQUEST['created_end'])) {
 				$this->_created($_REQUEST['created_begin'], $_REQUEST['created_end']);
 			}
 			
 			// Date modified
-			if(!empty($_REQUEST['modified_begin']) or !empty($_REQUEST['modified_end'])){
+			if (!empty($_REQUEST['modified_begin']) or !empty($_REQUEST['modified_end'])) {
 				$this->_modified($_REQUEST['modified_begin'], $_REQUEST['modified_end']);
 			}
 		
 			// Date taken
-			if(!empty($_REQUEST['taken_begin']) or !empty($_REQUEST['taken_end'])){
+			if (!empty($_REQUEST['taken_begin']) or !empty($_REQUEST['taken_end'])) {
 				$this->_taken($_REQUEST['taken_begin'], $_REQUEST['taken_end']);
 			}
 
 			// Date uploaded
-			if(!empty($_REQUEST['uploaded_begin']) or !empty($_REQUEST['uploaded_end'])){
+			if (!empty($_REQUEST['uploaded_begin']) or !empty($_REQUEST['uploaded_end'])) {
 				$this->_uploaded($_REQUEST['uploaded_begin'], $_REQUEST['uploaded_end']);
 			}
 
 			// Location
-			if(!empty($_REQUEST['location'])){
+			if (!empty($_REQUEST['location'])) {
 				$this->_location($_REQUEST['location'], $_REQUEST['location_proximity']);
 			}
 
 			// Primary color
-			if(!empty($_REQUEST['color'])){
-				switch($_REQUEST['color']){
+			if (!empty($_REQUEST['color'])) {
+				switch($_REQUEST['color']) {
 					case 'blue':
 						$this->_hsl(170, 235, 1, 100, 1, 100);
 						break;
@@ -245,8 +243,8 @@ class Find extends FSIP{
 			}
 
 			// Views
-			if(!empty($_REQUEST['views'])){
-				switch($_REQUEST['views_operator']){
+			if (!empty($_REQUEST['views'])) {
+				switch($_REQUEST['views_operator']) {
 					case 'greater':
 						$this->_views($_REQUEST['views'], null);
 						break;
@@ -260,8 +258,8 @@ class Find extends FSIP{
 			}
 
 			// Orientation
-			if(!empty($_REQUEST['orientation'])){
-				switch($_REQUEST['orientation']){
+			if (!empty($_REQUEST['orientation'])) {
+				switch($_REQUEST['orientation']) {
 					case 'portrait':
 						$this->_ratio(1, null, null);
 						break;
@@ -275,13 +273,13 @@ class Find extends FSIP{
 			}
 
 			// Privacy
-			if(!empty($_REQUEST['privacy'])){
+			if (!empty($_REQUEST['privacy'])) {
 				$this->_privacy($_REQUEST['privacy']);
 			}
 
 			// Published
-			if(!empty($_REQUEST['published'])){
-				switch($_REQUEST['published']){
+			if (!empty($_REQUEST['published'])) {
+				switch($_REQUEST['published']) {
 					case 'published':
 						$this->_published(true);
 						break;
@@ -292,8 +290,8 @@ class Find extends FSIP{
 			}
 
 			// Sort
-			if(!empty($_REQUEST['sort'])){
-				switch($_REQUEST['sort']){
+			if (!empty($_REQUEST['sort'])) {
+				switch($_REQUEST['sort']) {
 					case 'taken':
 						$this->_sort($this->table . '.' . $this->table_prefix . 'taken', $_REQUEST['sort_direction']);
 						$this->_notnull($this->table . '.' . $this->table_prefix . 'taken');
@@ -322,23 +320,23 @@ class Find extends FSIP{
 			}
 			
 			// Status
-			if(isset($_REQUEST['status'])){
+			if (isset($_REQUEST['status'])) {
 				$this->_status($_REQUEST['status']);
 			}
 			
 			// Response
-			if(isset($_REQUEST['response'])){
+			if (isset($_REQUEST['response'])) {
 				$this->_response($_REQUEST['response']);
 			}
 			
 			// Image association
-			if(!empty($_REQUEST['image'])){
+			if (!empty($_REQUEST['image'])) {
 				$this->_image($_REQUEST['image']);
 			}
 		}
 	}
 	
-	public function __destruct(){
+	public function __destruct() {
 		parent::__destruct();
 	}
 	
@@ -349,9 +347,9 @@ class Find extends FSIP{
 	 * @param array $arguments Method arguments
 	 * @return mixed
 	 */
-	public function __call($method, $arguments){
+	public function __call($method, $arguments) {
 		// Error checking
-		if(substr($method, 0, 1) != '_'){
+		if (substr($method, 0, 1) != '_') {
 			return false;
 		}
 		
@@ -359,10 +357,10 @@ class Find extends FSIP{
 		$method = substr($method, 1);
 		
 		// Error checking
-		if(!method_exists($this, $method)){
+		if (!method_exists($this, $method)) {
 			return false;
 		}
-		if(@count($arguments) < 1){
+		if (@count($arguments) < 1){
 			$arguments = null;
 		}
 		
@@ -372,7 +370,7 @@ class Find extends FSIP{
 		// Remove unsaveable methods
 		$nosave_methods = array('page');
 		
-		if(in_array($method, $nosave_methods)){
+		if (in_array($method, $nosave_methods)) {
 			return;
 		}
 			
@@ -385,9 +383,9 @@ class Find extends FSIP{
 	 *
 	 * @param $name page_#_uri
 	 */
-	public function __get($name){
-		if(substr($name, 0, 5) != 'page_'){ return; }
-		if(substr($name, -4) != '_uri'){ return; }
+	public function __get($name) {
+		if (substr($name, 0, 5) != 'page_') { return; }
+		if (substr($name, -4) != '_uri') { return; }
 		
 		$page_number = intval(substr($name, 5, -4));
 		
@@ -399,7 +397,7 @@ class Find extends FSIP{
 	 *
 	 * @return string Comma-separated IDs
 	 */
-	public function __toString(){
+	public function __toString() {
         return implode(', ', $this->ids);
     }
 
@@ -409,8 +407,8 @@ class Find extends FSIP{
 	 * @param Orbit $orbit 
 	 * @return void
 	 */
-	public function hook($orbit=null){
-		if(!is_object($orbit)){
+	public function hook($orbit=null) {
+		if (!is_object($orbit)) {
 			$orbit = new Orbit;
 		}
 		
@@ -425,23 +423,23 @@ class Find extends FSIP{
 	 * @param string $end Date end
 	 * @return bool True if successful
 	 */
-	public function taken($begin=null, $end=null){
+	public function taken($begin=null, $end=null) {
 		// Error checking
-		if(empty($begin) and empty($end)){ return false; }
+		if (empty($begin) and empty($end)) { return false; }
 		
 		// Set begin date
-		if(!empty($begin)){
-			if(is_int($begin)){ $begin = strval($begin); }
-			if(strlen($begin) == 4){ $begin .= '-01-01'; }
+		if (!empty($begin)) {
+			if (is_int($begin)) { $begin = strval($begin); }
+			if (strlen($begin) == 4) { $begin .= '-01-01'; }
 			$begin = date('Y-m-d', strtotime($begin));
 			$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'taken >= :image_taken_begin';
 			$this->sql_params[':image_taken_begin'] = $begin . ' 00:00:00';
 		}
 		
 		// Set end date
-		if(!empty($end)){
-			if(is_int($end)){ $end = strval($end); }
-			if(strlen($end) == 4){ $end .= '-01-01'; }
+		if (!empty($end)) {
+			if (is_int($end)) { $end = strval($end); }
+			if (strlen($end) == 4) { $end .= '-01-01'; }
 			$end = date('Y-m-d', strtotime($end));
 			$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'taken <= :image_taken_end';
 			$this->sql_params[':image_taken_end'] = $end . ' 23:59:59"';
@@ -457,23 +455,23 @@ class Find extends FSIP{
 	 * @param string $end Date end
 	 * @return bool True if successful
 	 */
-	public function modified($begin=null, $end=null){
+	public function modified($begin=null, $end=null) {
 		// Error checking
-		if(empty($begin) and empty($end)){ return false; }
+		if (empty($begin) and empty($end)) { return false; }
 		
 		// Set begin date
-		if(!empty($begin)){
-			if(is_int($begin)){ $begin = strval($begin); }
-			if(strlen($begin) == 4){ $begin .= '-01-01'; }
+		if (!empty($begin)) {
+			if (is_int($begin)) { $begin = strval($begin); }
+			if (strlen($begin) == 4) { $begin .= '-01-01'; }
 			$begin = date('Y-m-d', strtotime($begin));
 			$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'modified >= :image_modified_begin';
 			$this->sql_params[':image_modified_begin'] = $begin . ' 00:00:00';
 		}
 		
 		// Set end date
-		if(!empty($end)){
-			if(is_int($end)){ $end = strval($end); }
-			if(strlen($end) == 4){ $end .= '-01-01'; }
+		if (!empty($end)) {
+			if (is_int($end)) { $end = strval($end); }
+			if (strlen($end) == 4) { $end .= '-01-01'; }
 			$end = date('Y-m-d', strtotime($end));
 			$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'modified <= :image_modified_end';
 			$this->sql_params[':image_modified_end'] = $end . ' 23:59:59"';
@@ -489,61 +487,62 @@ class Find extends FSIP{
 	 * @param string $end Date end
 	 * @return bool True if successful
 	 */
-	public function published($begin=true, $end=null){
+	public function published($begin=true, $end=null) {
 		// Error checking
-		if(!isset($begin) and empty($end)){ return false; }
-		if(!empty($_SESSION['fsip']['preview'])){ return; }
+		if (!isset($begin) and empty($end)) { return false; }
+		if (!empty($_SESSION['fsip']['preview'])) { return; }
 		
 		// Set status
-		if($begin === 'false'){ $published = false; }
-		elseif($begin === 'true'){ $published = true; }
+		if ($begin === 'false') { 
+			$published = false;
+		} elseif($begin === 'true') { 
+			$published = true;
+		}
 		
 		$now = date('Y-m-d H:i:s');
 		
-		if($begin === true){
+		if ($begin === true) {
 			$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'published < :image_published';
 			$this->sql_params[':image_published'] = $now;
 			return true;
 		}
-		if($begin === false){
+		if ($begin === false) {
 			$this->sql_conds[] = '(' . $this->table . '.' . $this->table_prefix . 'published > :image_published OR ' . $this->table . '.' . $this->table_prefix . 'published IS NULL)';
 			$this->sql_params[':image_published'] = $now;
 			return true;
 		}
 		
 		// Set auto-interval
-		if(!empty($begin) and empty($end)){
-			if(is_int($begin)){ $begin = strval($begin); }
-			if(strlen($begin) == 4){ $end = $begin . '-12-31'; $begin .= '-01-01'; }
-			if((strlen($begin) == 6) or (strlen($begin) == 7)){ $end = $begin . '-31'; $begin .= '-01'; }
+		if (!empty($begin) and empty($end)) {
+			if (is_int($begin)) { $begin = strval($begin); }
+			if (strlen($begin) == 4) { $end = $begin . '-12-31'; $begin .= '-01-01'; }
+			if ((strlen($begin) == 6) or (strlen($begin) == 7)) { $end = $begin . '-31'; $begin .= '-01'; }
 			
 			$begin = date('Y-m-d', strtotime($begin));
 			$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'published >= :image_published_begin';
 			$this->sql_params[':image_published_begin'] = $begin . ' 00:00:00';
 			
-			if(empty($end)){ $end = $begin; }
+			if (empty($end)) { $end = $begin; }
 			
 			$end = date('Y-m-d', strtotime($end));
 			$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'published <= :image_published_end';
 			$this->sql_params[':image_published_end'] = $end . ' 23:59:59"';
-		}
-		// Set interval
-		elseif(!empty($begin) and !empty($end)){
-			if(is_int($begin)){ $begin = strval($begin); }
-			if(strlen($begin) == 4){ $begin .= '-01-01'; }
+		} elseif(!empty($begin) and !empty($end)) {
+			// Set interval
+			if (is_int($begin)) { $begin = strval($begin); }
+			if (strlen($begin) == 4) { $begin .= '-01-01'; }
 			$begin = date('Y-m-d', strtotime($begin));
 			$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'published >= :image_published_begin';
 			$this->sql_params[':image_published_begin'] = $begin . ' 00:00:00';
 			
-			if(is_int($end)){ $end = strval($end); }
-			if(strlen($end) == 4){ $end .= '-01-01'; }
+			if (is_int($end)) { $end = strval($end); }
+			if (strlen($end) == 4) { $end .= '-01-01'; }
 			$end = date('Y-m-d', strtotime($end));
 			$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'published <= :image_published_end';
 			$this->sql_params[':image_published_end'] = $end . ' 23:59:59"';
-		}
-		elseif(!empty($end)){
-			if(is_int($end)){ $end = strval($end); }
-			if(strlen($end) == 4){ $end .= '-01-01'; }
+		} elseif(!empty($end)) {
+			if (is_int($end)) { $end = strval($end); }
+			if (strlen($end) == 4) { $end .= '-01-01'; }
 			$end = date('Y-m-d', strtotime($end));
 			$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'published <= :image_published_end';
 			$this->sql_params[':image_published_end'] = $end . ' 23:59:59"';
@@ -559,14 +558,14 @@ class Find extends FSIP{
 	 * @param string $end Date end
 	 * @return bool True if successful
 	 */
-	public function created($begin=null, $end=null){
+	public function created($begin=null, $end=null) {
 		// Error checking
-		if(empty($begin) and empty($end)){ return false; }
+		if (empty($begin) and empty($end)) { return false; }
 		
 		// Set begin date
-		if(!empty($begin)){
-			if(!is_int($begin)){
-				if(strlen($begin) == 4){ $begin .= '-01-01'; }
+		if (!empty($begin)) {
+			if (!is_int($begin)) {
+				if (strlen($begin) == 4) { $begin .= '-01-01'; }
 				$begin = strtotime($begin);
 			}
 			$begin = date('Y-m-d H:i:s', $begin);
@@ -575,9 +574,11 @@ class Find extends FSIP{
 		}
 		
 		// Set end date
-		if(!empty($end)){
-			if(!is_int($end)){
-				if(strlen($end) == 4){ $end .= '-01-01'; }
+		if (!empty($end)) {
+			if (!is_int($end)) {
+				if (strlen($end) == 4) { 
+					$end .= '-01-01'; 
+				}
 				$end = strtotime($end);
 			}
 			$end = date('Y-m-d H:i:s', $end);
@@ -595,23 +596,23 @@ class Find extends FSIP{
 	 * @param string $end Date end
 	 * @return bool True if successful
 	 */
-	public function uploaded($begin=null, $end=null){
+	public function uploaded($begin=null, $end=null) {
 		// Error checking
-		if(empty($begin) and empty($end)){ return false; }
+		if (empty($begin) and empty($end)) { return false; }
 		
 		// Set begin date
-		if(!empty($begin)){
-			if(is_int($begin)){ $begin = strval($begin); }
-			if(strlen($begin) == 4){ $begin .= '-01-01'; }
+		if (!empty($begin)) {
+			if (is_int($begin)) { $begin = strval($begin); }
+			if (strlen($begin) == 4) { $begin .= '-01-01'; }
 			$begin = date('Y-m-d', strtotime($begin));
 			$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'uploaded >= :image_uploaded_begin';
 			$this->sql_params[':image_uploaded_begin'] = $begin . ' 00:00:00';
 		}
 		
 		// Set end date
-		if(!empty($end)){
-			if(is_int($end)){ $end = strval($end); }
-			if(strlen($end) == 4){ $end .= '-01-01'; }
+		if (!empty($end)) {
+			if (is_int($end)) { $end = strval($end); }
+			if (strlen($end) == 4) { $end .= '-01-01'; }
 			$end = date('Y-m-d', strtotime($end));
 			$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'uploaded <= :image_uploaded_end';
 			$this->sql_params[':image_uploaded_end'] = $end . ' 23:59:59"';
@@ -627,20 +628,20 @@ class Find extends FSIP{
 	 * @param string $max Maximum views
 	 * @return bool True if successful
 	 */
-	public function views($min=null, $max=null){
+	public function views($min=null, $max=null) {
 		// Error checking
-		if(empty($max) and empty($min)){ return false; }
+		if (empty($max) and empty($min)) { return false; }
 		
 		$min = intval($min);
 		$max = intval($max);
 		
 		// Set maximum views
-		if(!empty($max)){
+		if (!empty($max)) {
 			$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'views <= ' . $max;
 		}
 		
 		// Set minimum views
-		if(!empty($min)){
+		if (!empty($min)) {
 			$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'views >= ' . $min;
 		}
 		
@@ -653,14 +654,13 @@ class Find extends FSIP{
 	 * @param string $tags Tag search, can include boolean operators
 	 * @return bool True if successful
 	 */
-	public function tags($tags=null){
+	public function tags($tags=null) {
 		// Error checking
-		if(empty($tags)){ return false; }
+		if (empty($tags)) { return false; }
 		
-		if(!preg_match('/(NOT|OR|AND)/', $tags)){
+		if (!preg_match('/(NOT|OR|AND)/', $tags)) {
 			$pieces = array($tags, 'AND');
-		}
-		else{
+		} else {
 			$pieces = preg_split('/(NOT|OR|AND)/', $tags, null, PREG_SPLIT_DELIM_CAPTURE);
 		}
 		$pieces = array_map('trim', $pieces);
@@ -669,14 +669,14 @@ class Find extends FSIP{
 		$all = array();
 		$not = array();
 
-		for($i = 0; $i < count($pieces); ++$i){
-			if((@$pieces[$i - 1] == 'NOT') and !in_array($pieces[$i], $any) and !in_array($pieces[$i], $all) and !in_array($pieces[$i], $not) and !empty($pieces[$i])){
+		for($i = 0; $i < count($pieces); ++$i) {
+			if ((@$pieces[$i - 1] == 'NOT') and !in_array($pieces[$i], $any) and !in_array($pieces[$i], $all) and !in_array($pieces[$i], $not) and !empty($pieces[$i])) {
 				$not[] = $pieces[$i];
 			}
-			if(((@$pieces[$i + 1] == 'OR') or (@$pieces[$i - 1] == 'OR')) and !in_array($pieces[$i], $any) and !in_array($pieces[$i], $any) and !in_array($pieces[$i], $all) and !in_array($pieces[$i], $not) and !empty($pieces[$i])){
+			if (((@$pieces[$i + 1] == 'OR') or (@$pieces[$i - 1] == 'OR')) and !in_array($pieces[$i], $any) and !in_array($pieces[$i], $any) and !in_array($pieces[$i], $all) and !in_array($pieces[$i], $not) and !empty($pieces[$i])) {
 				$any[] = $pieces[$i];
 			}
-			if(((@$pieces[$i + 1] == 'AND') or (@$pieces[$i - 1] == 'AND') or (@$pieces[$i + 1] == 'NOT')) and !in_array($pieces[$i], $any) and !in_array($pieces[$i], $all) and !in_array($pieces[$i], $not) and !empty($pieces[$i])){
+			if (((@$pieces[$i + 1] == 'AND') or (@$pieces[$i - 1] == 'AND') or (@$pieces[$i + 1] == 'NOT')) and !in_array($pieces[$i], $any) and !in_array($pieces[$i], $all) and !in_array($pieces[$i], $not) and !empty($pieces[$i])) {
 				$all[] = $pieces[$i];
 			}
 		}
@@ -697,25 +697,24 @@ class Find extends FSIP{
 	 * @param string $count Minimum number of tags to find
 	 * @return bool True if successful
 	 */
-	public function anyTags($tags=null, $count=1){
+	public function anyTags($tags=null, $count=1) {
 		// Error checking
-		if(empty($tags)){ return false; }
+		if (empty($tags)) { return false; }
 		
 		parent::convertToArray($tags);
 		
-		if(($this->table == 'images') and empty($fields)){
+		if (($this->table == 'images') and empty($fields)) {
 			// Find tags in database
-			if(is_numeric($tags[0])){
+			if (is_numeric($tags[0])) {
 				parent::convertToIntegerArray($tags);
 				$query = $this->prepare('SELECT tags.tag_id FROM tags WHERE tags.tag_id = ' . implode(' OR tags.tag_id = ', $tags) . ';');
 				$query->execute();
-			}
-			else{
+			} else {
 				$sql_params = array();
 				$tag_count = count($tags);
 			
 				// Grab tag IDs
-				for($j=0; $j<$tag_count; ++$j){
+				for($j=0; $j<$tag_count; ++$j) {
 					$sql_params[':tag' . $j] = '%' . strtolower($tags[$j]) . '%';
 				}
 			
@@ -728,7 +727,7 @@ class Find extends FSIP{
 			$this->tags = $query->fetchAll();
 		
 			$tag_ids = array();	
-			foreach($this->tags as $tag){
+			foreach($this->tags as $tag) {
 				$tag_ids[] = $tag['tag_id'];
 			}
 		
@@ -752,26 +751,25 @@ class Find extends FSIP{
 	 * @param string|int|array $tags Tags to search for
 	 * @return bool True if successful
 	 */
-	public function allTags($tags=null){
+	public function allTags($tags=null) {
 		// Error checking
-		if(empty($tags)){ return false; }
+		if (empty($tags)) { return false; }
 		
 		$tag_count = count($tags);
 		
 		parent::convertToArray($tags);
 		
 		// Find images with these tags in database
-		if(intval($tags[0])){
+		if (intval($tags[0])) {
 			parent::convertToIntegerArray($tags);
 			$query = $this->prepare('SELECT ' . $this->table . '.' .$this->table_prefix . 'id FROM images, links WHERE ' . $this->table . '.' .$this->table_prefix . 'id = links.image_id AND (links.tag_id = ' . implode(' OR links.tag_id = ', $tags) . ');');
 			$query->execute();
-		}
-		else{
+		} else {
 			$sql_params = array();
 			$tag_count = count($tags);
 			
 			// Grab tag IDs
-			for($j=0; $j<$tag_count; ++$j){
+			for($j=0; $j<$tag_count; ++$j) {
 				$sql_params[':tag' . $j] = '%' . strtolower($tags[$j]) . '%';
 			}
 			
@@ -785,26 +783,24 @@ class Find extends FSIP{
 		
 		// Comset image IDs
 		$include_ids = array();	
-		foreach($this->images as $image){
-			if(array_key_exists($image[$this->table_prefix . 'id'], $include_ids)){
+		foreach($this->images as $image) {
+			if (array_key_exists($image[$this->table_prefix . 'id'], $include_ids)) {
 				$include_ids[$image[$this->table_prefix . 'id']]++;
-			}
-			else{
+			} else {
 				$include_ids[$image[$this->table_prefix . 'id']] = 1;
 			}
 		}
-		foreach($include_ids as $image_id => $count){
-			if($count < $tag_count){
+		foreach($include_ids as $image_id => $count) {
+			if ($count < $tag_count) {
 				unset($include_ids[$image_id]);
 			}
 		}
 		$include_ids = array_keys($include_ids);
 		
 		// Set fields to search
-		if(count($include_ids) > 0){
+		if (count($include_ids) > 0) {
 			$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'id IN (' . implode(', ', $include_ids) . ')';
-		}
-		else{
+		} else {
 			$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'id IN (NULL)';
 		}
 		
@@ -817,24 +813,23 @@ class Find extends FSIP{
 	 * @param string|int|array $tags Tags to search for
 	 * @return bool True if successful
 	 */
-	public function notTags($tags=null){
+	public function notTags($tags=null) {
 		// Error checking
-		if(empty($tags)){ return false; }
+		if (empty($tags)) { return false; }
 		
 		parent::convertToArray($tags);
 		
 		// Find images with these tags in database
-		if(intval($tags[0])){
+		if (intval($tags[0])) {
 			parent::convertToIntegerArray($tags);
 			$query = $this->prepare('SELECT ' . $this->table . '.' .$this->table_prefix . 'id FROM images, links WHERE ' . $this->table . '.' .$this->table_prefix . 'id = links.image_id AND (links.tag_id = ' . implode(' OR links.tag_id = ', $tags) . ');');
 			$query->execute();
-		}
-		else{
+		} else {
 			$sql_params = array();
 			$tag_count = count($tags);
 			
 			// Grab tag IDs
-			for($j=0; $j<$tag_count; ++$j){
+			for($j=0; $j<$tag_count; ++$j) {
 				$sql_params[':tag' . $j] = '%' . strtolower($tags[$j]) . '%';
 			}
 			
@@ -847,12 +842,12 @@ class Find extends FSIP{
 		
 		// Comset image IDs
 		$exclude_ids = array();	
-		foreach($this->images as $image){
+		foreach($this->images as $image) {
 			$exclude_ids[] = $image[$this->table_prefix . 'id'];
 		}
 		$exclude_ids = array_unique($exclude_ids);
 		
-		if(count($exclude_ids) > 0){
+		if (count($exclude_ids) > 0) {
 			$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'id NOT IN (' . implode(', ', $exclude_ids) . ')';
 		}
 		
@@ -865,34 +860,32 @@ class Find extends FSIP{
 	 * @param int|string $set Set ID or set title
 	 * @return void
 	 */
-	public function sets($set=null){
+	public function sets($set=null) {
 		// Error checking
-		if(empty($set)){ return false; }
-		if(intval($set)){ $set = intval($set); }
+		if (empty($set)) { return false; }
+		if (intval($set)) { $set = intval($set); }
 		
 		// Determine input type
-		if(is_string($set)){
+		if (is_string($set)) {
 			$query = $this->prepare('SELECT set_id, set_call, set_type, set_images, set_image_count FROM sets WHERE LOWER(set_title) LIKE :set_title_lower LIMIT 0, 1;');
 			$query->execute(array(':set_title_lower' => strtolower($set)));
-		}
-		elseif(is_int($set)){
+		} elseif(is_int($set)) {
 			$query = $this->prepare('SELECT set_id, set_call, set_type, set_images, set_image_count FROM sets WHERE set_id = ' . $set . ' LIMIT 0, 1;');
 			$query->execute();
-		}
-		else{
+		} else {
 			return false;
 		}
 		
 		$sets = $query->fetchAll();
 		
-		if(@count($sets) != 1){
+		if (@count($sets) != 1) {
 			return false;
 		}
 		
 		$set = $sets[0];
 		
 		// If auto, apply stored functions
-		if($set['set_type'] == 'auto'){
+		if ($set['set_type'] == 'auto') {
 			$ids = new Find('images', null, false, false);
 			$ids->memory(unserialize($set['set_call']));
 			$ids->find();
@@ -900,30 +893,25 @@ class Find extends FSIP{
 			$set_images = implode(', ', $ids->ids);
 			
 			// Update set if images have changed
-			if($set_images != $set['set_images']){
+			if ($set_images != $set['set_images']) {
 				$fields = array('set_image_count' => $ids->count,
 					'set_images' => $set_images);
 				$this->updateRow($fields, 'sets', $set['set_id'], false);
 			}
 			
-			if(!empty($ids->ids)){
+			if (!empty($ids->ids)) {
 				$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'id IN (' . implode(', ', $ids->ids) . ')';
 				foreach($ids->sql_sorts as $sql){
 					$this->sql_sorts[] = $sql;
 				}
-			}
-			else{
+			} else {
 				$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'id IN (NULL)';
 			}
-		}
-		
-		// If static, use stored image IDs
-		elseif($set['set_type'] == 'static'){
-			if(!empty($set['set_images'])){
+		} elseif($set['set_type'] == 'static') { // If static, use stored image IDs
+			if (!empty($set['set_images'])) {
 				$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'id IN (' . $set['set_images'] . ')';
 				$this->order = $this->convertToIntegerArray($set['set_images']);
-			}
-			else{
+			} else {
 				$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'id IN (NULL)';
 			}
 		}
@@ -935,14 +923,13 @@ class Find extends FSIP{
 	 * @param bool $response Is a response
 	 * @return bool True if successful
 	 */
-	public function response($response=true){
+	public function response($response=true) {
 		$response = $this->convertToBool($response);
 		
-		if($response === true){
+		if ($response === true) {
 			$this->notnull($this->table . '.' . $this->table_prefix . 'response');
 			return true;
-		}
-		elseif($response === false){
+		} elseif($response === false) {
 			$this->null($this->table . '.' . $this->table_prefix . 'response');
 			return true;
 		}
@@ -956,7 +943,7 @@ class Find extends FSIP{
 	 * @param bool $title Title
 	 * @return bool True if successful
 	 */
-	public function title($title){
+	public function title($title) {
 		$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'title_url = :title_url';
 		$this->sql_params[':title_url'] = $title;
 		
@@ -971,14 +958,14 @@ class Find extends FSIP{
 	 * @param array $call set_call field, else uses recent memory
 	 * @return bool True if successful
 	 */
-	public function memory($call=null){
-		if(empty($call)){
-			if(!$call = $this->recentMemory()){
+	public function memory($call=null) {
+		if (empty($call)){
+			if (!$call = $this->recentMemory()) {
 				return false;
 			}
 		}
 		
-		foreach($call as $ring){
+		foreach($call as $ring) {
 			$method = key($ring);
 			$arguments = $ring[$method];
 			call_user_func_array(array($this, $method), $arguments);
@@ -993,27 +980,25 @@ class Find extends FSIP{
 	 * @param int|string $right Right ID or right title
 	 * @return void
 	 */
-	public function rights($right=null){
+	public function rights($right=null) {
 		// Error checking
-		if(empty($right)){ return false; }
-		if(intval($right)){ $right = intval($right); }
+		if (empty($right)) { return false; }
+		if (intval($right)) { $right = intval($right); }
 		
 		// Determine input type
-		if(is_string($right)){
+		if (is_string($right)) {
 			$query = $this->prepare('SELECT right_id FROM rights WHERE LOWER(right_title) LIKE :lower_right_title LIMIT 0, 1;');
 			$query->execute(array(':lower_right_title' => strtolower($right)));
-		}
-		elseif(is_int($right)){
+		} elseif(is_int($right)) {
 			$query = $this->prepare('SELECT right_id FROM rights WHERE right_id = ' . $right . ' LIMIT 0, 1;');
 			$query->execute();
-		}
-		else{
+		} else {
 			return false;
 		}
 		
 		$rights = $query->fetchAll();
 		
-		if(@count($rights) != 1){
+		if (@count($rights) != 1) {
 			return false;
 		}
 		
@@ -1030,15 +1015,15 @@ class Find extends FSIP{
 	 * @param int|array $users User IDs
 	 * @return bool True if successful
 	 */
-	public function user($users=null){
+	public function user($users=null) {
 		// Error checking
-		if(empty($users)){ return false; }
+		if (empty($users)) { return false; }
 		
 		$users = parent::convertToIntegerArray($users);
 		
 		$users_sql = array();
 		
-		foreach($users as $user){
+		foreach($users as $user) {
 			$users_sql[] = $this->table . '.user_id = ' . $user;
 		}
 		
@@ -1053,15 +1038,15 @@ class Find extends FSIP{
 	 * @param string|array $categories Categories
 	 * @return bool True if successful
 	 */
-	public function category($categories=null){
+	public function category($categories=null) {
 		// Error checking
-		if(empty($categories)){ return false; }
+		if (empty($categories)) { return false; }
 		
 		$categories = parent::convertToArray($categories);
 		
 		$categories_sql = array();
 		
-		foreach($categories as $category){
+		foreach($categories as $category) {
 			$categories_sql[] = $this->table . '.' . $this->table_prefix . 'category = ' . $category;
 		}
 		
@@ -1189,10 +1174,9 @@ class Find extends FSIP{
 			}
 		}
 		
-		if(count($ids) > 0){
+		if (count($ids) > 0) {
 			$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'id IN (' . implode(', ', $ids) . ')';
-		}
-		else{
+		} else {
 			$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'id IS NULL';
 		}
 		
@@ -1208,9 +1192,9 @@ class Find extends FSIP{
 	 * @param string|array $fields Required for tables not built into FSIP (or for overriding built-in search parameters)
 	 * @return bool True if successful
 	 */
-	public function hide($search=null, $fields=null){
+	public function hide($search=null, $fields=null) {
 		// Error checking
-		if(empty($search)){ return false; }
+		if (empty($search)) { return false; }
 		
 		// Prepare input
 		$search_lower = strtolower($search);
@@ -1264,7 +1248,7 @@ class Find extends FSIP{
 			}
 		}
 		
-		if(count($ids) > 0){
+		if (count($ids) > 0) {
 			$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'id NOT IN (' . implode(', ', $ids) . ')';
 		}
 		
@@ -1279,47 +1263,42 @@ class Find extends FSIP{
 	 * @param bool $auto_guest Automatically handle guest privacy
 	 * @return bool True if successful
 	 */
-	public function privacy($privacy=null, $all=true, $auto_guest=true){
+	public function privacy($privacy=null, $all=true, $auto_guest=true) {
 		// Error checking
-		if(empty($privacy)){ return false; }
-		//  if(intval($privacy)){ $privacy = intval($privacy); }
-		if($this->table != 'images'){ return false; }
-		if(!empty($_SESSION['fsip']['preview'])){ return; }
+		if (empty($privacy)) { return false; }
+		//  if(intval($privacy)) { $privacy = intval($privacy); }
+		if ($this->table != 'images') { return false; }
+		if (!empty($_SESSION['fsip']['preview'])) { return; }
 		
-		if(!empty($_SESSION['fsip']['guest']) and ($auto_guest == true) and ($this->admin != true)){ return; }
+		if (!empty($_SESSION['fsip']['guest']) and ($auto_guest == true) and ($this->admin != true)) { return; }
 		
 		// Convert strings
-		if(is_string($privacy)){
+		if (is_string($privacy)) {
 			$privacy = strtolower($privacy);
 			$levels = array('public' => 1, 'protected' => 2, 'private' => 3);
 			$levels2 = array('1' => 1, '2' => 2, '3' => 3);
-			if(array_key_exists($privacy, $levels)){
+			if (array_key_exists($privacy, $levels)) {
 				$privacy = $levels[$privacy];
-			}
-			elseif(array_key_exists($privacy, $levels2)){
+			} elseif(array_key_exists($privacy, $levels2)) {
 				$privacy = $levels2[$privacy];
-			}
-			else{
+			} else {
 				return false;
 			}
 		}
 		
-		if(is_integer($privacy)){
+		if (is_integer($privacy)) {
 			// Set fields to search
-			if($all == true){
+			if ($all == true) {
 				$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'privacy <= ' . $privacy;
-			}
-			else{
+			} else {
 				$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'privacy = ' . $privacy;
 			}
-		}
-		elseif(is_array($privacy)){
+		} elseif(is_array($privacy)) {
 			parent::convertToIntegerArray($privacy);
 			
 			// Set fields to search
 			$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'privacy IN (' . implode(', ', $privacy) . ')';
-		}
-		else{
+		} else {
 			return false;
 		}
 		
@@ -1337,7 +1316,7 @@ class Find extends FSIP{
 	 * @param string $l_max 
 	 * @return bool True if successful
 	 */
-	public function hsl($h_min, $h_max, $s_min, $s_max, $l_min, $l_max){
+	public function hsl($h_min, $h_max, $s_min, $s_max, $l_min, $l_max) {
 		// Error checking
 		if (!isset($h_min) and !isset($h_max) and !isset($s_min) and !isset($s_max) and !isset($l_min) and !isset($l_max)) { return false; }
 		
@@ -1486,34 +1465,30 @@ class Find extends FSIP{
 	 * @param int|string $status Comment status
 	 * @return bool True if successful
 	 */
-	public function status($status=null){
+	public function status($status=null) {
 		// Error checking
-		if(!isset($status)){ return false; }
+		if (!isset($status)) { return false; }
 		
 		// Convert strings
-		if(is_string($status)){
+		if (is_string($status)) {
 			$levels = array('spam' => -1, '-1' => -1, 'unpublished' => 0, '0' => 0, 'published' => 1, '1' => 1);
-			if(array_key_exists($status, $levels)){
+			if (array_key_exists($status, $levels)) {
 				$status = $levels[$status];
-			}
-			else{
+			} else {
 				return false;
 			}
 			
 			// Set fields to search
 			$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'status = ' . $status;
-		}
-		elseif(is_integer($status)){
+		} elseif(is_integer($status)) {
 			$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'status = ' . $status;
 			
-		}
-		elseif(is_array($status)){
+		} elseif(is_array($status)) {
 			parent::convertToIntegerArray($status);
 			
 			// Set fields to search
 			$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'status IN (' . implode(', ', $status) . ')';
-		}
-		else{
+		} else {
 			return false;
 		}
 		
@@ -1527,19 +1502,18 @@ class Find extends FSIP{
 	 * @param string $name EXIF name (key)
 	 * @return bool True if successful
 	 */
-	public function exifs($value, $name=null){
-		if(empty($value)){ return false; }
+	public function exifs($value, $name=null) {
+		if (empty($value)) { return false; }
 		
 		// Add EXIFs to find
 		$this->sql_tables[] = 'exifs';
 		$this->sql_conds[] = 'exifs.image_id = ' . $this->table . '.' .$this->table_prefix . 'id';
 		
 		// Search EXIFs
-		if(empty($name)){
+		if (empty($name)) {
 			$this->sql_conds[] = '(LOWER(exifs.exif_value) LIKE :exif_value)';
 			$this->sql_params[':exif_value'] = '%' . strtolower($value) . '%';
-		}
-		else{
+		} else {
 			$this->sql_conds[] = '(LOWER(exifs.exif_value) LIKE :exif_value AND LOWER(exifs.exif_name) LIKE :exif_name)';
 			$this->sql_params[':exif_name'] = '%' . strtolower($name) . '%';
 			$this->sql_params[':exif_value'] = '%' . strtolower($value) . '%';
@@ -1554,19 +1528,18 @@ class Find extends FSIP{
 	 * @param int $id Guest ID
 	 * @return bool True if successful
 	 */
-	public function guest($id=null){
-		if(empty($id)){ return false; }
+	public function guest($id=null) {
+		if (empty($id)) { return false; }
 		
 		$guest = $this->getRow('guests', $id);
 		
-		if($guest === false){
+		if ($guest === false) {
 			return false;
 		}
 		
-		if(empty($guest['guest_sets'])){
+		if (empty($guest['guest_sets'])) {
 			$this->privacy('protected');
-		}
-		else{
+		} else {
 			$this->sets(intval($guest['guest_sets']));
 			$this->privacy('protected');
 		}
@@ -1580,12 +1553,12 @@ class Find extends FSIP{
 	 * @param string $kind Untagged, unpublished, displayed, modified, nonpublic, untitled, views, tags, guests, sets, me, users, rights, pages
 	 * @return bool True if successful
 	 */
-	protected function smart($kind){
-		if(empty($kind)){
+	protected function smart($kind) {
+		if (empty($kind)) {
 			return false;
 		}
 		
-		switch($kind){
+		switch($kind) {
 			case 'untagged':
 				$this->_special('untagged');
 				break;
@@ -1655,12 +1628,12 @@ class Find extends FSIP{
 	 * @param string $kind Unpublished, untitled, uncategorized
 	 * @return void
 	 */
-	protected function special($kind){
-		if(empty($kind)){
+	protected function special($kind) {
+		if (empty($kind)) {
 			return false;
 		}
 		
-		switch($kind){
+		switch($kind) {
 			case 'untagged':
 				// Join tables
 				$this->sql_join_on[] = $this->table . '.' . $this->table_prefix . 'id = links.image_id';
@@ -1692,10 +1665,10 @@ class Find extends FSIP{
 	 * @param int $id ID
 	 * @return bool True if successful
 	 */
-	public function with($id){
+	public function with($id) {
 		// Error checking
-		if(empty($id)){ return false; }
-		if(!$id = intval($id)){ return false; }
+		if (empty($id)) { return false; }
+		if (!$id = intval($id)) { return false; }
 		
 		$this->with = $id;
 		
@@ -1710,19 +1683,21 @@ class Find extends FSIP{
 	 * @param int $first Number of items on the first page (if different)
 	 * @return bool True if successful
 	 */
-	public function page($page=null, $limit=null, $first=null){
+	public function page($page=null, $limit=null, $first=null) {
 		// Error checking
-		if($limit === 0){ return false; }
-		if(empty($page)){
-			if(!empty($_REQUEST['page'])){ $page = intval($_REQUEST['page']); }
-			else{ $page = 1; }
-		}
-		else{
+		if ($limit === 0) { return false; }
+		if (empty($page)) {
+			if (!empty($_REQUEST['page'])) { 
+				$page = intval($_REQUEST['page']); 
+			} else { 
+				$page = 1; 
+			}
+		} else {
 			$page = intval($page);
 		}
-		if($page < 1){ return false; }
-		if(empty($limit)){ $limit = LIMIT; }
-		if(empty($first)){ $first = $limit; }
+		if ($page < 1) { return false; }
+		if (empty($limit)) { $limit = LIMIT; }
+		if (empty($first)) { $first = $limit; }
 		
 		// Store data to object
 		$this->page = $page;
@@ -1730,9 +1705,12 @@ class Find extends FSIP{
 		$this->page_limit_first = intval($first);
 		
 		// Set SQL limit
-		if($page == 1){ $this->page_limit_curent = $this->page_limit_first; }
-		else{ $this->page_limit_curent = $this->page_limit; }
-		
+		if ($page == 1) {
+			$this->page_limit_curent = $this->page_limit_first; 
+		} else { 
+			$this->page_limit_curent = $this->page_limit; 
+		}
+
 		$this->page_begin = (($page - 1) * $this->page_limit_curent) - $this->page_limit_curent + $this->page_limit_first;
 		$this->sql_limit = ' LIMIT ' . $this->page_begin . ', ' . $this->page_limit_curent;
 		
@@ -1745,9 +1723,9 @@ class Find extends FSIP{
 	 * @param int $length Number of items
 	 * @return bool True if successful
 	 */
-	public function offset($length){
+	public function offset($length) {
 		// Error checking
-		if(!($length = intval($length))){ return false; }
+		if (!($length = intval($length))) { return false; }
 		
 		$this->offset_length = $length;
 	}
@@ -1759,10 +1737,10 @@ class Find extends FSIP{
 	 * @param string $radius Search radius (in miles)
 	 * @return bool True if successful
 	 */
-	public function location($geo='', $radius=50){
+	public function location($geo='', $radius=50) {
 		$place = new Geo($geo);
 		
-		if(!($radius = floatval($radius))){ return false; }
+		if (!($radius = floatval($radius))) { return false; }
 		
 		$lat = $place->city['city_lat'];
 		$long = $place->city['city_long'];
@@ -1783,9 +1761,9 @@ class Find extends FSIP{
 	 * @param string $sort Sort order (ASC or DESC)
 	 * @return bool True if successful
 	 */
-	public function sort($column, $sort='ASC'){
+	public function sort($column, $sort='ASC') {
 		// Error checking
-		if(empty($column)){ return false; }
+		if (empty($column)) { return false; }
 		
 		$column = $this->sanitize($column);
 		
@@ -1793,7 +1771,7 @@ class Find extends FSIP{
 		$sort = strtoupper($sort);
 		
 		// More error checking
-		if(($sort != 'ASC') and ($sort != 'DESC')){
+		if (($sort != 'ASC') and ($sort != 'DESC')) {
 			return false;
 		}
 		
@@ -1809,8 +1787,8 @@ class Find extends FSIP{
 	 * @param string $field Table field
 	 * @return bool True if successful
 	 */
-	public function notnull($field){
-		if(empty($field)){ return false; }
+	public function notnull($field) {
+		if (empty($field)) { return false; }
 		
 		$field = $this->sanitize($field);
 		
@@ -1825,8 +1803,8 @@ class Find extends FSIP{
 	 * @param string $field Table field
 	 * @return bool True if successful
 	 */
-	public function null($field){
-		if(empty($field)){ return false; }
+	public function null($field) {
+		if (empty($field)) { return false; }
 		
 		$field = $this->sanitize($field);
 		
@@ -1840,34 +1818,33 @@ class Find extends FSIP{
 	 *
 	 * @return array Result IDs
 	 */
-	public function find(){
+	public function find() {
 		// Prepare SQL
 		$this->sql_from = ' FROM ' . implode(', ', $this->sql_tables);
 
-		if(count($this->sql_conds) > 0){
+		if (count($this->sql_conds) > 0) {
 			$this->sql_where = ' WHERE ' . implode(' AND ', $this->sql_conds);
 		}
 		
-		if(count($this->sql_sorts) > 0){
+		if (count($this->sql_sorts) > 0) {
 			$this->sql_order_by = ' ORDER BY ' . implode(', ', $this->sql_sorts);
-			if(($this->db_type == 'pgsql') or ($this->db_type == 'mssql')){
+			if (($this->db_type == 'pgsql') or ($this->db_type == 'mssql')) {
 				$sql_sorts = str_ireplace(' ASC', '', $this->sql_sorts);
 				$sql_sorts = str_ireplace(' DESC', '', $this->sql_sorts);
 				$this->sql_group_by .= ', ' . implode(', ', $sql_sorts);
 			}
-		}
-		elseif(empty($this->order)){
+		} elseif(empty($this->order)) {
 			$this->sql_order_by = ' ORDER BY ' . $this->table . '.' .$this->table_prefix . 'id DESC';
-			if(($this->db_type == 'pgsql') or ($this->db_type == 'mssql')){
+			if (($this->db_type == 'pgsql') or ($this->db_type == 'mssql')) {
 				$this->sql_group_by .= ', ' . $this->table . '.' .$this->table_prefix . 'id';
 			}
 		}
 		
-		if((count($this->sql_join_on) > 0) and (count($this->sql_join_tables) > 0) and (!empty($this->sql_join_type))){
+		if ((count($this->sql_join_on) > 0) and (count($this->sql_join_tables) > 0) and (!empty($this->sql_join_type))) {
 			$this->sql_join = ' ' . $this->sql_join_type . ' ' . implode(', ', $this->sql_join_tables) . ' ON ' . implode(', ', $this->sql_join_on);
 		}
 		
-		if(count($this->sql_having_fields) > 0){
+		if (count($this->sql_having_fields) > 0) {
 			$this->sql_having = ' HAVING ' . implode(', ', $this->sql_having_fields);
 		}
 
@@ -1881,7 +1858,7 @@ class Find extends FSIP{
 		
 		// Grab images.ids of results
 		$ids = array();
-		foreach($images as $image){
+		foreach($images as $image) {
 			$ids[] = intval($image[$this->table_prefix . 'id']);
 		}
 		
@@ -1889,19 +1866,18 @@ class Find extends FSIP{
 		$this->count = count($images);
 		
 		// Determine where "with" image id is placed in pages
-		if(!empty($this->with)){
+		if (!empty($this->with)) {
 			$key = array_search($this->with, $ids);
-			if($key === false){
+			if ($key === false) {
 				return false;
 			}
 			
-			if(empty($this->page_limit)){ $this->page_limit = LIMIT; }
-			if(empty($this->page_limit_first)){ $this->page_limit_first = $this->page_limit; }
+			if (empty($this->page_limit)) { $this->page_limit = LIMIT; }
+			if (empty($this->page_limit_first)) { $this->page_limit_first = $this->page_limit; }
 			
-			if($key < $this->page_limit_first){
+			if ($key < $this->page_limit_first) {
 				$page = 1;
-			}
-			else{
+			} else {
 				$page = intval(ceil((($key + 1) - $this->page_limit_first) / $this->page_limit) + 1);
 			}
 			
@@ -1909,12 +1885,12 @@ class Find extends FSIP{
 		}
 		
 		// Determine pagination
-		if(!empty($this->page)){
+		if (!empty($this->page)) {
 			$this->page_count = ceil(($this->count - $this->page_limit_first) / $this->page_limit) + 1;
-			if($this->page < $this->page_count){
+			if ($this->page < $this->page_count) {
 				$this->page_next = $this->page + 1;
 			}
-			if($this->page > 1){
+			if ($this->page > 1) {
 				$this->page_previous = $this->page - 1;
 			}
 		}
@@ -1929,27 +1905,27 @@ class Find extends FSIP{
 		
 		// Grab images.ids of results
 		$this->ids = array();
-		foreach($images as $image){
+		foreach($images as $image) {
 			$this->ids[] = intval($image[$this->table_prefix . 'id']);
-			if($this->cache === true){
+			if ($this->cache === true) {
 				$last_modified = strtotime($image['last_modified']);
-				if($last_modified > $this->last_modified){
+				if ($last_modified > $this->last_modified) {
 					$this->last_modified = $last_modified;
 				}
 			}
 		}
 		
-		if(!empty($this->order)){
+		if (!empty($this->order)) {
 			$replacement_ids = array();
-			foreach($this->order as $image_id){
-				if(in_array($image_id, $this->ids)){
+			foreach($this->order as $image_id) {
+				if (in_array($image_id, $this->ids)) {
 					$replacement_ids[] = $image_id;
 				}
 			}
 			
 			$replacement_append_ids = array();
-			foreach($this->ids as $image_id){
-				if(!in_array($image_id, $this->order)){
+			foreach($this->ids as $image_id) {
+				if (!in_array($image_id, $this->order)) {
 					$replacement_append_ids[] = $image_id;
 				}
 			}
@@ -1961,37 +1937,33 @@ class Find extends FSIP{
 		$this->count_result = count($this->ids);
 		
 		// Determine offset images
-		if(!empty($this->page_limit)){
-			if(!empty($this->offset_length)){
+		if (!empty($this->page_limit)) {
+			if (!empty($this->offset_length)) {
 				$offset = $this->page_begin - $this->offset_length;
 				
-				if($offset < 0){
+				if ($offset < 0) {
 					$length = $this->offset_length + $offset;
 					$offset = 0;
-				}
-				else{
+				} else {
 					$length = $this->offset_length;
 				}
 				
 				$this->ids_before = array_slice($ids, $offset, $length, true);
 				$this->ids_before = array_reverse($this->ids_before);
 				
-				if($this->page == 1){
+				if ($this->page == 1) {
 					$offset = $this->page_begin + $this->page_limit_first;
-				}
-				else{
+				} else {
 					$offset = $this->page_begin + $this->page_limit;
 				}
 				
 				$this->ids_after = array_slice($ids, $offset, $this->offset_length, true);
-			}
-			else{
+			} else {
 				$this->ids_before = array_slice($ids, 0, $this->page_begin, true);
 				
-				if($this->page == 1){
+				if ($this->page == 1) {
 					$offset = $this->page_begin + $this->page_limit_first;
-				}
-				else{
+				} else {
 					$offset = $this->page_begin + $this->page_limit;
 				}
 				$this->ids_after = array_slice($ids, $offset, null, true);
@@ -2008,11 +1980,11 @@ class Find extends FSIP{
 		$this->last_reverse = $this->page_begin + $this->page_limit;
 		
 		// Determine URLs of image pages
-		if(!empty($this->page_next)){
+		if (!empty($this->page_next)) {
 			$this->page_next_uri = $this->magicURL($this->page_next);
 		}
 		
-		if(!empty($this->page_previous)){
+		if (!empty($this->page_previous)) {
 			$this->page_previous_uri = $this->magicURL($this->page_previous);
 		}
 		
@@ -2027,7 +1999,7 @@ class Find extends FSIP{
 	 *
 	 * @return void
 	 */
-	public function saveMemory(){
+	public function saveMemory() {
 		$table = $this->table;
 		
 		$_SESSION['fsip']['search']['table'] = $table;
@@ -2041,10 +2013,10 @@ class Find extends FSIP{
 	 *
 	 * @return string|false
 	 */
-	public function recentMemory(){
+	public function recentMemory() {
 		$table = $this->table;
 		
-		if(empty($_SESSION['fsip']['search'][$table]['call'])){
+		if (empty($_SESSION['fsip']['search'][$table]['call'])) {
 			return false;
 		}
 		
@@ -2056,7 +2028,7 @@ class Find extends FSIP{
 	 *
 	 * @return void
 	 */
-	public static function clearMemory(){
+	public static function clearMemory() {
 		unset($_SESSION['fsip']['search']);
 	}
 }

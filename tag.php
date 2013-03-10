@@ -13,11 +13,11 @@ $fsip = new FSIP;
 $fsip->recordStat('tag');
 
 $id = $fsip->findID($_GET['id']);
-if(!$id){ $fsip->addError('No tag was found.', 'Try searching for the images you were seeking.', null, null, 404); }
+if (!$id) { $fsip->addError('No tag was found.', 'Try searching for the images you were seeking.', null, null, 404); }
 
 $tag = $fsip->getRow('tags', $id);
 
-if(!$tag){ $fsip->addError('No tag was found.', 'Try searching for the images you were seeking.', null, null, 404); }
+if (!$tag) { $fsip->addError('No tag was found.', 'Try searching for the images you were seeking.', null, null, 404); }
 
 $image_ids = new Find('images');
 $image_ids->page(null, 0);
