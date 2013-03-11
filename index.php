@@ -12,14 +12,18 @@ require_once(PATH . CLASSES . 'fsip.php');
 $fsip = new FSIP;
 $fsip->recordStat('home');
 
-if (!empty($_GET['with']) {
+if (isset($_GET['with']) {
 	$with_id = $fsip->findID($_GET['with'], true);
 }
-if (!$with_id and !empty($_GET['with'])) { $fsip->addError('No image was found.', 'Try searching for the image you were seeking.', null, null, 404); }
+if (!$with_id and !empty($_GET['with'])) { 
+	$fsip->addError('No image was found.', 'Try searching for the image you were seeking.', null, null, 404); 
+}
 
 $image_ids = new Find('images');
 $image_ids->page(null, 12, 1);
-if ($with_id) { $image_ids->with($with_id); }
+if ($with_id) { 
+	$image_ids->with($with_id); 
+}
 $image_ids->published();
 $image_ids->privacy('public');
 $image_ids->sort('image_published', 'DESC');
