@@ -1,9 +1,16 @@
-TODO: new stock template put content inside a frame and center the main image?
-
 Convert markdown to html - http://stackoverflow.com/questions/1319657/javascript-to-convert-markdown-textile-to-html-and-ideally-back-to-markdown-t
+________
 
+Themes:
+	- Find out why there is a <uid></uid> var in XML file. Can that be removed without breaking anything? There is already a folder/project name and a version and build number.
+	- In install/index.php there is a manual load of a default theme ~line 234. Why not load all themes at load time and then manually set the choice of default only?
+	//		$query = $db->prepare('INSERT INTO ' . $_POST['install_db_prefix'] . 'themes (theme_uid, theme_title, theme_build, theme_version, theme_folder, theme_creator_name, theme_creator_uri) VALUES (?, ?, ?, ?, ?, ?, ?);');
+//		$query->execute(array('225b134b655901223d2f2ee26599b71763b1e5fe', 'P1', 1, '1.0', 'p1', 'Wilkes & Barre', 'http://www.wilkesandbarre.com/'));
+		$query = $db->prepare('INSERT INTO ' . $_POST['install_db_prefix'] . 'themes (theme_uid, theme_title, theme_build, theme_version, theme_folder, theme_creator_name, theme_creator_uri) VALUES (?, ?, ?, ?, ?, ?, ?);');
+		$query->execute(array('FSIP_DEFAULT', 'fsipDefault', 1, '0.1', 'fsipDefault', 'Daryl Hawes', 'http://fsip.sdelargy.com/'));
 
 ________
+
 
 Geo: research how geo is really supposed to work. How does the googlemaps extension work? What format should the location field be in and why won't it do a lookup for you?
 _______

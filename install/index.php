@@ -231,8 +231,10 @@ if((@$_POST['install'] == 'Install') and ($fsip->countNotes('error') == 0)){
 		
 		// Add default theme
 		
+//		$query = $db->prepare('INSERT INTO ' . $_POST['install_db_prefix'] . 'themes (theme_uid, theme_title, theme_build, theme_version, theme_folder, theme_creator_name, theme_creator_uri) VALUES (?, ?, ?, ?, ?, ?, ?);');
+//		$query->execute(array('225b134b655901223d2f2ee26599b71763b1e5fe', 'P1', 1, '1.0', 'p1', 'Wilkes & Barre', 'http://www.wilkesandbarre.com/'));
 		$query = $db->prepare('INSERT INTO ' . $_POST['install_db_prefix'] . 'themes (theme_uid, theme_title, theme_build, theme_version, theme_folder, theme_creator_name, theme_creator_uri) VALUES (?, ?, ?, ?, ?, ?, ?);');
-		$query->execute(array('225b134b655901223d2f2ee26599b71763b1e5fe', 'P1', 1, '1.0', 'p1', 'Wilkes & Barre', 'http://www.wilkesandbarre.com/'));
+		$query->execute(array('FSIP_DEFAULT', 'fsipDefault', 1, '0.1', 'fsipDefault', 'Daryl Hawes', 'http://fsip.sdelargy.com/'));
 		
 		$query->closeCursor();
 		
