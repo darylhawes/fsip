@@ -1103,6 +1103,10 @@ class Image extends FSIP {
 			// Read IPTC data
 			$size = getimagesize($images[$i]['image_file'], $info);
 			
+			$tags = array();
+			$title = array();
+			$description = array();
+			
 			if (isset($info['APP13'])) {
 				// Parse IPTC data
 			    $iptc = iptcparse($info['APP13']);
@@ -1151,6 +1155,10 @@ class Image extends FSIP {
 			$found_exif = 0;
 			
 			if (function_exists('exif_read_data')) {
+				$geo = "";
+				$geo_lat = "";
+				$geo_long = "";
+
 				// Read EXIF data
 				$exif = @exif_read_data($images[$i]['image_file'], 0, true, false);
 				

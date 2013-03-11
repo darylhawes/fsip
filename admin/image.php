@@ -16,56 +16,51 @@ $user = new User;
 $user->perm(true, 'images');
 
 // GET PHOTO
-if(!$image_id = $fsip->findID($_GET['id'])){
+if (!$image_id = $fsip->findID($_GET['id'])) {
 	header('Location: ' . LOCATION . BASE . ADMIN . 'library' . URL_CAP);
 	exit();
 }
 
 // SAVE CHANGES
-if(!empty($_POST['image_id'])){
-	if(!$image_id = $fsip->findID($_POST['image_id'])){
+if (!empty($_POST['image_id'])) {
+	if (!$image_id = $fsip->findID($_POST['image_id'])) {
 		header('Location: ' . LOCATION . BASE . ADMIN . 'library' . URL_CAP);
 		exit();
 	}
 	
 	$images = new Image($image_id);
 	
-	if(@$_POST['image_delete'] == 'delete'){
-		if($images->delete()){
+	if (isset($_POST['image_delete']) && (@$_POST['image_delete'] == 'delete')) {
+		if ($images->delete()) {
 			$fsip->addNote('The image has been deleted.', 'success');
 		}
-	}
-	elseif(@$_POST['image_recover'] == 'recover'){
-		if($images->recover()){
+	} elseif(isset($_POST['image_recover']) && (@$_POST['image_recover'] == 'recover')) {
+		if ($images->recover()) {
 			$fsip->addNote('The image has been recovered.', 'success');
 		}
-	}
-	else{
+	} else {
 		$image_title = trim($_POST['image_title']);
 		
 		$image_description_raw = @$_POST['image_description_raw'];
 		$image_description = $image_description_raw;
 		
 		// Configuration: image_markup
-		if(!empty($_POST['image_markup'])){
+		if (!empty($_POST['image_markup'])) {
 			$image_markup_ext = $_POST['image_markup'];
 			$image_title = $orbit->hook('markup_title_' . $image_markup_ext, $image_title, $image_title);
 			$image_description = $orbit->hook('markup_' . $image_markup_ext, $image_description_raw, $image_description_raw);
-		}
-		elseif($fsip->returnConf('web_markup')){
+		} elseif($fsip->returnConf('web_markup')) {
 			$image_markup_ext = $fsip->returnConf('web_markup_ext');
 			$image_title = $orbit->hook('markup_title_' . $image_markup_ext, $image_title, $image_title);
 			$image_description = $orbit->hook('markup_' . $image_markup_ext, $image_description_raw, $image_description_raw);
-		}
-		else{
+		} else {
 			$image_markup_ext = '';
 			$image_description = $fsip->nl2br($image_description_raw);
 		}
 		
-		if(@$_POST['image_comment_disabled'] == 'disabled'){
+		if (isset($_POST['image_comment_disabled']) && (@$_POST['image_comment_disabled'] == 'disabled')) {
 			$image_comment_disabled = 1;
-		}
-		else{
+		} else {
 			$image_comment_disabled = 0;
 		}
 		
@@ -83,29 +78,27 @@ if(!empty($_POST['image_id'])){
 		$images->updateTags(json_decode($_POST['image_tags_input']));
 	}
 	
-	if(!empty($_POST['image_send']) and ($_POST['image_send'] == 'send')){
+	if (!empty($_POST['image_send']) and ($_POST['image_send'] == 'send')) {
 		$images = new Image($image_id);
 		$orbit->hook('send_' . $_POST['image_send_service'] . '_image', $images->images, null);
 	}
 	
-	if(!empty($_REQUEST['go'])){
+	if (!empty($_REQUEST['go'])) {
 		$image_ids = new Find('images');
 		$image_ids->memory();
 		$image_ids->with($image_id);
 		$image_ids->offset(1);
 		$image_ids->page(null, 1);
 		$image_ids->find();
-		if($_REQUEST['go'] == 'next'){
+		if ($_REQUEST['go'] == 'next') {
 			$_SESSION['fsip']['go'] = 'next';
 			header('Location: ' . LOCATION . BASE . ADMIN . 'images' . URL_ID . $image_ids->ids_after[0] . URL_CAP);
-		}
-		else{
+		} else {
 			$_SESSION['fsip']['go'] = 'previous';
 			header('Location: ' . LOCATION . BASE . ADMIN . 'images' . URL_ID . $image_ids->ids_before[0] . URL_CAP);
 		}
 		exit();
-	}
-	else{
+	} else {
 		$fsip->callback();
 	}
 }
@@ -119,25 +112,23 @@ $images->getColorkey(300, 40);
 $comments = $images->getComments();
 $exifs = $images->getEXIF();
 
-if(!$image = @$images->images[0]){
+if (!$image = @$images->images[0]) {
 	$fsip->addNote('The image you requested could not be found.', 'error');
 	$fsip->callback();
 }
 
 $comment_count = count($comments);
-if($comment_count > 0){
+if ($comment_count > 0) {
 	$comment_action = '<a href="' . BASE . ADMIN . 'comments' . URL_CAP . '?image=' . $image['image_id'] . '"><button>View ' . $fsip->returnCount($comment_count, 'comment') . ' (' . $comment_count . ')</button></a>';
-}
-else{
+} else {
 	$comment_action = '';
 }
 
 $now = time();
 $published = strtotime($image['image_published']);
-if($published <= $now){
+if ($published <= $now) {
 	$launch_action = '<a href="' . BASE . 'image' . URL_ID . $image['image_id'] . URL_RW . '"><button>Launch image</button></a>';
-}
-else{
+} else {
 	$launch_action = '';
 }
 
@@ -145,10 +136,9 @@ $image_colorkey = $image['image_colorkey'];
 $image = $fsip->makeHTMLSafe($image);
 
 define('TAB', 'library');
-if(!empty($image['image_title'])){	
+if (!empty($image['image_title'])) {
 	define('TITLE', 'Image: &#8220;' . $image['image_title']  . '&#8221;');
-}
-else{
+} else {
 	define('TITLE', 'Image');
 }
 require_once(PATH . ADMIN . 'includes/header.php');
@@ -164,10 +154,9 @@ require_once(PATH . ADMIN . 'includes/header.php');
 
 <?php
 
-if(empty($image['image_title'])){
+if (empty($image['image_title'])) {
 	echo '<h1><img src="' . BASE . ADMIN . 'images/icons/images.png" alt="" /> Image</h1>';
-}
-else{
+} else {
 	echo '<h1><img src="' . BASE . ADMIN . 'images/icons/images.png" alt="" /> Image: ' . $image['image_title'] . '</h1>';
 }
 
@@ -193,15 +182,15 @@ else{
 				<label for="image_geo">Location:</label><br />
 				<input type="text" id="image_geo" name="image_geo" class="image_geo get_location_result l" value="<?php echo $image['image_geo']; ?>" />&#0160;
 				<a href="#get_location" class="get_location"><img src="<?php echo BASE . ADMIN; ?>images/icons/location.png" alt="" style="vertical-align: middle;" /></a>
-				<?php
+<?php
 				
-				if(!empty($image['image_geo_lat'])){
-					?>
+				if (!empty($image['image_geo_lat'])) {
+?>
 					<br />
 					<img src="<?php echo BASE . ADMIN; ?>images/icons/geo.png" alt="" /> <?php echo round($image['image_geo_lat'], 5); ?>, <?php echo round($image['image_geo_long'], 5); ?>
-					<?php
+<?php
 				}
-				?>
+?>
 				<span class="none get_location_set"><?php if(!empty($_SESSION['fsip']['location'])){ echo $_SESSION['fsip']['location']; } ?></span>
 			</p>
 			
@@ -220,7 +209,7 @@ else{
 				<?php echo $fsip->showRights('right_id', $image['right_id']); ?>
 			</p>
 			
-			<?php if(!empty($image_colorkey)){ ?>
+			<?php if (!empty($image_colorkey)) { ?>
 			<p class="slim"><span class="switch">&#9656;</span> <a href="#" class="show">Show color palette</a></p>
 			
 			<div class="reveal">
@@ -237,34 +226,33 @@ else{
 			<div class="reveal">
 				<ul>
 					<li><a href="<?php echo $image['image_src']; ?>">Original</a> <span class="quiet">(<?php echo $image['image_width']; ?> &#0215; <?php echo $image['image_height']; ?>)</span></li>
-					<?php
+<?php
 
-					foreach($sizes as $size){
+					foreach($sizes as $size) {
 						echo '<li><a href="' . $size['size_src'] . '">' . $size['size_title'] . '</a> <span class="quiet">(' . $size['size_width'] . ' &#0215; ' . $size['size_height'] . ')</span></li>';
 					}
 
-					?>
+?>
 				</ul>
 			</div>
 			
-			<?php
+<?php
 			
-			if(count($exifs) > 0){
+			if (count($exifs) > 0) {
 				echo '<p><span class="switch">&#9656;</span> <a href="#" class="show">Show EXIF data</a></p>';
 				echo '<div class="reveal"><ul>' . "\n";
-				foreach($exifs as $exif){
+				foreach($exifs as $exif) {
 					$value = @unserialize(stripslashes($exif['exif_value']));
-					if(!is_array($value)){
+					if (!is_array($value)) {
 						echo '<li><strong>' . ucwords(strtolower($exif['exif_key'])) . '_' . $exif['exif_name'] . ':</strong><br />' . $value . '</li>' . "\n";
 					}
 				}
 				echo '</ul></div>';
 			}
 			
-			?>
+?>
 			
 			<hr />
-			
 			<table>
 				<tr>
 					<td class="right" style="width: 5%"><input type="checkbox" id="image_send" name="image_send" value="send" /></td>
@@ -277,7 +265,7 @@ else{
 						</label>
 					</td>
 				</tr>
-				<?php if($fsip->returnConf('comm_enabled')){ ?>
+				<?php if ($fsip->returnConf('comm_enabled')) { ?>
 				<tr>
 					<td class="right" style="width: 5%"><input type="checkbox" id="image_comment_disabled" name="image_comment_disabled" value="disabled" <?php if($image['image_comment_disabled'] == 1){ echo 'checked="checked"'; } ?> /></td>
 					<td>
@@ -285,14 +273,14 @@ else{
 					</td>
 				</tr>
 				<?php } ?>
-				<?php if(empty($image['image_deleted'])){ ?>
+				<?php if (empty($image['image_deleted'])) { ?>
 				<tr>
 					<td class="right" style="width: 5%"><input type="checkbox" id="image_delete" name="image_delete" value="delete" /></td>
 					<td>
 						<strong><label for="image_delete">Delete this image.</label></strong>
 					</td>
 				</tr>
-				<?php } else{ ?>
+				<?php } else { ?>
 				<tr>
 					<td class="right" style="width: 5%"><input type="checkbox" id="image_recover" name="image_recover" value="recover" /></td>
 					<td>
@@ -308,17 +296,18 @@ else{
 				<span class="switch">&#9656;</span> <a href="#" class="show">Display related images</a> <span class="quiet">(<?php echo $images->related->image_count; ?>)</span>
 			</p>
 			<div class="reveal">
-				<?php
+<?php
 				
-				foreach($images->related->images as $related_image){
-					?>
+				foreach($images->related->images as $related_image) {
+?>
 					<a href="<?php echo BASE . ADMIN . 'image' . URL_ID . $related_image['image_id'] . URL_RW; ?>" class="nu">
 						<img src="<?php echo $related_image['image_src_square']; ?>" alt="" title="<?php echo $related_image['image_title']; ?>" class="frame tip" />
 					</a>
-					<?php
+<?php
 				}
 
-				?><br /><br />
+?>
+				<br /><br />
 			</div>
 			<p>
 				<input type="hidden" id="image_markup" name="image_markup" value="<?php echo $image['image_markup']; ?>" />

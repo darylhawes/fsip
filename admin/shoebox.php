@@ -16,29 +16,27 @@ $user = new User;
 $user->perm(true, 'shoebox');
 
 // PROCESS SUBMITTED IMAGES
-if(!empty($_POST['image_ids'])){
+if (!empty($_POST['image_ids'])) {
 	$image_ids = explode(',', $_POST['image_ids']);
 	array_pop($image_ids);
 	
 	$fsip->convertToIntegerArray($image_ids);
 	
-	foreach($image_ids as $image_id){
+	foreach($image_ids as $image_id) {
 		$image = new Image($image_id);
-		if(@$_POST['image-' . $image_id . '-delete'] == 'delete'){
-			if($image->delete()){
+		if (@$_POST['image-' . $image_id . '-delete'] == 'delete') {
+			if ($image->delete()) {
 				$fsip->addNote('Your image has been deleted.', 'success');
 			}
-		}
-		else{
+		} else {
 			$image_title = $fsip->makeUnicode(@$_POST['image-' . $image_id . '-title']);
 			$image_description_raw = $fsip->makeUnicode(@$_POST['image-' . $image_id . '-description-raw']);
 			
-			if($fsip->returnConf('web_markup')){
+			if ($fsip->returnConf('web_markup')) {
 				$image_markup_ext = $fsip->returnConf('web_markup_ext');
 				$image_title = $orbit->hook('markup_title_' . $image_markup_ext, $image_title, $image_title);
 				$image_description = $orbit->hook('markup_' . $image_markup_ext, $image_description_raw, $image_description_raw);
-			}
-			else{
+			} else {
 				$image_markup_ext = '';
 				$image_description = $fsip->nl2br($image_description_raw);
 			}
@@ -57,7 +55,7 @@ if(!empty($_POST['image_ids'])){
 	
 	$fsip->addNote('Your shoebox has been processed.', 'success');
 	
-	if($user->returnPref('shoe_to_bulk') === true){
+	if ($user->returnPref('shoe_to_bulk') === true) {
 		Find::clearMemory();
 
 		$new_image_ids = new Find('images');
@@ -67,8 +65,7 @@ if(!empty($_POST['image_ids'])){
 		session_write_close();
 		
 		header('Location: ' . BASE . ADMIN . 'features' . URL_ACT . 'bulk' . URL_RW);
-	}
-	else{
+	} else {
 		header('Location: ' . BASE . ADMIN . 'library' . URL_CAP);
 	}
 	exit();
@@ -92,7 +89,7 @@ require_once(PATH . ADMIN . 'includes/header.php');
 
 <h1><img src="<?php echo BASE . ADMIN; ?>images/icons/shoebox.png" alt="" /> Shoebox (<?php echo $i_count; ?>)</h1>
 
-<div class="none get_location_set"><?php echo @$_SESSION['fsip']['location']; ?></div>
+<div class="none get_location_set"><?php if (isset($_SESSION['fsip']) && isset($_SESSION['fsip']['location']) ) { echo @$_SESSION['fsip']['location']; } ?></div>
 
 <form action="" method="post">
 	<div id="privacy_html" class="none">

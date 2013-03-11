@@ -1,0 +1,94 @@
+TODO: stock template put content inside a frame and center the main image?
+________
+
+Geo: research how geo is really supposed to work. How does the googlemaps extension work? What format should the location field be in and why won't it do a lookup for you?
+_______
+
+Shoebox subfolders needed. Create a subfolder for the user's userid to upload into and process from. admin/shoebox.php likely to be the area where reading should be done and admin/upload.php as well.
+-- In configuration there is the heirarchical option:
+Images	 Enable hierarchical directory mode using   format 
+Recommended for efficiently storing large image libraries, reorganize your image library after changing this setting
+-- check into this. surely we can insert the userid parent folder in here.
+
+
+________
+
+add next image / previous image buttons to Image preview.
+________
+
+List out all third party tools included and check their versions to see if any of them need updates.
+________
+
+
+--global setting check 	if($fsip->returnConf('syndication_summary_only')){
+
+in users and other places find code like $user_db['user_id'] != 1 which means userid of 1 is the first added user which is the superuser. replace with isAdmin($user_id) and isSuperUser($user_id) functions in FSIP class?
+_______
+
+On install site configuration should be the first stop rather than dashboard.
+
+
+Warnings and errors printed at the bottom of the page should have a setting for displaying to "admin" users only.
+
+Add Publish button and date field similar to wp admin Add Post page!
+	If NOT and ADMIN then "publish" should not be an option. "ACCEPT and PUBLISH" should be the admin action. "REJECT" should be another option and images rejected should remain in the system marked as rejected by admin.
+________
+
+
+add notification to admins when a new image is uploaded and ready to publish. 
+
+add a button on the user's profile to allow them to "request publish" from admins on their images.
+
+
+add some rights into system. basic default should be royalty free rights, free purchase.
+
+add support for model and building releases.
+
+add editorials capabilities. mark a photo as one, search for them, rights/licensing associated bits, etc
+________
+
+Upload progress bar does not reset to clear on second upload. Maybe redo it with a per file upload hover box that marks as completed like the file upload tool in cpanel?
+
+Analytics plugin edit needed: Do not display analytics code if the logged in user is an admin. Add option for this feature in setup area.
+________
+
+Add plugin settings panes similar to vanilla forums? 
+
+Adapt vanilla plugin user registration plugins for social network logins! (Cannot use vanilla forums code directly, it is GPLv3 licensed) (wordpress is GPL v2!)
+
+Create user registration page. "login or register."
+________
+
+Create/verify "admin" user and "contributor" user and "guest" user classes.
+
+add user class of "reviewer"
+
+add user class of "contributor"
+
+user class "guest" should only be able to browse images or login.
+________
+
+add reviewer's comments field to image editing options.
+
+add an admin moderation process for file submissions
+________
+
+Ensure that the user who uploaded the file and their profile settings are shown for every image displayed.
+________
+
+Fork codebase and rename project to FSIP - Free Stock Image Project?
+
+Look for front page options. Just showing the large version of the latest upload is not good enough. It should appear more professional like the istockphoto or photodune.net sites appear.
+
+Will need a project logo and mini icon for URL bar.
+
+Add personal user profile fields to user record and in user preferences/settings area. Tumlr link, youtube, flickr, Facebook links.
+________
+
+What about the ability to publish an approved image with reviewers comments and model release references to a central database which could then inform an extended library (as an extension or option)?
+________
+
+When looking at your own images allow different views. Thumbnails, or list view with metadata on the side. Also allow users to reorder images at their leisure to manually sort their order.
+________
+
+There is a user preference to "Display <x>  images per page." That's only for admin image views when adding data to uploaded files. That's not for the user template of viewing images that are in the system as a guest, etc. Check on or add that feature as a user preference as well.
