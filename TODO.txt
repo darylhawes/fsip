@@ -1,4 +1,8 @@
-TODO: stock template put content inside a frame and center the main image?
+TODO: new stock template put content inside a frame and center the main image?
+
+Convert markdown to html - http://stackoverflow.com/questions/1319657/javascript-to-convert-markdown-textile-to-html-and-ideally-back-to-markdown-t
+
+
 ________
 
 Geo: research how geo is really supposed to work. How does the googlemaps extension work? What format should the location field be in and why won't it do a lookup for you?
@@ -92,3 +96,15 @@ When looking at your own images allow different views. Thumbnails, or list view 
 ________
 
 There is a user preference to "Display <x>  images per page." That's only for admin image views when adding data to uploaded files. That's not for the user template of viewing images that are in the system as a guest, etc. Check on or add that feature as a user preference as well.
+
+_________
+
+When prompted to empty cache just do it, don't go to maintenance page where you hav eto dig through to find the option.
+
+_________
+
+Update rework.
+	- When new updates are discovered tell admin and offer them a link to a new update.php admin page where the update would then be performed rather than performing updates every time there are files in the update folder on login.
+	- Updates should be named by date and installed updates tracked in the db then ignored.
+	- No need to rename or remove the updates folder moving forward.
+	
