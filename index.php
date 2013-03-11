@@ -12,7 +12,7 @@ require_once(PATH . CLASSES . 'fsip.php');
 $fsip = new FSIP;
 $fsip->recordStat('home');
 
-if (isset($_GET['with']) {
+if (isset($_GET['with'])) {
 	$with_id = $fsip->findID($_GET['with'], true);
 }
 if (!$with_id and !empty($_GET['with'])) { 
