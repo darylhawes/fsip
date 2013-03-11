@@ -9,7 +9,7 @@
 body{
 	background-color: #fff;
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-	margin: 6em auto;
+//	margin: 6em auto;
 }
 
 h1, h2, h3, h4, h5, h6 { color: #222; }
@@ -236,6 +236,50 @@ textarea.comment_text{
 	height: 10em;
 }
 
+
+// Userbar for admin/user access from user site
+
+#header_holder{
+        background: #222 url(/admin/images/header_bg.png) bottom left repeat-x;
+}
+        
+#header{
+        margin: 4.5em 0 0.5em;
+}
+        
+#userbar{
+        position: fixed;
+        margin-bottom: 2em;
+        z-index: 200;
+}
+   
+#userbar div{
+        display: inline;
+        border-radius: 0 0 4px 4px;
+        -moz-border-radius: 0 0 4px 4px;
+        background-color: #ddd;
+        line-height: 2.2em;
+        padding: 1em 10px .6em 27px;
+        margin-left: 1em;
+        font-size: .9em;
+        color: #999;
+}
+
+#userbar strong{
+        color: #fff;
+}
+
+#userbar a{
+        color: #0096db;
+}
+
+#userbar a:hover, #userbar a:active{
+        color: #8dc9e8;
+}
+
+#userbar_user{
+        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAPpJREFUeNqUUMsNgkAQHeRj4LShAq7cLEFLoBJLsAY7sANbMKEBEg6cCCbcMAFOEPmtM6urCyYmvuRlZ9682ZldjXMOEkmSbMqyPN/vnUf5em1dXdcNfN+PpMcABY7jHJCeYTzlYRio8YAM3iaaIFkhmqbhaBSkmDTVo6krkUnermiAmibzlVrEQgQLLLXVon6Bb8w1db++7xmeGf8ge2lvz2xCmqasKG7QdZ0gxaTNVozj2Kvreo/xljG2maYJiAQ8PWzMwjCkd1ywftTyPK/GcWSmaYJt24KWZYkGmtK2rSCuBrqu1/StHP4AvWGHPCGjH77o5dk9BBgA9HG1S4v908EAAAAASUVORK5CYII=) 8px 1em no-repeat;
+} 
 
 /*
  * FSIP

@@ -1,3 +1,7 @@
+<?php
+$user = new User();
+?>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
@@ -23,13 +27,36 @@
 </head>
 <body>
 	<div class="container">
+	
 		<div class="span-24 last">
+			<div id="userbar" class="span-24 right">
+				 <div id="userbar_user">
+					<?php
+					if(!empty($user) and $user->perm()){
+							?>
+									<strong>
+											<?php echo $user->user['user_user']; ?>
+									</strong> &#0160;
+									<a href="<?php echo BASE . ADMIN . 'search' . URL_ACT . 'me' . URL_RW; ?>">My Images</a>,
+									<a href="<?php echo BASE . ADMIN . 'comments' . URL_ACT . 'me' . URL_RW; ?>">Comments</a> &#0160;
+									<a href="<?php echo BASE . ADMIN . 'preferences' . URL_CAP; ?>">Preferences</a> &#0160;
+									<a href="<?php echo BASE . ADMIN . 'logout' . URL_CAP; ?>">Logout</a>
+							<?php
+					} else {
+							echo "<a href=". BASE . ADMIN  .">Login</a>";
+					}
+				   ?>
+				</div>
+			</div>
+
 			<div id="title" class="span-10">
+                <br /><br />
 				<h1><a href="{define:Base}">{config:web_title}</a></h1>
 				<p class="quiet">{config:web_description}</p>
 				<p><a href="{Atom_URI}">Follow me in your newsreader</a></p>
 			</div>
 			<div id="navigation" class="span-14 last">
+                <br /><br />
 				<form action="{Search_Uri}">
 					<select name="type">
 						<option value="images">Images</option>
