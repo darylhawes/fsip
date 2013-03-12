@@ -16,6 +16,9 @@ Themes:
 
 ________
 Geo: research how geo is really supposed to work. How does the googlemaps extension work? What format should the location field be in and why won't it do a lookup for you?
+
+See find class - 	public function location($geo='', $radius=50) 
+
 _______
 
 Shoebox subfolders needed. Create a subfolder for the user's userid to upload into and process from. admin/shoebox.php likely to be the area where reading should be done and admin/upload.php as well.
