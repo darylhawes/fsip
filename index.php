@@ -20,7 +20,21 @@ if (!$with_id and !empty($_GET['with'])) {
 }
 
 $image_ids = new Find('images');
-$image_ids->page(null, 12, 1);
+
+/*	 * @param int $page Page number
+	 * @param int $limit Number of items per page
+	 * @param int $first Number of items on the first page (if different)
+	 * @return bool True if successful
+	 
+	public function page($page=null, $limit=null, $first=null) {
+*/
+
+//$image_ids->page(null, 12, 1); //DEH mod
+//no difference between first page and subsequent. 
+//Here is a good place to insert a user preference for how many items to show per page.
+$image_ids->page(null, 12, null); 
+
+
 if ($with_id) { 
 	$image_ids->with($with_id); 
 }
@@ -77,6 +91,8 @@ $index->assign('Page_Next_URI', $image_ids->page_next_uri);
 $index->assign('Page_Previous_URI', $image_ids->page_previous_uri);
 $index->assign('Page_Current', $image_ids->page);
 $index->assign('Page_Count', $image_ids->page_count);
+$index->assign('Page_Navigation_String', $image_ids->page_navigation_string);
+
 $index->loop($images);
 $index->display();
 
