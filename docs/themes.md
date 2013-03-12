@@ -10,7 +10,7 @@ You can install most themes by dragging an extension's folder to your `/themes/`
 
 *Note: Familiarity with HTML and CSS is required to design your own theme. You will only be able to create a theme as complex as your mastery of these markup languages.*
 
-First, take a look at a theme in your `/themes/` folder. Basic themes, including the default themes that ship with FSIP, are a series of HTML files as well as a CSS and XML file. The HTML files contain the basic layout of the page. The CSS file contains all of the font, color, and positioning rules. The XML file contains information FSIP needs to import your theme -- you should ignore that for now.
+First, take a look at a theme in your `/themes/` folder. Basic themes, including the default themes that ship with FSIP, are a series of HTML files as well as a CSS and an XML file. The HTML files contain the basic layout of the pages to be displayed to the browser. The CSS file contains all of the font, color, and positioning rules for the web page. The XML file contains meta data information FSIP needs to import your theme -- you should ignore that for now.
 
 Most themes are made up of three files. For example, your theme's home page:
 
@@ -59,7 +59,7 @@ Blocks display a series of data in a loop. There are seven major blocks in FSIP:
 
 ###### Counts
 
-You can count blocks outside the loop by like so: `{count:Block}`.
+You can count blocks outside the loop like so: `{count:Block}`.
 
 ###### PHP Constants
 
