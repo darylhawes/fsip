@@ -165,7 +165,7 @@ class Find extends FSIP {
 					$pnavstr .= '<a href="' . $this->$page_uri  .'" class="page_no">' . number_format($i) . '</a>';
 				}
 			}
-			$pnavstr '<span class="page_no">Page '. $this->page .' of '. $this->page_count. '</span>';
+			$pnavstr .= '<span class="page_no">Page '. $this->page .' of '. $this->page_count. '</span>';
 			if (!empty($this->page_next)) {
 				for($i = $this->page_next; $i <= $this->page_count; ++$i){
 					$page_uri = 'page_' . $i . '_uri';
@@ -2053,6 +2053,7 @@ class Find extends FSIP {
 	public static function clearMemory() {
 		unset($_SESSION['fsip']['search']);
 	}
-}
+
+} //end class
 
 ?>
