@@ -166,7 +166,7 @@ class Find extends FSIP {
 				}
 			}
 			$pnavstr '<span class="page_no">Page '. $this->page .' of '. $this->page_count. '</span>';
-			if(!empty($this->page_next)){
+			if (!empty($this->page_next)) {
 				for($i = $this->page_next; $i <= $image_ids->page_count; ++$i){
 					$page_uri = 'page_' . $i . '_uri';
 					$pnavstr .=  '<a href="' . $this->$page_uri  .'" class="page_no">' . number_format($i) . '</a>';
@@ -174,7 +174,8 @@ class Find extends FSIP {
 			}
 		$pnavstr .= "</p>";
 		$this->page_navigation_string = $pnavstr;
-
+		}
+		
 		if ($process_request == true) {
 			if (!empty($_REQUEST)) {
 				// Process browser requests
