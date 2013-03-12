@@ -17,7 +17,7 @@ $user->perm(true);
 $fsip->setCallback();
 
 // Preference: page_limit
-if(!$max = $user->returnPref('page_limit')){
+if (!$max = $user->returnPref('page_limit')) {
 	$max = 100;
 }
 
@@ -45,24 +45,23 @@ require_once(PATH . ADMIN . 'includes/header.php');
 
 <?php
 
-if(!empty($image_ids->finds)){
+if (!empty($image_ids->finds)) {
 	echo '<p class="large">';
-	foreach($image_ids->finds as $find){
-		if($find['find_table'] == 'images'){
+	foreach($image_ids->finds as $find) {
+		if ($find['find_table'] == 'images') {
 			echo '<strong>' . ucwords($find['find_table']) . ' (' . ucwords($find['find_count']) . ')</strong> &#0160;&#0160;&#0160;';
-		}
-		else{
+		} else {
 			echo '<a href="' . BASE . ADMIN . $find['find_table'] . URL_CAP . '?q=' . urlencode($image_ids->query) . '">' . ucwords($find['find_table']) . '</a> <span class="quiet">(' . ucwords($find['find_count']) . ')</span> &#0160;&#0160;&#0160;';
 		}
 	}
 	echo '</p>';
 }
 
-if($image_ids->count_result > 0){
+if ($image_ids->count_result > 0) {
 	?>
 	<p>
 	<?php
-	for($i = 0; $i < $images->image_count; ++$i){
+	for($i = 0; $i < $images->image_count; ++$i) {
 		?>
 		<a href="<?php echo BASE . ADMIN . 'image' . URL_ID . $images->images[$i]['image_id'] . URL_RW; ?>"><img src="<?php echo $images->images[$i]['image_src_square']; ?>" alt="" title="<?php echo $fsip->makeHTMLSafe($images->images[$i]['image_title']); ?>" class="frame tip" /></a>
 		<?php
@@ -70,12 +69,12 @@ if($image_ids->count_result > 0){
 	?>
 	</p>
 	<?php
-	if($image_ids->page_count > 1){
+	if ($image_ids->page_count > 1) {
 		?>
 		<p>
 			<?php
-			if(!empty($image_ids->page_previous)){
-				for($i = 1; $i <= $image_ids->page_previous; ++$i){
+			if (!empty($image_ids->page_previous)) {
+				for($i = 1; $i <= $image_ids->page_previous; ++$i) {
 					$page_uri = 'page_' . $i . '_uri';
 					echo '<a href="' . $image_ids->$page_uri  .'" class="page_no">' . number_format($i) . '</a>';
 				}
@@ -83,8 +82,8 @@ if($image_ids->count_result > 0){
 			?>
 			<span class="page_no">Page <?php echo $image_ids->page; ?> of <?php echo $image_ids->page_count; ?></span>
 			<?php
-			if(!empty($image_ids->page_next)){
-				for($i = $image_ids->page_next; $i <= $image_ids->page_count; ++$i){
+			if (!empty($image_ids->page_next)) {
+				for($i = $image_ids->page_next; $i <= $image_ids->page_count; ++$i) {
 					$page_uri = 'page_' . $i . '_uri';
 					echo '<a href="' . $image_ids->$page_uri  .'" class="page_no">' . number_format($i) . '</a>';
 				}
