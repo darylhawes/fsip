@@ -38,6 +38,7 @@ class Find extends FSIP {
 	public $page_next_uri;
 	public $page_previous;
 	public $page_previous_uri;
+	public $page_navigation_string;
 	public $sets;
 	public $table;
 	public $table_id;
@@ -74,7 +75,7 @@ class Find extends FSIP {
 	 * @param bool $process_request Automatically employ the $_REQUEST array to issue methods (for searches)
 	 * @param bool $ignore_deleted Ignore "deleted" table rows (except in recovery mode)
 	 */
-	public function __construct($table=null, $ids=null, $auto_guest=true, $process_request=true, $ignore_deleted=true){
+	public function __construct($table=null, $ids=null, $auto_guest=true, $process_request=true, $ignore_deleted=true) {
 		parent::__construct();
 		
 		// Error handling
@@ -154,6 +155,26 @@ class Find extends FSIP {
 			}
 		}
 		
+		// Create a page_navigation_string 
+		$pnavstr = "";
+		if ($this->page_count > 1) {
+			$pnavstr .= "<p>";
+			if (!empty($this->page_previous)) {
+				for($i = 1; $i <= $this->page_previous; ++$i) {
+					$page_uri = 'page_' . $i . '_uri';
+					$pnavstr .= '<a href="' . $this->$page_uri  .'" class="page_no">' . number_format($i) . '</a>';
+				}
+			}
+			$pnavstr '<span class="page_no">Page '. $this->page .' of '. $this->page_count. '</span>';
+			if(!empty($this->page_next)){
+				for($i = $this->page_next; $i <= $image_ids->page_count; ++$i){
+					$page_uri = 'page_' . $i . '_uri';
+					$pnavstr .=  '<a href="' . $this->$page_uri  .'" class="page_no">' . number_format($i) . '</a>';
+				}
+			}
+		$pnavstr .= "</p>";
+		$this->page_navigation_string = $pnavstr;
+
 		if ($process_request == true) {
 			if (!empty($_REQUEST)) {
 				// Process browser requests
@@ -333,8 +354,8 @@ class Find extends FSIP {
 			if (!empty($_REQUEST['image'])) {
 				$this->_image($_REQUEST['image']);
 			}
-		}
-	}
+		} //end if process request is true
+	} //end object construction
 	
 	public function __destruct() {
 		parent::__destruct();
