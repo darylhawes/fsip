@@ -1,4 +1,9 @@
-Convert markdown to html - http://stackoverflow.com/questions/1319657/javascript-to-convert-markdown-textile-to-html-and-ideally-back-to-markdown-t
+Convert markdown to html - activate md2html.js in js/markdown-js/bin/ to convert docs folder contents to html versions at install time?
+
+________
+insert a user preference for how many items to show per page.
+
+change index template pagination to match admin's results version
 ________
 
 Themes:
@@ -10,8 +15,6 @@ Themes:
 		$query->execute(array('FSIP_DEFAULT', 'fsipDefault', 1, '0.1', 'fsipDefault', 'Daryl Hawes', 'http://fsip.sdelargy.com/'));
 
 ________
-
-
 Geo: research how geo is really supposed to work. How does the googlemaps extension work? What format should the location field be in and why won't it do a lookup for you?
 _______
 
@@ -27,11 +30,11 @@ ________
 add next image / previous image buttons to Image preview.
 ________
 
-List out all third party tools included and check their versions to see if any of them need updates.
+List out all third party tools included and check their versions to see if any of them need updates. Add to bottom of README as "included third party code" or whatever.
 ________
 
 
---global setting check 	if($fsip->returnConf('syndication_summary_only')){
+--global setting check is returnConf('key')	if($fsip->returnConf('syndication_summary_only')){
 
 in users and other places find code like $user_db['user_id'] != 1 which means userid of 1 is the first added user which is the superuser. replace with isAdmin($user_id) and isSuperUser($user_id) functions in FSIP class?
 _______
