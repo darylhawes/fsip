@@ -1,39 +1,52 @@
 <?php
 
 require_once('../config.php');
-require_once('../extensions/markdown/functions/markdown.php');
-require_once('../extensions/markdown/functions/smartypants.php');
+require_once(PATH. EXTENSIONS .'markdown/functions/markdown.php');
+require_once(PATH. EXTENSIONS .'markdown/functions/smartypants.php');
 
-$page = "README";
+/*$page = "README";
 if (isset($_GET['page'])) {
 	$page = $_GET['page'];
 }
+*/
 
-if ($page == "fsip_rebuild_all_html_docs") {
-	rebuildREADME();
+//if ($page == "fsip_rebuild_all_html_docs") {
 
-	foreach(glob(PATH . DOCS.'*/{*.md}') as $md_doc)
-	{  
+	foreach(glob(PATH . 'admin/docs/*.md') as $md_doc) {
 		rebuildDoc($md_doc);
-	}  
+	}
+	echo rebuildREADME();
 	exit;
-}
+//}
 
-
+/*
 if ($page == "README") {
 	$outfile = PATH . 'README.html';
 	if (file_exists($outfile)) {
-		header('Location: '. LOCATION .'README.html');
+		header('Location: '. LOCATION . BASE .'README.html');
+		echo "<h1>Redirecting</h1><p>You are being redirected. If you're still here after a few seconds please ".'<a href="'. LOCATION . BASE . 'README.html' .'">'."click here</a></p>";
+// No fsip-> object here yet
+//	$location = LOCATION . BASE . 'results' . URL_CAP;
+//	$fsip::headerLocationRedirect($location);
+
+		exit();
 	}
-	$page_text = rebuildREADME();
-} else {
-	$outfile = PATH .'docs/'. $page.'.html';
+	echo rebuildREADME();
+	exit;
+} else { //page is in the docs/ folder
+	$outfile = PATH . "docs/" . $page.'.html';
 	if (file_exists($outfile)) {
-		header('Location: '. LOCATION .'docs/'.$page.'.html');
+		header('Location: '. LOCATION . BASE . "docs/" .$page.'.html');
+		echo "<h1>Redirecting</h1><p>You are being redirected. If you're still here after a few seconds please ".'<a href="'. LOCATION . BASE  . "docs/" . $page.'.html">'."click here</a></p>";
+// No fsip-> object here yet
+//	$location = LOCATION . BASE . 'results' . URL_CAP;
+//	$fsip::headerLocationRedirect($location);
+		exit();
 	}
-	$infile = PATH .'docs/'. $page.'.md';
-	$page_text = rebuildDoc();
-}
+	$infile = PATH . "docs/". $page.'.md';
+	echo  rebuildDoc($infile);
+	exit;
+}*/
 
 /// FUNCTIONS
 function rebuildREADME() {
@@ -44,7 +57,7 @@ function rebuildREADME() {
 	    echo "error opening file $infile";
 	    exit;
 	} 
-	convert_and_put_contents(PATH . 'README.html', $page_contents);
+	$page_contents = convert_and_put_contents(PATH . 'README.html', $page_contents);
 	return $page_contents;
 }
 
@@ -55,30 +68,25 @@ function rebuildDoc($infile) {
 	    echo "error opening file $infile";
 	    exit;
 	} 
-	convert_and_put_contents(PATH .'docs/'. $file_name. '.html', $page_contents);
+	$page_contents = convert_and_put_contents($infile. '.html', $page_contents);
 	return $page_contents;
 }
 
 function convert_and_put_contents($out, $text) {
-	$text = convertMD($text);
+	// Markdown
+	$parser = new Markdown_Parser;
+	$text = $parser->transform($text);
+
+	// SmartyPants text
+	$parser = new Markdown_SmartyPants;
+	$text = $parser->transform($text);
+
 	$result = file_put_contents($out, $text);
-	echo $result;
 
 	if ($result === false) { 
 		// file open failure
 		echo "Error writing file $out";
 	} 
-	return $result;
-}
-
-function convertMD($page_text) {
-	// Markdown
-	$parser = new Markdown_Parser;
-	$page_text = $parser->transform($page_text);
-
-	// SmartyPants text
-	$parser = new Markdown_SmartyPants;
-	$page_text = $parser->transform($page_text);
-	return $page_text;
+	return $text;
 }
 ?>
