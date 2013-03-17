@@ -812,7 +812,8 @@ class Dropbox_Dropbox
 		$url = self::API_AUTH_URL .'/0/oauth/authorize?'. http_build_query($parameters);
 
 		// redirect
-		header('Location: '. $url);
+		$location = $url;
+		$fsip::headerLocationRedirect($location);
 		exit;
 	}
 

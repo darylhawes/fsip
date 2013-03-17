@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../config.php');
+require_once('../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -17,14 +17,16 @@ $user->perm(true, 'images');
 
 // GET PHOTO
 if (!$image_id = $fsip->findID($_GET['id'])) {
-	header('Location: ' . LOCATION . BASE . ADMIN . 'library' . URL_CAP);
+	$location = LOCATION . BASE. ADMINFOLDER . 'library' . URL_CAP;
+	$fsip::headerLocationRedirect($location);
 	exit();
 }
 
 // SAVE CHANGES
 if (!empty($_POST['image_id'])) {
 	if (!$image_id = $fsip->findID($_POST['image_id'])) {
-		header('Location: ' . LOCATION . BASE . ADMIN . 'library' . URL_CAP);
+		$location = LOCATION . BASE. ADMINFOLDER . 'library' . URL_CAP;
+		$fsip::headerLocationRedirect($location);
 		exit();
 	}
 	
@@ -92,10 +94,12 @@ if (!empty($_POST['image_id'])) {
 		$image_ids->find();
 		if ($_REQUEST['go'] == 'next') {
 			$_SESSION['fsip']['go'] = 'next';
-			header('Location: ' . LOCATION . BASE . ADMIN . 'images' . URL_ID . $image_ids->ids_after[0] . URL_CAP);
+			$location = LOCATION . BASE. ADMINFOLDER .  'images' . URL_ID . $image_ids->ids_after[0] . URL_CAP;
+			$fsip::headerLocationRedirect($location);
 		} else {
 			$_SESSION['fsip']['go'] = 'previous';
-			header('Location: ' . LOCATION . BASE . ADMIN . 'images' . URL_ID . $image_ids->ids_before[0] . URL_CAP);
+			$location = LOCATION . BASE. ADMINFOLDER . 'images' . URL_ID . $image_ids->ids_before[0] . URL_CAP;
+			$fsip::headerLocationRedirect($location);
 		}
 		exit();
 	} else {
@@ -119,7 +123,7 @@ if (!$image = @$images->images[0]) {
 
 $comment_count = count($comments);
 if ($comment_count > 0) {
-	$comment_action = '<a href="' . BASE . ADMIN . 'comments' . URL_CAP . '?image=' . $image['image_id'] . '"><button>View ' . $fsip->returnCount($comment_count, 'comment') . ' (' . $comment_count . ')</button></a>';
+	$comment_action = '<a href="' . BASE . ADMINFOLDER . 'comments' . URL_CAP . '?image=' . $image['image_id'] . '"><button>View ' . $fsip->returnCount($comment_count, 'comment') . ' (' . $comment_count . ')</button></a>';
 } else {
 	$comment_action = '';
 }
@@ -141,13 +145,13 @@ if (!empty($image['image_title'])) {
 } else {
 	define('TITLE', 'Image');
 }
-require_once(PATH . ADMIN . 'includes/header.php');
+require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>
 
 <div class="actions">
 	<button id="preview">Preview image</button>
-	<a href="<?php echo BASE . ADMIN . 'tasks/download-image.php?id=' . $image['image_id']; ?>"><button>Download original</button></a>
+	<a href="<?php echo BASE . ADMINFOLDER . 'tasks/download-image.php?id=' . $image['image_id']; ?>"><button>Download original</button></a>
 	<?php echo $comment_action; ?>
 	<?php echo $launch_action; ?>
 </div>
@@ -155,9 +159,9 @@ require_once(PATH . ADMIN . 'includes/header.php');
 <?php
 
 if (empty($image['image_title'])) {
-	echo '<h1><img src="' . BASE . ADMIN . 'images/icons/images.png" alt="" /> Image</h1>';
+	echo '<h1><img src="' . BASE . IMGFOLDER . 'icons/images.png" alt="" /> Image</h1>';
 } else {
-	echo '<h1><img src="' . BASE . ADMIN . 'images/icons/images.png" alt="" /> Image: ' . $image['image_title'] . '</h1>';
+	echo '<h1><img src="' . BASE . IMGFOLDER . 'icons/images.png" alt="" /> Image: ' . $image['image_title'] . '</h1>';
 }
 
 ?>
@@ -181,13 +185,13 @@ if (empty($image['image_title'])) {
 			<p>
 				<label for="image_geo">Location:</label><br />
 				<input type="text" id="image_geo" name="image_geo" class="image_geo get_location_result l" value="<?php echo $image['image_geo']; ?>" />&#0160;
-				<a href="#get_location" class="get_location"><img src="<?php echo BASE . ADMIN; ?>images/icons/location.png" alt="" style="vertical-align: middle;" /></a>
+				<a href="#get_location" class="get_location"><img src="<?php echo BASE . IMGFOLDER; ?>icons/location.png" alt="" style="vertical-align: middle;" /></a>
 <?php
 				
 				if (!empty($image['image_geo_lat'])) {
 ?>
 					<br />
-					<img src="<?php echo BASE . ADMIN; ?>images/icons/geo.png" alt="" /> <?php echo round($image['image_geo_lat'], 5); ?>, <?php echo round($image['image_geo_long'], 5); ?>
+					<img src="<?php echo BASE . IMGFOLDER; ?>icons/geo.png" alt="" /> <?php echo round($image['image_geo_lat'], 5); ?>, <?php echo round($image['image_geo_long'], 5); ?>
 <?php
 				}
 ?>
@@ -216,7 +220,7 @@ if (empty($image['image_title'])) {
 				<?php echo $image_colorkey; ?>
 				
 				<ul>
-					<li>Export: <a href="<?php echo BASE . ADMIN . 'tasks/export-palette.php?image_id=' . $image['image_id'] . '&format=ase'; ?>" title="Adobe Swatch Exchange">ASE</a>, <a href="<?php echo BASE . ADMIN . 'tasks/export-palette.php?image_id=' . $image['image_id'] . '&format=css'; ?>" title="Cascading Style Sheets">CSS</a>, <a href="<?php echo BASE . ADMIN . 'tasks/export-palette.php?image_id=' . $image['image_id'] . '&format=gpl'; ?>" title="GIMP Palette">GPL</a></li>
+					<li>Export: <a href="<?php echo BASE . ADMINFOLDER . 'tasks/export-palette.php?image_id=' . $image['image_id'] . '&format=ase'; ?>" title="Adobe Swatch Exchange">ASE</a>, <a href="<?php echo BASE . ADMINFOLDER . 'tasks/export-palette.php?image_id=' . $image['image_id'] . '&format=css'; ?>" title="Cascading Style Sheets">CSS</a>, <a href="<?php echo BASE . ADMINFOLDER . 'tasks/export-palette.php?image_id=' . $image['image_id'] . '&format=gpl'; ?>" title="GIMP Palette">GPL</a></li>
 				</ul>
 			</div>
 			<?php } ?>
@@ -300,7 +304,7 @@ if (empty($image['image_title'])) {
 				
 				foreach($images->related->images as $related_image) {
 ?>
-					<a href="<?php echo BASE . ADMIN . 'image' . URL_ID . $related_image['image_id'] . URL_RW; ?>" class="nu">
+					<a href="<?php echo BASE . ADMINFOLDER . 'image' . URL_ID . $related_image['image_id'] . URL_RW; ?>" class="nu">
 						<img src="<?php echo $related_image['image_src_square']; ?>" alt="" title="<?php echo $related_image['image_title']; ?>" class="frame tip" />
 					</a>
 <?php
@@ -326,6 +330,6 @@ if (empty($image['image_title'])) {
 
 <?php
 
-require_once(PATH . ADMIN . 'includes/footer.php');
+require_once(PATH . INCLUDES . '/admin_footer.php');
 
 ?>

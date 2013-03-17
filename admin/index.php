@@ -6,19 +6,21 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../config.php');
+require_once('../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
 $user = new User;
 
-if($user->perm()){
-	header('Location: ' . LOCATION . BASE . ADMIN . 'dashboard' . URL_CAP);
-	exit();
+if ($user->perm()) {
+	$location = LOCATION . BASE. ADMINFOLDER . 'dashboard' . URL_CAP;
+	$fsip::headerLocationRedirect($location);
+} else {
+	$location = LOCATION . BASE. 'login' . URL_CAP;
+	$fsip::headerLocationRedirect($location);
 }
-else{
-	header('Location: ' . LOCATION . BASE . ADMIN . 'login' . URL_CAP);
-	exit();
-}
+
+
+exit();
 
 ?>

@@ -9,6 +9,8 @@
 require_once('config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
+$fsip = new FSIP;
+
 if (isset($_REQUEST['type'])) {
 	$type = $_REQUEST['type'];
 	if ($type == 'images') {
@@ -22,11 +24,11 @@ if (isset($_REQUEST['type'])) {
 	
 	$_SESSION['fsip']['search']['table'] = $type;
 	
-	header('Location: ' . LOCATION . BASE . 'results' . URL_CAP);
+	$location = LOCATION . BASE . 'results' . URL_CAP;
+	$fsip::headerLocationRedirect($location);
 	exit();
 }
 
-$fsip = new FSIP;
 $fsip->recordStat('home');
 
 $header = new Canvas;

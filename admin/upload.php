@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../config.php');
+require_once('../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -14,7 +14,7 @@ $user = new User;
 $orbit = new Orbit;
 
 // cliqcliq Quickpic support
-if(isset($_REQUEST['context']) and ($_REQUEST['context'] == sha1(PATH . BASE . DB_DSN . DB_TYPE))){
+if (isset($_REQUEST['context']) and ($_REQUEST['context'] == sha1(PATH . BASE . DB_DSN . DB_TYPE))) {
 	header('Content-Type: application/x-plist');
 	
 	$file = $_FILES['upload_file'];
@@ -34,7 +34,7 @@ if(isset($_REQUEST['context']) and ($_REQUEST['context'] == sha1(PATH . BASE . D
 
 $user->perm(true, 'upload');
 
-if(!empty($_FILES)){
+if (!empty($_FILES)) {
 	$filename = $_FILES['user_file']['name'][0];
 	$tmp_file = $_FILES['user_file']['tmp_name'][0];
 	copy($tmp_file, $fsip->correctWinPath(PATH . SHOEBOX . $filename));
@@ -43,8 +43,9 @@ if(!empty($_FILES)){
 	exit();
 }
 
-if(isset($_GET['success']) and ($_GET['success'] == 1)){
-	header('Location: ' . LOCATION . BASE . ADMIN . 'shoebox' . URL_CAP);
+if (isset($_GET['success']) and ($_GET['success'] == 1)) {
+	$location = LOCATION . BASE. ADMINFOLDER . 'shoebox' . URL_CAP;
+	$fsip::headerLocationRedirect($location);
 	exit();
 }
 
@@ -52,7 +53,7 @@ $orbit->hook('shoebox');
 
 define('TAB', 'upload');
 define('TITLE', 'Upload');
-require_once(PATH . ADMIN . 'includes/header.php');
+require_once(PATH . INCLUDES . '/admin_header.php');
 
 // cliqcliq Quickpic support
 if(preg_match('#iphone|ipad#si', $_SERVER['HTTP_USER_AGENT']) and !isset($_GET['success'])){
@@ -65,13 +66,13 @@ if(preg_match('#iphone|ipad#si', $_SERVER['HTTP_USER_AGENT']) and !isset($_GET['
 
 ?>
 
-<div class="actions"><a href="<?php echo BASE . ADMIN . 'shoebox' . URL_CAP; ?>"><button>Go to shoebox</button></a></div>
-<h1><img src="<?php echo BASE . ADMIN; ?>images/icons/upload.png" alt="" /> Upload</h1>
+<div class="actions"><a href="<?php echo BASE . ADMINFOLDER . 'shoebox' . URL_CAP; ?>"><button>Go to shoebox</button></a></div>
+<h1><img src="<?php echo BASE . IMGFOLDER; ?>icons/upload.png" alt="" /> Upload</h1>
 
 <div class="span-24 last">
 	<div class="span-18 append-1">
 		<form enctype="multipart/form-data" action="" method="post" style="padding-top: 1em;">
-			<img src="<?php echo BASE . ADMIN; ?>images/upload_box.png" alt="" style="position: absolute; z-index: -25;" />
+			<img src="<?php echo BASE . IMGFOLDER; ?>upload_box.png" alt="" style="position: absolute; z-index: -25;" />
 			<div style="height: 380px; margin-bottom: 1.5em;">
 				<input type="file" multiple="multiple" id="upload" />
 			</div>
@@ -87,7 +88,7 @@ if(preg_match('#iphone|ipad#si', $_SERVER['HTTP_USER_AGENT']) and !isset($_GET['
 	
 		<p>You can also browse your computer and select the files you wish to upload by clicking the &#8220;Choose File&#8221; button.</p>
 	
-		<p>Once you&#8217;ve finished uploading, go to your <a href="<?php echo BASE . ADMIN . 'shoebox' . URL_CAP; ?>">shoebox</a> to process your files.</p>
+		<p>Once you&#8217;ve finished uploading, go to your <a href="<?php echo BASE . ADMINFOLDER . 'shoebox' . URL_CAP; ?>">shoebox</a> to process your files.</p>
 
 		<h3>File size limit</h3>
 		<p>
@@ -113,7 +114,5 @@ if(preg_match('#iphone|ipad#si', $_SERVER['HTTP_USER_AGENT']) and !isset($_GET['
 </div>
 
 <?php
-
-require_once(PATH . ADMIN . 'includes/footer.php');
-
+require_once(PATH . INCLUDES . '/admin_footer.php');
 ?>

@@ -130,7 +130,8 @@ class FacebookHandler extends Orbit{
 					
 					$this->addNote('You successfully linked your Facebook account.', 'success');
 					
-					header('Location: ' . $this->location());
+					$location = $this->location();
+					$fsip::headerLocationRedirect($location);
 					exit();
 					
 					break;
@@ -150,10 +151,11 @@ class FacebookHandler extends Orbit{
 						'cancel_url' => 'http://fsip.delargy.com/callback/',
 						'req_perms' => 'user_photos, publish_stream, offline_access');
 					
-					header('Location: http://fsip.sdelargy.com/callback/?' . http_build_query(
+					$location = http://fsip.sdelargy.com/callback/?' . http_build_query(
 						array('to' => $this->facebook->getLoginUrl($params),
 						'from' => $this->locationFull(array('from' => 'facebook'))))
 					);
+					$fsip::headerLocationRedirect($location);
 					
 					exit();
 			}
@@ -169,7 +171,8 @@ class FacebookHandler extends Orbit{
 					$this->savePref();
 					
 					$this->addNote('You successfully unlinked your Facebook account.', 'success');
-					header('Location: ' . $this->location());
+					$location = $this->location();
+					$fsip::headerLocationRedirect($location);
 					exit();
 					
 					break;
@@ -194,7 +197,8 @@ class FacebookHandler extends Orbit{
 					$this->savePref();
 					
 					$this->addNote('You successfully linked your Facebook account.', 'success');
-					header('Location: ' . $this->location());
+					$location = $this->location();
+					$fsip::headerLocationRedirect($location);
 					exit();
 					
 					break;
@@ -211,7 +215,8 @@ class FacebookHandler extends Orbit{
 					$this->savePref();
 					
 					$this->addNote('You successfully unlinked your Facebook account.', 'success');
-					header('Location: ' . $this->location());
+					$location = $this->location();
+					$fsip::headerLocationRedirect($location);
 					exit();
 					
 					break;

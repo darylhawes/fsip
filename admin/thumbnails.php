@@ -5,7 +5,7 @@
 // Alkaline Copyright (c) 2010-2012 by Budin Ltd. Released to the wild under MIT license.
 // http://www.alkalineapp.com/
 */
-require_once('./../config.php');
+require_once('../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -13,39 +13,34 @@ $user = new User;
 
 $user->perm(true, 'thumbnails');
 
-if(!empty($_GET['id'])){
+if (!empty($_GET['id'])) {
 	$size_id = $fsip->findID($_GET['id']);
 }
 
-if(!empty($_GET['act'])){
+if (!empty($_GET['act'])) {
 	$size_act = $_GET['act'];
 }
 
 // SAVE CHANGES
-if(!empty($_POST['size_id'])){
+if (!empty($_POST['size_id'])) {
 	$size_id = $fsip->findID($_POST['size_id']);
 	
 	// Delete size
-	if(@$_POST['size_delete'] == 'delete'){
+	if (@$_POST['size_delete'] == 'delete') {
 		$fsip->deleteRow('sizes', $size_id);
-	}
-	
-	// Update size
-	else{
+	} else {  // Update size
 		// Check for file append, prepend duplicates--will overwrite
 		$query = $fsip->prepare('SELECT size_title FROM sizes WHERE size_append = :size_append AND size_prepend = :size_prepend AND size_id != ' . $size_id);
 		$query->execute(array(':size_append' => @$_POST['size_append'], ':size_prepend' => @$_POST['size_prepend']));
 		$sizes = $query->fetchAll();
 		
-		if(count($sizes) > 0){
+		if (count($sizes) > 0) {
 			$size_title = $sizes[0]['size_title'];
 			$fsip->addNote('The thumbnail &#8220;' . $size_title . '&#8221; already uses these prepend and append to filename settings.', 'error');
-		}
-		else{
-			if(@$_POST['size_watermark'] == 'watermark'){
+		} else {
+			if (@$_POST['size_watermark'] == 'watermark') {
 				$size_watermark = 1;
-			}
-			else{
+			} else {
 				$size_watermark = 0;
 			}
 		
@@ -63,44 +58,44 @@ if(!empty($_POST['size_id'])){
 	}
 	
 	// Build size
-	if((@$_POST['size_build'] == 'build') and ($fsip->countNotes('error') == 0)){
+	if ((@$_POST['size_build'] == 'build') and ($fsip->countNotes('error') == 0)) {
 		// Store to build thumbnails
 		$_SESSION['fsip']['maintenance']['size_id'] = $size_id;
 		
 		sleep(1);
 		
-		header('Location: ' . LOCATION . BASE . ADMIN . 'maintenance' . URL_CAP . '#build-thumbnail');
+		$location = LOCATION . BASE. ADMINFOLDER . 'maintenance' . URL_CAP . '#build-thumbnail';
+		$fsip::headerLocationRedirect($location);
 		exit();
 	}
 	
-	if($fsip->countNotes('error') == 0){
+	if ($fsip->countNotes('error') == 0) {
 		unset($size_id);
 	}
-}
-else{
+} else {
 	$fsip->deleteEmptyRow('sizes', array('size_title'));
 }
 
 // CREATE SIZE
-if(!empty($size_act) and ($size_act == 'build')){
+if (!empty($size_act) and ($size_act == 'build')) {
 	$size_id = $fsip->addRow(null, 'sizes');
 }
 
 define('TAB', 'settings');
 
 // GET SIZES TO VIEW OR SIZE TO EDIT
-if(empty($size_id)){
+if (empty($size_id)) {
 	$sizes = $fsip->getTable('sizes', null, null, null, 'size_title ASC');
 	$size_count = @count($sizes);
 	
 	define('TITLE', 'Thumbnails');
-	require_once(PATH . ADMIN . 'includes/header.php');
+	require_once(PATH . INCLUDES . '/admin_header.php');
 
-	?>
+?>
 	
-	<div class="actions"><a href="<?php echo BASE . ADMIN . 'thumbnails' . URL_ACT; ?>build<?php echo URL_RW; ?>"><button>Build thumbnail</button></a></div>
+	<div class="actions"><a href="<?php echo BASE . ADMINFOLDER . 'thumbnails' . URL_ACT; ?>build<?php echo URL_RW; ?>"><button>Build thumbnail</button></a></div>
 
-	<h1><img src="<?php echo BASE . ADMIN; ?>images/icons/thumbnails.png" alt="" /> Thumbnails (<?php echo $size_count; ?>)</h1>
+	<h1><img src="<?php echo BASE . IMGFOLDER; ?>icons/thumbnails.png" alt="" /> Thumbnails (<?php echo $size_count; ?>)</h1>
 	
 	<p>Thumbnails are resized versions of each image in your library.</p>
 	
@@ -115,52 +110,50 @@ if(empty($size_id)){
 			<th class="center">Type</th>
 			<th class="center">Canvas tag</th>
 		</tr>
-		<?php
+<?php
 	
-		foreach($sizes as $size){
+		foreach($sizes as $size) {
 			echo '<tr class="ro">';
-				echo '<td><strong class="large"><a href="' . BASE . ADMIN . 'thumbnails' . URL_ID . $size['size_id'] . URL_RW . '">' . $size['size_title'] . '</a></strong></td>';
+				echo '<td><strong class="large"><a href="' . BASE . ADMINFOLDER . 'thumbnails' . URL_ID . $size['size_id'] . URL_RW . '">' . $size['size_title'] . '</a></strong></td>';
 				echo '<td class="center">' . $size['size_width'] . ' &#0215; ' . $size['size_height'] . '</td>';
 				echo '<td class="center">' . ucwords($size['size_type']) . '</td>';
 				echo '<td class="center">{Image_Src_' . ucwords($size['size_label']) . '}</td>';
 			echo '</tr>';
 		}
 	
-		?>
+?>
 	</table>
 
-	<?php
+<?php
 	
-	require_once(PATH . ADMIN . 'includes/footer.php');
+	require_once(PATH . INCLUDES . '/admin_footer.php');
 	
-}
-else{
+} else {
 	// Get sizes set
 	$size = $fsip->getRow('sizes', $size_id);
 	$size = $fsip->makeHTMLSafe($size);
-	
+
 	// Dashboard thumbnail warning
-	if(($size['size_label'] == 'admin') or ($size['size_label'] == 'square')){
+	if (($size['size_label'] == 'admin') or ($size['size_label'] == 'square')) {
 		$fsip->addNote('This thumbnail is crucial to the proper functioning of your dashboard. Modify at your own risk.', 'error');
 	}
 	
-	if(!empty($size['size_title'])){	
+	if (!empty($size['size_title'])) {
 		define('TITLE', 'Thumbnail: &#8220;' . ucwords($size['size_title'])  . '&#8221;');
 	}
-	require_once(PATH . ADMIN . 'includes/header.php');
+	require_once(PATH . INCLUDES . '/admin_header.php');
 	
-	if(empty($size['size_title'])){
-		echo '<h1><img src="' . BASE . ADMIN . 'images/icons/thumbnails.png" alt="" /> New Thumbnail</h1>';
-	}
-	else{
-		echo '<h1><img src="' . BASE . ADMIN . 'images/icons/thumbnails.png" alt="" /> Thumbnail: ' . $size['size_title'] . '</h1>';
+	if (empty($size['size_title'])) {
+		echo '<h1><img src="' . BASE . IMGFOLDER . 'icons/thumbnails.png" alt="" /> New Thumbnail</h1>';
+	} else {
+		echo '<h1><img src="' . BASE . IMGFOLDER . 'icons/thumbnails.png" alt="" /> Thumbnail: ' . $size['size_title'] . '</h1>';
 	}
 	
-	?>
+?>
 	
 	<p>All fields are required except append to and prepend to filename&#8212;use one or both.</p>
 	
-	<form action="<?php echo BASE . ADMIN; ?>thumbnails<?php echo URL_CAP; ?>" method="post">
+	<form action="<?php echo BASE . ADMINFOLDER; ?>thumbnails<?php echo URL_CAP; ?>" method="post">
 		<table>
 			<tr>
 				<td class="right middle"><label for="size_title">Title:</label></td>
@@ -232,9 +225,9 @@ else{
 		</table>
 	</form>
 
-	<?php
+<?php
 	
-	require_once(PATH . ADMIN . 'includes/footer.php');
+	require_once(PATH . INCLUDES . '/admin_footer.php');
 	
 }
 

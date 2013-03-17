@@ -107,7 +107,8 @@ class Five extends Orbit{
 					$this->savePref();
 					
 					$this->addNote('You successfully linked your 500px account.', 'success');
-					header('Location: ' . $this->location());
+					$location = $this->location();
+					$fsip::headerLocationRedirect($location);
 					exit();
 					
 					break;
@@ -124,7 +125,8 @@ class Five extends Orbit{
 					$this->setPref('five_oauth_secret', $five_token['oauth_token_secret']);
 					$this->savePref();
 					
-					header('Location: ' . $five_authorize_uri);
+					$location = $five_authorize_uri;
+					$fsip::headerLocationRedirect($location);
 					exit();
 					
 					break;
@@ -142,7 +144,8 @@ class Five extends Orbit{
 					$this->savePref();
 					
 					$this->addNote('You successfully unlinked your 500px account.', 'success');
-					header('Location: ' . $this->location());
+					$location = $this->location();
+					$fsip::headerLocationRedirect($location);
 					exit();
 					
 					break;
@@ -167,7 +170,8 @@ class Five extends Orbit{
 					$this->savePref();
 					
 					$this->addNote('You successfully linked your Tumblr account.', 'success');
-					header('Location: ' . $this->location());
+					$location = $this->location();
+					$fsip::headerLocationRedirect($location);
 					exit();
 					
 					break;
@@ -184,7 +188,8 @@ class Five extends Orbit{
 					$this->savePref();
 					
 					$this->addNote('You successfully unlinked your Tumblr account.', 'success');
-					header('Location: ' . $this->location());
+					$location = $this->location();
+					$fsip::headerLocationRedirect($location);
 					exit();
 					
 					break;

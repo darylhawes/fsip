@@ -6,18 +6,21 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../config.php');
+require_once('../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
 
 // GET PHOTO
-if($image_id = $fsip->findID($_GET['id'])){
-	header('Location: ' . LOCATION . BASE . ADMIN . 'image' . URL_ID . $image_id . URL_RW);
+if ($image_id = $fsip->findID($_GET['id'])) {
+	$location = LOCATION . BASE. ADMINFOLDER .  'image' . URL_ID . $image_id . URL_RW;
+	$fsip::headerLocationRedirect($location);
 	exit();
 }
 
-header('Location: ' . BASE . ADMIN . 'library' . URL_CAP);
+$location = LOCATION . BASE. ADMINFOLDER . 'library' . URL_CAP;
+$fsip::headerLocationRedirect($location);
+
 exit();
 
 ?>

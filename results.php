@@ -13,7 +13,8 @@ $fsip = new FSIP;
 $fsip->recordStat('home');
 
 if (empty($_SESSION['fsip']['search']['table'])) {
-	header('Location: ' . LOCATION . BASE . 'search' . URL_CAP);
+	$location = LOCATION . BASE . 'search' . URL_CAP;
+	$fsip::headerLocationRedirect($location);
 	exit();
 }
 

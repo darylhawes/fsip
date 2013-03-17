@@ -118,7 +118,8 @@ class Tumblr extends Orbit {
 					$this->savePref();
 					
 					$this->addNote('You successfully linked your Tumblr account.', 'success');
-					header('Location: ' . $this->location());
+					$location = $this->location();
+					$fsip::headerLocationRedirect($location);
 					exit();
 					
 					break;
@@ -135,7 +136,8 @@ class Tumblr extends Orbit {
 					$this->setPref('tumblr_oauth_secret', $tumblr_token['oauth_token_secret']);
 					$this->savePref();
 					
-					header('Location: ' . $tumblr_authorize_uri);
+					$location = $tumblr_authorize_uri;
+					$fsip::headerLocationRedirect($location);
 					exit();
 					
 					break;
@@ -153,7 +155,8 @@ class Tumblr extends Orbit {
 					$this->savePref();
 					
 					$this->addNote('You successfully unlinked your Tumblr account.', 'success');
-					header('Location: ' . $this->location());
+					$location = $this->location();
+					$fsip::headerLocationRedirect($location);
 					exit();
 					
 					break;
@@ -178,7 +181,8 @@ class Tumblr extends Orbit {
 					$this->savePref();
 					
 					$this->addNote('You successfully linked your Tumblr account.', 'success');
-					header('Location: ' . $this->location());
+					$location = $this->location();
+					$fsip::headerLocationRedirect($location);
 					exit();
 					
 					break;
@@ -195,7 +199,8 @@ class Tumblr extends Orbit {
 					$this->savePref();
 					
 					$this->addNote('You successfully unlinked your Tumblr account.', 'success');
-					header('Location: ' . $this->location());
+					$location = $this->location();
+					$fsip::headerLocationRedirect($location);
 					exit();
 					
 					break;

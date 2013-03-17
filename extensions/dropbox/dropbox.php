@@ -93,7 +93,8 @@ class Dropbox extends Orbit{
 					$this->savePref();
 					
 					$this->addNote('You successfully linked your Dropbox account.', 'success');
-					header('Location: ' . $this->location());
+					$location = $this->location();
+					$fsip::headerLocationRedirect($location);
 					exit();
 					
 					break;
@@ -110,7 +111,8 @@ class Dropbox extends Orbit{
 					$this->setPref('dropbox_oauth_secret', $dropbox_token['oauth_token_secret']);
 					$this->savePref();
 					
-					header('Location: ' . $dropbox_authorize_uri);
+					$location = $dropbox_authorize_uri;
+					$fsip::headerLocationRedirect($location);
 					exit();
 					
 					break;
@@ -128,7 +130,8 @@ class Dropbox extends Orbit{
 					$this->savePref();
 					
 					$this->addNote('You successfully unlinked your Twitter account.', 'success');
-					header('Location: ' . $this->location());
+					$location = $this->location();
+					$fsip::headerLocationRedirect($location);
 					exit();
 					
 					break;

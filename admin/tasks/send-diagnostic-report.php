@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../../config.php');
+require_once('../../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -26,9 +26,10 @@ $options = array(
 // Create a Cache_Lite object
 $cache = new Cache_Lite($options);
 
-if(!$report = $cache->get('diagnostic_report')){
+if (!$report = $cache->get('diagnostic_report')) {
 	$fsip->addNote('Your diagnostic report could not be submitted. Please try again.', 'error');
-	header('Location: ' . LOCATION . BASE . ADMIN . 'settings' . URL_CAP);
+	$location = LOCATION . BASE. ADMINFOLDER . 'settings' . URL_CAP;
+	$fsip::headerLocationRedirect($location);
 }
 
 $data = http_build_query(
@@ -58,6 +59,7 @@ else{
 	$fsip->addNote('Your diagnostic report could not be submitted at this time.', 'error');
 //}
 
-header('Location: ' . LOCATION . BASE . ADMIN);
+$location = LOCATION . BASE. ADMINFOLDER;
+$fsip::headerLocationRedirect($location);
 
 ?>

@@ -14,7 +14,8 @@ $fsip->access($_REQUEST['id']);
 
 session_write_close();
 
-header('Location: ' . LOCATION . BASE);
+$location = LOCATION . BASE;
+$fsip::headerLocationRedirect($location);
 exit();
 
 ?>

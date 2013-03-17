@@ -154,7 +154,8 @@ class Twitter extends Orbit{
 					$this->savePref();
 					
 					$this->addNote('You successfully linked your Twitter account.', 'success');
-					header('Location: ' . $this->location());
+					$location = $this->location();
+					$fsip::headerLocationRedirect($location);
 					exit();
 					
 					break;
@@ -171,7 +172,8 @@ class Twitter extends Orbit{
 					$this->setPref('twitter_oauth_secret', $twitter_token['oauth_token_secret']);
 					$this->savePref();
 					
-					header('Location: ' . $twitter_authorize_uri);
+					$location = $twitter_authorize_uri;
+					$fsip::headerLocationRedirect($location);
 					exit();
 					
 					break;
@@ -189,7 +191,9 @@ class Twitter extends Orbit{
 					$this->savePref();
 					
 					$this->addNote('You successfully unlinked your Twitter account.', 'success');
+					// We do not have an fsip-> object to call for redirect so...
 					header('Location: ' . $this->location());
+					echo "<h1>Redirecting</h1><p>You are being redirected. If you're still here after a few seconds please ".'<a href="'. $this->location() .'">'."click here</a></p>";
 					exit();
 					
 					break;

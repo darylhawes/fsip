@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../config.php');
+require_once('../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -64,30 +64,34 @@ if (!empty($_POST['image_ids'])) {
 		
 		session_write_close();
 		
-		header('Location: ' . BASE . ADMIN . 'features' . URL_ACT . 'bulk' . URL_RW);
+		$location = BASE . ADMINFOLDER . 'features' . URL_ACT . 'bulk' . URL_RW;
+		$fsip::headerLocationRedirect($location);
 	} else {
-		header('Location: ' . BASE . ADMIN . 'library' . URL_CAP);
+		$location = BASE . ADMINFOLDER . 'library' . URL_CAP;
+		$fsip::headerLocationRedirect($location);
 	}
 	exit();
 }
 
-// New images DEH - here is where we should be able to seek through subdirectories based on userid
+// New images DEH - here is where we should be able to seek through subdirectories 
+// based on a userid parent folder for uploading
 $files = $fsip->seekDirectory(PATH . SHOEBOX);
 $i_count = count($files);
 
 if ($i_count == 0) {
 	$fsip->addNote('There are no files in your shoebox.', 'error');
-	header('Location: ' . BASE . ADMIN . 'upload' . URL_CAP);
+	$location = BASE . ADMINFOLDER . 'upload' . URL_CAP;
+	$fsip::headerLocationRedirect($location);
 	exit();
 }
 
 define('TAB', 'shoebox');
 define('TITLE', 'Shoebox');
-require_once(PATH . ADMIN . 'includes/header.php');
+require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>
 
-<h1><img src="<?php echo BASE . ADMIN; ?>images/icons/shoebox.png" alt="" /> Shoebox (<?php echo $i_count; ?>)</h1>
+<h1><img src="<?php echo BASE . IMGFOLDER; ?>icons/shoebox.png" alt="" /> Shoebox (<?php echo $i_count; ?>)</h1>
 
 <div class="none get_location_set"><?php if (isset($_SESSION['fsip']) && isset($_SESSION['fsip']['location']) ) { echo @$_SESSION['fsip']['location']; } ?></div>
 
@@ -116,6 +120,6 @@ require_once(PATH . ADMIN . 'includes/header.php');
 	
 <?php
 
-require_once(PATH . ADMIN . 'includes/footer.php');
+require_once(PATH . INCLUDES . '/admin_footer.php');
 
 ?>

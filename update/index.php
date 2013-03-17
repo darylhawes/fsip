@@ -19,9 +19,9 @@ foreach($builds as $build){
 	$queries = file_get_contents(PATH . 'update/' . $build . '/' . $fsip->db_type . '.sql');
 	$queries = explode("\n", $queries);
 
-	foreach($queries as $query){
+	foreach($queries as $query) {
 		$query = trim($query);
-		if(!empty($query)){
+		if (!empty($query)) {
 			$fsip->exec($query);
 		}
 	}
@@ -29,7 +29,8 @@ foreach($builds as $build){
 
 $fsip->addNote('You have successfully updated FSIP. You should now remove the /update directory.', 'success');
 
-header('Location: ' . LOCATION . BASE . ADMIN);
+$location = LOCATION . BASE . ADMINFOLDER;
+$fsip::headerLocationRedirect($location);
 exit();
 
 ?>

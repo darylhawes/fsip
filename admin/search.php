@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../config.php');
+require_once('../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -16,10 +16,9 @@ $user->perm(true);
 
 Find::clearMemory();
 
-if(!empty($_REQUEST['search_type'])){
+if (!empty($_REQUEST['search_type'])) {
 	$table = $_REQUEST['search_type'];
-}
-else{
+} else {
 	$table = 'images';
 }
 
@@ -27,12 +26,13 @@ $ids = new Find($table);
 $ids->find();
 $ids->saveMemory();
 
-if($table == 'images'){
-	header('Location: ' . LOCATION . BASE . ADMIN . 'results' . URL_CAP);
+if ($table == 'images') {
+	$location = LOCATION . BASE. ADMINFOLDER . 'results' . URL_CAP;
+	$fsip::headerLocationRedirect($location);
 	exit();
-}
-else{
-	header('Location: ' . LOCATION . BASE . ADMIN . $table . URL_ACT . 'results' . URL_RW);
+} else {
+	$location = LOCATION . BASE. ADMINFOLDER . $table . URL_ACT . 'results' . URL_RW;
+	$fsip::headerLocationRedirect($location);
 	exit();
 }
 

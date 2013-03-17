@@ -99,7 +99,8 @@ class Flickr extends Orbit{
 					$this->savePref();
 					
 					$this->addNote('You successfully linked your Flickr account.', 'success');
-					header('Location: ' . $this->location());
+					$location = $this->location();
+					$fsip::headerLocationRedirect($location);
 					exit();
 					
 					break;
@@ -112,7 +113,8 @@ class Flickr extends Orbit{
 					$to = $this->flickr->auth('write');
 					$params = array('to' => $to,
 						'from' => $this->locationFull(array('from' => 'flickr')));
-					header('Location: http://fsip.sdelargy.com/callback/?' . http_build_query($params));
+					$location = 'http://fsip.sdelargy.com/callback/?' . http_build_query($params));
+					$fsip::headerLocationRedirect($location);
 					break;
 			}
 		}
@@ -128,7 +130,8 @@ class Flickr extends Orbit{
 					$this->savePref();
 					
 					$this->addNote('You successfully unlinked your Flickr account.', 'success');
-					header('Location: ' . $this->location());
+					$location = $this->location();
+					$fsip::headerLocationRedirect($location);
 					exit();
 					
 					break;

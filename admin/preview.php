@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../config.php');
+require_once('../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -22,7 +22,7 @@ if (!empty($_POST['act']) and !empty($_POST['object'])) {
 	$block = $_SESSION['fsip']['preview']['act'] . 's';
 	$object[$block] = 1;
 	
-	if($block == 'images') {
+	if ($block == 'images') {
 		if (!empty($object['image_markup'])) {
 			$image_markup_ext = $object['image_markup'];
 			$object['image_description'] = $orbit->hook('markup_' . $image_markup_ext, $object['image_description_raw'], $object['image_description_raw']);
@@ -65,7 +65,8 @@ if (!empty($_POST['act']) and !empty($_POST['object'])) {
 }
 
 if (empty($_SESSION['fsip']['preview']['act'])) {
-	header('Location: ' . LOCATION . BASE . ADMIN);
+	$location = LOCATION . BASE. ADMINFOLDER;
+	$fsip::headerLocationRedirect($location);
 }
 
 $_GET['id'] = $_SESSION['fsip']['preview']['id'];
