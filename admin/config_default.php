@@ -70,15 +70,14 @@ $palette_size = 8;
 $color_tolerance = 60;
 
 
-if($url_rewrite){
+if ($url_rewrite) {
 	define('URL_CAP', '/');
 	define('URL_ID', '/');
 	define('URL_ACT', '/');
 	define('URL_AID', '/');
 	define('URL_PAGE', '/page');
 	define('URL_RW', '/');
-}
-else{
+} else {
 	define('URL_CAP', '.php');
 	define('URL_ID', '.php?id=');
 	define('URL_ACT', '.php?act=');
@@ -87,10 +86,23 @@ else{
 	define('URL_RW', '');
 }
 
+define('DB_DSN', $db_dsn);
+define('DB_TYPE', $db_type);
+@define('DB_USER', $db_user);
+@define('DB_PASS', $db_pass);
+define('TABLE_PREFIX', $table_prefix);
+define('FOLDER_PREFIX', $folder_prefix);
+define('SALT', $salt);
+
+$server_address = $_SERVER['SERVER_NAME'];
+if (isset ($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] != "80") {
+	$server_address .= ':'.$_SERVER['SERVER_PORT'];
+}
+
 define('SERVER_TYPE', $server_type);
 define('PATH', $path);
 define('BASE', $base);
-define('DOMAIN', $_SERVER['SERVER_NAME']);
+define('DOMAIN', $server_address);
 define('LOCATION', 'http://' . DOMAIN);
 define('DB_DSN', $db_dsn);
 define('DB_TYPE', $db_type);
@@ -107,19 +119,23 @@ define('DATE_FORMAT', $date_format);
 define('PALETTE_SIZE', $palette_size);
 define('COLOR_TOLERANCE', $color_tolerance);
 
-define('ADMIN', FOLDER_PREFIX . 'admin/');
 define('CACHE', FOLDER_PREFIX . 'cache/');
-define('CLASSES', FOLDER_PREFIX . 'classes/');
-define('DB', FOLDER_PREFIX . 'db/');
 define('EXTENSIONS', FOLDER_PREFIX . 'extensions/');
-define('FUNCTIONS', FOLDER_PREFIX . 'functions/');
-define('I18N', FOLDER_PREFIX . 'i18n/');
-define('INCLUDES', FOLDER_PREFIX . 'includes/');
-define('JS', FOLDER_PREFIX . 'js/');
-define('IMAGES', FOLDER_PREFIX . 'images/');
-define('INSTALL', FOLDER_PREFIX . 'install/');
 define('SHOEBOX', FOLDER_PREFIX . 'shoebox/');
 define('THEMES', FOLDER_PREFIX . 'themes/');
 define('WATERMARKS', FOLDER_PREFIX . 'watermarks/');
+define('USERFOLDER', FOLDER_PREFIX . 'user/');
+define('ADMINFOLDER', FOLDER_PREFIX . 'admin/');
+define('DOCS', ADMINFOLDER . 'docs/');
+define('LIB', FOLDER_PREFIX . 'lib/');
+define('CLASSES', LIB . 'classes/');
+define('INCLUDES', LIB . 'includes/');
+define('JS', LIB . 'js/');
+define('IMGFOLDER', LIB . 'images/');
+define('DATAFOLDER', FOLDER_PREFIX . 'data/');
+define('IMAGEDATA', DATAFOLDER . 'images/');
+define('DB', DATAFOLDER . 'db/');
+//define('IMAGES', DATA . 'images/'); //old IMAGES folder for stored photo/image stock. replace as you see .IMAGES. with .IMAGEDATA
+//define('ADMIN', FOLDER_PREFIX . 'admin/'); //backward compatible, replace as you see old . ADMIN . uses. 
 
 ?>
