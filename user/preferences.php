@@ -29,7 +29,8 @@ if(!empty($_POST['preferences_save'])){
 	
 	$fsip->addNote('Your preferences have been saved.', 'success');
 	
-	header('Location: ' . BASE . ADMIN . 'dashboard' . URL_CAP);
+	$location = BASE . ADMINFOLDER . 'dashboard' . URL_CAP;
+	$fsip::headerLocationRedirect($location);
 	exit();
 }
 
