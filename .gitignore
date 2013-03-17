@@ -5,7 +5,9 @@ cache/*
 license.php
 log.txt
 cache/*
-images/*
+data/images/*.jpg
+data/images/*.JPG
+data/images/*.png
 shoebox/*
 
 # the following patterns will be ignored for revision control purposes
