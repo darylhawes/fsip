@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../config.php');
+require_once('config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -16,7 +16,8 @@ if($user->deauth()){
 	$fsip->addNote('You successfully logged out.', 'success');
 }
 
-header('Location: ' . LOCATION . BASE . ADMIN . 'login' . URL_CAP);
+$location = LOCATION . BASE  . 'login' . URL_CAP;
+$fsip::headerLocationRedirect($location);
 exit();
 
 ?>
