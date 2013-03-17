@@ -9,7 +9,7 @@
 /**
  * @author Budin Ltd. <contact@budinltd.com>
  * @copyright Copyright (c) 2010-2012, Budin Ltd.
- * @version 1.0
+ * @version 1.1
  */
 
 class User extends FSIP {
@@ -21,13 +21,12 @@ class User extends FSIP {
 	 */
 	public function __construct() {
 		parent::__construct();
-		
+
 		// Login user by session data
 		if (!empty($_SESSION['fsip']['user'])) {
 			$this->user = $_SESSION['fsip']['user'];
-		}
-		// Login user by ID, key
-		elseif (!empty($_COOKIE['uid']) and !empty($_COOKIE['key'])) {
+		} elseif (!empty($_COOKIE['uid']) and !empty($_COOKIE['key'])) {
+			// Login user by ID, key
 			$user_id = strip_tags($_COOKIE['uid']);
 			$user_key = strip_tags($_COOKIE['key']);
 			unset($_SESSION['fsip']['guest']);
@@ -84,7 +83,7 @@ class User extends FSIP {
 		$query->execute(array(':username' => $username, ':password' => sha1($password . SALT)));
 		$this->user = $query->fetchAll();
 		
-		if(!self::prep($remember)){
+		if (!self::prep($remember)) {
 			return false;
 		}
 		
@@ -99,15 +98,15 @@ class User extends FSIP {
 	 * @param bool $remember 
 	 * @return bool True if successful
 	 */
-	protected function authByCookie($user_id=0, $user_key='', $remember=true){
+	protected function authByCookie($user_id=0, $user_key='', $remember=true) {
 		// Error checking
-		if(empty($user_id) or empty($user_key)){ return false ; }
-		
+		if (empty($user_id) or empty($user_key)) { return false ; }
+
 		$query = $this->prepare('SELECT * FROM users WHERE user_id = :user_id AND user_key = :user_key;');
 		$query->execute(array(':user_id' => $user_id, ':user_key' => $user_key));
 		$this->user = $query->fetchAll();
 		
-		if(!self::prep($remember)){
+		if (!self::prep($remember)) {
 			return false;
 		}
 		
@@ -198,16 +197,19 @@ class User extends FSIP {
 	 */
 	public function perm($required=false, $permission=null) {
 		if (empty($this->user)) {
+			// user not logged in
 			if ($required === true) {
 				$_SESSION['fsip']['destination'] = $this->location();
 				session_write_close();
 				
-				header('Location: ' . LOCATION . BASE . ADMIN . 'login' . URL_CAP);
+				$location = LOCATION . BASE . 'login' . URL_CAP;
+				$this->headerLocationRedirect($location);
 				exit();
 			} else {
 				return false;
 			}
 		} else {
+			// $this->user is not empty, user is logged in
 			if (empty($permission)) {
 				return true;
 			} elseif($this->user['user_id'] == 1) {
@@ -287,7 +289,7 @@ class User extends FSIP {
 	 * @param bool $overwrite 
 	 * @return void
 	 */
-	public function updateFields($fields=array(), $overwrite=true){
+	public function updateFields($fields=array(), $overwrite=true) {
 		if (!$this->perm(true)) { return false; }
 		
 		// Verify each key has changed; if not, unset the key
@@ -312,11 +314,12 @@ class User extends FSIP {
 	/**
 	 * Send email to user
 	 *
+	 * @param string $to - left as null for this function in order to match parent function's signature.
 	 * @param string $subject 
 	 * @param string $message 
 	 * @return void
 	 */
-	public function email($subject='', $message='') {
+ 	public function email($to=null, $subject='', $message='') {
 		if (!$this->perm(true)) { return false; }
 		
 		return parent::email($this->user['user_email'], $subject, $message);

@@ -9,7 +9,7 @@
 /**
  * @author Budin Ltd. <contact@budinltd.com>
  * @copyright Copyright (c) 2010-2012, Budin Ltd.
- * @version 1.0
+ * @version 1.1
  */
 
 function __autoload($class) {
@@ -23,7 +23,7 @@ class FSIP {
 	const build = 1294;
 	const copyright = 'Powered by <a href="http://github.com/darylhawes/fsip">FSIP</a> based on <a href="http://www.alkalineapp.com/">Alkaline</a> under MIT license.';
 	const product = 'FSIP';
-	const version = '1.1.2.3';
+	const version = '1.2';
 	
 	public $admin;
 		
@@ -58,7 +58,7 @@ class FSIP {
 			while(list($key, $val) = each($process)) {
 				foreach($val as $k => $v) {
 					unset($process[$key][$k]);
-					if(is_array($v)) {
+					if (is_array($v)) {
 						$process[$key][stripslashes($k)] = $v;
 						$process[] = &$process[$key][stripslashes($k)];
 					} else {
@@ -107,7 +107,7 @@ class FSIP {
 		$this->tables_index = array('comments', 'images', 'pages', 'rights', 'sets', 'tags');
 		
 		// Check if in Dashboard
-		if (strpos($_SERVER['SCRIPT_FILENAME'], PATH . ADMIN) === 0) {
+		if (strpos($_SERVER['SCRIPT_FILENAME'], PATH . ADMINFOLDER) === 0) {
 			$this->adminpath = true;
 		}
 		
@@ -181,7 +181,12 @@ class FSIP {
 	 * @return int Number of affected rows
 	 */
 	public function exec($query) {
-		if (!$this->db) { $this->addError(E_USER_ERROR, 'No database connection'); }
+		if (!$this->db) { 
+			// This error message may mean that we're not installed properly. Offer the user a link to setup their installation.
+			echo "<h1>ERROR: No database connection.</h1> <p><strong>You may not have FSIP configured properly. </strong></p><p>Try to <a href=".LOCATION . BASE."admin/install.php>install</a> again?</p>";
+			exit;
+//			$this->addError(E_USER_ERROR, 'No database connection'); 
+		}
 		
 		$this->prequery($query);
 		$response = $this->db->exec($query);
@@ -197,13 +202,21 @@ class FSIP {
 	 * @return PDOStatement
 	 */
 	public function prepare($query) {
-		if (!$this->db) { $this->addError(E_USER_ERROR, 'No database connection'); }
+		if (!$this->db) { 
+			$location = $this->locationFull();
+			// This error message may mean that we're not installed properly. Offer the user a link to setup their installation.
+			echo "<h1>ERROR: No database connection.</h1> <p><strong>You may not have FSIP configured properly. </strong></p><p>Try to <a href=".LOCATION . BASE."admin/install.php>install</a> again?</p>";
+			exit;
+//			$this->addError(E_USER_ERROR, 'No database connection'); 
+		}
 		
 		$this->prequery($query);
 		$response = $this->db->prepare($query, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
 		$this->postquery($query);
 		
-		if(!$response){ $this->addError(E_USER_ERROR, 'Invalid query, check database log and connection'); }
+		if (!$response) { 
+			$this->addError(E_USER_ERROR, 'Invalid query, check database log and connection');
+		}
 		
 		return $response;
 	}
@@ -292,7 +305,9 @@ class FSIP {
 	 * @return bool True if successful
 	 */
 	public function postquery(&$query, $db=null) {
-		if (empty($db)) { $db = $this->db; }
+		if (empty($db)) { 
+			$db = $this->db;
+		}
 		
 		$error = $db->errorInfo();
 		
@@ -506,6 +521,9 @@ class FSIP {
 		// Seek directory
 		while($filename = readdir($handle)) {
 			if (!in_array($filename, $ignore)) { 
+			//DEH old (broken?) recursive directory seek that might help with user directory subfolders?
+			// shouldn't it be: $files=	self::seekDirectory($dir . $filename . '/', $exit); ?
+
 				// Recusively check directories
 				/*
 				if(is_dir($dir . '/' . $filename)){
@@ -753,7 +771,7 @@ class FSIP {
 	 * @param string $ext Desired extension
 	 * @return string Changed filename
 	 */
-	public function changeExt($file, $ext){
+	public function changeExt($file, $ext) {
 		$file = preg_replace('#\.([a-z0-9]*?)$#si', '.' . $ext, $file);
 		return $file;
 	}
@@ -768,12 +786,12 @@ class FSIP {
 	 * @param string $empty If null or empty input time, return this string
 	 * @return string|false Time or error
 	 */
-	public function formatTime($time=null, $format=null, $empty=false){
+	public function formatTime($time=null, $format=null, $empty=false) {
 		// Error checking
-		if(empty($time) or ($time == '0000-00-00 00:00:00')){
+		if(empty($time) or ($time == '0000-00-00 00:00:00')) {
 			return $empty;
 		}
-		if(empty($format)){
+		if (empty($format)) {
 			$format = DATE_FORMAT;
 		}
 		
@@ -798,16 +816,16 @@ class FSIP {
 	 * @param int $round Digits of rounding (as in round();)
 	 * @return string|false Time or error
 	 */
-	public function formatRelTime($time, $format=null, $empty=false, $round=null){
+	public function formatRelTime($time, $format=null, $empty=false, $round=null) {
 		// Error checking
-		if(empty($time) or ($time == '0000-00-00 00:00:00')){
+		if (empty($time) or ($time == '0000-00-00 00:00:00')) {
 			return $empty;
 		}
-		if(empty($format)){
+		if (empty($format)) {
 			$format = DATE_FORMAT;
 		}
 		
-		if(!is_integer($time)){
+		if (!is_integer($time)) {
 			$time = str_ireplace(' at ', ' ', $time);
 			$time = str_ireplace(' on ', ' ', $time);
 		
@@ -819,37 +837,48 @@ class FSIP {
 		$day = $now - strtotime(date('Y-m-d', $time));
 		$month = $now - strtotime(date('Y-m', $time));
 		
-		if(is_integer($round)){
+		if (is_integer($round)) {
 			$seconds = round($seconds, $round);
 		}
 		
-		if(empty($seconds)){
+		if (empty($seconds)) {
 			$span = 'just now';
-		}
-		else{
-			switch($seconds){
+		} else {
+			switch($seconds) {
 				case(empty($seconds) or ($seconds < 15)):
 					$span = 'just now';
 					break;
 				case($seconds < 3600):
 					$minutes = intval($seconds / 60);
-					if($minutes < 2){ $span = 'a minute ago'; }
-					else{ $span = $minutes . ' minutes ago'; }
+					if($minutes < 2) { 
+						$span = 'a minute ago';
+					} else { 
+						$span = $minutes . ' minutes ago'; 
+					}
 					break;
 				case($seconds < 86400):
 					$hours = intval($seconds / 3600);
-					if($hours < 2){ $span = 'an hour ago'; }
-					else{ $span = $hours . ' hours ago'; }
+					if($hours < 2) { 
+						$span = 'an hour ago'; 
+					} else { 
+						$span = $hours . ' hours ago'; 
+					}
 					break;
 				case($seconds < 2419200):
 					$days = floor($day / 86400);
-					if($days < 2){ $span = 'yesterday'; }
-					else{ $span = $days . ' days ago'; }
+					if ($days < 2) { 
+						$span = 'yesterday'; 
+					} else { 
+						$span = $days . ' days ago'; 
+					}
 					break;
 				case($seconds < 29030400):
 					$months = floor($month / 2419200);
-					if($months < 2){ $span = 'a month ago'; }
-					else{ $span = $months . ' months ago'; }
+					if($months < 2) { 
+					 	$span = 'a month ago'; 
+					} else { 
+						$span = $months . ' months ago'; 
+					}
 					break;
 				default:
 					$span = date($format, $time);
@@ -866,9 +895,9 @@ class FSIP {
 	 * @param string|int $num Numerical month (e.g., 01)
 	 * @return string|false Written month (e.g., January) or error
 	 */
-	public function numberToMonth($num){
+	public function numberToMonth($num) {
 		$int = intval($num);
-		switch($int){
+		switch($int) {
 			case 1:
 				return 'January';
 				break;
@@ -919,7 +948,7 @@ class FSIP {
 	 * @param string $powsuffix
 	 * @return string
 	 */
-	public function numberToWords($num, $power = 0, $powsuffix = ''){
+	public function numberToWords($num, $power = 0, $powsuffix = '') {
 		$_minus = 'minus'; // minus sign
 		
 	    $_exponent = array(
@@ -1049,7 +1078,7 @@ class FSIP {
         $ret = '';
 
         // add a minus sign
-        if(substr($num, 0, 1) == '-'){
+        if (substr($num, 0, 1) == '-') {
             $ret = $_sep . $_minus;
             $num = substr($num, 1);
         }
@@ -1058,16 +1087,16 @@ class FSIP {
         $num = trim($num);
         $num = preg_replace('/^0+/', '', $num);
 
-        if(strlen($num) > 3){
+        if (strlen($num) > 3) {
             $maxp = strlen($num)-1;
             $curp = $maxp;
-            for($p = $maxp; $p > 0; --$p){ // power
+            for($p = $maxp; $p > 0; --$p) { // power
                 // check for highest power
-                if(isset($_exponent[$p])){
+                if (isset($_exponent[$p])) {
                     // send substr from $curp to $p
                     $snum = substr($num, $maxp - $curp, $curp - $p + 1);
                     $snum = preg_replace('/^0+/', '', $snum);
-                    if($snum !== ''){
+                    if ($snum !== '') {
                         $cursuffix = $_exponent[$power][count($_exponent[$power])-1];
                         if($powsuffix != ''){
                             $cursuffix .= $_sep . $powsuffix;
@@ -1080,17 +1109,16 @@ class FSIP {
                 }
             }
             $num = substr($num, $maxp - $curp, $curp - $p + 1);
-            if($num == 0){
+            if ($num == 0) {
                 return $ret;
             }
-        }
-		elseif($num == 0 || $num == ''){
+        } elseif($num == 0 || $num == '') {
             return $_sep . $_digits[0];
         }
 
         $h = $t = $d = 0;
 
-        switch(strlen($num)){
+        switch(strlen($num)) {
         case 3:
             $h = (int)substr($num, -3, 1);
 
@@ -1106,7 +1134,7 @@ class FSIP {
             break;
         }
 
-        if($h){
+        if ($h) {
             $ret .= $_sep . $_digits[$h] . $_sep . 'hundred';
 
             // in English only - add ' and' for [1-9]01..[1-9]99
@@ -1118,7 +1146,7 @@ class FSIP {
         }
 
         // ten, twenty etc.
-        switch ($t){
+        switch ($t) {
         case 9:
         case 7:
         case 6:
@@ -1146,7 +1174,7 @@ class FSIP {
             break;
 
         case 1:
-            switch($d){
+            switch($d) {
             case 0:
                 $ret .= $_sep . 'ten';
                 break;
@@ -1181,29 +1209,28 @@ class FSIP {
             break;
         }
 
-        if($t != 1 && $d > 0){ // add digits only in <0>,<1,9> and <21,inf>
+        if ($t != 1 && $d > 0) { // add digits only in <0>,<1,9> and <21,inf>
             // add minus sign between [2-9] and digit
-            if($t > 1){
+            if ($t > 1) {
                 $ret .= '-' . $_digits[$d];
-            }
-			else{
+            } else {
                 $ret .= $_sep . $_digits[$d];
             }
         }
 
-        if($power > 0){
-            if(isset($_exponent[$power])){
+        if ($power > 0) {
+            if (isset($_exponent[$power])) {
                 $lev = $_exponent[$power];
             }
 
-            if(!isset($lev) || !is_array($lev)){
+            if (!isset($lev) || !is_array($lev)) {
                 return null;
             }
 
             $ret .= $_sep . $lev[0];
         }
 
-        if($powsuffix != ''){
+        if ($powsuffix != '') {
             $ret .= $_sep . $powsuffix;
         }
 
@@ -1218,7 +1245,7 @@ class FSIP {
 	 * @param string $string 
 	 * @return string
 	 */
-	public function makeUnicode($string){
+	public function makeUnicode($string) {
 		return mb_detect_encoding($string, 'UTF-8') == 'UTF-8' ? $string : utf8_encode($string);
 	}
 	
@@ -1228,7 +1255,7 @@ class FSIP {
 	 * @param string $string 
 	 * @return string
 	 */
-	public function sanitize($string){
+	public function sanitize($string) {
 		return preg_replace('#(?:(?![a-z0-9_\.-\s]).)*#si', '', $string);
 	}
 	
@@ -1238,12 +1265,12 @@ class FSIP {
 	 * @param string $input 
 	 * @return string
 	 */
-	public function makeHTMLSafe($input){
-		if(is_string($input)){
+	public function makeHTMLSafe($input) {
+		if (is_string($input)) {
 			$input = self::makeHTMLSafeHelper($input);
 		}
-		if(is_array($input)){
-			foreach($input as &$value){
+		if (is_array($input)) {
+			foreach($input as &$value) {
 				$value = self::makeHTMLSafe($value);
 			}
 		}
@@ -1251,7 +1278,7 @@ class FSIP {
 		return $input;
 	}
 	
-	private function makeHTMLSafeHelper($string){
+	private function makeHTMLSafeHelper($string) {
 		$string = htmlentities($string, ENT_QUOTES, 'UTF-8', false);
 		return $string;
 	}
@@ -1262,12 +1289,12 @@ class FSIP {
 	 * @param string $input 
 	 * @return string
 	 */
-	public function reverseHTMLSafe($input){
-		if(is_string($input)){
+	public function reverseHTMLSafe($input) {
+		if (is_string($input)) {
 			$input = self::reverseHTMLSafeHelper($input);
 		}
-		if(is_array($input)){
-			foreach($input as &$value){
+		if (is_array($input)) {
+			foreach($input as &$value) {
 				$value = self::reverseHTMLSafe($value);
 			}
 		}
@@ -1275,7 +1302,7 @@ class FSIP {
 		return $input;
 	}
 	
-	private function reverseHTMLSafeHelper($string){
+	private function reverseHTMLSafeHelper($string) {
 		$string = preg_replace('#\&\#0039\;#s', '\'', $string);	
 		$string = preg_replace('#\&\#0034\;#s', '"', $string);
 		return $string;
@@ -1287,7 +1314,7 @@ class FSIP {
 	 * @param string $str 
 	 * @return string
 	 */
-	public function makeFilenameSafe($str){
+	public function makeFilenameSafe($str) {
 		$data = base64_encode($str);
 	    $data = str_replace(array('+','/','='),array('-','_',''), $data);
 	    return $data;
@@ -1315,12 +1342,11 @@ class FSIP {
 	 * @param string|array $var
 	 * @return string|array
 	 */
-	public function stripTags($var){
-		if(is_string($var)){
+	public function stripTags($var) {
+		if (is_string($var)) {
 			$var = trim(strip_tags($var));
-		}
-		elseif(is_array($var)){
-			foreach($var as $key => $value){
+		} elseif (is_array($var)) {
+			foreach($var as $key => $value) {
 				$var[$key] = self::stripTags($value);
 			}
 		}
@@ -1359,7 +1385,7 @@ class FSIP {
 	 * @param string $string 
 	 * @return int Word count
 	 */
-	public function countWords($string){
+	public function countWords($string) {
 		$string = strip_tags($string);
 		preg_match_all("/\S+/", $string, $matches); 
 	    return count($matches[0]);
@@ -1373,13 +1399,16 @@ class FSIP {
 	 * @param string $max 
 	 * @return void
 	 */
-	public function randInt($min=null, $max=null){
-		if(function_exists('mt_rand')){
-			if(empty($max)){ $max = mt_getrandmax(); }
+	public function randInt($min=null, $max=null) { 
+		if (function_exists('mt_rand')) {
+			if (empty($max)) { 
+				$max = mt_getrandmax();
+			}
 			$num = mt_rand($min, $max);
-		}
-		else{
-			if(empty($max)){ $max = getrandmax(); }
+		} else {
+			if (empty($max)) { 
+				$max = getrandmax(); 
+			}
 			$num = rand($min, $max);
 		}
 		
@@ -1392,16 +1421,16 @@ class FSIP {
 	 * @param mixed $var Variable
 	 * @return string Type of variable
 	 */
-	function getType($var){
-		if(is_array($var)){ return 'array'; }
-		if(is_bool($var)){ return 'boolean'; }
-		if(is_float($var)){ return 'float'; }
-		if(is_int($var)){ return 'integer'; }
-		if(is_null($var)){ return 'NULL'; }
-		if(is_numeric($var)){ return 'numeric'; }
-		if(is_object($var)){ return 'object'; }
-		if(is_resource($var)){ return 'resource'; }
-		if(is_string($var)){ return 'string'; }
+	function getType($var) {
+		if (is_array($var)) { return 'array'; }
+		if (is_bool($var)) { return 'boolean'; }
+		if (is_float($var)) { return 'float'; }
+		if (is_int($var)) { return 'integer'; }
+		if (is_null($var)) { return 'NULL'; }
+		if (is_numeric($var)) { return 'numeric'; }
+		if (is_object($var)) { return 'object'; }
+		if (is_resource($var)) { return 'resource'; }
+		if (is_string($var)) { return 'string'; }
 		return 'unknown';
 	}
 	
@@ -1412,47 +1441,44 @@ class FSIP {
 	 *
 	 * @return int|false Comment ID or false on failure
 	 */
-	public function addComments(){
+	public function addComments() {
 		// Configuration: comm_enabled
-		if(!$this->returnConf('comm_enabled')){
+		if (!$this->returnConf('comm_enabled')) {
 			return false;
 		}
 		
-		if(!empty($_POST['image_id'])){
+		if (!empty($_POST['image_id'])) {
 			$id = self::findID($_POST['image_id']);
 			$id_type = 'image_id';
 		}
 		
 		// Configuration: comm_mod
-		if($this->returnConf('comm_mod')){
+		if ($this->returnConf('comm_mod')) {
 			$comment_status = 0;
-		}
-		else{
+		} else {
 			$comment_status = 1;
 		}
 		
 		$comment_text_raw = $_POST['comment_' . $id .'_text'];
 		
-		if(empty($comment_text_raw)){
+		if (empty($comment_text_raw)) {
 			return false;
 		}
 		
 		$orbit = new Orbit;
 		
 		// Configuration: comm_markup
-		if($this->returnConf('comm_markup')){
+		if ($this->returnConf('comm_markup')) {
 			$comm_markup_ext = $this->returnConf('comm_markup_ext');
 			$comment_text = $orbit->hook('markup_' . $comm_markup_ext, $comment_text_raw, null);
-		}
-		else{
+		} else {
 			$comm_markup_ext = '';
 			$comment_text = $this->nl2br($comment_text_raw);
 		}
 		
-		if($this->returnConf('comm_allow_html')){
+		if ($this->returnConf('comm_allow_html')) {
 			$comment_text = strip_tags($comment_text, $this->returnConf('comm_allow_html_tags'));
-		}
-		else{
+		} else {
 			$comment_text = strip_tags($comment_text);
 		}
 		
@@ -1468,15 +1494,15 @@ class FSIP {
 		
 		$fields = $orbit->hook('comment_add', $fields, $fields);
 		
-		if(!$comment_id = $this->addRow($fields, 'comments')){
+		if (!$comment_id = $this->addRow($fields, 'comments')) {
 			return false;
 		}
 		
-		if($this->returnConf('comm_email')){
-			$this->email(0, 'New comment', 'A new comment has been submitted:' . "\r\n\n" . strip_tags($comment_text) . "\r\n\n" . LOCATION . BASE . ADMIN . 'comments' . URL_ID . $comment_id . URL_RW);
+		if ($this->returnConf('comm_email')) {
+			$this->email(0, 'New comment', 'A new comment has been submitted:' . "\r\n\n" . strip_tags($comment_text) . "\r\n\n" . LOCATION . BASE . ADMINFOLDER . 'comments' . URL_ID . $comment_id . URL_RW);
 		}
 		
-		if($id_type == 'image_id'){
+		if ($id_type == 'image_id') {
 			$this->updateCount('comments', 'images', 'image_comment_count', $id);
 		}
 		
@@ -1492,15 +1518,21 @@ class FSIP {
 	 * @param int $version_id 
 	 * @return bool True if successful
 	 */
-	public function revertVersion($version_id){
-		if(empty($version_id)){ return false; }
-		if(!$version_id = intval($version_id)){ return false; }
+	public function revertVersion($version_id) {
+		if(empty($version_id)) { 
+			return false; 
+		}
+		if (!$version_id = intval($version_id)) { 
+			return false; 
+		}
 		
 		$version = $this->getRow('versions', $version_id);
 		
-		if(empty($version)){ return false; }
+		if (empty($version)) { 
+			return false; 
+		}
 		
-		if(!empty($version['page_id'])){
+		if (!empty($version['page_id'])) {
 			$page = new Page($version['page_id']);
 			$fields = array('page_title' => $version['version_title'],
 				'page_text_raw' => $version['version_text_raw']);
@@ -1519,7 +1551,7 @@ class FSIP {
 	 * @param string $result_id 
 	 * @return bool True if successful
 	 */
-	public function updateCount($count_table, $result_table, $result_field, $result_id){
+	public function updateCount($count_table, $result_table, $result_field, $result_id) {
 		$result_id = intval($result_id);
 		
 		$count_table = $this->sanitize($count_table);
@@ -1531,7 +1563,7 @@ class FSIP {
 		// Get count
 		$query = $this->prepare('SELECT COUNT(' . $count_id_field . ') AS count FROM ' . $count_table . ' WHERE ' . $result_id_field  . ' = :result_id AND ' . substr($count_id_field, 0, -2) . 'deleted IS NULL;');
 		
-		if(!$query->execute(array(':result_id' => $result_id))){
+		if (!$query->execute(array(':result_id' => $result_id))) {
 			return false;
 		}
 		
@@ -1541,7 +1573,7 @@ class FSIP {
 		// Update row
 		$query = $this->prepare('UPDATE ' . $result_table . ' SET ' . $result_field . ' = :count WHERE ' . $result_id_field . ' = :result_id;');
 		
-		if(!$query->execute(array(':count' => $count, ':result_id' => $result_id))){
+		if (!$query->execute(array(':count' => $count, ':result_id' => $result_id))) {
 			return false;
 		}
 		
@@ -1556,7 +1588,7 @@ class FSIP {
 	 * @param string $result_field 
 	 * @return bool True if successful
 	 */
-	public function updateCounts($count_table, $result_table, $result_field){
+	public function updateCounts($count_table, $result_table, $result_field) {
 		$count_table = $this->sanitize($count_table);
 		$result_table = $this->sanitize($result_table);
 		
@@ -1571,16 +1603,16 @@ class FSIP {
 		// Update row
 		$update = $this->prepare('UPDATE ' . $result_table . ' SET ' . $result_field . ' = :count WHERE ' . $result_id_field . ' = :result_id;');
 		
-		foreach($results as $result){
+		foreach($results as $result) {
 			$result_id = $result[$result_id_field];
-			if(!$select->execute(array(':result_id' => $result_id))){
+			if (!$select->execute(array(':result_id' => $result_id))) {
 				return false;
 			}
 		
 			$counts = $select->fetchAll();
 			$count = $counts[0]['count'];
 		
-			if(!$update->execute(array(':count' => $count, ':result_id' => $result_id))){
+			if (!$update->execute(array(':count' => $count, ':result_id' => $result_id))) {
 				return false;
 			}
 		}
@@ -1595,7 +1627,7 @@ class FSIP {
 	 *
 	 * @return array Tables and their row counts
 	 */
-	public function getInfo(){
+	public function getInfo() {
 		$info = array();
 		
 		// Get tables
@@ -1613,15 +1645,14 @@ class FSIP {
 		unset($tables['items']);
 		
 		// Run helper function
-		foreach($tables as $table => $selector){
+		foreach($tables as $table => $selector) {
 			$info[] = array('table' => $table, 'count' => self::countTable($table));
 		}
 		
-		foreach($info as &$table){
-			if($table['count'] == 1){
+		foreach($info as &$table) {
+			if ($table['count'] == 1) {
 				$table['display'] = preg_replace('#s$#si', '', $table['table']);
-			}
-			else{
+			} else {
 				$table['display'] = $table['table'];
 			}
 		}
@@ -1634,7 +1665,7 @@ class FSIP {
 	 *
 	 * @return array Associate array of fields and integers
 	 */
-	public function getBadges(){
+	public function getBadges() {
 		$badges = array();
 		
 		$badges['images'] = $this->countDirectory(PATH . SHOEBOX);
@@ -1654,30 +1685,29 @@ class FSIP {
 	 * @param bool $show_hidden_tags Include hidden tags
 	 * @return array Associative array of tags
 	 */
-	public function getTags($show_hidden_tags=false, $published_only=false, $public_only=false){
+	public function getTags($show_hidden_tags=false, $published_only=false, $public_only=false) {
 		$sql = '';
 		
-		if($published_only === true){
+		if ($published_only === true) {
 			$sql .= ' AND images.image_published <= "' . date('Y-m-d H:i:s') . '"';
 		}
 		
-		if($public_only === true){
+		if ($public_only === true) {
 			$sql .= ' AND images.image_privacy = 1';
 		}
 	
-		if($this->returnConf('tag_alpha')){
+		if ($this->returnConf('tag_alpha')) {
 			$query = $this->prepare('SELECT tags.tag_name, tags.tag_id, images.image_id FROM tags, links, images WHERE tags.tag_id = links.tag_id AND links.image_id = images.image_id AND images.image_deleted IS NULL ' . $sql . ' ORDER BY tags.tag_name;');
-		}
-		else{
+		} else {
 			$query = $this->prepare('SELECT tags.tag_name, tags.tag_id, images.image_id FROM tags, links, images WHERE tags.tag_id = links.tag_id AND links.image_id = images.image_id AND images.image_deleted IS NULL ' . $sql . ' ORDER BY tags.tag_id ASC;');
 		}
 		$query->execute();
 		$tags = $query->fetchAll();
 		
-		if($show_hidden_tags !== true){
+		if ($show_hidden_tags !== true) {
 			$tags_new = array();
-			foreach($tags as $tag){
-				if($tag['tag_name'][0] != '!'){
+			foreach($tags as $tag) {
+				if ($tag['tag_name'][0] != '!') {
 					$tags_new[] = $tag;
 				}
 			}
@@ -1689,7 +1719,7 @@ class FSIP {
 		$tag_counts = array();
 		$tag_uniques = array();
 		
-		foreach($tags as $tag){
+		foreach($tags as $tag) {
 			$tag_names[] = $tag['tag_name'];
 			$tag_ids[$tag['tag_name']] = $tag['tag_id'];
 		}
@@ -1725,8 +1755,11 @@ class FSIP {
 	 * @param int $field_id ID to enter
 	 * @return array Associative array of newly created citation row
 	 */
-	public function loadCitation($uri, $field, $field_id){
-		if((strpos($uri, 'http://') !== 0) and (strpos($uri, 'https://') !== 0)){ return false; }
+	public function loadCitation($uri, $field, $field_id) {
+		if ((strpos($uri, 'http://') !== 0) and (strpos($uri, 'https://') !== 0)) 
+		{ 
+			return false;
+		}
 		
 		// Check if exists
 		$sql = 'SELECT * FROM citations WHERE citation_uri_requested = :citation_uri_requested';
@@ -1736,7 +1769,10 @@ class FSIP {
 		$citations = $query->fetchAll();
 		
 		foreach($citations as $citation){
-			if($citation[$field] == $field_id){ return $citation; }
+			if($citation[$field] == $field_id)
+			{ 
+				return $citation;
+			}
 		}
 		
 		$domain = $this->siftDomain($uri);
@@ -1744,16 +1780,20 @@ class FSIP {
 		$ico_file = PATH . CACHE . 'favicons/' . $this->makeFilenameSafe($domain) . '.ico';
 		$png_file = PATH . CACHE . 'favicons/' . $this->makeFilenameSafe($domain) . '.png';
 		
-		if(count($citations) == 0){
+		if (count($citations) == 0) {
 			ini_set('default_socket_timeout', 1);
 			$html = @file_get_contents($uri, null, null, 0, 7500);
 			ini_restore('default_socket_timeout');
 			
-			if($html == false){ return false; }
-			if(!preg_match('#Content-Type:\s*text/html#si', implode(' ', $http_response_header))){ return false; }
+			if ($html == false) { 
+				return false;
+			}
+			if (!preg_match('#Content-Type:\s*text/html#si', implode(' ', $http_response_header))) { 
+				return false;
+			}
 			
-			if(!file_exists($png_file)){
-				if(!file_exists(PATH . CACHE . 'favicons/')){
+			if (!file_exists($png_file)) {
+				if (!file_exists(PATH . CACHE . 'favicons/')) {
 					@mkdir(PATH . CACHE . 'favicons/', 0777, true);
 				}
 				
@@ -1810,8 +1850,8 @@ class FSIP {
 		
 			$html5_meta = array();
 		
-			foreach($metas[0] as $meta){
-				if(preg_match('#property="og:(.*?)"#si', $meta, $property)){
+			foreach($metas[0] as $meta) {
+				if (preg_match('#property="og:(.*?)"#si', $meta, $property)) {
 					preg_match('#content="(.*?)"#si', $meta, $content);
 					$html5_meta[$property[1]] = $content[1];
 				}
@@ -1821,53 +1861,57 @@ class FSIP {
 			$fields = array('citation_uri_requested' => $uri,
 				$field => $field_id);
 		
-			foreach($html5_meta as $property => $content){
-				if(in_array($property, $save_fields)){
-					if($property == 'url'){ $property = 'uri'; }
+			foreach($html5_meta as $property => $content) {
+				if (in_array($property, $save_fields)) {
+					if($property == 'url')
+					{ 
+						$property = 'uri'; 
+					}
 					$field = 'citation_' . $property;
 					$fields[$field] = $this->makeUnicode(html_entity_decode($content, ENT_QUOTES, 'UTF-8'));
 				}
 			}
 			
-			if(empty($fields['citation_title'])){
+			if (empty($fields['citation_title'])) {
 				preg_match('#<title>(.*?)</title>#si', $html, $match);
 				$fields['citation_title'] = $match[1];
 			}
 			
-			if(empty($fields['citation_description'])){
+			if (empty($fields['citation_description'])) {
 				preg_match('#<meta[^>]*name="description"[^>]*content="([^>]*)"[^>]*>#si', $html, $match);
-				if(empty($match[1])){
+				if (empty($match[1])) {
 					preg_match('#<meta[^>]*content="([^>]*)"[^>]*name="description"[^>]*>#si', $html, $match);
 				}
 				
-				if(!empty($match[1])){
+				if (!empty($match[1])) {
 					$fields['citation_description'] = $match[1];
 				}
 			}
-		}
-		else{
+		} else {
 			$fields = array();
 			
-			foreach($citations[0] as $key => $value){
-				if(is_int($key)){ continue; }
+			foreach($citations[0] as $key => $value) {
+				if (is_int($key)) {
+					continue;
+				}
 				$fields[$key] = $value;
 			}
 			
 			unset($fields['citation_id']);
 			$fields[$field] = $field_id;
 			
-			if(file_exists(PATH . CACHE . 'favicons/' . $this->makeFilenameSafe($domain) . '.png')){
+			if (file_exists(PATH . CACHE . 'favicons/' . $this->makeFilenameSafe($domain) . '.png')) {
 				$favicon_found = true;
 			}
 		}
 		
 		$fields['citation_id'] = $this->addRow($fields, 'citations');
 		
-		if(empty($fields['citation_site_name'])){
+		if (empty($fields['citation_site_name'])) {
 			$fields['citation_site_name'] = $domain;
 		}
 		
-		if(file_exists($png_file)){
+		if (file_exists($png_file)) {
 			$fields['citation_favicon_uri'] = LOCATION . BASE . CACHE . 'favicons/' . $this->makeFilenameSafe($domain) . '.png';
 		}
 		
@@ -1880,7 +1924,7 @@ class FSIP {
 	 * @param string $hint Search string
 	 * @return array
 	 */
-	public function hintTag($hint){
+	public function hintTag($hint) {
 		$hint_lower = strtolower($hint);
 		
 		$sql = 'SELECT DISTINCT(tags.tag_name) FROM tags WHERE LOWER(tags.tag_name) LIKE :hint_lower ORDER BY tags.tag_name ASC';
@@ -1891,7 +1935,7 @@ class FSIP {
 		
 		$tags_list = array();
 		
-		foreach($tags as $tag){
+		foreach($tags as $tag) {
 			$tags_list[] = $tag['tag_name'];
 		}
 		
@@ -1904,13 +1948,12 @@ class FSIP {
 	 * @param string $hint Search string
 	 * @return array
 	 */
-	public function hintPageCategory($hint){
+	public function hintPageCategory($hint) {
 		$hint_lower = strtolower($hint);
 		
-		if(!empty($hint)){
+		if (!empty($hint)) {
 			$sql = 'SELECT DISTINCT(pages.page_category) FROM pages WHERE LOWER(pages.page_category) LIKE :hint_lower ORDER BY pages.page_category ASC';
-		}
-		else{
+		} else {
 			$sql = 'SELECT DISTINCT(pages.page_category) FROM pages ORDER BY pages.page_category ASC';
 		}
 		
@@ -1919,8 +1962,8 @@ class FSIP {
 		$pages = $query->fetchAll();
 		
 		$categories_list = array();
-		
-		foreach($pages as $page){
+
+		foreach($pages as $page) {
 			$categories_list[] = $page['page_category'];
 		}
 		
@@ -1933,10 +1976,10 @@ class FSIP {
 	 *
 	 * @return array Array of includes
 	 */
-	public function getIncludes(){
+	public function getIncludes() {
 		$includes = self::seekDirectory(PATH . INCLUDES, '.*');
 		
-		foreach($includes as &$include){
+		foreach($includes as &$include) {
 			$include = self::getFilename($include);
 		}
 		
@@ -1950,8 +1993,8 @@ class FSIP {
 	 * @param integer $right_id Default or selected right_id
 	 * @return string
 	 */
-	public function showRights($name, $right_id=null){
-		if(empty($name)){
+	public function showRights($name, $right_id=null) {
+		if (empty($name)) {
 			return false;
 		}
 		
@@ -1961,9 +2004,9 @@ class FSIP {
 		
 		$html = '<select name="' . $name . '" id="' . $name . '"><option value=""></option>';
 		
-		foreach($rights as $right){
+		foreach($rights as $right) {
 			$html .= '<option value="' . $right['right_id'] . '"';
-			if($right['right_id'] == $right_id){
+			if ($right['right_id'] == $right_id) {
 				$html .= ' selected="selected"';
 			}
 			$html .= '>' . $right['right_title'] . '</option>';
@@ -1981,8 +2024,8 @@ class FSIP {
 	 * @param integer $size_id Default or selected size_id
 	 * @return string
 	 */
-	public function showSizes($name, $size_id=null){
-		if(empty($name)){
+	public function showSizes($name, $size_id=null) {
+		if (empty($name)) {
 			return false;
 		}
 		
@@ -1992,9 +2035,9 @@ class FSIP {
 		
 		$html = '<select name="' . $name . '" id="' . $name . '">';
 		
-		foreach($sizes as $size){
+		foreach($sizes as $size) {
 			$html .= '<option value="' . $size['size_id'] . '"';
-			if($size['size_id'] == $size_id){
+			if ($size['size_id'] == $size_id) {
 				$html .= ' selected="selected"';
 			}
 			$html .= '>' . $size['size_title'] . '</option>';
@@ -2012,8 +2055,8 @@ class FSIP {
 	 * @param integer $privacy_id Default or selected privacy_id
 	 * @return string
 	 */
-	public function showPrivacy($name, $privacy_id=1){
-		if(empty($name)){
+	public function showPrivacy($name, $privacy_id=1) {
+		if (empty($name)) {
 			return false;
 		}
 		
@@ -2021,9 +2064,9 @@ class FSIP {
 		
 		$html = '<select name="' . $name . '" id="' . $name . '">';
 		
-		foreach($privacy_levels as $privacy_level => $privacy_label){
+		foreach($privacy_levels as $privacy_level => $privacy_label) {
 			$html .= '<option value="' . $privacy_level . '"';
-			if($privacy_level == $privacy_id){
+			if ($privacy_level == $privacy_id) {
 				$html .= ' selected="selected"';
 			}
 			$html .= '>' . $privacy_label . '</option>';
@@ -2044,16 +2087,15 @@ class FSIP {
 	 * @param bool $static_only Display on static sets
 	 * @return string
 	 */
-	public function showSets($name, $set_id=null, $static_only=false){
-		if(empty($name)){
+	public function showSets($name, $set_id=null, $static_only=false) {
+		if (empty($name)) {
 			return false;
 		}
 		
-		if($static_only === true){
+		if ($static_only === true) {
 			$query = $this->prepare('SELECT set_id, set_title FROM sets WHERE set_type = :set_type AND set_deleted IS NULL;');
 			$query->execute(array(':set_type' => 'static'));
-		}
-		else{
+		} else {
 			$query = $this->prepare('SELECT set_id, set_title FROM sets WHERE set_deleted IS NULL;');
 			$query->execute();
 		}
@@ -2061,9 +2103,9 @@ class FSIP {
 		
 		$html = '<select name="' . $name . '" id="' . $name . '">';
 		
-		foreach($sets as $set){
+		foreach($sets as $set) {
 			$html .= '<option value="' . $set['set_id'] . '"';
-			if($set['set_id'] == $set_id){
+			if ($set['set_id'] == $set_id) {
 				$html .= ' selected="selected"';
 			}
 			$html .= '>' . $set['set_title'] . '</option>';
@@ -2081,8 +2123,8 @@ class FSIP {
 	 * @param integer $theme_id Default or selected theme_id
 	 * @return string
 	 */
-	public function showThemes($name, $theme_id=null){
-		if(empty($name)){
+	public function showThemes($name, $theme_id=null) {
+		if (empty($name)) {
 			return false;
 		}
 		
@@ -2092,9 +2134,9 @@ class FSIP {
 		
 		$html = '<select name="' . $name . '" id="' . $name . '">';
 		
-		foreach($themes as $theme){
+		foreach($themes as $theme) {
 			$html .= '<option value="' . $theme['theme_id'] . '"';
-			if($theme['theme_id'] == $theme_id){
+			if ($theme['theme_id'] == $theme_id) {
 				$html .= ' selected="selected"';
 			}
 			$html .= '>' . $theme['theme_title'] . '</option>';
@@ -2112,8 +2154,8 @@ class FSIP {
 	 * @param integer $exif_name Default or selected exif_name
 	 * @return string
 	 */
-	public function showEXIFNames($name, $exif_name=null){
-		if(empty($name)){
+	public function showEXIFNames($name, $exif_name=null) {
+		if (empty($name)) {
 			return false;
 		}
 		
@@ -2123,9 +2165,9 @@ class FSIP {
 		
 		$html = '<select name="' . $name . '" id="' . $name . '"><option value=""></option>';
 		
-		foreach($exifs as $exif){
+		foreach($exifs as $exif) {
 			$html .= '<option value="' . $exif['exif_name'] . '"';
-			if($exif['exif_name'] == $exif_name){
+			if ($exif['exif_name'] == $exif_name) {
 				$html .= ' selected="selected"';
 			}
 			$html .= '>' . $exif['exif_name'] . '</option>';
@@ -2149,11 +2191,11 @@ class FSIP {
 	 * @param string $order_by 
 	 * @return array
 	 */
-	public function getTable($table, $ids=null, $limit=null, $page=1, $order_by=null){
-		if(empty($table)){
+	public function getTable($table, $ids=null, $limit=null, $page=1, $order_by=null) {
+		if (empty($table)) {
 			return false;
 		}
-		if(!is_int($page) or ($page < 1)){
+		if (!is_int($page) or ($page < 1)) {
 			$page = 1;
 		}
 		
@@ -2164,29 +2206,27 @@ class FSIP {
 		$order_by_sql = '';
 		$limit_sql = '';
 		
-		if(!empty($order_by)){
-			if(is_string($order_by)){
+		if (!empty($order_by)) {
+			if (is_string($order_by)) {
 				$order_by = $this->sanitize($order_by);
 				$order_by_sql = ' ORDER BY ' . $order_by;
-			}
-			elseif(is_array($order_by)){
-				foreach($order_by as &$by){
+			} elseif(is_array($order_by)) {
+				foreach($order_by as &$by) {
 					$by = $this->sanitize($by);
 				}
 				$order_by_sql = ' ORDER BY ' . implode(', ', $order_by);
 			}
 		}
 		
-		if(!empty($limit)){
+		if (!empty($limit)) {
 			$limit = intval($limit);
 			$page = intval($page);
 			$limit_sql = ' LIMIT ' . ($limit * ($page - 1)) . ', ' . $limit;
 		}
 		
-		if(empty($ids)){
+		if (empty($ids)) {
 			$query = $this->prepare('SELECT * FROM ' . $table . $order_by_sql . $limit_sql . ';');
-		}
-		else{
+		} else {
 			$ids = self::convertToIntegerArray($ids);
 			$field = $this->tables[$table];
 			
@@ -2197,17 +2237,17 @@ class FSIP {
 		$contents = $query->fetchAll();
 		
 		// Delete extra users on standard licenses
-		if(($table == 'users') and (count($contents) > 1)){
+		if (($table == 'users') and (count($contents) > 1)) {
 			$this->deleteDisallowedUsers();
 		}
 		
 		$contents_ordered = array();
 		
-		if(!empty($ids)){
+		if (!empty($ids)) {
 			// Ensure posts array correlates to post_ids array
-			foreach($ids as $id){
-				foreach($contents as $content){
-					if($id == $content[$field]){
+			foreach($ids as $id) {
+				foreach($contents as $content) {
+					if ($id == $content[$field]) {
 						$contents_ordered[] = $content;
 					}
 				}
@@ -2225,13 +2265,13 @@ class FSIP {
 	 * @param string|int $id Row ID
 	 * @return array
 	 */
-	public function getRow($table, $id){
+	public function getRow($table, $id) {
 		// Error checking
-		if(empty($id)){ return false; }
-		if(!($id = intval($id))){ return false; }
+		if (empty($id)) { return false; }
+		if (!($id = intval($id))) { return false; }
 		
 		$table = $this->getTable($table, $id);
-		if(count($table) != 1){ return false; }
+		if (count($table) != 1) { return false; }
 		return $table[0];
 	}
 	
@@ -2242,13 +2282,13 @@ class FSIP {
 	 * @param string $table Table name
 	 * @return int|false Row ID or error
 	 */
-	public function addRow($fields=null, $table){
+	public function addRow($fields=null, $table) {
 		// Error checking
-		if(empty($table) or (!is_array($fields) and isset($fields))){
+		if (empty($table) or (!is_array($fields) and isset($fields))) {
 			return false;
 		}
 		
-		if(empty($fields)){
+		if (empty($fields)) {
 			$fields = array();
 		}
 		
@@ -2256,38 +2296,38 @@ class FSIP {
 		$now = date('Y-m-d H:i:s');
 		
 		// Add default fields
-		switch($table){
+		switch($table) {
 			case 'comments':
-				if(empty($fields['comment_created'])){ $fields['comment_created'] = $now; }
-				if(empty($fields['comment_modified'])){ $fields['comment_modified'] = $now; }
+				if (empty($fields['comment_created'])) { $fields['comment_created'] = $now; }
+				if (empty($fields['comment_modified'])) { $fields['comment_modified'] = $now; }
 				break;
 			case 'guests':
-				if(empty($fields['guest_views'])){ $fields['guest_views'] = 0; }
-				if(empty($fields['guest_created'])){ $fields['guest_created'] = $now; }
+				if (empty($fields['guest_views'])) { $fields['guest_views'] = 0; }
+				if (empty($fields['guest_created'])) { $fields['guest_created'] = $now; }
 				break;
 			case 'rights':
-				if(empty($fields['right_created'])){ $fields['right_created'] = $now; }
-				if(empty($fields['right_modified'])){ $fields['right_modified'] = $now; }
+				if (empty($fields['right_created'])) { $fields['right_created'] = $now; }
+				if (empty($fields['right_modified'])) { $fields['right_modified'] = $now; }
 				break;
 			case 'pages':
-				if(empty($fields['page_views'])){ $fields['page_views'] = 0; }
-				if(empty($fields['page_created'])){ $fields['page_created'] = $now; }
-				if(empty($fields['page_modified'])){ $fields['page_modified'] = $now; }
+				if (empty($fields['page_views'])) { $fields['page_views'] = 0; }
+				if (empty($fields['page_created'])) { $fields['page_created'] = $now; }
+				if (empty($fields['page_modified'])) { $fields['page_modified'] = $now; }
 				break;
 			case 'citations':
-				if(empty($fields['citation_created'])){ $fields['citation_created'] = $now; }
-				if(empty($fields['citation_modified'])){ $fields['citation_modified'] = $now; }
+				if (empty($fields['citation_created'])) { $fields['citation_created'] = $now; }
+				if (empty($fields['citation_modified'])) { $fields['citation_modified'] = $now; }
 				break;
 			case 'sets':
-				if(empty($fields['set_views'])){ $fields['set_views'] = 0; }
-				if(empty($fields['set_created'])){ $fields['set_created'] = $now; }
-				if(empty($fields['set_modified'])){ $fields['set_modified'] = $now; }
+				if (empty($fields['set_views'])) { $fields['set_views'] = 0; }
+				if (empty($fields['set_created'])) { $fields['set_created'] = $now; }
+				if (empty($fields['set_modified'])) { $fields['set_modified'] = $now; }
 				break;
 			case 'sizes':
-				if(!isset($fields['size_title'])){ $fields['size_title'] = ''; }
+				if (!isset($fields['size_title'])) { $fields['size_title'] = ''; }
 				break;
 			case 'users':
-				if(empty($fields['user_created'])){ $fields['user_created'] = $now; }
+				if (empty($fields['user_created'])) { $fields['user_created'] = $now; }
 				break;
 			default:
 				break;
@@ -2296,7 +2336,7 @@ class FSIP {
 		$field = $this->tables[$table];
 		unset($fields[$field]);
 		
-		if(count($fields) > 0){
+		if (count($fields) > 0) {
 			$columns = array_keys($fields);
 			$values = array_values($fields);
 		
@@ -2304,21 +2344,20 @@ class FSIP {
 		
 			// Add row to database
 			$query = $this->prepare('INSERT INTO ' . $table . ' (' . implode(', ', $columns) . ') VALUES (' . implode(', ', $value_slots) . ');');
-		}
-		else{
+		} else {
 			$values = array();
 			$query = $this->prepare('INSERT INTO ' . $table . ' (' . $this->tables[$table] . ') VALUES (?);');
 			$values = array(PDO::PARAM_NULL);
 		}
 		
-		if(!$query->execute($values)){
+		if (!$query->execute($values)) {
 			return false;
 		}
 		
 		// Return ID
 		$id = intval($this->db->lastInsertId(TABLE_PREFIX . $table . '_' . $field . '_seq'));
 		
-		if($id == 0){
+		if ($id == 0) {
 			return false;
 		}
 		
@@ -2334,9 +2373,9 @@ class FSIP {
 	 * @param string $default Include default fields (e.g., update modified dates)
 	 * @return bool True if successful
 	 */
-	public function updateRow($fields, $table, $ids=null, $default=true){
+	public function updateRow($fields, $table, $ids=null, $default=true) {
 		// Error checking
-		if(empty($fields) or empty($table) or !is_array($fields)){
+		if (empty($fields) or empty($table) or !is_array($fields)) {
 			return false;
 		}
 		
@@ -2347,8 +2386,8 @@ class FSIP {
 		$now = date('Y-m-d H:i:s');
 		
 		// Add default fields
-		if($default === true){
-			switch($table){
+		if ($default === true) {
+			switch($table) {
 				case 'images':
 					$fields['image_modified'] = $now;
 					break;
@@ -2374,7 +2413,7 @@ class FSIP {
 
 		// Add row to database
 		$query = $this->prepare('UPDATE ' . $table . ' SET ' . implode(' = ?, ', $columns) . ' = ? WHERE ' . $field . ' = ' . implode(' OR ' . $field . ' = ', $ids) . ';');
-		if(!$query->execute($values)){
+		if (!$query->execute($values)) {
 			return false;
 		}
 		
@@ -2388,8 +2427,8 @@ class FSIP {
 	 * @param string|int|array $ids Row IDs
 	 * @return bool True if successful
 	 */
-	public function deleteRow($table, $ids=null){
-		if(empty($table) or empty($ids)){
+	public function deleteRow($table, $ids=null) {
+		if (empty($table) or empty($ids)) {
 			return false;
 		}
 		
@@ -2401,7 +2440,7 @@ class FSIP {
 		// Delete row
 		$query = 'DELETE FROM ' . $table . ' WHERE ' . $field . ' = ' . implode(' OR ' . $field . ' = ', $ids) . ';';
 		
-		if(!$this->exec($query)){
+		if (!$this->exec($query)) {
 			return false;
 		}
 		
@@ -2415,8 +2454,8 @@ class FSIP {
 	 * @param string|array $fields Fields to check for empty values (if any are empty, deletion will occur) 
 	 * @return bool True if successful
 	 */
-	public function deleteEmptyRow($table, $fields){
-		if(empty($table) or empty($fields)){
+	public function deleteEmptyRow($table, $fields) {
+		if (empty($table) or empty($fields)) {
 			return false;
 		}
 		
@@ -2425,7 +2464,7 @@ class FSIP {
 		$fields = self::convertToArray($fields);
 		
 		$conditions = array();
-		foreach($fields as $field){
+		foreach($fields as $field) {
 			$conditions[] = '(' . $field . ' = ? OR ' . $field . ' IS NULL)';
 		}
 		
@@ -2434,7 +2473,7 @@ class FSIP {
 		// Delete empty rows
 		$query = $this->prepare('DELETE FROM ' . $table . ' WHERE ' . implode(' OR ', $conditions) . ';');
 		
-		if(!$query->execute($sql_params)){
+		if (!$query->execute($sql_params)) {
 			return false;
 		}
 		
@@ -2447,11 +2486,14 @@ class FSIP {
 	 * @param string $table Table name
 	 * @return int Number of rows
 	 */
-	function countTable($table){
+	function countTable($table) {
 		$table = $this->sanitize($table);
 		
 		$field = $this->tables[$table];
-		if (empty($field)) { return false; }
+		if (empty($field)) 
+		{ 
+			return false;
+		}
 		
 		$sql = '';
 		
@@ -2459,16 +2501,16 @@ class FSIP {
 		$with_deleted_columns = array('images', 'comments', 'sets', 'pages', 'rights');
 		if (in_array($table, $with_deleted_columns)) {
 			$show_deleted = false;
-			if($this->adminpath === true) {
+			if ($this->adminpath === true) {
 				$user = new User();
-				if(!empty($user) and $user->perm()){
-					if($user->returnPref('recovery_mode') === true){
+				if (!empty($user) and $user->perm()) {
+					if ($user->returnPref('recovery_mode') === true) {
 						$show_deleted = true;
 					}
 				}
 			}
 			
-			if ($show_deleted === false){
+			if ($show_deleted === false) {
 				$sql = ' WHERE ' . $table . '.' . substr($field, 0, -2) . 'deleted IS NULL';
 			}
 		}
@@ -2964,7 +3006,10 @@ class FSIP {
 	 */
 	public function fitString($string, $length=50) {
 		$length = intval($length);
-		if ($length < 3) { return false; }
+		if ($length < 3) 
+		{ 
+			return false;
+		}
 		
 		$string = trim($string);
 		if (strlen($string) > $length) {
@@ -3018,12 +3063,12 @@ class FSIP {
 	 * @param string $plural Plural form
 	 * @return string
 	 */
-	public function returnCount($count, $singular, $plural=null){
-		if(empty($plural)){
+	public function returnCount($count, $singular, $plural=null) {
+		if (empty($plural)) {
 			$plural = $singular . 's';
 		}
 		
-		if($count == 1){
+		if ($count == 1) {
 			return $singular;
 		}
 		
@@ -3038,7 +3083,7 @@ class FSIP {
 	 * @param string $plural Plural form
 	 * @return string
 	 */
-	public function returnFullCount($count, $singular, $plural=null){
+	public function returnFullCount($count, $singular, $plural=null) {
 		$count = number_format($count) . ' ' . self::returnCount($count, $singular, $plural);
 		
 		return $count;
@@ -3050,8 +3095,8 @@ class FSIP {
 	 * @param string $path
 	 * @return string
 	 */
-	public function correctWinPath($path){
-		if(SERVER_TYPE == 'win'){
+	public function correctWinPath($path) {
+		if (SERVER_TYPE == 'win') {
 			$path = str_replace('/', '\\', $path);
 		}
 		return $path;
@@ -3065,19 +3110,18 @@ class FSIP {
 	 * @param array $get Append to URL (GET variables as associative array)
 	 * @return string
 	 */
-	public function location($get=null){
+	public function location($get=null) {
 		$location = LOCATION;
 		$location .= preg_replace('#\?.*$#si', '', $_SERVER['REQUEST_URI']);
 		
 		// Retain page data
 		preg_match('#page=[0-9]+#si', $_SERVER['REQUEST_URI'], $matches);
-		if(!empty($matches[0])){
+		if (!empty($matches[0])) {
 			$location .= '?' . $matches[0];
-			if(!empty($params)){
+			if (!empty($params)) {
 				$location .= '&' . http_build_query($get);
 			}
-		}
-		elseif(!empty($params)){
+		} elseif(!empty($params)) {
 			$location .= '?' . http_build_query($get);
 		}
 		
@@ -3090,14 +3134,16 @@ class FSIP {
 	 * @param array $get Append to URL (GET variables as associative array)
 	 * @return string URL
 	 */
-	public function locationFull($get=null){
-		if(!empty($array) and !is_array($get)){ return false; }
+	public function locationFull($get=null) {
+		if (!empty($array) and !is_array($get))
+		{ 
+			return false; 
+		}
 		$location = LOCATION . $_SERVER['REQUEST_URI'];
-		if(!empty($get)){
-			if(preg_match('#\?.*$#si', $location)){
+		if (!empty($get)) {
+			if (preg_match('#\?.*$#si', $location)) {
 				$location .= '&' . http_build_query($get);
-			}
-			else{
+			} else {
 				$location .= '?' . http_build_query($get);
 			}
 		}
@@ -3111,11 +3157,10 @@ class FSIP {
 	 * @param string $page 
 	 * @return void
 	 */
-	public function setCallback($page=null){
-		if(!empty($page)){
+	public function setCallback($page=null) {
+		if (!empty($page)) {
 			$_SESSION['fsip']['callback'] = $page;
-		}
-		else{
+		} else {
 			$_SESSION['fsip']['callback'] = self::location();
 		}
 	}
@@ -3126,16 +3171,17 @@ class FSIP {
 	 * @param string $url Fallback URL if callback URL isn't set
 	 * @return void
 	 */
-	public function callback($url=null){
+	public function callback($url=null) {
 		unset($_SESSION['fsip']['go']);
-		if(!empty($_SESSION['fsip']['callback'])){
-			header('Location: ' . $_SESSION['fsip']['callback']);
-		}
-		elseif(!empty($url)){
-			header('Location: ' . $url);
-		}
-		else{
-			header('Location: ' . LOCATION . BASE . ADMIN . 'dashboard/');
+		if(!empty($_SESSION['fsip']['callback'])) {
+			$location = $_SESSION['fsip']['callback'];
+			$this->headerLocationRedirect($location);
+		} elseif(!empty($url)) {
+			$location= $url;
+			$this->headerLocationRedirect($location);
+		} else {
+			$location = LOCATION . BASE . ADMINFOLDER . 'dashboard/';
+			$this->headerLocationRedirect($location);
 		}
 		exit();
 	}
@@ -3145,15 +3191,13 @@ class FSIP {
 	 *
 	 * @return void
 	 */
-	public function back(){
-		if(!empty($_SESSION['fsip']['back'])){
+	public function back() {
+		if (!empty($_SESSION['fsip']['back'])) {
 			echo $_SESSION['fsip']['back'];
-		}
-		elseif(!empty($_SERVER['HTTP_REFERER'])){
+		} elseif (!empty($_SERVER['HTTP_REFERER'])) {
 			echo $_SERVER['HTTP_REFERER'];
-		}
-		else{
-			echo LOCATION . BASE . ADMIN . 'dashboard/';
+		} else {
+			echo LOCATION . BASE . ADMINFOLDER . 'dashboard/';
 		}
 	}
 	
@@ -3163,7 +3207,7 @@ class FSIP {
 	 * @param string $uri
 	 * @return string
 	 */
-	public function siftDomain($uri){
+	public function siftDomain($uri) {
 		$domain = preg_replace('#https?://([^/]*).*#si', '$1', $uri);
 		return $domain;
 	}
@@ -3178,14 +3222,17 @@ class FSIP {
 	 * @param string $message 
 	 * @return True if successful
 	 */
-	public function email($to=0, $subject=null, $message=null){
-		if(empty($subject) or empty($message)){ return false; }
+ 	public function email($to=0, $subject=null, $message=null) {
+		if (empty($subject) or empty($message))
+		{ 
+			return false;
+		}
 		
-		if($to == 0){
+		if ($to == 0) {
 			$to = $this->returnConf('web_email');
 		}
 		
-		if(is_int($to) or preg_match('#[0-9]+#s', $to)){
+		if (is_int($to) or preg_match('#[0-9]+#s', $to)) {
 			$query = $this->prepare('SELECT user_email FROM users WHERE user_id = ' . $to);
 			$query->execute();
 			$user = $query->fetch();
@@ -3194,7 +3241,10 @@ class FSIP {
 		
 		$source = strip_tags($this->returnConf('web_title'));
 		
-		if(empty($source)){ $source = 'FSIP'; }
+		if (empty($source))
+		{
+			$source = 'FSIP'; 
+		}
 		
 		$subject = $source . ': ' . $subject;
 		$message = $message . "\r\n\n" . '-- ' . $source;
@@ -3217,198 +3267,158 @@ class FSIP {
 	 * @param int|string|array $http_headers Index array of HTTP headers to send (if an item is an integer, send as status code)
 	 * @return void
 	 */
-	public static function addError($severity, $message=null, $filename=null, $line_number=null, $http_headers=null){
-		if(!(error_reporting() & $severity)){
+	public static function addError($severity, $message=null, $filename=null, $line_number=null, $http_headers=null) {
+
+		if (!(error_reporting() & $severity)) {
 			// This error code is not included in error_reporting
 			// return;
 		}
-		
+
 		// Is exception?
-		if(is_object($severity)){
+		if (is_object($severity)) {
 			$message = $severity->getMessage();
 			$filename = $severity->getFile();
 			$line_number = $severity->getLine();
 			$severity = E_USER_ERROR;
 		}
 		
-		if(is_string($severity)){
-			if(!is_array($http_headers)){
+		if (is_string($severity)) {
+			if (!is_array($http_headers)) {
 				$http_headers_wrong_format = $http_headers;
 				$http_headers = array();
-				if(is_int($http_headers_wrong_format)){
+				if (is_int($http_headers_wrong_format)) {
 					$http_headers[] = $http_headers_wrong_format;
 				}
-				if(is_string($http_headers_wrong_format)){
+				if (is_string($http_headers_wrong_format)) {
 					$http_headers[] = $http_headers_wrong_format;
 				}
 			}
-			foreach($http_headers as $header){
-				if(!headers_sent()){
-					if(is_string($header)){
+			foreach ($http_headers as $header) {
+				if (!headers_sent()) {
+					if (is_string($header)) {
 						header($header, true);
-					}
-					elseif(is_integer($header)){
-						if($header == 100){
+					} elseif (is_integer($header)) {
+						if ($header == 100) {
 							header('HTTP/1.0 100 Continue', true);
 							header('Status: 100 Continue', true);
-						}
-						elseif($header == 101){
+						} elseif ($header == 101) {
 							header('HTTP/1.0 101 Switching Protocols', true);
 							header('Status: 101 Switching Protocols', true);
-						}
-						elseif($header == 200){
+						} elseif ($header == 200) {
 							header('HTTP/1.0 200 OK', true);
 							header('Status: 200 OK', true);
-						}
-						elseif($header == 201){
+						} elseif ($header == 201) {
 							header('HTTP/1.0 201 Created', true);
 							header('Status: 201 Created', true);
-						}
-						elseif($header == 202){
+						} elseif ($header == 202) {
 							header('HTTP/1.0 202 Accepted', true);
 							header('Status: 202 Accepted', true);
-						}
-						elseif($header == 203){
+						} elseif ($header == 203) {
 							header('HTTP/1.0 203 Non-Authoritative Information', true);
 							header('Status: 203 Non-Authoritative Information', true);
-						}
-						elseif($header == 204){
+						} elseif ($header == 204) {
 							header('HTTP/1.0 204 No Content', true);
 							header('Status: 204 No Content', true);
-						}
-						elseif($header == 205){
+						} elseif ($header == 205) {
 							header('HTTP/1.0 205 Reset Content', true);
 							header('Status: 205 Reset Content', true);
-						}
-						elseif($header == 206){
+						} elseif ($header == 206) {
 							header('HTTP/1.0 206 Partial Content', true);
 							header('Status: 206 Partial Content', true);
-						}
-						elseif($header == 300){
+						} elseif ($header == 300) {
 							header('HTTP/1.0 300 Multiple Choices', true);
 							header('Status: 300 Multiple Choices', true);
-						}
-						elseif($header == 301){
+						} elseif ($header == 301) {
 							header('HTTP/1.0 301 Moved Permanently', true);
 							header('Status: 301 Moved Permanently', true);
-						}
-						elseif($header == 302){
+						} elseif ($header == 302) {
 							header('HTTP/1.0 302 Moved Temporarily', true);
 							header('Status: 302 Moved Temporarily', true);
-						}
-						elseif($header == 303){
+						} elseif ($header == 303) {
 							header('HTTP/1.0 303 See Other', true);
 							header('Status: 303 See Other', true);
-						}
-						elseif($header == 304){
+						} elseif ($header == 304) {
 							header('HTTP/1.0 304 Not Modified', true);
 							header('Status: 304 Not Modified', true);
-						}
-						elseif($header == 305){
+						} elseif ($header == 305) {
 							header('HTTP/1.0 305 Use Proxy', true);
 							header('Status: 305 Use Proxy', true);
-						}
-						elseif($header == 307){
+						} elseif ($header == 307) {
 							header('HTTP/1.0 307 Temporary Redirect', true);
 							header('Status: 307 Temporary Redirect', true);
-						}
-						elseif($header == 400){
+						} elseif ($header == 400) {
 							header('HTTP/1.0 400 Bad Request', true);
 							header('Status: 400 Bad Request', true);
-						}
-						elseif($header == 401){
+						} elseif ($header == 401) {
 							header('HTTP/1.0 401 Unauthorized', true);
 							header('Status: 401 Unauthorized', true);
-						}
-						elseif($header == 402){
+						} elseif ($header == 402) {
 							header('HTTP/1.0 402 Payment Required', true);
 							header('Status: 402 Payment Required', true);
-						}
-						elseif($header == 403){
+						} elseif ($header == 403) {
 							header('HTTP/1.0 403 Forbidden', true);
 							header('Status: 403 Forbidden', true);
-						}
-						elseif($header == 404){
+						} elseif ($header == 404) {
 							header('HTTP/1.0 404 Not Found', true);
 							header('Status: 404 Not Found', true);
-						}
-						elseif($header == 405){
+						} elseif ($header == 405) {
 							header('HTTP/1.0 405 Method Not Allowed', true);
 							header('Status: 405 Method Not Allowed', true);
-						}
-						elseif($header == 406){
+						} elseif ($header == 406) {
 							header('HTTP/1.0 406 Not Acceptable', true);
 							header('Status: 406 Not Acceptable', true);
-						}
-						elseif($header == 407){
+						} elseif ($header == 407) {
 							header('HTTP/1.0 407 Proxy Authentication Required', true);
 							header('Status: 407 Proxy Authentication Required', true);
-						}
-						elseif($header == 408){
+						} elseif ($header == 408) {
 							header('HTTP/1.0 408 Request Timeout', true);
 							header('Status: 408 Request Timeout', true);
-						}
-						elseif($header == 409){
+						} elseif ($header == 409) {
 							header('HTTP/1.0 409 Conflict', true);
 							header('Status: 409 Conflict', true);
-						}
-						elseif($header == 410){
+						} elseif ($header == 410) {
 							header('HTTP/1.0 410 Gone', true);
 							header('Status: 410 Gone', true);
-						}
-						elseif($header == 411){
+						} elseif ($header == 411) {
 							header('HTTP/1.0 411 Length Required', true);
 							header('Status: 411 Length Required', true);
-						}
-						elseif($header == 412){
+						} elseif ($header == 412) {
 							header('HTTP/1.0 412 Precondition Failed', true);
 							header('Status: 412 Precondition Failed', true);
-						}
-						elseif($header == 413){
+						} elseif ($header == 413) {
 							header('HTTP/1.0 413 Request Entity Too Large', true);
 							header('Status: 413 Request Entity Too Large', true);
-						}
-						elseif($header == 414){
+						} elseif ($header == 414) {
 							header('HTTP/1.0 414 Request URI Too Large', true);
 							header('Status: 414 Request URI Too Large', true);
-						}
-						elseif($header == 415){
+						} elseif ($header == 415) {
 							header('HTTP/1.0 415 Unsupported Media Type', true);
 							header('Status: 415 Unsupported Media Type', true);
-						}
-						elseif($header == 416){
+						} elseif ($header == 416) {
 							header('HTTP/1.0 416 Request Range Not Satisfiable', true);
 							header('Status: 416 Request Range Not Satisfiable', true);
-						}
-						elseif($header == 417){
+						} elseif ($header == 417) {
 							header('HTTP/1.0 417 Expectation Failed', true);
 							header('Status: 417 Expectation Failed', true);
-						}
-						elseif($header == 500){
+						} elseif ($header == 500) {
 							header('HTTP/1.0 500 Internal Server Error', true);
 							header('Status: 500 Internal Server Error', true);
-						}
-						elseif($header == 501){
+						} elseif ($header == 501) {
 							header('HTTP/1.0 501 Not Implemented', true);
 							header('Status: 501 Not Implemented', true);
-						}
-						elseif($header == 502){
+						} elseif ($header == 502) {
 							header('HTTP/1.0 502 Bad Gateway', true);
 							header('Status: 502 Bad Gateway', true);
-						}
-						elseif($header == 503){
+						} elseif ($header == 503) {
 							header('HTTP/1.0 503 Service Unavailable', true);
 							header('Status: 503 Service Unavailable', true);
-						}
-						elseif($header == 504){
+						} elseif ($header == 504) {
 							header('HTTP/1.0 504 Gateway Timeout', true);
 							header('Status: 504 Gateway Timeout', true);
-						}
-						elseif($header == 505){
+						} elseif ($header == 505) {
 							header('HTTP/1.0 505 HTTP Version Not Supported', true);
 							header('Status: 505 HTTP Version Not Supported', true);
-						}
-						else{
+						} else {
 							header('HTTP/1.0 ' . $header, true);
 							header('Status: ' . $header, true);
 						}
@@ -3422,7 +3432,7 @@ class FSIP {
 			
 			// Get error page
 			ob_start();
-			chdir(PATH);
+			chdir(PATH); //error.php in root folder / PATH
 			require('error.php');
 			ob_flush();
 			
@@ -3430,7 +3440,7 @@ class FSIP {
 			exit();
 		}
 		
-		switch($severity){
+		switch($severity) {
 			case E_USER_NOTICE:
 				$_SESSION['fsip']['errors'][] = array('constant' => $severity, 'severity' => 'notice', 'message' => $message, 'filename' => $filename, 'line_number' => $line_number);
 				break;
@@ -3438,10 +3448,10 @@ class FSIP {
 				$_SESSION['fsip']['errors'][] = array('constant' => $severity, 'severity' => 'warning', 'message' => $message, 'filename' => $filename, 'line_number' => $line_number);
 				break;
 			case E_USER_ERROR:
-				try{
+				try {
 					throw new ErrorException($message, 0, E_USER_ERROR, $filename, $line_number);
 				}
-				catch(ErrorException $e){
+				catch(ErrorException $e) {
 					self::addException($e);
 				}
 			default:
@@ -3458,7 +3468,7 @@ class FSIP {
 	 * @param Exception $e 
 	 * @return void
 	 */
-	public static function addException($e){
+	public static function addException($e) {
 		throw new FSIPException($e);
 	}
 	
@@ -3525,7 +3535,7 @@ class FSIP {
 	 *
 	 * @return array
 	 */
-	public function debug(){
+	public function debug() {
 		$_SESSION['fsip']['debug']['execution_time'] = microtime(true) - $_SESSION['fsip']['debug']['start_time'];
 		return $_SESSION['fsip']['debug'];
 	}
@@ -3537,8 +3547,11 @@ class FSIP {
 	 * @param string $number 
 	 * @return void
 	 */
-	public function report($message, $number=null){
-		if(isset($_SESSION['fsip']['warning']) and ($_SESSION['fsip']['warning'] == $message)){ return false; }
+	public function report($message, $number=null) {
+		if (isset($_SESSION['fsip']['warning']) and ($_SESSION['fsip']['warning'] == $message))
+		{ 
+			return false;
+		}
 		
 		$_SESSION['fsip']['warning'] = $message;
 		
@@ -3549,7 +3562,7 @@ class FSIP {
 		
 		// Write message
 		$handle = fopen($this->correctWinPath(PATH . DB . 'log.txt'), 'a');
-		if(@fwrite($handle, $message) === false){
+		if (@fwrite($handle, $message) === false) {
 			$this->addError(E_USER_ERROR, 'Cannot write to report file');
 		}
 		fclose($handle);
@@ -3573,6 +3586,20 @@ class FSIP {
 		$renderer = new Text_Diff_Renderer_inline();
 		return nl2br($renderer->render($diff));
 	}
+
+	/**
+	 * Redirect to another URL using header(). 
+	 * There must not have been any output printed prior in order for this to work.
+	 *
+	 * @param string $location The URL to redirect to.
+	 */	
+	 public static function headerLocationRedirect($location) {
+		header('Location: ' . $location);
+		echo "<h1>Redirecting</h1>";
+		echo "<p>You are being redirected. If you're still here after a few seconds please ";
+		echo '<a href="'. $location .'">'."click here</a></p>";
+	}
+
 }
 
 class FSIPException extends Exception implements Serializable {
@@ -3595,7 +3622,7 @@ class FSIPException extends Exception implements Serializable {
 		
 		// Get error page
 		ob_start();
-		chdir(PATH . ADMIN);
+		chdir(PATH . ADMINFOLDER); // error.php in root/admin folder PATH.ADMINFOLDER
 		require('error.php');
 		ob_flush();
 		
@@ -3628,6 +3655,7 @@ class FSIPException extends Exception implements Serializable {
 		
 		return $trace;
 	}
+
 }
 
 ?>

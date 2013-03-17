@@ -9,7 +9,7 @@
 /**
  * @author Budin Ltd. <contact@budinltd.com>
  * @copyright Copyright (c) 2010-2012, Budin Ltd.
- * @version 1.0
+ * @version 1.1
  */
 
 class Right extends FSIP {
@@ -145,12 +145,14 @@ class Right extends FSIP {
 	}
 	
 	/**
-	 * Format time
+	 * Make time more human-readable
 	 *
-	 * @param string $format Same format as date();
-	 * @return void
+	 * @param string $time Time - unused and left null, present to match format of parent class function
+	 * @param string $format Format (as in date();)
+	 * @param string $empty unused, present to match parent class function
+	 * @return string|false Time or error
 	 */
-	public function formatTime($format=null) {
+	public function formatTime($time=null, $format=null, $empty=false) {
 		foreach($this->rights as &$right) {
 			$right['right_created_format'] = parent::formatTime($right['right_created'], $format);
 			$right['right_modified_format'] = parent::formatTime($right['right_modified'], $format);

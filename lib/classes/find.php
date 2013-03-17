@@ -9,7 +9,7 @@
 /**
  * @author Budin Ltd. <contact@budinltd.com>
  * @copyright Copyright (c) 2010-2012, Budin Ltd.
- * @version 1.0
+ * @version 1.1
  */
 
 class Find extends FSIP {
@@ -155,7 +155,7 @@ class Find extends FSIP {
 			}
 		}
 		
-		// Create a page_navigation_string 
+		// Create a page_navigation_string for templates to insert.
 		$pnavstr = "";
 		if ($this->page_count > 1) {
 			$pnavstr .= "<p>";

@@ -9,7 +9,7 @@
 /**
  * @author Budin Ltd. <contact@budinltd.com>
  * @copyright Copyright (c) 2010-2012, Budin Ltd.
- * @version 1.0
+ * @version 1.1
  */
 
 class Set extends FSIP {
@@ -172,12 +172,14 @@ class Set extends FSIP {
 	}
 	
 	/**
-	 * Format time
+	 * Make time more human-readable
 	 *
-	 * @param string $format Same format as date();
-	 * @return void
+	 * @param string $time Time - unused and left null, present to match format of parent class function
+	 * @param string $format Format (as in date();)
+	 * @param string $empty unused, present to match parent class function
+	 * @return string|false Time or error
 	 */
-	public function formatTime($format=null) {
+	public function formatTime($time=null, $format=null, $empty=false) {
 		foreach($this->sets as &$set) {
 			$set['set_created_format'] = parent::formatTime($set['set_created'], $format);
 			$set['set_modified_format'] = parent::formatTime($set['set_modified'], $format);

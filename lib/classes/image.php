@@ -9,7 +9,7 @@
 /**
  * @author Budin Ltd. <contact@budinltd.com>
  * @copyright Copyright (c) 2010-2012, Budin Ltd.
- * @version 1.0
+ * @version 1.1
  */
 
 class Image extends FSIP {
@@ -90,11 +90,11 @@ class Image extends FSIP {
 				// Attach additional fields
 				for($i = 0; $i < $image_count; ++$i) {
 					if (empty($this->images[$i]['image_directory'])) {	
-						$this->images[$i]['image_file'] = parent::correctWinPath(PATH . IMAGES . $this->images[$i]['image_id'] . '.' . $this->images[$i]['image_ext']);
+						$this->images[$i]['image_file'] = parent::correctWinPath(PATH . IMAGEDATA . $this->images[$i]['image_id'] . '.' . $this->images[$i]['image_ext']);
 					} else {
-						$this->images[$i]['image_file'] = parent::correctWinPath(PATH . IMAGES . $this->images[$i]['image_directory'] . $this->images[$i]['image_id'] . '.' . $this->images[$i]['image_ext']);
+						$this->images[$i]['image_file'] = parent::correctWinPath(PATH . IMAGEDATA . $this->images[$i]['image_directory'] . $this->images[$i]['image_id'] . '.' . $this->images[$i]['image_ext']);
 					}
-					$this->images[$i]['image_src'] = BASE . IMAGES . $this->images[$i]['image_id'] . '.' . $this->images[$i]['image_ext'];
+					$this->images[$i]['image_src'] = BASE . IMAGEDATA . $this->images[$i]['image_id'] . '.' . $this->images[$i]['image_ext'];
 					$title_url = $this->makeURL($this->images[$i]['image_title']);
 					if (empty($title_url) or (URL_RW != '/')) {
 						$this->images[$i]['image_uri_rel'] = BASE . 'image' . URL_ID . $this->images[$i]['image_id'] . URL_RW;
@@ -178,6 +178,7 @@ class Image extends FSIP {
 			$image_size = $this->getSize($file, $image_ext);
 			
 			// Configuration: default rights set
+			$right_id = null; //to avoid using a variable that is not declared
 			if ($this->returnConf('rights_default')) {
 				$right_id = $this->returnConf('rights_default_id');
 			}
@@ -195,7 +196,7 @@ class Image extends FSIP {
 			$image_ids[] = $image_id;
 
 			// Copy image to archive, delete original from shoebox
-			copy($file, parent::correctWinPath(PATH . IMAGES . $image_id . '.' . $image_ext));
+			copy($file, parent::correctWinPath(PATH . IMAGEDATA . $image_id . '.' . $image_ext));
 			@unlink($file);
 		}
 		
@@ -273,7 +274,7 @@ class Image extends FSIP {
 				$size_append = $size['size_append'];
 				$size_watermark = $size['size_watermark'];
 				$size_label = $size['size_label'];
-				$size_dest = parent::correctWinPath(PATH . IMAGES . $images[$i]['image_directory'] . $size_prepend . $images[$i]['image_id'] . $size_append . '.' . $images[$i]['image_ext']);
+				$size_dest = parent::correctWinPath(PATH . IMAGEDATA . $images[$i]['image_directory'] . $size_prepend . $images[$i]['image_id'] . $size_append . '.' . $images[$i]['image_ext']);
 				
 				if (in_array($images[$i]['image_ext'], array('pdf', 'svg'))) {
 					$size_dest = $this->changeExt($size_dest, 'png');
@@ -768,12 +769,12 @@ class Image extends FSIP {
 	}
 	
 	/**
-	 * Determine image extension
+	 * Determine image extension. Static function to allow Image::getExt access without warnings.
 	 *
 	 * @param string $file Full path to file
 	 * @return string|false Extension
 	 */
-	public function getExt($file) {
+	public static function getExt($file) {
 		// Error checking
 		if (empty($file)) {
 			return false;
@@ -1431,15 +1432,15 @@ class Image extends FSIP {
 					$this->images[$j]['image_directory'] = '';
 				}
 				
-				$size['size_file'] = parent::correctWinPath(PATH . IMAGES . $this->images[$j]['image_directory'] . $size_prepend . $this->images[$j]['image_id'] . $size_append . '.' . $this->images[$j]['image_ext']);
+				$size['size_file'] = parent::correctWinPath(PATH . IMAGEDATA . $this->images[$j]['image_directory'] . $size_prepend . $this->images[$j]['image_id'] . $size_append . '.' . $this->images[$j]['image_ext']);
 				
-				$size['size_src'] = BASE . IMAGES . $this->images[$j]['image_directory'] . $size_prepend . $this->images[$j]['image_id'] . $size_append . '.' . $image_ext;
+				$size['size_src'] = BASE . IMAGEDATA . $this->images[$j]['image_directory'] . $size_prepend . $this->images[$j]['image_id'] . $size_append . '.' . $image_ext;
 				
 				$width = $size['size_width'];
 				$height = $size['size_height'];
 
-			    $this->images[$j][$size_label] = BASE . IMAGES . $this->images[$j]['image_directory'] . $size_prepend . $this->images[$j]['image_id'] . $size_append . '.' . $image_ext;
-			    $this->images[$j][$size_img_label] = '<img src="' . BASE . IMAGES . $this->images[$j]['image_directory'] . $size_prepend . $this->images[$j]['image_id'] . $size_append . '.' . $image_ext . ' alt="" />';
+			    $this->images[$j][$size_label] = BASE . IMAGEDATA . $this->images[$j]['image_directory'] . $size_prepend . $this->images[$j]['image_id'] . $size_append . '.' . $image_ext;
+			    $this->images[$j][$size_img_label] = '<img src="' . BASE . IMAGEDATA . $this->images[$j]['image_directory'] . $size_prepend . $this->images[$j]['image_id'] . $size_append . '.' . $image_ext . ' alt="" />';
 				
 				$width_orig = $this->images[$j]['image_width'];
 				$height_orig = $this->images[$j]['image_height'];
@@ -1514,14 +1515,17 @@ class Image extends FSIP {
 		
 		return $exifs;
 	}
-	
+
+
 	/**
 	 * Get image tags and append to image array
 	 *
 	 * @param bool $show_hidden_tags Include hidden tags
+	 * @param bool $published_only Unused - present for compatibility with parent function declaration
+	 * @param bool $public_only Unused - present for compatibility with parent function declaration	 
 	 * @return array Associative array of tags
 	 */
-	public function getTags($show_hidden_tags=false) {
+	public function getTags($show_hidden_tags=false, $published_only=false, $public_only=false) {
 		// Sort by tag name
 		if ($this->returnConf('tag_alpha')) {
 			$query = $this->prepare('SELECT tags.tag_name, tags.tag_id, images.image_id FROM tags, links, images' . $this->sql . ' AND tags.tag_id = links.tag_id AND links.image_id = images.image_id ORDER BY tags.tag_name;');
@@ -1920,7 +1924,7 @@ class Image extends FSIP {
 	 */
 	public function deSizeImage($original=false, $save_labels=null) {
 		// Open image directory
-		$dir = parent::correctWinPath(PATH . IMAGES);
+		$dir = parent::correctWinPath(PATH . IMAGEDATA);
 		$handle = opendir($dir);
 		$images = array();
 		
@@ -1962,12 +1966,14 @@ class Image extends FSIP {
 	}
 	
 	/**
-	 * Format time
+	 * Make time more human-readable
 	 *
-	 * @param string $format Same format as date();
-	 * @return void
+	 * @param string $time Time - unused and left null, present to match format of parent class function
+	 * @param string $format Format (as in date();)
+	 * @param string $empty unused, present to match parent class function
+	 * @return string|false Time or error
 	 */
-	public function formatTime($format=null) {
+	public function formatTime($time=null, $format=null, $empty=false) {
 		foreach($this->images as &$image) {
 			$image['image_taken_format'] = parent::formatTime($image['image_taken'], $format);
 			$image['image_uploaded_format'] = parent::formatTime($image['image_uploaded'], $format);
