@@ -240,7 +240,7 @@ textarea.comment_text{
 // Userbar for admin/user access from user site
 
 #header_holder{
-        background: #222 url(/admin/images/header_bg.png) bottom left repeat-x;
+        background: #222 url(/lib/images/header_bg.png) bottom left repeat-x;
 }
         
 #header{

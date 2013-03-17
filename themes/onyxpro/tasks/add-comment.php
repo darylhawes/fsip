@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../../../config.php');
+require_once('../../../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 if(!empty($_POST['image_id'])){
