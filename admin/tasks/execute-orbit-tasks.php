@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../../config.php');
+require_once('../../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -14,16 +14,15 @@ $user = new User;
 
 $user->perm(true);
 
-if(empty($_POST['image_id'])){
+if (empty($_POST['image_id'])) {
 	$count = $_SESSION['fsip']['tasks'];
 	
-	for($i=1; $i <= $count; $i++){
+	for($i=1; $i <= $count; $i++) {
 		$tasks[] = $i;
 	}
 	
 	echo $fsip->removeNull(json_encode($tasks));
-}
-else{
+} else {
 	$prbit = new Orbit;
 	$prbit->executeTask($_POST['image_id']);
 }

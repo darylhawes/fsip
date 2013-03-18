@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../../config.php');
+require_once('../../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -16,7 +16,7 @@ $user->perm(true);
 
 $id = $fsip->findID(@$_POST['image_id']);
 
-if(empty($id)){
+if (empty($id)) {
 	$olds = array();
 	
 	$query = $fsip->prepare('SELECT DISTINCT versions.version_id FROM versions WHERE versions.version_similarity > :version_similarity AND versions.version_created < :version_created;');
@@ -35,8 +35,7 @@ if(empty($id)){
 	}
 	
 	echo json_encode($version_ids);
-}
-else{
+} else {
 	$fsip->exec('DELETE FROM versions WHERE version_id = ' . intval($id));
 }
 

@@ -8,7 +8,7 @@
 
 error_reporting(E_ALL & ~E_DEPRECATED);
 
-require_once('./../../config.php');
+require_once('../../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -24,19 +24,19 @@ $comparison = $fsip->compare($version['version_title'] . "\n\n" . $version['vers
 // Bold title
 $comparison = preg_replace('#(.*?)\n#si', '<strong>\\1</strong>', $comparison, 1);
 
-function charsToBlanks($str){
+function charsToBlanks($str) {
 	$paras = substr_count($str, "\n");
 	$len = strlen($str);
 	$str = ' &#0160; ' . str_repeat(' &#0160;', ceil($len / 2));
 	$str .= str_repeat('<br />', $paras);
-	if((1&$len)){ $str .= ' '; }
+	if ((1&$len)){ $str .= ' '; }
 	
 	return $str;
 }
 
 $comparison_mod = preg_replace('#<ins>(.*?)</ins>#esi', "charsToBlanks('\\1')", $comparison);
 
-if(empty($comparison)){
+if (empty($comparison)) {
 	exit();
 }
 

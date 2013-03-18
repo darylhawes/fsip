@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../../config.php');
+require_once('../../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -14,7 +14,7 @@ $user = new User;
 
 $user->perm(true);
 
-if(!empty($_POST['id'])){
+if (!empty($_POST['id'])) {
 	$fsip->revertVersion($_POST['id']);
 }
 

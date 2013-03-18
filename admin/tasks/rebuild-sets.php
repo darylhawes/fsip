@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../../config.php');
+require_once('../../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -16,13 +16,12 @@ $user->perm(true);
 
 $id = $fsip->findID(@$_POST['image_id']);
 
-if(empty($id)){
+if (empty($id)) {
 	$sets = new Find('sets');
 	$sets->find();
 	
 	echo json_encode($sets->ids);
-}
-else{
+} else {
 	$set = new Set(intval($id));
 	$set->rebuild();
 }

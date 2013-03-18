@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../../config.php');
+require_once('../../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -22,11 +22,11 @@ $images = $query->fetchAll();
 
 $image_ids = array();
 
-foreach($images as $image){
+foreach($images as $image) {
 	$image_ids[] = $image['image_id'];
 }
 
-if(count($image_ids) > 0){
+if (count($image_ids) > 0) {
 	$query = $fsip->prepare('UPDATE images SET image_description_raw = image_description, image_markup = :image_markup WHERE (image_id IN (' . implode(', ', $image_ids) . '));');
 	$query->execute(array(':image_markup' => $markup));
 }

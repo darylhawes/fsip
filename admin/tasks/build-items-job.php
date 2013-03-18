@@ -11,7 +11,7 @@ ini_set('display_errors', 0);
 
 chdir(__DIR__);
 
-require_once('./../../config.php');
+require_once('../../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -21,11 +21,11 @@ if(!isset($argv)){ exit(); };
 
 $table_ids = array();
 
-foreach($fsip->tables_index as $key => $value){
+foreach($fsip->tables_index as $key => $value) {
 	$table_ids[] = ++$key;
 }
 	
-foreach($table_ids as $id){
+foreach($table_ids as $id) {
 	$table = $fsip->tables_index[--$id];
 	
 	$ids = new Find($table);
@@ -37,13 +37,15 @@ foreach($table_ids as $id){
 	
 	$item_table_ids = array();
 	
-	foreach($items as $item){
+	foreach($items as $item) {
 		$item_table_ids[] = $item['item_table_id'];
 	}
 	
-	foreach($ids->ids as $item_id){
-		if(in_array($item_id, $item_table_ids)){ continue; }
-		
+	foreach($ids->ids as $item_id) {
+		if (in_array($item_id, $item_table_ids)) { 
+			continue; 
+		}
+
 		$fields = array('item_table' => $fsip->tables_index[$id],
 			'item_table_id' => $item_id);
 		$fsip->addRow($fields, 'items');
@@ -51,8 +53,10 @@ foreach($table_ids as $id){
 	
 	$delete_ids = array();
 	
-	foreach($item_table_ids as $item_id){
-		if(in_array($item_id, $ids->ids)){ continue; }
+	foreach($item_table_ids as $item_id) {
+		if (in_array($item_id, $ids->ids)) { 
+			continue; 
+		}
 		$delete_ids[] = $item_id;
 	}
 	

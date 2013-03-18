@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../../config.php');
+require_once('../../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -16,12 +16,16 @@ $user->perm(true);
 
 // Get image
 $id = intval($_REQUEST['id']);
-if(empty($id)){ exit(); }
+if (empty($id)) {
+	exit(); 
+}
 $images = new Image($id);
 $image = $images->images[0];
 
 // Set browser headers
-if(ini_get('zlib.output_compression')){ ini_set('zlib.output_compression', 'Off'); }
+if (ini_get('zlib.output_compression')) { 
+	ini_set('zlib.output_compression', 'Off'); 
+}
 header('Pragma: public');
 header('Last-Modified: ' . gmdate('D, d M Y H:i:s',  filemtime($image['image_file'])) . ' GMT');
 header('Expires: 0');

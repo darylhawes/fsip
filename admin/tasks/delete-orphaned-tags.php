@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../../config.php');
+require_once('../../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -16,7 +16,7 @@ $user->perm(true);
 
 $id = $fsip->findID(@$_POST['image_id']);
 
-if(empty($id)){
+if (empty($id)) {
 	$query = $fsip->prepare('SELECT DISTINCT tags.tag_id FROM tags;');
 	$query->execute();
 	$tags = $query->fetchAll();
@@ -27,21 +27,20 @@ if(empty($id)){
 	
 	$orphans = array();
 	
-	foreach($tags as $tag){
-		if(!in_array($tag, $tags_in_use)){
+	foreach($tags as $tag) {
+		if (!in_array($tag, $tags_in_use)) {
 			$orphans[] = $tag;
 		}
 	}
 	
 	$tag_ids = array();
 	
-	foreach($orphans as $orphan){
+	foreach($orphans as $orphan) {
 		$tag_ids[] = $orphan['tag_id'];
 	}
 	
 	echo json_encode($tag_ids);
-}
-else{
+} else {
 	$fsip->exec('DELETE FROM tags WHERE tag_id = ' . intval($id));
 }
 

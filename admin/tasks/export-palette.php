@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../../config.php');
+require_once('../../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -20,13 +20,15 @@ $format = strtolower(strip_tags(strval($_REQUEST['format'])));
 // Get image
 $images = new Image($image_id);
 $title = $images->images[0]['image_title'];
-if(empty($title)){ $title = 'Image ' . $images->images[0]['image_id']; }
+if (empty($title)) {
+	$title = 'Image ' . $images->images[0]['image_id']; 
+}
 $rgb_colors = unserialize($images->images[0]['image_colors']);
 
 // Convert RGB image colors to HEX values
-function rgb2hex(){
+function rgb2hex() {
 	$str = '';
-	foreach(func_get_args() as $c){
+	foreach(func_get_args() as $c) {
 		$str .= substr(sprintf('0%x',$c), -2);
 	}
 	return $str;
@@ -35,14 +37,14 @@ function rgb2hex(){
 $hex_colors = array();
 
 $i = 1;
-foreach($rgb_colors as $rgb => $percent){
+foreach($rgb_colors as $rgb => $percent) {
 	$rgb = explode(',', $rgb);
 	$hex = rgb2hex($rgb[0], $rgb[1], $rgb[2]);
 	$hex_colors[] = array($hex, 'Color ' . $i++);
 }
 
 // Convert to format
-if($format == 'ase'){
+if ($format == 'ase') {
 	/** 
 	* Make an Adobe Swatch Exchange file 
 	* 
@@ -157,36 +159,35 @@ if($format == 'ase'){
 	
 	$encoding = 'binary';
 	$mime = 'application/octet-stream';
-}
-elseif($format == 'css'){
+} elseif($format == 'css') {
 	$palette = '';
 	$i = 1;
-	foreach($hex_colors as $color){
+	foreach($hex_colors as $color) {
 		$palette .= '.color' . $i++ . ' { background-color: #' . $color[0] . '; }' . "\n";
 	}
 	
 	$encoding = 'ascii';
 	$mime = 'text/x-c';
-}
-elseif($format == 'gpl'){
+} elseif($format == 'gpl') {
 	$palette = 'GIMP Palette' . "\n";
 	$palette .= 'Name: ' . $title . "\n";
 	$palette .= 'Columns: 4' . "\n";
 	$palette .= '#';
 	$i = 1;
-	foreach($rgb_colors as $rgb => $percent){
+	foreach($rgb_colors as $rgb => $percent) {
 		$rgb = explode(',', $rgb);
 		$palette .= "\n" . $rgb[0] . ' ' . $rgb[1] .' ' . $rgb[2] . ' Color ' . $i++;
 	}
 	
 	$encoding = 'ascii';
 	$mime = 'text/x-c';
-}
-else{
+} else {
 	exit();
 }
 
-if(ini_get('zlib.output_compression')){ ini_set('zlib.output_compression', 'Off'); }
+if (ini_get('zlib.output_compression')) {
+	ini_set('zlib.output_compression', 'Off'); 
+}
 header('Pragma: public'); // required
 header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 header('Expires: 0');

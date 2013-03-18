@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../../config.php');
+require_once('../../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -18,9 +18,9 @@ $id = $fsip->findID(@$_POST['image_id']);
 
 // Require at least 128M memory
 $mem = ini_get('memory_limit');
-if(substr($mem, -1) == 'M'){
-	if(substr($mem, 0, strlen($mem) - 1) < 128){
-		if(!ini_set('memory_limit', '128M')){
+if (substr($mem, -1) == 'M') {
+	if (substr($mem, 0, strlen($mem) - 1) < 128) {
+		if (!ini_set('memory_limit', '128M')) {
 			exit();
 		}
 	}
@@ -30,17 +30,16 @@ if(substr($mem, -1) == 'M'){
 $cities = file_get_contents(PATH . DB . 'cities.json');
 $cities = explode("\n", $cities);
 
-if(!is_int($id)){
+if (!is_int($id)) {
 	// Generate array of query blocks for cities
 	$execute = array();
 	$count = count($cities);
-	for($i = 0; $i < $count; $i=$i+1000){
+	for($i = 0; $i < $count; $i=$i+1000) {
 		$execute[] = $i;
 	}
 	echo json_encode($execute);
-}
-else{
-	if($id == 0){
+} else {
+	if ($id == 0) {
 		// Delete existing geo data, start from scratch
 		$fsip->exec('DELETE FROM cities;');
 		$fsip->exec('DELETE FROM countries;');
@@ -51,7 +50,7 @@ else{
 
 		$query = $fsip->prepare('INSERT INTO countries (country_id, country_code, country_name) VALUES (?, ?, ?);');
 
-		foreach($countries as $country){
+		foreach($countries as $country) {
 			$country = json_decode($country);
 			$country = @array_map('utf8_encode', $country);
 			$country = @array_map('utf8_decode', $country);
@@ -66,7 +65,7 @@ else{
 	
 	$query = $fsip->prepare('INSERT INTO cities (city_id, city_name, city_state, country_code, city_name_raw, city_name_alt, city_pop, city_lat, city_long, city_class, city_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);');
 	
-	foreach($cities as $city){
+	foreach($cities as $city) {
 		$city = json_decode($city);
 		$city = @array_map('utf8_encode', $city);
 		$city = @array_map('utf8_decode', $city);

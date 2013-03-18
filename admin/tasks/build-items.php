@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../../config.php');
+require_once('../../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -16,16 +16,15 @@ $user->perm(true, 'maintenance');
 
 $id = $fsip->findID(@$_POST['image_id']);
 
-if(empty($id)){
+if(empty($id)) {
 	$ids = array();
 	
-	foreach($fsip->tables_index as $key => $value){
+	foreach($fsip->tables_index as $key => $value) {
 		$ids[] = ++$key;
 	}
 	
 	echo json_encode($ids);
-}
-else{
+} else {
 	$table = $fsip->tables_index[--$id];
 	
 	$ids = new Find($table);
@@ -37,12 +36,14 @@ else{
 	
 	$item_table_ids = array();
 	
-	foreach($items as $item){
+	foreach($items as $item) {
 		$item_table_ids[] = $item['item_table_id'];
 	}
 	
-	foreach($ids->ids as $item_id){
-		if(in_array($item_id, $item_table_ids)){ continue; }
+	foreach($ids->ids as $item_id) {
+		if (in_array($item_id, $item_table_ids)) { 
+			continue; 
+		}
 		
 		$fields = array('item_table' => $fsip->tables_index[$id],
 			'item_table_id' => $item_id);
@@ -51,8 +52,10 @@ else{
 	
 	$delete_ids = array();
 	
-	foreach($item_table_ids as $item_id){
-		if(in_array($item_id, $ids->ids)){ continue; }
+	foreach($item_table_ids as $item_id) {
+		if (in_array($item_id, $ids->ids)) { 
+			continue; 
+		}
 		$delete_ids[] = $item_id;
 	}
 	
