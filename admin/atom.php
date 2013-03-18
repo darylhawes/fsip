@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-if(empty($_SERVER['PHP_AUTH_USER'])){
+if (empty($_SERVER['PHP_AUTH_USER'])) {
     header('WWW-Authenticate: Basic realm="Dashboard Feed"');
     header('HTTP/1.0 401 Unauthorized');
     exit();
@@ -18,7 +18,7 @@ require_once(PATH . CLASSES . 'fsip.php');
 $fsip = new FSIP();
 $user = new User();
 
-if($user->auth($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) === false){
+if ($user->auth($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) === false) {
 	header('WWW-Authenticate: Basic realm="Dashboard Feed"');
     header('HTTP/1.0 401 Unauthorized');
     exit();
@@ -38,10 +38,9 @@ $options = array(
 // Create a Cache_Lite object
 $cache = new Cache_Lite($options);
 
-if($xml = $cache->get('xml:user', 'xml')){
+if ($xml = $cache->get('xml:user', 'xml')) {
 	echo $xml;
-}
-else{
+} else {
 	ob_start();
 
 	// Daily stats
@@ -62,7 +61,7 @@ else{
 	$comment_ids->find();
 
 	$comments = new Comment($comment_ids);
-	$comments->formatTime('c');
+	$comments->formatTime(null,'c');
 
 	$comment_entries = new Canvas('
 	{block:Comments}
@@ -88,27 +87,27 @@ else{
 
 	$last_updated = 0;
 
-	foreach($updated as $table => $time){
-		if($time > $last_updated){
+	foreach($updated as $table => $time) {
+		if ($time > $last_updated) {
 			$last_updated = $time;
 		}
 	}
 
 	echo '<?xml version="1.0" encoding="utf-8"?>';
 
-	?>
+?>
 
 	<feed xmlns="http://www.w3.org/2005/Atom">
 		<title>Dashboard Feed</title>
 		<updated><?php echo date('c', strtotime($images->images[0]['image_published'])); ?></updated>
-		<link href="<?php echo BASE . ADMIN; ?>" />
-		<link rel="self" type="application/atom+xml" href="<?php echo LOCATION . BASE . ADMIN; ?>atom.php" />
+		<link href="<?php echo BASE . ADMINFOLDER; ?>" />
+		<link rel="self" type="application/atom+xml" href="<?php echo LOCATION . BASE . ADMINFOLDER; ?>atom.php" />
 		<id>tag:<?php echo DOMAIN; ?>,2010:/</id>
 	
 		<entry>
 			<title type="text">Daily report (<?php echo date('l, F j', $yesterday) ?>)</title>
 			<link href="{define:Location}{define:Base}{define:Admin}statistics{define:URL_CAP}" />
-			<id>{define:LOCATION}{define:BASE}{define:ADMIN}statistics{define:URL_CAP}#<?php echo $yesterday; ?></id>
+			<id>{define:LOCATION}{define:BASE}{define:ADMINFOLDER}statistics{define:URL_CAP}#<?php echo $yesterday; ?></id>
 			<updated><?php echo date('c', $yesterday); ?></updated>
 			<published><?php echo date('c', $yesterday); ?></published>
 			<content type="xhtml">
@@ -122,7 +121,7 @@ else{
 	
 	</feed>
 	
-	<?php
+<?php
 	
 	$xml = ob_get_flush();
 	$cache->save($xml);	
