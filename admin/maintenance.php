@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../config.php');
+require_once('../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -16,11 +16,11 @@ $user->perm(true, 'maintenance');
 
 define('TAB', 'settings');
 define('TITLE', 'Maintenance');
-require_once(PATH . ADMIN . 'includes/header.php');
+require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>
 
-<h1><img src="<?php echo BASE . ADMIN; ?>images/icons/maintenance.png" alt="" /> Maintenance</h1>
+<h1><img src="<?php echo BASE . IMGFOLDER; ?>icons/maintenance.png" alt="" /> Maintenance</h1>
 
 <div id="progress">
 </div>
@@ -37,12 +37,12 @@ require_once(PATH . ADMIN . 'includes/header.php');
 			<ul class="tasks">
 				<li>
 					<strong><a href="#rebuild-thumbnails">Rebuild all image thumbnails</a></strong><br />
-					Individual thumbnail sizes can be rebuilt on <a href="<?php echo BASE . ADMIN . 'thumbnails' . URL_CAP; ?>">their respective pages</a>, necessary for fixing corrupt or missing image files (resource intensive)
+					Individual thumbnail sizes can be rebuilt on <a href="<?php echo BASE . ADMINFOLDER . 'thumbnails' . URL_CAP; ?>">their respective pages</a>, necessary for fixing corrupt or missing image files (resource intensive)
 				</li>
 				<ul>
 					<li>
 						<strong>Rebuild thumbnail series</strong><br />
-						<form action="<?php echo BASE . ADMIN . 'tasks/rebuild-thumbnail-series.php'; ?>" method="post">
+						<form action="<?php echo BASE . ADMINFOLDER . 'tasks/rebuild-thumbnail-series.php'; ?>" method="post">
 							From image ID <input type="text" name="min" placeholder="0" style="width: 5em" /> to <input type="text" name="max" placeholder="100" style="width: 5em" />
 							<input type="hidden" name="series" value="true" />
 							<input type="submit" value="Rebuild series" />
@@ -51,7 +51,7 @@ require_once(PATH . ADMIN . 'includes/header.php');
 				</ul>
 				<li>
 					<strong><a href="#reorganize-library">Reorganize image library</a></strong><br />
-					Move files, as necessary, according to the current <a href="<?php echo BASE . ADMIN . 'configuration' . URL_CAP; ?>">hierarchical directory mode</a> setting
+					Move files, as necessary, according to the current <a href="<?php echo BASE . ADMINFOLDER . 'configuration' . URL_CAP; ?>">hierarchical directory mode</a> setting
 				</li>
 				<li>
 					<strong><a href="#delete-unused-thumbnails">Delete unclaimed image thumbnails</a></strong><br />
@@ -116,6 +116,6 @@ require_once(PATH . ADMIN . 'includes/header.php');
 
 <?php
 
-require_once(PATH . ADMIN . 'includes/footer.php');
+require_once(PATH . INCLUDES . '/admin_footer.php');
 
 ?>
