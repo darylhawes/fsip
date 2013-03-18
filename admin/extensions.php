@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../config.php');
+require_once('../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -14,62 +14,62 @@ $user = new User;
 
 $user->perm(true, 'extensions');
 
-if(!empty($_GET['id'])){
+if (!empty($_GET['id'])) {
 	$extension_id = $fsip->findID($_GET['id']);
 }
 
-if(!empty($_GET['act'])){
+if (!empty($_GET['act'])) {
 	$extension_act = $_GET['act'];
 }
 
 // SAVE CHANGES
-if(!empty($_POST['extension_id'])){
+if (!empty($_POST['extension_id'])) {
 	$extension_id = $fsip->findID($_POST['extension_id']);
 	
 	// Reset extension
-	if(@$_POST['extension_reset'] == 'reset'){
+	if (@$_POST['extension_reset'] == 'reset') {
 		$fields = array('extension_preferences' => '');
 		$bool = $fsip->updateRow($fields, 'extensions', $extension_id);
-		if($bool === true){
+		if ($bool === true) {
 			$fsip->addNote('You successfully reset the extension.', 'success');
 			$reset = 1;
 		}
 	}
 	
 	// Disable extension
-	if(@$_POST['extension_disable'] == 'disable'){
+	if (@$_POST['extension_disable'] == 'disable') {
 		$fields = array('extension_status' => 0);
 		$bool = $fsip->updateRow($fields, 'extensions', $extension_id);
-		if($bool === true){
+		if ($bool === true) {
 			$fsip->addNote('You successfully disabled the extension.', 'success');
 			$disable = 1;
 		}
 	}
 	
 	// Enable extension
-	if(@$_POST['extension_enable'] == 'enable'){
+	if (@$_POST['extension_enable'] == 'enable') {
 		$fields = array('extension_status' => 1);
 		$bool = $fsip->updateRow($fields, 'extensions', $extension_id);
-		if($bool === true){
+		if ($bool === true) {
 			$fsip->addNote('You successfully enabled the extension.', 'success');
 			$enable = 1;
 		}
 	}
 	
 	// Save extension, if no other action taken
-	if((@$reset != 1) or (@$disable != 1) or (@$enable != 1)){
+	if ((@$reset != 1) or (@$disable != 1) or (@$enable != 1)) {
 		$orbit = new Orbit($extension_id);
 		$orbit->hook('config_save');
 	}
 	
 	// If not only resetting, return to Extensions page
-	if((@$reset != 1) or (@$disable == 1) or (@$enable != 1)){
+	if ((@$reset != 1) or (@$disable == 1) or (@$enable != 1)) {
 		unset($extension_id);
 	}
 }
 
 // Configuration: maint_disable
-if($fsip->returnConf('maint_disable')){
+if ($fsip->returnConf('maint_disable')) {
 	$fsip->addNote('All extensions have been disabled.', 'notice');
 }
 
@@ -85,7 +85,7 @@ $extension_builds = array();
 $extension_folders = array();
 $extension_classes = array();
 
-foreach($extensions as $extension){
+foreach($extensions as $extension) {
 	$extension_ids[] = $extension['extension_id'];
 	$extension_uids[] = $extension['extension_uid'];
 	$extension_builds[] = $extension['extension_build'];
@@ -97,9 +97,9 @@ foreach($extensions as $extension){
 // Determine which themes have been removed, delete rows from table
 $extension_deleted = array();
 
-foreach($extensions as $extension){
+foreach($extensions as $extension) {
 	$extension_folder = PATH . EXTENSIONS . $extension['extension_folder'];
-	if(!in_array($extension_folder, $seek_extensions)){
+	if (!in_array($extension_folder, $seek_extensions)) {
 		$extension_deleted[] = $extension['extension_id'];
 	}
 }
@@ -110,17 +110,19 @@ $fsip->deleteRow('extensions', $extension_deleted);
 $extensions_installed = array();
 $extensions_updated = array();
 
-foreach($seek_extensions as &$extension_folder){
-	if(strpos($fsip->getFilename($extension_folder), '.') === 0){ continue; }
+foreach($seek_extensions as &$extension_folder) {
+	if (strpos($fsip->getFilename($extension_folder), '.') === 0) { continue; }
 	
 	$extension_folder = $fsip->getFilename($extension_folder);
-	if(!in_array($extension_folder, $extension_folders)){
+	if (!in_array($extension_folder, $extension_folders)) {
 		$data = file_get_contents(PATH . EXTENSIONS . $extension_folder . '/extension.xml');
-		if(empty($data)){ $fsip->addNote('Could not install a new extension. Its XML file is missing or corrupted.', 'error'); continue; }
+		if (empty($data)) { 
+			$fsip->addNote('Could not install a new extension. Its XML file is missing or corrupted.', 'error'); continue; 
+		}
 		
 		$xml = new SimpleXMLElement($data);
 		
-		if(in_array($xml->class, $extension_classes)){
+		if (in_array($xml->class, $extension_classes)) {
 			$fsip->addNote('Could not install a new extension. Its class name interferes with a pre-existing extension.', 'error');
 		}
 		
@@ -129,8 +131,8 @@ foreach($seek_extensions as &$extension_folder){
 		$extension_methods = get_class_methods(strval($xml->class));
 		$extension_hooks = array();
 		
-		foreach($extension_methods as $method){
-			if(strpos($method, 'orbit_') === 0){
+		foreach($extension_methods as $method) {
+			if (strpos($method, 'orbit_') === 0) {
 				$extension_hooks[] = substr($method, 6);
 			}
 		}
@@ -149,13 +151,12 @@ foreach($seek_extensions as &$extension_folder){
 			'extension_creator_uri' => $xml->creator->uri);
 		$extension_intalled_id = $fsip->addRow($fields, 'extensions');
 		$extensions_installed[] = $extension_intalled_id;
-	}
-	else{
+	} else {
 		$data = file_get_contents(PATH . EXTENSIONS . $extension_folder . '/extension.xml');
 		$xml = new SimpleXMLElement($data);
 		$keys = array_keys($extension_classes, $xml->class);
 		foreach($keys as $key){
-			if($xml->build != $extension_builds[$key]){
+			if($xml->build != $extension_builds[$key]) {
 				$id = $extension_ids[$key];
 		
 				require_once(PATH . EXTENSIONS . $extension_folder . '/' . $xml->file . '.php');
@@ -163,8 +164,8 @@ foreach($seek_extensions as &$extension_folder){
 				$extension_methods = get_class_methods(strval($xml->class));
 				$extension_hooks = array();
 		
-				foreach($extension_methods as $method){
-					if(strpos($method, 'orbit_') === 0){
+				foreach($extension_methods as $method) {
+					if (strpos($method, 'orbit_') === 0) {
 						$extension_hooks[] = substr($method, 6);
 					}
 				}
@@ -246,11 +247,11 @@ if(empty($extension_id)){
 	$extensions_count = @count($extensions);
 	
 	define('TITLE', 'Extensions');
-	require_once(PATH . ADMIN . 'includes/header.php');
+	require_once(PATH . INCLUDES . '/admin_header.php');
 
 	?>
 
-	<h1><img src="<?php echo BASE . ADMIN; ?>images/icons/extensions.png" alt="" /> Extensions (<?php echo @$extensions_count; ?>)</h1>
+	<h1><img src="<?php echo BASE . IMGFOLDER; ?>icons/extensions.png" alt="" /> Extensions (<?php echo @$extensions_count; ?>)</h1>
 	<!-- //DEH removing dead remote user lounge links
 	<p>Extensions add new functionality to your FSIP installation. You can browse and download additional extensions at the <a href="http://www.alkalineapp.com/users/">Alkaline Lounge</a>.</p>
 	-->
@@ -269,7 +270,7 @@ if(empty($extension_id)){
 	
 		foreach($extensions as $extension){
 			echo '<tr class="ro">';
-			echo '<td><strong class="large"><a href="' . BASE . ADMIN . 'extensions' . URL_ID . $extension['extension_id'] . URL_RW . '">' . $extension['extension_title'] . '</a></strong>';
+			echo '<td><strong class="large"><a href="' . BASE . ADMINFOLDER . 'extensions' . URL_ID . $extension['extension_id'] . URL_RW . '">' . $extension['extension_title'] . '</a></strong>';
 			if(!empty($extension['extension_creator_name'])){
 				echo ' \ ';
 				if(!empty($extension['extension_creator_uri'])){
@@ -305,7 +306,7 @@ if(empty($extension_id)){
 	
 	<?php
 
-	require_once(PATH . ADMIN . 'includes/footer.php');
+	require_once(PATH . INCLUDES . '/admin_footer.php');
 	
 }
 else{
@@ -318,13 +319,13 @@ else{
 		$orbit->hook('config_load');
 	
 		define('TITLE', 'Extension: &#8220;' . $extension['extension_title']  . '&#8221;');
-		require_once(PATH . ADMIN . 'includes/header.php');
+		require_once(PATH . INCLUDES . '/admin_header.php');
 	
 		?>
 	
-		<h1><img src="<?php echo BASE . ADMIN; ?>images/icons/extensions.png" alt="" /> Extension: <?php echo $extension['extension_title']; ?></h1>
+		<h1><img src="<?php echo BASE . IMGFOLDER; ?>icons/extensions.png" alt="" /> Extension: <?php echo $extension['extension_title']; ?></h1>
 	
-		<form id="extension" action="<?php echo BASE . ADMIN; ?>extensions<?php echo URL_CAP; ?>" method="post">
+		<form id="extension" action="<?php echo BASE . ADMINFOLDER; ?>extensions<?php echo URL_CAP; ?>" method="post">
 			<div>
 				<?php $orbit->hook('config'); ?>
 			</div>
@@ -347,17 +348,17 @@ else{
 	
 		<?php
 	
-		require_once(PATH . ADMIN . 'includes/footer.php');
+		require_once(PATH . INCLUDES . '/admin_footer.php');
 	}
 	else{
 		define('TITLE', 'Extension: &#8220;' . $extension['extension_title']  . '&#8221;');
-		require_once(PATH . ADMIN . 'includes/header.php');
+		require_once(PATH . INCLUDES . '/admin_header.php');
 		
 		?>
 		
-		<h1><img src="<?php echo BASE . ADMIN; ?>images/icons/extensions.png" alt="" /> <?php echo $extension['extension_title']; ?></h1>
+		<h1><img src="<?php echo BASE . IMGFOLDER; ?>icons/extensions.png" alt="" /> <?php echo $extension['extension_title']; ?></h1>
 		
-		<form id="extension" action="<?php echo BASE . ADMIN; ?>extensions<?php echo URL_CAP; ?>" method="post">
+		<form id="extension" action="<?php echo BASE . ADMINFOLDER; ?>extensions<?php echo URL_CAP; ?>" method="post">
 			<table>
 				<tr>
 					<td class="right"><input type="checkbox" id="extension_reset" name="extension_reset" value="reset" /></td>
@@ -375,8 +376,8 @@ else{
 		</form>
 		
 		<?php
-		
-		require_once(PATH . ADMIN . 'includes/footer.php');
+	
+		require_once(PATH . INCLUDES . '/admin_footer.php');
 	}
 	
 }
