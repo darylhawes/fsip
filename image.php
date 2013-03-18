@@ -14,7 +14,9 @@ $fsip->recordStat('image');
 $fsip->addComments();
 
 $id = $fsip->findID($_GET['id'], true);
-if (!$id) { $fsip->addError('No image was found.', 'Try searching for the image you were seeking.', null, null, 404); }
+if (!$id) { 
+	$fsip->addError('No image was found.', 'Try searching for the image you were seeking.', null, null, 404); 
+}
 
 $image_ids = new Find('images', $id);
 $image_ids->published();
