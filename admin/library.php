@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../config.php');
+require_once('../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -17,7 +17,7 @@ $user->perm(true);
 $fsip->setCallback();
 
 // Preference: page_limit
-if(!$max = $user->returnPref('page_limit')){
+if (!$max = $user->returnPref('page_limit')) {
 	$max = 100;
 }
 
@@ -31,34 +31,33 @@ $images->getSizes('square');
 $images->hook();
 
 $shoebox_count = $fsip->countDirectory(PATH . SHOEBOX);
-if($shoebox_count > 0){
+if ($shoebox_count > 0) {
 	$shoebox_count = '(' . $shoebox_count . ') ';
-}
-else{
+} else {
 	$shoebox_count = '';
 }
 
 define('TAB', 'library');
 define('TITLE', 'Library');
-require_once(PATH . ADMIN . 'includes/header.php');
+require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>
 
 <div class="span-24 last">
 	<div class="actions">
-		<a href="<?php echo BASE . ADMIN . 'upload' . URL_CAP; ?>">
+		<a href="<?php echo BASE . ADMINFOLDER . 'upload' . URL_CAP; ?>">
 			<button>Upload image</button>
 		</a>
-		<?php if($badges['images'] > 0){ ?>
-		<a href="<?php echo BASE . ADMIN . 'shoebox' . URL_CAP; ?>">
+		<?php if ($badges['images'] > 0) { ?>
+		<a href="<?php echo BASE . ADMINFOLDER . 'shoebox' . URL_CAP; ?>">
 			<button>Process images (<?php echo $badges['images']; ?>)</button>
 		</a>
 		<?php } ?>
 	</div>
 	
-	<h1><img src="<?php echo BASE . ADMIN; ?>images/icons/images.png" alt="" /> Images (<?php echo number_format($image_ids->count); ?>)</h1>
+	<h1><img src="<?php echo BASE . IMGFOLDER; ?>icons/images.png" alt="" /> Images (<?php echo number_format($image_ids->count); ?>)</h1>
 
-	<form action="<?php echo BASE . ADMIN; ?>search<?php echo URL_CAP; ?>" method="post">
+	<form action="<?php echo BASE . ADMINFOLDER; ?>search<?php echo URL_CAP; ?>" method="post">
 		<p style="margin-bottom: 0;">
 			<input type="search" name="q" style="width: 30em; margin-left: 0;" results="10" /> <input type="submit" value="Search" />
 		</p>
@@ -204,62 +203,62 @@ require_once(PATH . ADMIN . 'includes/header.php');
 				<h3>Presets</h3>
 				
 				<ul>
-					<li><a href="<?php echo BASE . ADMIN . 'search' . URL_ACT . 'displayed' . URL_RW; ?>">Displayed images</a></li>
-					<li><a href="<?php echo BASE . ADMIN . 'search' . URL_ACT . 'updated' . URL_RW; ?>">Recently updated images</a></li>
-					<li><a href="<?php echo BASE . ADMIN . 'search' . URL_ACT . 'views' . URL_RW; ?>">Most viewed images</a></li>
-					<li><a href="<?php echo BASE . ADMIN . 'search' . URL_ACT . 'nonpublic' . URL_RW; ?>">Nonpublic images</a></li>
+					<li><a href="<?php echo BASE . ADMINFOLDER . 'search' . URL_ACT . 'displayed' . URL_RW; ?>">Displayed images</a></li>
+					<li><a href="<?php echo BASE . ADMINFOLDER . 'search' . URL_ACT . 'updated' . URL_RW; ?>">Recently updated images</a></li>
+					<li><a href="<?php echo BASE . ADMINFOLDER . 'search' . URL_ACT . 'views' . URL_RW; ?>">Most viewed images</a></li>
+					<li><a href="<?php echo BASE . ADMINFOLDER . 'search' . URL_ACT . 'nonpublic' . URL_RW; ?>">Nonpublic images</a></li>
 				</ul>
 				<ul>
-					<li><a href="<?php echo BASE . ADMIN . 'search' . URL_ACT . 'unpublished' . URL_RW; ?>">Unpublished images</a></li>
-					<li><a href="<?php echo BASE . ADMIN . 'search' . URL_ACT . 'untitled' . URL_RW; ?>">Untitled images</a></li>
-					<li><a href="<?php echo BASE . ADMIN . 'search' . URL_ACT . 'untagged' . URL_RW; ?>">Untagged images</a></li>
+					<li><a href="<?php echo BASE . ADMINFOLDER . 'search' . URL_ACT . 'unpublished' . URL_RW; ?>">Unpublished images</a></li>
+					<li><a href="<?php echo BASE . ADMINFOLDER . 'search' . URL_ACT . 'untitled' . URL_RW; ?>">Untitled images</a></li>
+					<li><a href="<?php echo BASE . ADMINFOLDER . 'search' . URL_ACT . 'untagged' . URL_RW; ?>">Untagged images</a></li>
 				</ul>
 			</div>
 		</div>
 	</form>
 
 	<p>
-		<?php
+<?php
 
-		foreach($images->images as $image){
-			?>
-			<a href="<?php echo BASE . ADMIN . 'image' . URL_ID . $image['image_id'] . URL_RW; ?>" class="nu">
+		foreach($images->images as $image) {
+?>
+			<a href="<?php echo BASE . ADMINFOLDER . 'image' . URL_ID . $image['image_id'] . URL_RW; ?>" class="nu">
 				<img src="<?php echo $image['image_src_square']; ?>" alt="" title="<?php echo $fsip->makeHTMLSafe($image['image_title']); ?>" class="frame tip" />
 			</a>
-			<?php
+<?php
 		}
 		
-		?>
+?>
 	</p>
-	<?php
-	if($image_ids->page_count > 1){
-		?>
+<?php
+	if ($image_ids->page_count > 1) {
+?>
 		<p>
-			<?php
-			if(!empty($image_ids->page_previous)){
-				for($i = 1; $i <= $image_ids->page_previous; ++$i){
+<?php
+			if (!empty($image_ids->page_previous)) {
+				for($i = 1; $i <= $image_ids->page_previous; ++$i) {
 					$page_uri = 'page_' . $i . '_uri';
 					echo '<a href="' . $image_ids->$page_uri  .'" class="page_no">' . number_format($i) . '</a>';
 				}
 			}
-			?>
+?>
 			<span class="page_no">Page <?php echo $image_ids->page; ?> of <?php echo $image_ids->page_count; ?></span>
-			<?php
-			if(!empty($image_ids->page_next)){
-				for($i = $image_ids->page_next; $i <= $image_ids->page_count; ++$i){
+<?php
+			if (!empty($image_ids->page_next)) {
+				for($i = $image_ids->page_next; $i <= $image_ids->page_count; ++$i) {
 					$page_uri = 'page_' . $i . '_uri';
 					echo '<a href="' . $image_ids->$page_uri  .'" class="page_no">' . number_format($i) . '</a>';
 				}
 			}
-			?>
+?>
 		</p>
-		<?php
+<?php
 	}
-	?>
+?>
 </div>
 
 <?php
 
-require_once(PATH . ADMIN . 'includes/footer.php');
+require_once(PATH . INCLUDES . '/admin_footer.php');
 
 ?>
