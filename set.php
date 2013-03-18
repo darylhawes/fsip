@@ -19,8 +19,8 @@ $set = new Set($id);
 $set = @$set->sets[0];
 if (!$set) { $fsip->addError('No set was found.', 'Try searching for the set you were seeking.', null, null, 404); }
 
-$set['set_created'] = $fsip->formatTime($set['set_created']);
-$set['set_modified'] = $fsip->formatTime($set['set_modified']);
+$set['set_created'] = $fsip->formatTime(null, $set['set_created']);
+$set['set_modified'] = $fsip->formatTime(null, $set['set_modified']);
 
 $image_ids = new Find('images');
 $image_ids->page(null, 0);
