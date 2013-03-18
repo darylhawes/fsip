@@ -26,10 +26,9 @@ $options = array(
 // Create a Cache_Lite object
 $cache = new Cache_Lite($options);
 
-if($xml = $cache->get('xml:visitor', 'xml')){
+if ($xml = $cache->get('xml:visitor', 'xml')) {
 	echo $xml;
-}
-else{
+} else {
 	ob_start();
 
 	// Gather images
@@ -43,7 +42,7 @@ else{
 
 	$images = new Image($image_ids);
 	$images->getSizes('medium');
-	$images->formatTime('c');
+	$images->formatTime(null,'c');
 
 	$image_entries = new Canvas('
 	{block:Images}
@@ -74,15 +73,15 @@ else{
 
 	$last_updated = 0;
 
-	foreach($updated as $table => $time){
-		if($time > $last_updated){
+	foreach($updated as $table => $time) {
+		if ($time > $last_updated) {
 			$last_updated = $time;
 		}
 	}
 
 	echo '<?xml version="1.0" encoding="utf-8"?>';
 
-	?>
+?>
 
 	<feed xmlns="http://www.w3.org/2005/Atom">
 
@@ -99,7 +98,7 @@ else{
 
 	</feed>
 	
-	<?php
+<?php
 	
 	$xml = ob_get_flush();
 	$cache->save($xml);
