@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../config.php');
+require_once('../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -15,9 +15,9 @@ $user = new User;
 
 $user->perm(true, 'configuration');
 
-if(!empty($_POST['configuration_save'])){
+if (!empty($_POST['configuration_save'])) {
 	$theme_id = intval($_POST['theme_id']);
-	if($_POST['theme_id'] != $fsip->returnConf('theme_id')){
+	if ($_POST['theme_id'] != $fsip->returnConf('theme_id')) {
 		$theme = $fsip->getRow('themes', $theme_id);
 		
 		$fsip->setConf('theme_id', $theme_id);
@@ -25,7 +25,7 @@ if(!empty($_POST['configuration_save'])){
 	}
 	
 	$page_size_id = intval($_POST['page_size_id']);
-	if($_POST['page_size_id'] != $fsip->returnConf('page_size_id')){
+	if ($_POST['page_size_id'] != $fsip->returnConf('page_size_id')) {
 		$size = $fsip->getRow('sizes', $page_size_id);
 		
 		$fsip->setConf('page_size_id', $page_size_id);
@@ -33,7 +33,7 @@ if(!empty($_POST['configuration_save'])){
 	}
 	
 	$post_size_id = intval($_POST['post_size_id']);
-	if($_POST['post_size_id'] != $fsip->returnConf('post_size_id')){
+	if ($_POST['post_size_id'] != $fsip->returnConf('post_size_id')) {
 		$size = $fsip->getRow('sizes', $post_size_id);
 		
 		$fsip->setConf('post_size_id', $post_size_id);
@@ -50,17 +50,18 @@ if(!empty($_POST['configuration_save'])){
 	$fsip->setConf('shoe_iptc', @$_POST['shoe_iptc']);
 	$fsip->setConf('shoe_geo', @$_POST['shoe_geo']);
 	$fsip->setConf('shoe_max', @$_POST['shoe_max']);
-	if(intval($_POST['shoe_max_count'])){
+	if (intval($_POST['shoe_max_count'])) {
 		$fsip->setConf('shoe_max_count', @$_POST['shoe_max_count']);
-	}
-	else{
+	} else {
 		$fsip->setConf('shoe_max_count', 20);
 	}
 	
 	$fsip->setConf('image_hdm', @$_POST['image_hdm']);
 	$fsip->setConf('image_hdm_format', @$_POST['image_hdm_format']);
 	$fsip->setConf('web_markup', @$_POST['web_markup']);
-	if(@$_POST['web_markup'] == ''){ $_POST['web_markup_ext'] = ''; }
+	if (@$_POST['web_markup'] == '') { 
+		$_POST['web_markup_ext'] = ''; 
+	}
 	
 	$fsip->setConf('web_markup_ext', @$_POST['web_markup_ext']);
 	
@@ -69,7 +70,9 @@ if(!empty($_POST['configuration_save'])){
 	$fsip->setConf('thumb_imagick', @$_POST['thumb_imagick']);
 	$fsip->setConf('thumb_metadata', @$_POST['thumb_metadata']);
 	$fsip->setConf('thumb_compress', @$_POST['thumb_compress']);
-	if(@$_POST['thumb_compress'] == ''){ $_POST['thumb_compress_tol'] = 100; }
+	if (@$_POST['thumb_compress'] == '') { 
+		$_POST['thumb_compress_tol'] = 100; 
+	}
 	
 	$fsip->setConf('thumb_compress_tol', intval(@$_POST['thumb_compress_tol']));
 	$fsip->setConf('thumb_watermark', @$_POST['thumb_watermark']);
@@ -82,7 +85,9 @@ if(!empty($_POST['configuration_save'])){
 	$fsip->setConf('comm_email', @$_POST['comm_email']);
 	$fsip->setConf('comm_mod', @$_POST['comm_mod']);
 	$fsip->setConf('comm_markup', @$_POST['comm_markup']);
-	if(@$_POST['comment_markup'] == ''){ $_POST['comment_markup_ext'] = ''; }
+	if (@$_POST['comment_markup'] == '') {
+		$_POST['comment_markup_ext'] = ''; 
+	}
 	
 	$fsip->setConf('comm_markup_ext', @$_POST['comm_markup_ext']);
 	$fsip->setConf('comm_allow_html', @$_POST['comm_allow_html']);
@@ -107,25 +112,25 @@ if(!empty($_POST['configuration_save'])){
 	$fsip->setConf('maint_debug', @$_POST['maint_debug']);
 	$fsip->setConf('maint_disable', @$_POST['maint_disable']);
 	
-	if($fsip->saveConf()){
-		$fsip->addNote('The configuration has been saved. Changes not taking effect instantly? <a href="' . BASE . ADMIN . 'maintenance' . URL_CAP . '">Delete your cache files.</a>', 'success');
-	}
-	else{
+	if ($fsip->saveConf()) {
+		$fsip->addNote('The configuration has been saved. Changes not taking effect instantly? <a href="' . BASE . ADMINFOLDER . 'maintenance' . URL_CAP . '">Delete your cache files.</a>', 'success');
+	} else {
 		$fsip->addNote('The configuration could not be saved.', 'error');
 	}
 	
-	header('Location: ' . BASE . ADMIN . 'settings' . URL_CAP);
+	$location = BASE . ADMINFOLDER . 'settings' . URL_CAP;
+	$fsip::headerLocationRedirect($location);
 	exit();
 }
 
 define('TAB', 'settings');
 define('TITLE', 'FSIP Configuration');
-require_once(PATH . ADMIN . 'includes/header.php');
+require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>
 
 <form action="" id="configuration" method="post">
-	<h1><img src="<?php echo BASE . ADMIN; ?>images/icons/configuration.png" alt="" /> Configuration</h1>
+	<h1><img src="<?php echo BASE . IMGFOLDER; ?>icons/configuration.png" alt="" /> Configuration</h1>
 	
 	<h3>General</h3>
 	
@@ -167,32 +172,30 @@ require_once(PATH . ADMIN . 'includes/header.php');
 		<tr>
 			<td class="right middle"><label for="web_timezone">Time zone:</label></td>
 			<td>
-				<?php
+<?php
 
 				$timezones = timezone_abbreviations_list();
 				$continents = array('Africa', 'America', 'Antarctica', 'Arctic', 'Asia', 'Atlantic', 'Australia', 'Europe', 'Indian', 'Pacific');
 				$places = array();
 
-				foreach($timezones as $unknown){
-					foreach($unknown as $timezone){
+				foreach($timezones as $unknown) {
+					foreach($unknown as $timezone) {
 						$cities = array();
 						$timezone_id = $timezone['timezone_id'];
 						$parts = explode('/', $timezone_id);
 						$continent = $parts[0];
-						if(in_array($continent, $continents)){
+						if (in_array($continent, $continents)) {
 							$city = str_replace('_', ' ', $parts[1]);
 							
-							if(isset($parts[2])){
+							if (isset($parts[2])) {
 								$district = str_replace('_', ' ', $parts[2]);
-							}
-							else{
+							} else {
 								$district = '';
 							}
 							
-							if(empty($district)){
+							if (empty($district)) {
 								$places[$continent][$timezone_id] = $city;
-							}
-							else{
+							} else {
 								$places[$continent][$timezone_id] = $city . ' (' . $district . ')';
 							}
 						}
@@ -203,12 +206,12 @@ require_once(PATH . ADMIN . 'includes/header.php');
 				
 				echo '<select id="web_timezone" name="web_timezone">';
 
-				foreach($places as $continent => $cities){
+				foreach($places as $continent => $cities) {
 					echo '<optgroup label="' . $continent . '">';
 						natsort($cities);
-						foreach($cities as $abbr => $city){
+						foreach($cities as $abbr => $city) {
 							echo '<option value="' . $abbr . '"';
-							if($abbr == $web_timezone){
+							if ($abbr == $web_timezone) {
 								echo 'selected="selected"';
 							}
 							echo '>' . $city . '</option>';
@@ -218,7 +221,7 @@ require_once(PATH . ADMIN . 'includes/header.php');
 
 				echo '</select>';
 
-				?>
+?>
 			</td>
 		</tr>
 		<tr>
@@ -277,7 +280,7 @@ require_once(PATH . ADMIN . 'includes/header.php');
 					</select>
 					format
 				</label><br />
-				Recommended for efficiently storing large image libraries, <a href="<?php echo BASE . ADMIN . 'maintenance' . URL_CAP; ?>">reorganize your image library</a> after changing this setting
+				Recommended for efficiently storing large image libraries, <a href="<?php echo BASE . ADMINFOLDER . 'maintenance' . URL_CAP; ?>">reorganize your image library</a> after changing this setting
 			</td>
 		</tr>
 	</table>
@@ -597,6 +600,6 @@ require_once(PATH . ADMIN . 'includes/header.php');
 
 <?php
 
-require_once(PATH . ADMIN . 'includes/footer.php');
+require_once(PATH . INCLUDES . '/admin_footer.php');
 
 ?>
