@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../config.php');
+require_once('../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -14,34 +14,31 @@ $user = new User;
 
 $user->perm(true, 'guests');
 
-if(!empty($_GET['id'])){
+if (!empty($_GET['id'])) {
 	$guest_id = $fsip->findID($_GET['id']);
 }
 
-if(!empty($_GET['act'])){
+if (!empty($_GET['act'])) {
 	$guest_act = $_GET['act'];
 }
 
 // SAVE CHANGES
-if(!empty($_POST['guest_id'])){
+if (!empty($_POST['guest_id'])) {
 	$guest_id = $fsip->findID($_POST['guest_id']);
-	if($_POST['guest_delete'] == 'delete'){
+	if ($_POST['guest_delete'] == 'delete') {
 		$fsip->deleteRow('guests', $guest_id);
-	}
-	else{
+	} else {
 		$guest_sets = @$_POST['guest_sets'];
 		
-		if($guest_sets == 'all'){
+		if ($guest_sets == 'all') {
 			$guest_sets = '';
-		}
-		else{
+		} else {
 			$guest_sets = @$_POST['guest_sets_select'];
 		}
 		
-		if(@$_POST['guest_inclusive'] == 'inclusive'){
+		if (@$_POST['guest_inclusive'] == 'inclusive') {
 			$guest_inclusive = 1;
-		}
-		else{
+		} else {
 			$guest_inclusive = 0;
 		}
 		
@@ -49,38 +46,37 @@ if(!empty($_POST['guest_id'])){
 			'guest_key' => @$_POST['guest_key'],
 			'guest_sets' => $guest_sets,
 			'guest_inclusive' => $guest_inclusive);
-		if(@$_POST['guest_reset_view_count'] == 'reset_view_count'){
+		if (@$_POST['guest_reset_view_count'] == 'reset_view_count') {
 			$fields['guest_views'] = 0;
 		}
 		
 		$fsip->updateRow($fields, 'guests', $guest_id);
 	}
 	unset($guest_id);
-}
-else{
+} else {
 	$fsip->deleteEmptyRow('guests', array('guest_title', 'guest_key'));
 }
 
 // CREATE GUEST
-if(!empty($guest_act) and ($guest_act == 'add')){
+if (!empty($guest_act) and ($guest_act == 'add')) {
 	$guest_id = $fsip->addRow(null, 'guests');
 }
 
 define('TAB', 'settings');
 
 // GET GUEST TO VIEW OR GUEST TO EDIT
-if(empty($guest_id)){
+if (empty($guest_id)) {
 	$guests = $fsip->getTable('guests');
 	$guest_count = @count($guests);
 	
 	define('TITLE', 'Guests');
-	require_once(PATH . ADMIN . 'includes/header.php');
+	require_once(PATH . INCLUDES . '/admin_header.php');
 
-	?>
+?>
 	
-	<div class="actions"><a href="<?php echo BASE . ADMIN . 'guests' . URL_ACT . 'add' . URL_RW; ?>"><button>Add guest</button></a></div>
+	<div class="actions"><a href="<?php echo BASE . ADMINFOLDER . 'guests' . URL_ACT . 'add' . URL_RW; ?>"><button>Add guest</button></a></div>
 
-	<h1><img src="<?php echo BASE . ADMIN; ?>images/icons/guests.png" alt="" /> Guests (<?php echo $guest_count; ?>)</h1>
+	<h1><img src="<?php echo BASE . IMGFOLDER; ?>icons/guests.png" alt="" /> Guests (<?php echo $guest_count; ?>)</h1>
 	
 	<p>Guests can use an access key to view some or all protected images in your library.</p>
 	
@@ -94,25 +90,24 @@ if(empty($guest_id)){
 			<th class="center">Views</th>
 			<th>Last login</th>
 		</tr>
-		<?php
+<?php
 	
-		foreach($guests as $guest){
+		foreach($guests as $guest) {
 			echo '<tr class="ro">';
-				echo '<td><strong class="large"><a href="' . BASE . ADMIN . 'guests' . URL_ID . $guest['guest_id'] . URL_RW . '">' . $guest['guest_title'] . '</a></strong></td>';
+				echo '<td><strong class="large"><a href="' . BASE . ADMINFOLDER . 'guests' . URL_ID . $guest['guest_id'] . URL_RW . '">' . $guest['guest_title'] . '</a></strong></td>';
 				echo '<td class="center">' . number_format($guest['guest_views']) . '</td>';
 				echo '<td>' . $fsip->formatTime($guest['guest_last_login'], null, '<em>Never</em>') . '</td>';
 			echo '</tr>';
 		}
 	
-		?>
+?>
 	</table>
 	
-	<?php
+<?php
 	
-	require_once(PATH . ADMIN . 'includes/footer.php');
+	require_once(PATH . INCLUDES . '/admin_footer.php');
 	
-}
-else{
+} else {
 	// Get guest
 	$guest = $fsip->getRow('guests', $guest_id);
 	$guest = $fsip->makeHTMLSafe($guest);
@@ -120,33 +115,31 @@ else{
 	// Save credentials
 	$_SESSION['fsip']['guest'] = $guest;
 	
-	if(!empty($guest['guest_title'])){	
+	if (!empty($guest['guest_title'])) {
 		define('TITLE', 'Guest: ' . $guest['guest_title']);
-	}
-	else{
+	} else {
 		define('TITLE', 'Guest');
 	}
-	require_once(PATH . ADMIN . 'includes/header.php');
+	require_once(PATH . INCLUDES . '/admin_header.php');
 
-	?>
+?>
 	
 	<div class="actions">
-		<a href="<?php echo BASE . ADMIN . 'search' . URL_ACT . 'guests' . URL_AID . $guest['guest_id'] . URL_RW; ?>"><button>View images</button></a>
+		<a href="<?php echo BASE . ADMINFOLDER . 'search' . URL_ACT . 'guests' . URL_AID . $guest['guest_id'] . URL_RW; ?>"><button>View images</button></a>
 		<a href="<?php echo BASE . 'access' . URL_ID .  $guest['guest_key'] . URL_RW; ?>"><button>Simulate guest</button></a>
 	</div>
 	
-	<?php
+<?php
 	
-	if(empty($guest['guest_title'])){
-		echo '<h1><img src="' . BASE . ADMIN . 'images/icons/guests.png" alt="" /> New Guest</h1>';
+	if (empty($guest['guest_title'])) {
+		echo '<h1><img src="' . BASE . IMGFOLDER . 'icons/guests.png" alt="" /> New Guest</h1>';
+	} else {
+		echo '<h1><img src="' . BASE . IMGFOLDER . 'icons/guests.png" alt="" /> Guest: ' . $guest['guest_title'] . '</h1>';
 	}
-	else{
-		echo '<h1><img src="' . BASE . ADMIN . 'images/icons/guests.png" alt="" /> Guest: ' . $guest['guest_title'] . '</h1>';
-	}
 	
-	?>
+?>
 	
-	<form id="guest" action="<?php echo BASE . ADMIN . 'guests' . URL_CAP; ?>" method="post">
+	<form id="guest" action="<?php echo BASE . ADMINFOLDER . 'guests' . URL_CAP; ?>" method="post">
 		<table>
 			<tr>
 				<td class="right middle"><label for="guest_title">Title:</label></td>
@@ -197,9 +190,9 @@ else{
 		</table>
 	</form>
 
-	<?php
+<?php
 	
-	require_once(PATH . ADMIN . 'includes/footer.php');
+	require_once(PATH . INCLUDES . '/admin_footer.php');
 	
 }
 
