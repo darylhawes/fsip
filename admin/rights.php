@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../config.php');
+require_once('../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -15,25 +15,25 @@ $orbit = new Orbit;
 
 $user->perm(true, 'rights');
 
-if(!empty($_GET['id'])){
+if (!empty($_GET['id'])) {
 	$right_id = $fsip->findID($_GET['id']);
 }
 
-if(!empty($_GET['act'])){
+if (!empty($_GET['act'])) {
 	$right_act = $_GET['act'];
 }
 
 // SAVE CHANGES
-if(!empty($_POST['right_id'])){
+if (!empty($_POST['right_id'])) {
 	$right_id = $fsip->findID($_POST['right_id']);
 	
 	$right = new Right($right_id);
 	
 	// Merge rights set
-	if(@$_POST['right_merge'] == 'merge'){
+	if (@$_POST['right_merge'] == 'merge') {
 		$right_merge_id = $_POST['right_merge_id'];
 		
-		if(empty($right_merge_id)){
+		if (empty($right_merge_id)) {
 			$right_merge_id = '';
 		}
 		
@@ -41,33 +41,28 @@ if(!empty($_POST['right_id'])){
 	}
 	
 	// Delete rights set
-	if(!empty($_POST['right_delete']) and ($_POST['right_delete'] == 'delete')){
-		if($right->delete()){
+	if (!empty($_POST['right_delete']) and ($_POST['right_delete'] == 'delete')) {
+		if ($right->delete()) {
 			$fsip->addNote('The rights set has been deleted.', 'success');
 		}
-	}
-	elseif(!empty($_POST['right_recover']) and ($_POST['right_recover'] == 'recover')){
-		if($right->recover()){
+	} elseif (!empty($_POST['right_recover']) and ($_POST['right_recover'] == 'recover')) {
+		if ($right->recover()) {
 			$fsip->addNote('The right set has been recovered.', 'success');
 		}
-	}
-	// Update rights set
-	else{
+	} else {  // Update rights set
 		$right_title = $_POST['right_title'];
 		$right_description_raw = $_POST['right_description_raw'];
 		
 		// Configuration: right_markup
-		if(!empty($_POST['right_markup'])){
+		if (!empty($_POST['right_markup'])) {
 			$right_markup_ext = $_POST['right_markup_ext'];
 			$right_description = $orbit->hook('markup_' . $right_markup_ext, $right_description_raw, $right_description_raw);
 			$right_title = $orbit->hook('markup_title_' . $right_markup_ext, $right_title, $right_title);
-		}
-		elseif($fsip->returnConf('web_markup')){
+		} elseif($fsip->returnConf('web_markup')) {
 			$right_markup_ext = $fsip->returnConf('web_markup_ext');
 			$right_description = $orbit->hook('markup_' . $right_markup_ext, $right_description_raw, $right_description_raw);
 			$right_title = $orbit->hook('markup_title_' . $right_markup_ext, $right_title, $right_title);
-		}
-		else{
+		} else {
 			$right_markup_ext = '';
 			$right_description = $fsip->nl2br($right_description_raw);
 		}
@@ -80,20 +75,19 @@ if(!empty($_POST['right_id'])){
 	}
 	
 	unset($right_id);
-}
-else{
+} else {
 	$fsip->deleteEmptyRow('rights', array('right_title'));
 }
 
 // CREATE RIGHTS SET
-if(isset($right_act) and ($right_act == 'add')){
+if (isset($right_act) and ($right_act == 'add')) {
 	$right_id = $fsip->addRow(null, 'rights');
 }
 
 define('TAB', 'features');
 
 // GET RIGHTS SETS TO VIEW OR RIGHTS SET TO EDIT
-if(empty($right_id)){
+if (empty($right_id)) {
 	$fsip->updateCounts('images', 'rights', 'right_image_count');
 	
 	$right_ids = new Find('rights');
@@ -103,13 +97,13 @@ if(empty($right_id)){
 	$rights = new Right($right_ids);
 	
 	define('TITLE', 'Rights Sets');
-	require_once(PATH . ADMIN . 'includes/header.php');
+	require_once(PATH . INCLUDES . '/admin_header.php');
 	
 	?>
 	
-	<div class="actions"><a href="<?php echo BASE . ADMIN . 'rights' . URL_ACT . 'add' . URL_RW; ?>"><button>Add rights set</button></a></div>
+	<div class="actions"><a href="<?php echo BASE . ADMINFOLDER . 'rights' . URL_ACT . 'add' . URL_RW; ?>"><button>Add rights set</button></a></div>
 
-	<h1><img src="<?php echo BASE . ADMIN; ?>images/icons/rights.png" alt="" /> Rights Sets (<?php echo $rights->right_count; ?>)</h1>
+	<h1><img src="<?php echo BASE . IMGFOLDER; ?>icons/rights.png" alt="" /> Rights Sets (<?php echo $rights->right_count; ?>)</h1>
 	
 	<p>Rights sets clarify which copyrights you retain on your images to discourage illicit use.</p>
 	
@@ -124,26 +118,25 @@ if(empty($right_id)){
 			<th>Created</th>
 			<th>Last modified</th>
 		</tr>
-		<?php
+<?php
 	
-		foreach($rights->rights as $right){
+		foreach($rights->rights as $right) {
 			echo '<tr class="ro">';
-				echo '<td><strong class="large"><a href="' . BASE . ADMIN . 'rights' . URL_ID . $right['right_id'] . URL_RW . '" class="tip" title="' . htmlentities($fsip->fitStringByWord(strip_tags($right['right_description']), 150)) . '">' . $right['right_title'] . '</a></strong></td>';
-				echo '<td class="center"><a href="' . BASE . ADMIN . 'search' . URL_ACT . 'rights' . URL_AID . $right['right_id'] . URL_RW . '">' . $right['right_image_count'] . '</a></td>';
+				echo '<td><strong class="large"><a href="' . BASE . ADMINFOLDER . 'rights' . URL_ID . $right['right_id'] . URL_RW . '" class="tip" title="' . htmlentities($fsip->fitStringByWord(strip_tags($right['right_description']), 150)) . '">' . $right['right_title'] . '</a></strong></td>';
+				echo '<td class="center"><a href="' . BASE . ADMINFOLDER . 'search' . URL_ACT . 'rights' . URL_AID . $right['right_id'] . URL_RW . '">' . $right['right_image_count'] . '</a></td>';
 				echo '<td>' . $fsip->formatTime($right['right_created']) . '</td>';
 				echo '<td>' . ucfirst($fsip->formatRelTime($right['right_modified'])) . '</td>';
 			echo '</tr>';
 		}
 	
-		?>
+?>
 	</table>
 
-	<?php
+<?php
 	
-	require_once(PATH . ADMIN . 'includes/footer.php');
+	require_once(PATH . INCLUDES . '/admin_footer.php');
 	
-}
-else{	
+} else {
 	// Update image count on rights set
 	$image_ids = new Find('images');
 	$image_ids->rights($right_id);
@@ -156,27 +149,26 @@ else{
 	$right = $fsip->getRow('rights', $right_id);
 	$right = $fsip->makeHTMLSafe($right);
 
-	if(!empty($right['right_title'])){	
+	if (!empty($right['right_title'])) {
 		define('TITLE', 'Rights Set: &#8220;' . $right['right_title']  . '&#8221;');
 	}
-	require_once(PATH . ADMIN . 'includes/header.php');
+	require_once(PATH . INCLUDES . '/admin_header.php');
 
-	?>
+?>
 	
-	<div class="actions"><a href="<?php echo BASE . ADMIN . 'search' . URL_ACT . 'rights' . URL_AID . $right['right_id'] . URL_RW; ?>"><button>View images (<?php echo $image_ids->count; ?>)</button></a></div>
+	<div class="actions"><a href="<?php echo BASE . ADMINFOLDER . 'search' . URL_ACT . 'rights' . URL_AID . $right['right_id'] . URL_RW; ?>"><button>View images (<?php echo $image_ids->count; ?>)</button></a></div>
 	
-	<?php
+<?php
 	
-	if(empty($right['right_title'])){
-		echo '<h1><img src="' . BASE . ADMIN . 'images/icons/rights.png" alt="" /> New Rights Set</h1>';
+	if (empty($right['right_title'])) {
+		echo '<h1><img src="' . BASE . IMGFOLDER . 'icons/rights.png" alt="" /> New Rights Set</h1>';
+	} else {
+		echo '<h1><img src="' . BASE . IMGFOLDER . 'icons/rights.png" alt="" /> Rights Set: ' . $right['right_title'] . '</h1>';
 	}
-	else{
-		echo '<h1><img src="' . BASE . ADMIN . 'images/icons/rights.png" alt="" /> Rights Set: ' . $right['right_title'] . '</h1>';
-	}
 	
-	?>
+?>
 	
-	<form id="rights" action="<?php echo BASE . ADMIN . 'rights' . URL_CAP; ?>" method="post">
+	<form id="rights" action="<?php echo BASE . ADMINFOLDER . 'rights' . URL_CAP; ?>" method="post">
 		<div class="span-24 last">
 			<div class="span-15 append-1">
 				<input type="text" id="right_title" name="right_title" placeholder="Title" value="<?php echo $right['right_title']; ?>" class="title notempty" />
@@ -217,9 +209,9 @@ else{
 		</p>
 	</form>
 
-	<?php
+<?php
 	
-	require_once(PATH . ADMIN . 'includes/footer.php');
+	require_once(PATH . INCLUDES . '/admin_footer.php');
 	
 }
 

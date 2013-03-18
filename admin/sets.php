@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../config.php');
+require_once('../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -132,17 +132,17 @@ if (empty($set_id)) {
 	$sets = new Set($set_ids);
 	
 	define('TITLE', 'Sets');
-	require_once(PATH . ADMIN . 'includes/header.php');
+	require_once(PATH . INCLUDES . '/admin_header.php');
 	
 ?>
 	
 	<div class="actions">
-		<a href="<?php echo BASE . ADMIN . 'sets' . URL_ACT . 'build' . URL_RW; ?>"><button>Build set</button></a>
+		<a href="<?php echo BASE . ADMINFOLDER . 'sets' . URL_ACT . 'build' . URL_RW; ?>"><button>Build set</button></a>
 	</div>
 
-	<h1><img src="<?php echo BASE . ADMIN; ?>images/icons/sets.png" alt="" /> Sets (<?php echo $sets->set_count; ?>)</h1>
+	<h1><img src="<?php echo BASE . IMGFOLDER; ?>icons/sets.png" alt="" /> Sets (<?php echo $sets->set_count; ?>)</h1>
 	
-	<p>Sets are collections of images. You can also build a set by <a href="<?php echo BASE . ADMIN . 'library' . URL_CAP; ?>">performing a search</a>.</p>
+	<p>Sets are collections of images. You can also build a set by <a href="<?php echo BASE . ADMINFOLDER . 'library' . URL_CAP; ?>">performing a search</a>.</p>
 	
 	<p>
 		<input type="search" name="filter" placeholder="Filter" class="s" results="0" />
@@ -160,10 +160,10 @@ if (empty($set_id)) {
 <?php	
 		foreach($sets->sets as $set) {
 			echo '<tr class="ro">';
-				echo '<td><strong class="large"><a href="' . BASE . ADMIN . 'sets' . URL_ID . $set['set_id'] . URL_RW . '">' . $set['set_title'] . '</a></strong><br /><a href="' . BASE . 'set' . URL_ID . $set['set_title_url'] . URL_RW . '" class="nu quiet">' . $set['set_title_url'] . '</td>';
+				echo '<td><strong class="large"><a href="' . BASE . ADMINFOLDER . 'sets' . URL_ID . $set['set_id'] . URL_RW . '">' . $set['set_title'] . '</a></strong><br /><a href="' . BASE . 'set' . URL_ID . $set['set_title_url'] . URL_RW . '" class="nu quiet">' . $set['set_title_url'] . '</td>';
 				echo '<td class="center">' . ucwords($set['set_type']) . '</td>';
 				echo '<td class="center">' . $set['set_views'] . '</td>';
-				echo '<td class="center"><a href="' . BASE . ADMIN . 'search' . URL_ACT . 'sets' . URL_AID . $set['set_id'] . URL_RW . '">' . $set['set_image_count'] . '</a></td>';
+				echo '<td class="center"><a href="' . BASE . ADMINFOLDER . 'search' . URL_ACT . 'sets' . URL_AID . $set['set_id'] . URL_RW . '">' . $set['set_image_count'] . '</a></td>';
 				echo '<td>' . $fsip->formatTime($set['set_created']) . '</td>';
 				echo '<td>' . ucfirst($fsip->formatRelTime($set['set_modified'])) . '</td>';
 			echo '</tr>';
@@ -174,7 +174,7 @@ if (empty($set_id)) {
 
 <?php
 	
-	require_once(PATH . ADMIN . 'includes/footer.php');
+	require_once(PATH . INCLUDES . '/admin_footer.php');
 	
 } else {
 	// Get set
@@ -193,23 +193,23 @@ if (empty($set_id)) {
 	} else {
 		define('TITLE', 'Set');
 	}
-	require_once(PATH . ADMIN . 'includes/header.php');
+	require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>
 	
-	<div class="actions"><a href="<?php echo BASE . ADMIN . 'search' . URL_ACT . 'sets' . URL_AID . $set['set_id'] . URL_RW; ?>"><button>View images (<?php echo $image_ids->count; ?>)</button></a> <a href="<?php echo BASE . 'set' . URL_ID . $set['set_id'] . URL_RW; ?>"><button>Launch set</button></a></div>
+	<div class="actions"><a href="<?php echo BASE . ADMINFOLDER . 'search' . URL_ACT . 'sets' . URL_AID . $set['set_id'] . URL_RW; ?>"><button>View images (<?php echo $image_ids->count; ?>)</button></a> <a href="<?php echo BASE . 'set' . URL_ID . $set['set_id'] . URL_RW; ?>"><button>Launch set</button></a></div>
 	
 <?php
 	
 	if (empty($set['set_title'])) {
-		echo '<h1><img src="' . BASE . ADMIN . 'images/icons/sets.png" alt="" /> New Set</h1>';
+		echo '<h1><img src="' . BASE . IMGFOLDER . 'icons/sets.png" alt="" /> New Set</h1>';
 	} else {
-		echo '<h1><img src="' . BASE . ADMIN . 'images/icons/sets.png" alt="" /> Set: ' . $set['set_title'] . '</h1>';
+		echo '<h1><img src="' . BASE . IMGFOLDER . 'icons/sets.png" alt="" /> Set: ' . $set['set_title'] . '</h1>';
 	}
 	
 ?>
 	
-	<form id="set" action="<?php echo BASE . ADMIN . 'sets' . URL_CAP; ?>" method="post">
+	<form id="set" action="<?php echo BASE . ADMINFOLDER . 'sets' . URL_CAP; ?>" method="post">
 		<div class="span-24 last">
 			<div class="span-15 append-1">
 				<input type="text" id="set_title" name="set_title" placeholder="Title" value="<?php echo $set['set_title']; ?>" class="title notempty" />
@@ -434,7 +434,7 @@ if (empty($set_id)) {
 
 <?php
 	
-	require_once(PATH . ADMIN . 'includes/footer.php');
+	require_once(PATH . INCLUDES . '/admin_footer.php');
 	
 }
 

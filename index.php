@@ -12,25 +12,22 @@ require_once(PATH . CLASSES . 'fsip.php');
 $fsip = new FSIP;
 $fsip->recordStat('home');
 
+$with_id = null;
+
 if (isset($_GET['with'])) {
 	$with_id = $fsip->findID($_GET['with'], true);
 }
-if (!$with_id and !empty($_GET['with'])) { 
+if (!isset($with_id) and !empty($_GET['with'])) {
 	$fsip->addError('No image was found.', 'Try searching for the image you were seeking.', null, null, 404); 
 }
 
 $image_ids = new Find('images');
 
-/*
-	 * @param int $page Page number
-	 * @param int $limit Number of items per page
-	 * @param int $first Number of items on the first page (if different)
-	public function page($page=null, $limit=null, $first=null) {
-*/
 
-//no difference between first page and subsequent. 
-//Here is a good place to insert a user preference for how many items to show per page.
-$image_ids->page(null, 12, null); 
+
+// no difference between first page and subsequent. 
+// Here is a good place to insert a user preference for how many items to show per page. DEH
+$image_ids->page(null, 12, null); // 	public function page($page=Page number, $limit=Number of items per page, $first=Number of items on the first page (if different)) {
 //$image_ids->page(null, 12, 1); //DEH mod
 
 

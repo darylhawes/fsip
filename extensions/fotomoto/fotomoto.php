@@ -31,7 +31,7 @@ class Fotomoto extends Orbit{
 			}
 			else{
 				foreach($images as &$image){
-					$src = BASE . IMAGES . $image['image_directory'] . $image['image_id'] . '_admin.' . $image['image_ext'];
+					$src = BASE . IMAGEDATA . $image['image_directory'] . $image['image_id'] . '_admin.' . $image['image_ext'];
 					$image['image_fotomoto_buy'] = '<a href="#" onclick="FOTOMOTO.API.showWindow(FOTOMOTO.API.BUY,\'' . $src . '\'); event.preventDefault();">' . $this->fm_buy_html . '</a>';
 					$image['image_fotomoto_print'] = '<a href="#" onclick="FOTOMOTO.API.showWindow(FOTOMOTO.API.PRINT,\'' . $src . '\'); event.preventDefault();">' . $this->fm_print_html . '</a>';
 					$image['image_fotomoto_file'] = '<a href="#" onclick="FOTOMOTO.API.showWindow(FOTOMOTO.API.FILE,\'' . $src . '\'); event.preventDefault();">' . $this->fm_file_html . '</a>';

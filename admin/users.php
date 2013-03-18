@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../config.php');
+require_once('../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -32,7 +32,7 @@ if (!empty($_POST['user_id'])) {
 			$rand = $fsip->randInt();
 			echo $rand;
 			$pass = substr(sha1($rand), 0, 8);
-			$fsip->email($_POST['user_email'], 'Password reset', 'Your password has been reset:' . "\r\n\n" . $pass . "\r\n\n" . LOCATION . BASE . ADMIN);
+			$fsip->email($_POST['user_email'], 'Password reset', 'Your password has been reset:' . "\r\n\n" . $pass . "\r\n\n" . LOCATION . BASE . ADMINFOLDER);
 			$_POST['user_pass'] = $pass;
 		}
 		
@@ -89,12 +89,12 @@ if (empty($user_db_id)) {
 	$user_db_count = @count($user_dbs);
 	
 	define('TITLE', 'Users');
-	require_once(PATH . ADMIN . 'includes/header.php');
+	require_once(PATH . INCLUDES . '/admin_header.php');
 	
 ?>	
-	<div class="actions"><a href="<?php echo BASE . ADMIN . 'users' . URL_ACT . 'add' . URL_RW; ?>"><button>Add user</button></a></div>
+	<div class="actions"><a href="<?php echo BASE . ADMINFOLDER . 'users' . URL_ACT . 'add' . URL_RW; ?>"><button>Add user</button></a></div>
 
-	<h1><img src="<?php echo BASE . ADMIN; ?>images/icons/users.png" alt="" /> Users (<?php echo $user_db_count; ?>)</h1>
+	<h1><img src="<?php echo BASE . IMGFOLDER; ?>icons/users.png" alt="" /> Users (<?php echo $user_db_count; ?>)</h1>
 	
 	<p>Users can add images to your library and modify this installation.</p>
 	
@@ -114,11 +114,11 @@ if (empty($user_db_id)) {
 <?php	
 		foreach($user_dbs as $user_db) {
 			echo '<tr class="ro">';
-				echo '<td><strong class="large"><a href="' . BASE . ADMIN . 'users' . URL_ID . $user_db['user_id'] . URL_RW . '">' . $user_db['user_user'] . '</a></strong></td>';
+				echo '<td><strong class="large"><a href="' . BASE . ADMINFOLDER . 'users' . URL_ID . $user_db['user_id'] . URL_RW . '">' . $user_db['user_user'] . '</a></strong></td>';
 				echo '<td>' . $user_db['user_name'] . '</td>';
 				echo '<td><a href="mailto:' . $user_db['user_email'] . '">' . $user_db['user_email'] . '</a></td>';
-				echo '<td class="center"><a href="' . BASE . ADMIN . 'search' . URL_ACT . 'users' . URL_AID . $user_db['user_id'] . URL_RW . '">' . number_format($user_db['user_image_count']) . '</a></td>';
-				echo '<td class="center"><a href="' . BASE . ADMIN . 'comments' . URL_ACT . 'users' . URL_AID . $user_db['user_id'] . URL_RW . '">' . number_format($user_db['user_comment_count']) . '</a></td>';
+				echo '<td class="center"><a href="' . BASE . ADMINFOLDER . 'search' . URL_ACT . 'users' . URL_AID . $user_db['user_id'] . URL_RW . '">' . number_format($user_db['user_image_count']) . '</a></td>';
+				echo '<td class="center"><a href="' . BASE . ADMINFOLDER . 'comments' . URL_ACT . 'users' . URL_AID . $user_db['user_id'] . URL_RW . '">' . number_format($user_db['user_comment_count']) . '</a></td>';
 				echo '<td>' . $fsip->formatTime($user_db['user_last_login'], null, '<em>Never</em>') . '</td>';
 			echo '</tr>';
 		}
@@ -128,7 +128,7 @@ if (empty($user_db_id)) {
 	
 <?php
 	
-	require_once(PATH . ADMIN . 'includes/footer.php');
+	require_once(PATH . INCLUDES . '/admin_footer.php');
 	
 } else { //$user_db_id not empty
 	// Update image count
@@ -149,26 +149,26 @@ if (empty($user_db_id)) {
 	} else {
 		define('TITLE', 'User');
 	}
-	require_once(PATH . ADMIN . 'includes/header.php');
+	require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>
 	
 	<div class="actions">
 		<a href="mailto:<?php echo $user_db['user_email']; ?>"><button>Email user</button></a>
-		<a href="<?php echo BASE . ADMIN . 'search' . URL_ACT . 'users' . URL_AID . $user_db['user_id'] . URL_RW; ?>"><button>View images (<?php echo $user_image_count; ?>)</button></a>
+		<a href="<?php echo BASE . ADMINFOLDER . 'search' . URL_ACT . 'users' . URL_AID . $user_db['user_id'] . URL_RW; ?>"><button>View images (<?php echo $user_image_count; ?>)</button></a>
 	</div>
 	
 <?php
 	
 	if (empty($user_db['user_name'])) {
-		echo '<h1><img src="' . BASE . ADMIN . 'images/icons/users.png" alt="" /> New User</h1>';
+		echo '<h1><img src="' . BASE . IMGFOLDER . 'icons/users.png" alt="" /> New User</h1>';
 	} else {
-		echo '<h1><img src="' . BASE . ADMIN . 'images/icons/users.png" alt="" /> User: ' . $user_db['user_name'] . '</h1>';
+		echo '<h1><img src="' . BASE . IMGFOLDER . 'icons/users.png" alt="" /> User: ' . $user_db['user_name'] . '</h1>';
 	}
 	
 ?>
 	
-	<form id="user" action="<?php echo BASE . ADMIN . 'users' . URL_CAP; ?>" method="post">
+	<form id="user" action="<?php echo BASE . ADMINFOLDER . 'users' . URL_CAP; ?>" method="post">
 		<table>
 			<tr>
 				<td class="right middle"><label for="user_name">Name:</label></td>
@@ -285,7 +285,7 @@ if (empty($user_db_id)) {
 
 <?php
 	
-	require_once(PATH . ADMIN . 'includes/footer.php');
+	require_once(PATH . INCLUDES . '/admin_footer.php');
 	
 }
 

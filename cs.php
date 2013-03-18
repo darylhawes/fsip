@@ -29,7 +29,7 @@ class CS {
 		ob_end_clean();
 		$php_pdo_drivers = @PDO::getAvailableDrivers();
 		foreach($php_pdo_drivers as $driver) {
-			switch($driver){
+			switch($driver) {
 				case 'odbc':
 					// $this->php_pdo_drivers[] = 'Microsoft SQL Server';
 					break;
@@ -153,7 +153,7 @@ $test = new CS();
 	<link rel="stylesheet" href="admin/css/blueprint/print.css" type="text/css" media="print" />	
 	<!--[if lt IE 8]><link rel="stylesheet" href="admin/css/blueprint/ie.css" type="text/css" media="screen, projection" /><![endif]-->
 	<link rel="stylesheet" href="admin/css/fsip.css" type="text/css" media="screen, projection" />
-	<link rel="shortcut icon" href="admin/images/favicon.ico" />
+	<link rel="shortcut icon" href="lib/images/favicon.ico" />
 </head>
 <body>
 	<div id="header_holder">
@@ -283,20 +283,20 @@ $test = new CS();
 			<?php echo $test->noteRAM(); ?>
 			
 			<p class="center large">
-				<?php
+<?php
 				if ($test->compatible == true) {
-					?>
+?>
 					SUCCESS<br />
 					<strong>Good news, you can install here!</strong><br />
-					<?php
+<?php
 				} else {
-					?>
+?>
 					FAILURE!<br />
 					<strong>Uh-oh, you cannot install here.</strong><br />
 <!--					<span class="quiet small"><a href="http://www.alkalineapp.com/compatibility/">Learn how to make your Web server compatible.</a></span>-->
-					<?php
+<?php
 				}
-				?>
+?>
 			</p><br />
 		
 			<div id="footer" class="span-24 last">

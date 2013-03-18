@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../../config.php');
+require_once('../../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -16,12 +16,11 @@ $user->perm(true);
 
 $id = $fsip->findID(@$_POST['image_id']);
 
-if(empty($id)){
+if (empty($id)) {
 	$image_ids = new Find('images', null, null, null, false);
 	$image_ids->find();
 	echo json_encode($image_ids->ids);
-}
-else{
+} else {
 	$images = new Image($id);
 	$sizes = $images->getSizes();
 	$image = $images->images[0];
@@ -29,16 +28,14 @@ else{
 	
 	$dir = '';
 	
-	if($fsip->returnConf('image_hdm') == true){
-		if($fsip->returnConf('image_hdm_format') == 'yyyy/mm/dd'){
+	if ($fsip->returnConf('image_hdm') == true) {
+		if ($fsip->returnConf('image_hdm_format') == 'yyyy/mm/dd') {
 			$dir = substr($image['image_uploaded'], 0, 10);
 			$dir = str_replace('-', '/', $dir);
-		}
-		elseif($fsip->returnConf('image_hdm_format') == '1000'){
-			if($image['image_id'] < 1000){
+		} elseif($fsip->returnConf('image_hdm_format') == '1000') {
+			if ($image['image_id'] < 1000) {
 				$dir = '0000';
-			}
-			else{
+			} else {
 				$dir = substr($image['image_id'], 0, -3) . '000';
 			}
 		}
@@ -46,11 +43,11 @@ else{
 		$dir .= '/';
 	}
 	
-	$path = $fsip->correctWinPath(PATH . IMAGES . $dir);
+	$path = $fsip->correctWinPath(PATH . IMAGEDATA . $dir);
 	$dest = $path . $image['image_id'] . '.' . $image['image_ext'];
 	
-	if($src != $dest){
-		if(!is_dir($path)){
+	if ($src != $dest) {
+		if (!is_dir($path)) {
 			mkdir($path, 0777, true);
 		}
 		
@@ -58,9 +55,9 @@ else{
 		
 		rename($src, $dest);
 		
-		foreach($sizes as $size){
+		foreach($sizes as $size) {
 			$src = $size['size_file'];
-			$dest = $fsip->correctWinPath(PATH . IMAGES . $dir . $size['size_prepend'] . $image['image_id'] . $size['size_append'] . '.' . $image['image_ext']);
+			$dest = $fsip->correctWinPath(PATH . IMAGEDATA . $dir . $size['size_prepend'] . $image['image_id'] . $size['size_append'] . '.' . $image['image_ext']);
 			
 			rename($src, $dest);
 		}

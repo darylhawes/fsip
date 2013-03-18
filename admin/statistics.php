@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../config.php');
+require_once('../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -27,7 +27,7 @@ $h_visitors = number_format($hourly->visitors);
 $views = array();
 $visitors = array();
 
-foreach($hourly->stats as $stat){
+foreach($hourly->stats as $stat) {
 	$views[] = array($stat['stat_ts_js'], $stat['stat_views']);
 	$visitors[] = array($stat['stat_ts_js'], $stat['stat_visitors']);
 }
@@ -48,7 +48,7 @@ $d_visitors = number_format($daily->visitors);
 $views = array();
 $visitors = array();
 
-foreach($daily->stats as $stat){
+foreach($daily->stats as $stat) {
 	$views[] = array($stat['stat_ts_js'], $stat['stat_views']);
 	$visitors[] = array($stat['stat_ts_js'], $stat['stat_visitors']);
 }
@@ -69,7 +69,7 @@ $m_visitors = number_format($monthly->visitors);
 $views = array();
 $visitors = array();
 
-foreach($monthly->stats as $stat){
+foreach($monthly->stats as $stat) {
 	$views[] = array($stat['stat_ts_js'], $stat['stat_views']);
 	$visitors[] = array($stat['stat_ts_js'], $stat['stat_visitors']);
 }
@@ -97,9 +97,9 @@ $durations_count = count($stats->durations);
 
 $accounted_for = 0;
 
-foreach($stats->durations as $duration){
-	foreach($levels as $level_text => $level_max){
-		if($duration['stat_duration'] < $level_max){
+foreach($stats->durations as $duration) {
+	foreach($levels as $level_text => $level_max) {
+		if ($duration['stat_duration'] < $level_max) {
 			$durations[$level_text]++;
 			$accounted_for++;
 			break;
@@ -109,8 +109,8 @@ foreach($stats->durations as $duration){
 
 $durations[$last] = $durations_count - $accounted_for;
 
-if($durations_count > 0){
-	foreach($durations as $text => $duration){
+if ($durations_count > 0) {
+	foreach($durations as $text => $duration) {
 		$durations[$text] = round(($duration / $durations_count) * 100, 1);
 	}
 }
@@ -127,7 +127,7 @@ $stats->getPageTypes();
 
 $stats->getRecentReferrers(10, false);
 
-foreach($stats->referrers_recent as &$referrer){
+foreach($stats->referrers_recent as &$referrer) {
 	$referrer['stat_referrer_display'] = $fsip->fitString($fsip->minimizeURL($referrer['stat_referrer']), 30);
 }
 
@@ -135,17 +135,17 @@ foreach($stats->referrers_recent as &$referrer){
 
 $stats->getPopularReferrers(10, false);
 
-foreach($stats->referrers_popular as &$referrer){
+foreach($stats->referrers_popular as &$referrer) {
 	$referrer['stat_referrer_display'] = $fsip->fitString($fsip->minimizeURL($referrer['stat_referrer']), 30);
 }
 
 define('TAB', 'dashboard');
 define('TITLE', 'Statistics');
-require_once(PATH . ADMIN . 'includes/header.php');
+require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>
 
-<h1><img src="<?php echo BASE . ADMIN; ?>images/icons/stats.png" alt="" /> Statistics</h1>
+<h1><img src="<?php echo BASE . IMGFOLDER; ?>icons/stats.png" alt="" /> Statistics</h1>
 
 <div class="span-24 last">
 	<div class="span-15 append-1">
@@ -176,14 +176,14 @@ require_once(PATH . ADMIN . 'includes/header.php');
 				<th class="right">%</th>
 				<th>Duration</th>
 			</tr>
-			<?php				
-			foreach($durations as $label => $duration){
+<?php				
+			foreach($durations as $label => $duration) {
 				echo '<tr>';
 				echo '<td class="right">' . $duration . '%</td>';
 				echo '<td>' . $label . '</td>';
 				echo '</tr>';
 			}
-			?>
+?>
 		</table>
 
 		<h3>Popular Pages</h3>
@@ -192,14 +192,14 @@ require_once(PATH . ADMIN . 'includes/header.php');
 				<th class="right">Hits</th>
 				<th>Page</th>
 			</tr>
-			<?php				
-			foreach($stats->pages as $page){
+<?php				
+			foreach($stats->pages as $page) {
 				echo '<tr>';
 				echo '<td class="right">' . number_format($page['stat_count']) . '</td>';
 				echo '<td><a href="' . BASE . substr($page['stat_page'], 1) . '">' . $fsip->fitString($page['stat_page'], 30) . '</a></td>';
 				echo '</tr>';
 			}
-			?>
+?>
 		</table>
 
 		<h3>Page Types</h3>
@@ -208,14 +208,14 @@ require_once(PATH . ADMIN . 'includes/header.php');
 				<th class="right">Hits</th>
 				<th>Page type</th>
 			</tr>
-			<?php				
-			foreach($stats->page_types as $page_type){
+<?php				
+			foreach($stats->page_types as $page_type) {
 				echo '<tr>';
 				echo '<td class="right">' . number_format($page_type['stat_count']) . '</td>';
 				echo '<td>' . ucwords($page_type['stat_page_type']) . '</td>';
 				echo '</tr>';
 			}
-			?>
+?>
 		</table>
 
 		<h3>Popular Referrers</h3>
@@ -224,14 +224,14 @@ require_once(PATH . ADMIN . 'includes/header.php');
 				<th class="right">Hits</th>
 				<th>Referrer</th>
 			</tr>
-			<?php				
-			foreach($stats->referrers_popular as $referrer){
+<?php				
+			foreach($stats->referrers_popular as $referrer) {
 				echo '<tr>';
 				echo '<td class="right">' . number_format($referrer['stat_referrer_count']) . '</td>';
 				echo '<td><a href="' . $referrer['stat_referrer'] . '">' . $referrer['stat_referrer_display'] . '</a></td>';
 				echo '</tr>';
 			}
-			?>
+?>
 		</table>
 
 		<h3>Recent Referrers</h3>
@@ -240,20 +240,20 @@ require_once(PATH . ADMIN . 'includes/header.php');
 				<th class="right">Date</th>
 				<th>Referrer</th>
 			</tr>
-			<?php				
-			foreach($stats->referrers_recent as $referrer){
+<?php
+			foreach($stats->referrers_recent as $referrer) {
 				echo '<tr>';
 				echo '<td class="right quiet">' . $fsip->formatRelTime($referrer['stat_date'], 'M j, g:i a') . '</td>';
 				echo '<td><a href="' . $referrer['stat_referrer'] . '">' . $referrer['stat_referrer_display'] . '</a></td>';
 				echo '</tr>';
 			}
-			?>
+?>
 		</table>
 	</div>
 </div>
 
 <?php
 
-require_once(PATH . ADMIN . 'includes/footer.php');
+require_once(PATH . INCLUDES . '/admin_footer.php');
 
 ?>
