@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../config.php');
+require_once('../config.php');
 require_once(PATH . CLASSES . 'fsip.php');
 
 $fsip = new FSIP;
@@ -19,7 +19,7 @@ $include_count = count($includes);
 
 define('TAB', 'settings');
 define('TITLE', 'Theme Includes');
-require_once(PATH . ADMIN . 'includes/header.php');
+require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>
 
@@ -30,20 +30,20 @@ require_once(PATH . ADMIN . 'includes/header.php');
 		<th>include</th>
 		<th class="center">Canvas tag</th>
 	</tr>
-	<?php
+<?php
 	
-	foreach($includes as $include){
+	foreach($includes as $include) {
 		echo '<tr>';
 		echo '<td><strong>' . $include . '</strong></td>';
 		echo '<td class="center">{include:' . preg_replace('#\..+#si', '', ucwords($include)) . '}</td>';
 		echo '</tr>';
 	}
 
-	?>
+?>
 </table>
 	
 <?php
 
-require_once(PATH . ADMIN . 'includes/footer.php');
+require_once(PATH . INCLUDES . '/admin_footer.php');
 
 ?>
