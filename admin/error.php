@@ -14,7 +14,7 @@ $e = $_SESSION['fsip']['exception'];
 
 define('TAB', 'Error');
 define('TITLE', 'Error');
-require_once(PATH . ADMIN . 'includes/header.php');
+require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>
 
@@ -27,19 +27,19 @@ require_once(PATH . ADMIN . 'includes/header.php');
 
 $trace = $e->getPublicTrace();
 
-foreach($trace as $stack){
-	?>
+foreach($trace as $stack) {
+?>
 	<li>
 		<?php echo $stack['class']; ?> <?php echo str_replace('->', '&#8594;', $stack['type']); ?> <?php echo $stack['function']; ?>
 		<span class="quiet">(<?php echo $stack['file']; ?>, line <?php echo $stack['line']; ?>)</span>
 	</li>
-	<?php
+<?php
 }
 
 ?>
 </ol>
 <?php
 
-require_once(PATH . ADMIN . 'includes/footer.php');
+require_once(PATH . INCLUDES . '/admin_footer.php');
 
 ?>
