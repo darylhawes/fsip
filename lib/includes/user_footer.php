@@ -18,5 +18,10 @@
 			?>
 		</div>
 	</div>
+		{if:Published_Public_Image_Count}
+		<div>
+			<span class="footer_stats">There are {Published_Public_Image_Count} images available.</span>
+		</div>
+		{/if:Published_Public_Image_Count}
 </body>
 </html>
