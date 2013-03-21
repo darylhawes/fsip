@@ -23,12 +23,10 @@ if (!isset($with_id) and !empty($_GET['with'])) {
 
 $image_ids = new Find('images');
 
-
-
 // no difference between first page and subsequent. 
 // Here is a good place to insert a user preference for how many items to show per page. DEH
-$image_ids->page(null, 12, null); // 	public function page($page=Page number, $limit=Number of items per page, $first=Number of items on the first page (if different)) {
-//$image_ids->page(null, 12, 1); //DEH mod
+//$image_ids->page(null, 12, null); // 	public function page($page=Page number, $limit=Number of items per page, $first=Number of items on the first page (if different)) {
+$image_ids->page(null, 12, 1); //DEH mod
 
 
 if ($with_id) { 
@@ -38,6 +36,17 @@ $image_ids->published();
 $image_ids->privacy('public');
 $image_ids->sort('image_published', 'DESC');
 $image_ids->find();
+
+$template_variables = array();
+$template_variable['Page_Next'] = $image_ids->page_next;
+$template_variable['Page_Previous'] = $image_ids->page_previous;
+$template_variable['Page_Next_URI'] = $image_ids->page_next_uri;
+$template_variable['Page_Previous_URI'] = $image_ids->page_previous_uri;
+$template_variable['Page_Current'] = $image_ids->page;
+$template_variable['Page_Count'] = $image_ids->page_count;
+$template_variable['Page_Navigation_String'] = $image_ids->page_navigation_string;
+$template_variable['Published_Public_Image_Count'] = $image_ids->published_public_image_count;
+$template_variable['Total_Image_Count'] = $image_ids->total_image_count;
 
 $images = new Image($image_ids);
 $images->formatTime();
@@ -54,6 +63,7 @@ $images->hook();
 
 $header = new Canvas;
 $header->load('header');
+$header->assignArray($template_variable);
 $header->setTitle('Welcome');
 $header->display();
 
@@ -69,31 +79,24 @@ $sets = new Set($set_ids);
 
 $directory = new Canvas;
 $directory->load('directory');
+$directory->assignArray($template_variable);
 $directory->loop($pages);
 $directory->loop($sets);
 $directory->display();
 
 $index = new Canvas;
-
 if ($image_ids->page == 1) {
 	$index->load('index');
 } else {
 	$index->load('index_sub');
 }
-
-$index->assign('Page_Next', $image_ids->page_next);
-$index->assign('Page_Previous', $image_ids->page_previous);
-$index->assign('Page_Next_URI', $image_ids->page_next_uri);
-$index->assign('Page_Previous_URI', $image_ids->page_previous_uri);
-$index->assign('Page_Current', $image_ids->page);
-$index->assign('Page_Count', $image_ids->page_count);
-$index->assign('Page_Navigation_String', $image_ids->page_navigation_string);
-
+$index->assignArray($template_variable);
 $index->loop($images);
 $index->display();
 
 $footer = new Canvas;
 $footer->load('footer');
+$footer->assignArray($template_variable);
 $footer->display();
 
 ?>
