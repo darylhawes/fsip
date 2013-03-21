@@ -229,7 +229,7 @@ class Canvas extends FSIP {
 	}
 	
 	/**
-	 * Set a image object to process blocks and nested blocks
+	 * Set an image object to process blocks and nested blocks
 	 *
 	 * @param Image $object Image object
 	 * @return bool True if successful
@@ -1008,7 +1008,7 @@ class Canvas extends FSIP {
 		$this->assign('Search_Uri', LOCATION . BASE . 'search' . URL_CAP);
 		$this->assign('Results_Uri', LOCATION . BASE . 'results' . URL_CAP);
 		$this->assign('Atom_Uri', LOCATION . BASE . 'atom' . URL_CAP);
-		
+
 		// Process Counts, Blocks, Orbit, Config
 		$this->initDefines();
 		$this->initCounts();
