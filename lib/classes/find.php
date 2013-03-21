@@ -28,6 +28,8 @@ class Find extends FSIP {
 	public $last;
 	public $last_modified;
 	public $last_reverse;
+	public $published_public_image_count;
+	public $total_image_count;
 	public $page;
 	public $page_begin;
 	public $page_count;
@@ -154,28 +156,7 @@ class Find extends FSIP {
 				}
 			}
 		}
-		
-		// Create a page_navigation_string for templates to insert.
-		$pnavstr = "";
-		if ($this->page_count > 1) {
-			$pnavstr .= "<p>";
-			if (!empty($this->page_previous)) {
-				for($i = 1; $i <= $this->page_previous; ++$i) {
-					$page_uri = 'page_' . $i . '_uri';
-					$pnavstr .= '<a href="' . $this->$page_uri  .'" class="page_no">' . number_format($i) . '</a>';
-				}
-			}
-			$pnavstr .= '<span class="page_no">Page '. $this->page .' of '. $this->page_count. '</span>';
-			if (!empty($this->page_next)) {
-				for($i = $this->page_next; $i <= $this->page_count; ++$i){
-					$page_uri = 'page_' . $i . '_uri';
-					$pnavstr .=  '<a href="' . $this->$page_uri  .'" class="page_no">' . number_format($i) . '</a>';
-				}
-			}
-		$pnavstr .= "</p>";
-		$this->page_navigation_string = $pnavstr;
-		}
-		
+
 		if ($process_request == true) {
 			if (!empty($_REQUEST)) {
 				// Process browser requests
@@ -1855,7 +1836,7 @@ class Find extends FSIP {
 				$sql_sorts = str_ireplace(' DESC', '', $this->sql_sorts);
 				$this->sql_group_by .= ', ' . implode(', ', $sql_sorts);
 			}
-		} elseif(empty($this->order)) {
+		} elseif (empty($this->order)) {
 			$this->sql_order_by = ' ORDER BY ' . $this->table . '.' .$this->table_prefix . 'id DESC';
 			if (($this->db_type == 'pgsql') or ($this->db_type == 'mssql')) {
 				$this->sql_group_by .= ', ' . $this->table . '.' .$this->table_prefix . 'id';
@@ -1877,7 +1858,7 @@ class Find extends FSIP {
 		$query = $this->prepare($this->sql);
 		$query->execute($this->sql_params);
 		$images = $query->fetchAll();
-		
+
 		// Grab images.ids of results
 		$ids = array();
 		foreach($images as $image) {
@@ -1955,7 +1936,7 @@ class Find extends FSIP {
 			$this->ids = array_merge($replacement_ids, $replacement_append_ids);
 		}
 		
-		// Count images
+		// Count number of images in this found set of images
 		$this->count_result = count($this->ids);
 		
 		// Determine offset images
@@ -2009,10 +1990,47 @@ class Find extends FSIP {
 		if (!empty($this->page_previous)) {
 			$this->page_previous_uri = $this->magicURL($this->page_previous);
 		}
-		
+
+		// Create a page_navigation_string for templates to insert.
+		$pnavstr = "";
+		$this->page_navigation_string = $pnavstr;
+
+		// Create a total_image_count variable for templates to insert.
+		$query = $this->prepare('SELECT COUNT(*) as count FROM images WHERE 1;');
+		$query->execute();
+		$ttlImages = $query->fetchAll();
+		$this->total_image_count = $ttlImages[0]['count'];
+	
+		// Create a published_public_image_count variable for templates to insert.
+		$now = date('Y-m-d H:i:s');
+		$query = $this->prepare("SELECT COUNT(*) as count FROM images WHERE image_published > 1 AND image_published < '$now'");
+		$query->execute();
+		$pubImages = $query->fetchAll();
+		$this->published_public_image_count = $pubImages[0]['count'];		
+
+		if ($this->page_count > 1) {
+			$pnavstr .= "<p>";
+			if (!empty($this->page_previous)) {
+				for($i = 1; $i <= $this->page_previous; ++$i) {
+					$page_uri = 'page_' . $i . '_uri';
+					$pnavstr .= '<a href="' . $this->$page_uri  .'" class="page_no">' . number_format($i) . '</a>';
+				}
+			}
+			$pnavstr .= '<span class="page_no">Page '. $this->page .' of '. $this->page_count. '</span>';
+			if (!empty($this->page_next)) {
+				for($i = $this->page_next; $i <= $this->page_count; ++$i){
+					$page_uri = 'page_' . $i . '_uri';
+					$pnavstr .=  '<a href="' . $this->$page_uri  .'" class="page_no">' . number_format($i) . '</a>';
+				}
+			}
+		$pnavstr .= "</p>";
+		$this->page_navigation_string = $pnavstr;
+		}
+
 		// Return images.ids
 		return $this->ids;
 	}
+
 	
 	// SEARCH MEMORY
 	
