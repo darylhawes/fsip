@@ -14,9 +14,22 @@
 			}
 			
 			echo Orbit::promptTasks();
-			
 			?>
 		</div>
 	</div>
-</body>
+<!--	<div>
+		Census:
+		<table class="census">
+			<?php
+/*			$tables = $fsip->getInfo();
+			foreach($tables as $table) {
+				echo '<tr><td class="right">' . number_format($table['count']) . '</td><td><a href="' . BASE . ADMINFOLDER . $table['table'] . URL_CAP . '">' . $table['display'] . '</a></td></tr>';
+				
+				if($table['table'] == 'images'){ $image_count = $table['count']; }
+			}
+*/			?>
+		</table>
+	</div>
+-->
+	</body>
 </html>
