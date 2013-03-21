@@ -131,7 +131,7 @@ if (empty($set_id)) {
 	
 	$sets = new Set($set_ids);
 	
-	define('TITLE', 'Sets');
+	define('TITLE', 'FSIP Sets');
 	require_once(PATH . INCLUDES . '/admin_header.php');
 	
 ?>

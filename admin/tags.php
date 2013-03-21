@@ -59,7 +59,7 @@ define('TAB', 'features');
 
 // GET TAG CLOUD TO VIEW OR TAG TO EDIT
 if (empty($tag_id)) {
-	define('TITLE', 'fsip Tags');
+	define('TITLE', 'FSIP Tags');
 	require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>

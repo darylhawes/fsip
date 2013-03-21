@@ -112,7 +112,7 @@ if (empty($page_id)) {
 	$pages = new Page($page_ids);
 	$pages->hook();
 	
-	define('TITLE', 'Pages');
+	define('TITLE', 'FSIP Pages');
 	require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>
@@ -162,7 +162,7 @@ if (empty($page_id)) {
 	if (!empty($page['page_title'])) {
 		define('TITLE', 'Page: &#8220;' . $page['page_title']  . '&#8221;');
 	} else {
-		define('TITLE', 'Page');
+		define('TITLE', 'FSIP Page');
 	}
 	require_once(PATH . INCLUDES . '/admin_header.php');
 

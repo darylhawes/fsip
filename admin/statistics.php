@@ -140,7 +140,7 @@ foreach($stats->referrers_popular as &$referrer) {
 }
 
 define('TAB', 'dashboard');
-define('TITLE', 'Statistics');
+define('TITLE', 'FSIP Statistics');
 require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>

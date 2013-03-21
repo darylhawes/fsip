@@ -38,7 +38,7 @@ if ($shoebox_count > 0) {
 }
 
 define('TAB', 'library');
-define('TITLE', 'Library');
+define('TITLE', 'FSIP Library');
 require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>

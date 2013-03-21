@@ -15,7 +15,7 @@ $user = new User;
 $user->perm(true, 'maintenance');
 
 define('TAB', 'settings');
-define('TITLE', 'Maintenance');
+define('TITLE', 'FSIP Maintenance');
 require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>

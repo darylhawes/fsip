@@ -96,7 +96,7 @@ if (empty($right_id)) {
 	
 	$rights = new Right($right_ids);
 	
-	define('TITLE', 'Rights Sets');
+	define('TITLE', 'FSIP Rights Sets');
 	require_once(PATH . INCLUDES . '/admin_header.php');
 	
 	?>

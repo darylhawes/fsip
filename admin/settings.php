@@ -46,7 +46,7 @@ if($latest['build'] > FSIP::build){
 } */
 
 define('TAB', 'settings');
-define('TITLE', 'Settings');
+define('TITLE', 'FSIP Settings');
 require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>

@@ -69,7 +69,7 @@ if (empty($guest_id)) {
 	$guests = $fsip->getTable('guests');
 	$guest_count = @count($guests);
 	
-	define('TITLE', 'Guests');
+	define('TITLE', 'FSIP Guests');
 	require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>
@@ -116,9 +116,9 @@ if (empty($guest_id)) {
 	$_SESSION['fsip']['guest'] = $guest;
 	
 	if (!empty($guest['guest_title'])) {
-		define('TITLE', 'Guest: ' . $guest['guest_title']);
+		define('TITLE', 'FSIP Guest: ' . $guest['guest_title']);
 	} else {
-		define('TITLE', 'Guest');
+		define('TITLE', 'FSIP Guest');
 	}
 	require_once(PATH . INCLUDES . '/admin_header.php');
 

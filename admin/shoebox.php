@@ -86,7 +86,7 @@ if ($i_count == 0) {
 }
 
 define('TAB', 'shoebox');
-define('TITLE', 'Shoebox');
+define('TITLE', 'FSIP Shoebox');
 require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>

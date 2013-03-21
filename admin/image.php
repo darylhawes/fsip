@@ -141,9 +141,9 @@ $image = $fsip->makeHTMLSafe($image);
 
 define('TAB', 'library');
 if (!empty($image['image_title'])) {
-	define('TITLE', 'Image: &#8220;' . $image['image_title']  . '&#8221;');
+	define('TITLE', 'FSIP Image: &#8220;' . $image['image_title']  . '&#8221;');
 } else {
-	define('TITLE', 'Image');
+	define('TITLE', 'FSIP Image');
 }
 require_once(PATH . INCLUDES . '/admin_header.php');
 

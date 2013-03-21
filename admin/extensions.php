@@ -246,7 +246,7 @@ if(empty($extension_id)){
 	$extensions = $fsip->getTable('extensions', null, null, null, array('extension_status DESC', 'extension_title ASC'));
 	$extensions_count = @count($extensions);
 	
-	define('TITLE', 'Extensions');
+	define('TITLE', 'FSIP Extensions');
 	require_once(PATH . INCLUDES . '/admin_header.php');
 
 	?>

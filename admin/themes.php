@@ -144,7 +144,7 @@ $themes = $fsip->getTable('themes');
 $theme_count = @count($themes);
 
 define('TAB', 'settings');
-define('TITLE', 'Themes');
+define('TITLE', 'FSIP Themes');
 require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>

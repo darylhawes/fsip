@@ -13,7 +13,7 @@ if (session_id() == '') { session_start(); }
 $e = $_SESSION['fsip']['exception'];
 
 define('TAB', 'Error');
-define('TITLE', 'Error');
+define('TITLE', 'FSIP Error');
 require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>

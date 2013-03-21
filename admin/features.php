@@ -173,7 +173,7 @@ $images->getSizes('square');
 $images->hook();
 
 define('TAB', 'features');
-define('TITLE', 'Features');
+define('TITLE', 'FSIP Features');
 require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>

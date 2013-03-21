@@ -88,7 +88,7 @@ if (empty($size_id)) {
 	$sizes = $fsip->getTable('sizes', null, null, null, 'size_title ASC');
 	$size_count = @count($sizes);
 	
-	define('TITLE', 'Thumbnails');
+	define('TITLE', 'FSIP Thumbnails');
 	require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>

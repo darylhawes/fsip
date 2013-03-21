@@ -30,7 +30,7 @@ $images = new Image($image_ids);
 $images->getSizes('square');
 
 define('TAB', 'library');
-define('TITLE', 'Search Results');
+define('TITLE', 'FSIP Search Results');
 require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>
