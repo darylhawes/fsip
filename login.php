@@ -74,7 +74,7 @@ if (!empty($username) or !empty($password)) {
 }
 
 define('TAB', 'Login');
-define('TITLE', 'Login');
+define('TITLE', 'FSIP Login');
 require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>
