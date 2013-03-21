@@ -37,7 +37,7 @@ foreach($stats->stats as $stat){
 $visitors = json_encode($visitors);
 
 define('TAB', 'dashboard');
-define('TITLE', 'Dashboard');
+define('TITLE', 'FSIP Dashboard');
 require_once(PATH . ADMIN . 'includes/header.php');
 
 ?>
