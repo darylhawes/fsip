@@ -37,7 +37,7 @@ foreach($stats->stats as $stat) {
 $visitors = json_encode($visitors);
 
 define('TAB', 'dashboard');
-define('TITLE', 'Dashboard');
+define('TITLE', 'FSIP Dashboard');
 
 require_once(PATH . INCLUDES . 'admin_header.php');
 
@@ -74,6 +74,7 @@ require_once(PATH . INCLUDES . 'admin_header.php');
 				
 				if($table['table'] == 'images'){ $image_count = $table['count']; }
 			}
+			// DEH TODO: in census instead of reporting only image: #, report publisher images # vs. total images in dbase, maybe also display #deleted images!
 			?>
 		</table>
 
