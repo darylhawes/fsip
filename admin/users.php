@@ -88,7 +88,7 @@ if (empty($user_db_id)) {
 	$user_dbs = $fsip->getTable('users');
 	$user_db_count = @count($user_dbs);
 	
-	define('TITLE', 'Users');
+	define('TITLE', 'FSIP Users');
 	require_once(PATH . INCLUDES . '/admin_header.php');
 	
 ?>	

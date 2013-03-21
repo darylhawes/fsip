@@ -52,7 +52,7 @@ if (isset($_GET['success']) and ($_GET['success'] == 1)) {
 $orbit->hook('shoebox');
 
 define('TAB', 'upload');
-define('TITLE', 'Upload');
+define('TITLE', 'FSIP Upload');
 require_once(PATH . INCLUDES . '/admin_header.php');
 
 // cliqcliq Quickpic support
