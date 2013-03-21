@@ -46,7 +46,7 @@ class FSIP {
 		// Set error handlers
 		set_error_handler(array($this, 'addError'), E_ALL);
 		set_exception_handler(array($this, 'addException'));
-		
+
 		// Set error reporting
 		if (ini_get('error_reporting') > 30719) {
 			error_reporting(E_ALL);
@@ -71,7 +71,7 @@ class FSIP {
 		
 		// Determine class
 		$class = get_class($this);
-		
+
 		// Begin a session, if one does not yet exist
 		if (session_id() == '') { session_start(); }
 		
@@ -83,13 +83,13 @@ class FSIP {
 				header('Cache-Control: no-cache, must-revalidate', false);
 				header('Expires: Sat, 26 Jul 1997 05:00:00 GMT', false);
 			}
-			
+
 			$_SESSION['fsip']['debug']['start_time'] = microtime(true);
 			$_SESSION['fsip']['debug']['queries'] = 0;
 			if ($contents = file_get_contents($this->correctWinPath(PATH . 'config.json'))) {
 				$_SESSION['fsip']['config'] = json_decode($contents, true);
-			}	
-			
+			}
+
 			if (empty($_SESSION['fsip']['config'])) {
 				$_SESSION['fsip']['config'] = array();
 			}
@@ -110,12 +110,12 @@ class FSIP {
 		if (strpos($_SERVER['SCRIPT_FILENAME'], PATH . ADMINFOLDER) === 0) {
 			$this->adminpath = true;
 		}
-		
+
 		// Set back link
 		if (!empty($_SERVER['HTTP_REFERER']) and ($_SERVER['HTTP_REFERER'] != LOCATION . $_SERVER['REQUEST_URI'])) {
 			$_SESSION['fsip']['back'] = $_SERVER['HTTP_REFERER'];
 		} 
-		
+
 		// Initiate database connection, if necessary
 		$no_db_classes = array('Canvas');
 		
@@ -145,6 +145,16 @@ class FSIP {
 			}
 		}
 		
+		// Require at least 128M memory
+		$mem = ini_get('memory_limit');
+		if (substr($mem, -1) == 'M') {
+			if (substr($mem, 0, strlen($mem) - 1) < 128) {
+				if (!ini_set('memory_limit', '128M')) {
+					$this->addNote("Warning: Memory is less than 128MB. You may have trouble with some features.");
+				}
+			}
+		}
+
 		// Delete saved Orbit extension session references
 		if ($class == 'FSIP') {
 			unset($_SESSION['fsip']['extensions']);
@@ -184,8 +194,8 @@ class FSIP {
 		if (!$this->db) { 
 			// This error message may mean that we're not installed properly. Offer the user a link to setup their installation.
 			echo "<h1>ERROR: No database connection.</h1> <p><strong>You may not have FSIP configured properly. </strong></p><p>Try to <a href=".LOCATION . BASE."admin/install.php>install</a> again?</p>";
-			exit;
 //			$this->addError(E_USER_ERROR, 'No database connection'); 
+			exit;
 		}
 		
 		$this->prequery($query);
@@ -202,18 +212,17 @@ class FSIP {
 	 * @return PDOStatement
 	 */
 	public function prepare($query) {
-		if (!$this->db) { 
-			$location = $this->locationFull();
+		if (!$this->db) {
 			// This error message may mean that we're not installed properly. Offer the user a link to setup their installation.
 			echo "<h1>ERROR: No database connection.</h1> <p><strong>You may not have FSIP configured properly. </strong></p><p>Try to <a href=".LOCATION . BASE."admin/install.php>install</a> again?</p>";
-			exit;
 //			$this->addError(E_USER_ERROR, 'No database connection'); 
+			exit;
 		}
 		
 		$this->prequery($query);
 		$response = $this->db->prepare($query, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
 		$this->postquery($query);
-		
+
 		if (!$response) { 
 			$this->addError(E_USER_ERROR, 'Invalid query, check database log and connection');
 		}
