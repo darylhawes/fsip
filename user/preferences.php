@@ -7,11 +7,9 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
+
 $user = new User;
-
 $user->perm(true);
 
 if(!empty($_POST['preferences_save'])){
@@ -27,20 +25,20 @@ if(!empty($_POST['preferences_save'])){
 	$user->setPref('shoe_to_bulk', @$_POST['shoe_to_bulk']);
 	$user->savePref();
 	
-	$fsip->addNote('Your preferences have been saved.', 'success');
+	addNote('Your preferences have been saved.', 'success');
 	
 	$location = BASE . ADMINFOLDER . 'dashboard' . URL_CAP;
-	$fsip::headerLocationRedirect($location);
+	headerLocationRedirect($location);
 	exit();
 }
 
 define('TAB', 'dashboard');
 define('TITLE', 'Preferences');
-require_once(PATH . ADMIN . 'includes/header.php');
+require_once(PATH . INCLUDES . 'admin/admin_header.php');
 
 ?>
 
-<h1><img src="<?php echo BASE . ADMIN; ?>images/icons/preferences.png" alt="" /> Preferences</h1>
+<h1><img src="<?php echo BASE . LIB; ?>images/icons/preferences.png" alt="" /> Preferences</h1>
 
 <form id="preferences" action="" method="post">
 	<h3>General</h3>
@@ -124,11 +122,11 @@ require_once(PATH . ADMIN . 'includes/header.php');
 		</tr>
 	</table>
 	
-	<p><input type="submit" name="preferences_save" value="Save changes" /> or <a href="<?php echo $fsip->back(); ?>">cancel</a></p>
+	<p><input type="submit" name="preferences_save" value="Save changes" /> or <a href="<?php echo back(); ?>">cancel</a></p>
 </form>
 
 <?php
 
-require_once(PATH . ADMIN . 'includes/footer.php');
+require_once(PATH . INCLUDES . 'admin/admin_footer.php');
 
 ?>

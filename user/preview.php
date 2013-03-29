@@ -7,9 +7,7 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
 $orbit = new Orbit;
 $user = new User;
 
@@ -51,8 +49,8 @@ if (!empty($_POST['act']) and !empty($_POST['object'])) {
 			$object['page_excerpt'] = $orbit->hook('markup_' . $page_markup_ext, $object['page_excerpt_raw'], $object['page_excerpt_raw']);
 		} else {
 			$page_markup_ext = '';
-			$object['page_text'] = $fsip->nl2br($object['page_text_raw']);
-			$object['page_excerpt'] = $fsip->nl2br($object['page_excerpt_raw']);
+			$object['page_text'] = fsip_nl2br($object['page_text_raw']);
+			$object['page_excerpt'] = fsip_nl2br($object['page_excerpt_raw']);
 		}
 	}
 	
@@ -66,7 +64,7 @@ if (!empty($_POST['act']) and !empty($_POST['object'])) {
 
 if (empty($_SESSION['fsip']['preview']['act'])) {
 	$location = LOCATION . BASE . ADMINFOLDER);
-	$fsip::headerLocationRedirect($location);
+	headerLocationRedirect($location);
 }
 
 $_GET['id'] = $_SESSION['fsip']['preview']['id'];

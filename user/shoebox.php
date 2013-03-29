@@ -7,30 +7,30 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
 $orbit = new Orbit;
-$user = new User;
 
+$user = new User;
 $user->perm(true, 'shoebox');
+
+$fm = getFileManager();
 
 // PROCESS SUBMITTED IMAGES
 if (!empty($_POST['image_ids'])) {
 	$image_ids = explode(',', $_POST['image_ids']);
 	array_pop($image_ids);
 	
-	$fsip->convertToIntegerArray($image_ids);
+	convertToIntegerArray($image_ids);
 	
 	foreach($image_ids as $image_id) {
 		$image = new Image($image_id);
 		if (@$_POST['image-' . $image_id . '-delete'] == 'delete') {
 			if ($image->delete()) {
-				$fsip->addNote('Your image has been deleted.', 'success');
+				addNote('Your image has been deleted.', 'success');
 			}
 		} else {
-			$image_title = $fsip->makeUnicode(@$_POST['image-' . $image_id . '-title']);
-			$image_description_raw = $fsip->makeUnicode(@$_POST['image-' . $image_id . '-description-raw']);
+			$image_title = makeUnicode(@$_POST['image-' . $image_id . '-title']);
+			$image_description_raw = makeUnicode(@$_POST['image-' . $image_id . '-description-raw']);
 			
 			if ($fsip->returnConf('web_markup')) {
 				$image_markup_ext = $fsip->returnConf('web_markup_ext');
@@ -65,22 +65,22 @@ if (!empty($_POST['image_ids'])) {
 		session_write_close();
 		
 		$location: = BASE . ADMINFOLDER . 'features' . URL_ACT . 'bulk' . URL_RW);
-		$fsip::headerLocationRedirect($location);
+		headerLocationRedirect($location);
 	} else {
 		$location = BASE . ADMINFOLDER . 'library' . URL_CAP);
-		$fsip::headerLocationRedirect($location);
+		headerLocationRedirect($location);
 	}
 	exit();
 }
 
 // New images DEH - here is where we should be able to seek through subdirectories based on userid
-$files = $fsip->seekDirectory(PATH . SHOEBOX);
+$files = $fm->seekDirectory(PATH . SHOEBOX);
 $i_count = count($files);
 
 if ($i_count == 0) {
 	$fsip->addNote('There are no files in your shoebox.', 'error');
-	header('Location: ' . BASE . ADMINFOLDER . 'upload' . URL_CAP);
-	echo "<h1>Redirecting</h1><p>You are being redirected. If you're still here after a few seconds please ".'<a href="'. BASE . ADMIN . 'upload' . URL_CAP .'">'."click here</a></p>";
+	$location = . BASE . ADMINFOLDER . 'upload' . URL_CAP);
+	headerLocationRedirect($location);
 	exit();
 }
 

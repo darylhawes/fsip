@@ -7,14 +7,11 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
 $user = new User;
-
 $user->perm(true);
 
-$fsip->setCallback();
+setCallback();
 
 // Vitals
 $stats = new Stat(strtotime('-30 days'));
@@ -64,10 +61,10 @@ require_once(PATH . ADMIN . 'includes/header.php');
 		<h3>Hello</h3>
 		<p><?php echo ($user->user['user_last_login']) ? 'Welcome back! You last logged in on:  ' .  $fsip->formatTime($user->user['user_last_login'], 'l, F j \a\t g:i a') : 'Welcome to FSIP. You should begin by <a href="' . BASE . ADMIN . 'preferences' . URL_CAP . '">configuring your preferences</a> and <a href="' . BASE . ADMIN . 'upload' . URL_CAP . '">uploading some content</a>.'; ?></p>
 
-		<h3>Census</h3>
+		<h3>Personal Census</h3>
 		<table class="census">
 			<?php
-			$tables = $fsip->getInfo();
+			$tables = $fsip->getInfo(); //user class method needed
 			foreach($tables as $table){
 				echo '<tr><td class="right">' . number_format($table['count']) . '</td><td><a href="' . BASE . ADMIN . $table['table'] . URL_CAP . '">' . $table['display'] . '</a></td></tr>';
 				
@@ -77,7 +74,7 @@ require_once(PATH . ADMIN . 'includes/header.php');
 		</table>
 
 		<h3>FSIP</h3>
-		<p>You are running FSIP <?php echo FSIP::version; ?>.</p>
+		<p>You are running FSIP <?php echo FSIP_VERSION; ?>.</p>
 	</div>
 </div>
 
@@ -211,8 +208,8 @@ if(($user->returnConf('maint_reports') === true) && ($user->returnConf('maint_re
 			'unique' => sha1($_SERVER['HTTP_HOST']),
 			'views' => $stats->views,
 			'visitors' => $stats->visitors,
-			'build' => FSIP::build,
-			'version' => FSIP::version,
+			'build' => FSIP_BUILD,
+			'version' => FSIP_VERSION,
 			'http_server' => preg_replace('#\/.*#si', '', $_SERVER['SERVER_SOFTWARE']),
 			'http_server_version' => preg_replace('#.*?\/([0-9.]*).*#si', '\\1', $_SERVER['SERVER_SOFTWARE']),
 			'db_server' => $fsip->db_type,

@@ -7,9 +7,7 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
 $orbit = new Orbit;
 $user = new User;
 
@@ -18,7 +16,7 @@ $user->perm(true, 'images');
 // GET PHOTO
 if (!$image_id = $fsip->findID($_GET['id'])) {
 	$location = LOCATION . BASE . ADMINFOLDER . 'library' . URL_CAP;
-	$fsip::headerLocationRedirect($location);
+	headerLocationRedirect($location);
 	exit();
 }
 
@@ -26,7 +24,7 @@ if (!$image_id = $fsip->findID($_GET['id'])) {
 if (!empty($_POST['image_id'])) {
 	if (!$image_id = $fsip->findID($_POST['image_id'])) {
 		$location = LOCATION . BASE . ADMINFOLDER . 'library' . URL_CAP;
-		$fsip::headerLocationRedirect($location);
+		headerLocationRedirect($location);
 		exit();
 	}
 	
@@ -34,11 +32,11 @@ if (!empty($_POST['image_id'])) {
 	
 	if (isset($_POST['image_delete']) && (@$_POST['image_delete'] == 'delete')) {
 		if ($images->delete()) {
-			$fsip->addNote('The image has been deleted.', 'success');
+//DEH temp disable			$fsip->addNote('The image has been deleted.', 'success');
 		}
 	} elseif(isset($_POST['image_recover']) && (@$_POST['image_recover'] == 'recover')) {
 		if ($images->recover()) {
-			$fsip->addNote('The image has been recovered.', 'success');
+//DEH Temp disable			$fsip->addNote('The image has been recovered.', 'success');
 		}
 	} else {
 		$image_title = trim($_POST['image_title']);
@@ -95,11 +93,11 @@ if (!empty($_POST['image_id'])) {
 		if ($_REQUEST['go'] == 'next') {
 			$_SESSION['fsip']['go'] = 'next';
 			$location = LOCATION . BASE . ADMINFOLDER . 'images' . URL_ID . $image_ids->ids_after[0] . URL_CAP;
-			$fsip::headerLocationRedirect($location);
+			headerLocationRedirect($location);
 		} else {
 			$_SESSION['fsip']['go'] = 'previous';
 			$location = LOCATION . BASE . ADMINFOLDER . 'images' . URL_ID . $image_ids->ids_before[0] . URL_CAP;
-			$fsip::headerLocationRedirect($location);
+			headerLocationRedirect($location);
 		}
 		exit();
 	} else {

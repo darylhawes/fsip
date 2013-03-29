@@ -7,12 +7,12 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
+
 $user = new User;
-
 $user->perm(true, 'themes');
+
+$fm = getFileManager();
 
 // Load current themes
 $themes = $fsip->getTable('themes');
@@ -49,10 +49,10 @@ $themes_installed = array();
 $themes_updated = array();
 
 foreach($seek_themes as &$theme_folder){
-	$theme_folder = $fsip->getFilename($theme_folder);
+	$theme_folder = $fm->getFilename($theme_folder);
 	if(!in_array($theme_folder, $theme_folders)){
 		$data = file_get_contents(PATH . THEMES . $theme_folder . '/theme.xml');
-		if(empty($data)){ $fsip->addNote('Could not install a new theme. Its XML file is missing or corrupted.', 'error'); continue; }
+		if(empty($data)){ addNote('Could not install a new theme. Its XML file is missing or corrupted.', 'error'); continue; }
 		
 		$xml = new SimpleXMLElement($data);
 		

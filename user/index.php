@@ -7,9 +7,7 @@
 */
 
 require_once('../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
 $user = new User;
 
 if ($user->perm()) {
@@ -19,7 +17,7 @@ if ($user->perm()) {
 }
 
 $location = LOCATION . BASE . USERFOLDER . $page . URL_CAP;
-$fsip::headerLocationRedirect($location);
+headerLocationRedirect($location);
 exit();
 
 ?>

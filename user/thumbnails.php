@@ -6,9 +6,7 @@
 // http://www.alkalineapp.com/
 */
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true, 'thumbnails');
@@ -63,7 +61,7 @@ if(!empty($_POST['size_id'])){
 	}
 	
 	// Build size
-	if((@$_POST['size_build'] == 'build') and ($fsip->countNotes('error') == 0)){
+	if((@$_POST['size_build'] == 'build') and (countNotes('error') == 0)){
 		// Store to build thumbnails
 		$_SESSION['fsip']['maintenance']['size_id'] = $size_id;
 		
