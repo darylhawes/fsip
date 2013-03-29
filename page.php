@@ -7,20 +7,24 @@
 */
 
 require_once('config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
-$fsip->recordStat('page');
+$dbpointer = getDB();
 
-$id = $fsip->findID($_GET['id']);
-if (!$id) { $fsip->addError('No page was found.', 'Try searching for the page you were seeking.', null, null, 404); }
+$dbpointer->recordStat('page');
+
+$id = findID($_GET['id']);
+if (!$id) { 
+	addError('No page was found.', 'Try searching for the page you were seeking.', null, null, 404); 
+}
 
 $pages = new Page($id);
 $pages->formatTime();
 $pages->updateViews();
 $page = $pages->pages[0];
 
-if (!$page) { $fsip->addError('No page was found.', 'Try searching for the page you were seeking.', null, null, 404); }
+if (!$page) { 
+	addError('No page was found.', 'Try searching for the page you were seeking.', null, null, 404); 
+}
 
 $header = new Canvas;
 $header->load('header');

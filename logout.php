@@ -7,17 +7,15 @@
 */
 
 require_once('config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
 $user = new User;
 
 if($user->deauth()){
-	$fsip->addNote('You successfully logged out.', 'success');
+	addNote('You successfully logged out.', 'success');
 }
 
 $location = LOCATION . BASE  . 'login' . URL_CAP;
-$fsip::headerLocationRedirect($location);
+headerLocationRedirect($location);
 exit();
 
 ?>

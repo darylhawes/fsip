@@ -7,9 +7,7 @@
 */
 
 require_once('config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
 $user = new User;
 
 if (!empty($_POST['login_user'])) { 
@@ -33,11 +31,11 @@ if (!empty($remember) and ($remember == 1)) {
 if ($user->perm()) {
 	if (file_exists(PATH . 'update/index.php')) {
 		$location = LOCATION . BASE . 'update/';
-		$fsip::headerLocationRedirect($location);
+		headerLocationRedirect($location);
 		exit();
 	} else {
 		$location = LOCATION . BASE . ADMINFOLDER . 'dashboard' . URL_CAP;
-		$fsip::headerLocationRedirect($location);
+		headerLocationRedirect($location);
 		exit();
 	}
 }
@@ -47,7 +45,7 @@ if (!empty($username) or !empty($password)) {
 		// Check for updates
 /* DEH remove dead remote services
 		$latest = @$fsip->boomerang('latest');
-		if($latest['build'] > FSIP::build){
+		if($latest['build'] > FSIP_BUILD){
 			$fsip->addNote('A new version of FSIP (v' . $latest['version'] . ') is available. Learn more and download the update at <a href="http://www.alkalineapp.com/">alkalineapp.com</a>.', 'notice');
 		}
 */
@@ -58,24 +56,24 @@ if (!empty($username) or !empty($password)) {
 //This should be moved to an admin function with an addNote() pointing to the update page when available.
 		if (file_exists(PATH . 'update/index.php')) {
 			$location = LOCATION . BASE . 'update/';
-			$fsip::headerLocationRedirect($location);
+			headerLocationRedirect($location);
 		} elseif(empty($_POST['destination'])) {
 			$location = LOCATION . BASE . ADMINFOLDER . 'dashboard' . URL_CAP;
-			$fsip::headerLocationRedirect($location);
+			headerLocationRedirect($location);
 		} else {
 			$location = strip_tags($_POST['destination']);
-			$fsip::headerLocationRedirect($location);
+			headerLocationRedirect($location);
 		}
 		
 		exit();
 	} else {
-		$fsip->addNote('Your username or password is invalid. Please try again.', 'error');
+		addNote('Your username or password is invalid. Please try again.', 'error');
 	}
 }
 
 define('TAB', 'Login');
 define('TITLE', 'FSIP Login');
-require_once(PATH . INCLUDES . '/admin_header.php');
+require_once(PATH . INCLUDES . 'admin/admin_header.php');
 
 ?>
 
@@ -119,6 +117,6 @@ require_once(PATH . INCLUDES . '/admin_header.php');
 
 <?php
 
-require_once(PATH . INCLUDES . '/admin_footer.php');
+require_once(PATH . INCLUDES . 'admin/admin_footer.php');
 
 ?>
