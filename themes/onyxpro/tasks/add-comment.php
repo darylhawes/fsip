@@ -7,7 +7,8 @@
 */
 
 require_once('../../../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
+
+$dbpointer = getDB();
 
 if(!empty($_POST['image_id'])){
 	$id = $_POST['image_id'];
@@ -23,11 +24,10 @@ $_POST[$comment_author_name] = $_POST['author_name'];
 $_POST[$comment_author_email] = $_POST['author_email'];
 $_POST[$comment_author_uri] = $_POST['author_uri'];
 
-$fsip = new FSIP;
-$comment_id = $alkaline->addComments();
+$comment_id = addComments();
 
-if($comment_id > 0){
-	$comment = $fsip->getRow('comments', $comment_id);
+if ($comment_id > 0) {
+	$comment = $dbpointer->getRow('comments', $comment_id);
 	echo $comment['comment_text'];
 }
 

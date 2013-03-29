@@ -7,20 +7,24 @@
 */
 
 require_once('config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
-$fsip->recordStat('set');
+$dbpointer = getDB();
 
-$id = $fsip->findID($_GET['id']);
-if (!$id) { $fsip->addError('No set was found.', 'Try searching for the set you were seeking.', null, null, 404); }
+$dbpointer->recordStat('set');
+
+$id = findID($_GET['id']);
+if (!$id) { 
+	addError('No set was found.', 'Try searching for the set you were seeking.', null, null, 404); 
+}
 
 $set = new Set($id);
 $set = @$set->sets[0];
-if (!$set) { $fsip->addError('No set was found.', 'Try searching for the set you were seeking.', null, null, 404); }
+if (!$set) { 
+	addError('No set was found.', 'Try searching for the set you were seeking.', null, null, 404); 
+}
 
-$set['set_created'] = $fsip->formatTime(null, $set['set_created']);
-$set['set_modified'] = $fsip->formatTime(null, $set['set_modified']);
+$set['set_created'] = formatTime(null, $set['set_created']);
+$set['set_modified'] = formatTime(null, $set['set_modified']);
 
 $image_ids = new Find('images');
 $image_ids->page(null, 0);

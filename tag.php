@@ -7,17 +7,21 @@
 */
 
 require_once('config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
-$fsip->recordStat('tag');
+$dbpointer = getDB();
 
-$id = $fsip->findID($_GET['id']);
-if (!$id) { $fsip->addError('No tag was found.', 'Try searching for the images you were seeking.', null, null, 404); }
+$dbpointer->recordStat('tag');
 
-$tag = $fsip->getRow('tags', $id);
+$id = findID($_GET['id']);
+if (!$id) { 
+	addError('No tag was found.', 'Try searching for the images you were seeking.', null, null, 404); 
+}
 
-if (!$tag) { $fsip->addError('No tag was found.', 'Try searching for the images you were seeking.', null, null, 404); }
+$tag = $dbpointer->getRow('tags', $id);
+
+if (!$tag) { 
+	addError('No tag was found.', 'Try searching for the images you were seeking.', null, null, 404); 
+}
 
 $image_ids = new Find('images');
 $image_ids->page(null, 0);
