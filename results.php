@@ -7,14 +7,14 @@
 */
 
 require_once('config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
-$fsip->recordStat('home');
+$dbpointer = getDB();
+
+$dbpointer->recordStat('home');
 
 if (empty($_SESSION['fsip']['search']['table'])) {
 	$location = LOCATION . BASE . 'search' . URL_CAP;
-	$fsip::headerLocationRedirect($location);
+	headerLocationRedirect($location);
 	exit();
 }
 
