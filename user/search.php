@@ -7,9 +7,7 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true);
@@ -28,11 +26,11 @@ $ids->saveMemory();
 
 if ($table == 'images') {
 	$location = LOCATION . BASE . ADMINFOLDER . 'results' . URL_CAP;
-	$fsip::headerLocationRedirect($location);
+	headerLocationRedirect($location);
 	exit();
 } else {
 	$location = LOCATION . BASE . ADMINFOLDER . $table . URL_ACT . 'results' . URL_RW;
-	$fsip::headerLocationRedirect($location);
+	headerLocationRedirect($location);
 	exit();
 }
 
