@@ -12,28 +12,30 @@
  * @version 1.1
  */
 
-class Canvas extends FSIP {
+class Canvas {
 	public $form_wrap;
 	public $slideshow;
-	public $tables;
 	public $template;
+
 	protected $value;
 	protected $objects;
 	
+	private $dbpointer;
+
 	/**
 	 * Initiates Canvas class
 	 *
 	 * @param string $template Template
 	 */
 	public function __construct($template=null) {
-		parent::__construct();
+		$this->dbpointer = getDB();
 		
 		$this->objects = array();
 		$this->template = (empty($template)) ? '' : $template . "\n";
 	}
 	
 	public function __destruct() {
-		parent::__destruct();
+		//
 	}
 	
 	/**
@@ -82,19 +84,19 @@ class Canvas extends FSIP {
 		if (!empty($_REQUEST['theme'])) {
 			$theme_folder = strip_tags($_REQUEST['theme']);
 		} else {
-			$theme_folder = $this->returnConf('theme_folder');
+			$theme_folder = returnConf('theme_folder');
 		}
 		
 		if (empty($theme_folder)) {
-			$this->addError(E_USER_ERROR, 'No default theme selected');
+			addError(E_USER_ERROR, 'No default theme selected');
 		}
 		
-		$path = $this->correctWinPath(PATH . THEMES . $theme_folder . '/' . $filename . TEMP_EXT);
+		$path = correctWinPath(PATH . THEMES . $theme_folder . '/' . $filename . TEMP_EXT);
 		
 		if (is_file($path)) {
 			$this->template .= file_get_contents($path) . "\n";
 		} else {
-			$this->addError(E_USER_ERROR, 'Cannot locate theme file');
+			addError(E_USER_ERROR, 'Cannot locate theme file');
 		}
 	}
 	
@@ -182,16 +184,20 @@ class Canvas extends FSIP {
 	 * @return bool True if successful
 	 */
 	public function setTitle($title=null) {
-		$source = $this->returnConf('web_title');
+		$source = returnConf('web_title'); // Configuration for Web Title
 		
 		if (empty($title)) {
-			$title = $source;
+			$title = $source; // No Page title, just return user configuration Web title
 		} else {
-			$format = $this->returnConf('web_title_format');
-			if($format == 'emdash'){
-				$title .= ' &#8212; ' . $source;
+			$format = returnConf('web_title_format');
+			if ($format == 'emdash') {
+				$title .= ' &#8212; ' . $source; // Return Page title - Web title
+			} else if ($format == 'emdash2') {
+				$source .= ' &#8212; ' . $title; // Return Web title - Page title
+			} else if ($format == '2') {
+				$title .= ': ' . $source; // Return Page title : Web title
 			} else {
-				$title = $source . ': ' . $title;
+				$title = $source . ': ' . $title; // Return Web title : Page title
 			}
 		}
 		
@@ -206,7 +212,7 @@ class Canvas extends FSIP {
 	 * @return bool True if successful
 	 */
 	public function setBreadcrumb($array) {
-		$source = $this->returnConf('web_title');
+		$source = returnConf('web_title');
 		
 		$j = 0;
 		$breadcrumb = '<div itemscope itemtype="http://data-vocabulary.org/Breadcrumb" class="breadcrumb">' . "\n\t";
@@ -236,8 +242,8 @@ class Canvas extends FSIP {
 	 */
 	public function loop($object, $offset=0, $length=null) {
 		if (empty($offset)) { $offset = 0; }
-		
-		$table_regex = implode('|', array_keys($this->tables));
+		$tables = getTables();
+		$table_regex = implode('|', array_keys($tables));
 		$table_regex = strtoupper($table_regex);
 		
 		if (!empty($_SESSION['fsip']['preview']['object'])) {
@@ -286,7 +292,7 @@ class Canvas extends FSIP {
 			
 			$reel_count = count($reel);
 			
-			$field = $this->tables[$loops[$j]['reel']];
+			$field = $tables[$loops[$j]['reel']];
 			
 			
 			// Determine if block has items
@@ -378,8 +384,9 @@ class Canvas extends FSIP {
 	 */
 	protected function loopSub($array, $template, $field, $id) {
 		$loops = array();
+		$tables = getTables();
 		
-		$table_regex = implode('|', array_keys($this->tables));
+		$table_regex = implode('|', array_keys($tables));
 		
 		$matches = array();
 		
@@ -413,7 +420,7 @@ class Canvas extends FSIP {
 				for($i = 0; $i < $reel_count; ++$i) {
 					$loop_template = '';
 					
-					$sub_field = $this->tables[$loops[$j]['reel']];
+					$sub_field = $tables[$loops[$j]['reel']];
 					$sub_field_label = substr($sub_field, 0, -3);
 					
 					if ($i == 0) {
@@ -475,7 +482,7 @@ class Canvas extends FSIP {
 			}
 		}
 		
-		$table_regex = implode('|', array_keys($this->tables));
+		$table_regex = implode('|', array_keys($tables));
 		preg_match_all('#{if:(' . $table_regex . ')}(.*?){/if:\1}#si', $template, $matches, PREG_SET_ORDER);
 		
 		$loops = array();
@@ -571,8 +578,9 @@ class Canvas extends FSIP {
 	 */
 	public function initCounts() {
 		$loops = array();
+		$tables = getTables();
 		
-		$table_regex = implode('|', array_keys($this->tables));
+		$table_regex = implode('|', array_keys($tables));
 		$table_regex = strtoupper($table_regex);
 		
 		$matches = array();
@@ -592,7 +600,7 @@ class Canvas extends FSIP {
 			$count = 0;
 			foreach($this->objects as $object) {
 				if (property_exists($object, $reel)) {
-					$field = $this->tables[$reel];
+					$field = $tables[$reel];
 					$ids = array();
 					if (!is_array($object->$reel)) { continue; }
 					foreach($object->$reel as $item) {
@@ -644,7 +652,7 @@ class Canvas extends FSIP {
 	 * @return void
 	 */
 	public function fit50() {
-		return FSIP::fitStringByWord($this->value, 50);
+		return fitStringByWord($this->value, 50);
 	}
 	
 	/**
@@ -653,7 +661,7 @@ class Canvas extends FSIP {
 	 * @return void
 	 */
 	public function reltime() {
-		return FSIP::formatRelTime($this->value, null, '(Unknown)');
+		return formatRelTime($this->value, null, '(Unknown)');
 	}
 	
 	/**
@@ -662,7 +670,7 @@ class Canvas extends FSIP {
 	 * @return void
 	 */
 	public function fit100() {
-		return FSIP::fitStringByWord($this->value, 100);
+		return fitStringByWord($this->value, 100);
 	}
 	
 	/**
@@ -671,7 +679,7 @@ class Canvas extends FSIP {
 	 * @return void
 	 */
 	public function fit250() {
-		return FSIP::fitStringByWord($this->value, 250);
+		return fitStringByWord($this->value, 250);
 	}
 	
 	/**
@@ -680,7 +688,7 @@ class Canvas extends FSIP {
 	 * @return void
 	 */
 	public function fit500() {
-		return FSIP::fitStringByWord($this->value, 500);
+		return fitStringByWord($this->value, 500);
 	}
 	
 	/**
@@ -689,16 +697,16 @@ class Canvas extends FSIP {
 	 * @return void
 	 */
 	public function fit1000() {
-		return FSIP::fitStringByWord($this->value, 1000);
+		return fitStringByWord($this->value, 1000);
 	}
 	
 	/**
-	 * Perform FSIP::makeURL filter
+	 * Perform makeURL filter
 	 *
 	 * @return string
 	 */
 	public function urlize() {
-		return FSIP::makeURL($this->value);
+		return makeURL($this->value);
 	}
 	
 	
@@ -720,7 +728,7 @@ class Canvas extends FSIP {
 	 * @return string
 	 */
 	public function alpha() {
-		return FSIP::numberToWords($this->value);
+		return numberToWords($this->value);
 	}
 	
 	/**
@@ -730,7 +738,7 @@ class Canvas extends FSIP {
 	 */
 	public function alpha0() {
 		if ($this->value != 0) {
-			$this->value = FSIP::numberToWords($this->value);
+			$this->value = numberToWords($this->value);
 		}
 		return $this->value;
 	}
@@ -773,7 +781,7 @@ class Canvas extends FSIP {
 	 * @return string
 	 */
 	public function sterilize() {
-		return FSIP::stripTags($this->value);
+		return stripTags($this->value);
 	}
 	
 	
@@ -839,7 +847,7 @@ class Canvas extends FSIP {
 			$template = preg_replace('#{if:' . $loop['var'] . '}(.*?){/if:' . $loop['var'] . '}#si', $loop['replacement'], $template, 1);
 		}
 		
-		if ($this->returnConf('canvas_remove_unused') or !empty($_SESSION['fsip']['preview']['object'])) {
+		if (returnConf('canvas_remove_unused') or !empty($_SESSION['fsip']['preview']['object'])) {
 			$template = preg_replace('#\{.*?}#si', '', $template);
 		}
 		
@@ -903,7 +911,7 @@ class Canvas extends FSIP {
 		
 		foreach($configs as $config) {
 			// Return configuration
-			$content = $this->returnConf($config['config']);
+			$content = returnConf($config['config']);
 			
 			// Replace contents
 			$this->template = str_ireplace($config['replace'], $content, $this->template);
@@ -1003,8 +1011,8 @@ class Canvas extends FSIP {
 	 */
 	public function generate() {
 		// Add copyright information
-		$this->assign('Copyright', parent::copyright);
-		$this->assign('Powered_by', 'Powered by <a href="http://github.com/darylhawes/fsip">FSIP</a> based on <a href="http://www.alkalineapp.com/">Alkaline</a> under MIT license.');
+		$this->assign('Copyright', COPYRIGHT);
+		$this->assign('Powered_by', POWERED_BY);
 		$this->assign('Search_Uri', LOCATION . BASE . 'search' . URL_CAP);
 		$this->assign('Results_Uri', LOCATION . BASE . 'results' . URL_CAP);
 		$this->assign('Atom_Uri', LOCATION . BASE . 'atom' . URL_CAP);
