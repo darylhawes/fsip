@@ -7,13 +7,12 @@
 */
 
 require_once('../../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
 $user = new User;
+$fm = getFileManager();
 
 $user->perm(true, 'maintenance');
 
-$fsip->emptyDirectory(PATH . CACHE . 'tasks/');
+$fm->emptyDirectory(PATH . CACHE . 'tasks/');
 
 ?>

@@ -7,19 +7,18 @@
 */
 
 require_once('../../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
 $user = new User;
+$dbpointer = getDB();
 
 $user->perm(true);
 
-$id = $fsip->findID(@$_POST['image_id']);
+$id = findID(@$_POST['image_id']);
 
 if (empty($id)) {
 	$olds = array();
 	
-	$query = $fsip->prepare('SELECT DISTINCT versions.version_id FROM versions WHERE versions.version_similarity > :version_similarity AND versions.version_created < :version_created;');
+	$query = $dbpointer->prepare('SELECT DISTINCT versions.version_id FROM versions WHERE versions.version_similarity > :version_similarity AND versions.version_created < :version_created;');
 	$query->execute(array(':version_similarity' => 65, ':version_created' => date('Y-m-d H:i:s', strtotime('-2 weeks'))));
 	$versions1 = $query->fetchAll();
 	
@@ -36,7 +35,7 @@ if (empty($id)) {
 	
 	echo json_encode($version_ids);
 } else {
-	$fsip->exec('DELETE FROM versions WHERE version_id = ' . intval($id));
+	$dbpointer->exec('DELETE FROM versions WHERE version_id = ' . intval($id));
 }
 
 ?>

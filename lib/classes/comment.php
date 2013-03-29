@@ -12,7 +12,7 @@
  * @version 1.1
  */
 
-class Comment extends FSIP{
+class Comment { 
 	public $comments;
 	public $comment_ids;
 	public $comment_count = 0;
@@ -20,24 +20,30 @@ class Comment extends FSIP{
 
 	protected $sql;
 	
+	private $dbpointer;
+	
 	/**
 	 * Initiate Comment class
 	 *
 	 * @param string|int|array $comment_ids Limit results to select comment IDs
 	 */
 	public function __construct($comment_ids=null) {
-		parent::__construct();
+//echo "constructing comments object 1<br />";
+		$this->dbpointer = getDB();
 		
 		// Recomment comment array
 		$this->comments = array();
-		
+
+//echo "constructing comments object 2<br />";
 		// Input handling
 		if (is_object($comment_ids)) {
+//echo "constructing comments object 2.1<br />";
 			$last_modified = $comment_ids->last_modified;
 			$comment_ids = $comment_ids->ids;
 		}
 		
-		$this->comment_ids = parent::convertToIntegerArray($comment_ids);
+		$this->comment_ids = convertToIntegerArray($comment_ids);
+//echo "constructing comments object 3<br />";
 		
 		// Error checking
 		$this->sql = ' WHERE (comments.comment_id IS NULL)';
@@ -47,6 +53,7 @@ class Comment extends FSIP{
 		
 		// Cache
 		require_once('cache_lite/Lite.php');
+//echo "constructing comments object 4<br />";
 		
 		// Set a few options
 		$options = array(
@@ -56,12 +63,16 @@ class Comment extends FSIP{
 
 		// Create a Cache_Lite object
 		$cache = new Cache_Lite($options);
+//echo "constructing comments object 5<br />";
 		
 		if (($comments = $cache->get('comments:' . implode(',', $this->comment_ids), 'comments')) && !empty($last_modified) && ($cache->lastModified() > $last_modified)) {
+//echo "constructing comments object 5.1<br />";
 			$this->comments = unserialize($comments);
 		} else {
+//echo "constructing comments object 5.2<br />";
 			if (count($this->comment_ids) > 0) {
-				$query = $this->prepare('SELECT * FROM comments' . $this->sql . ';');
+//echo "constructing comments object 5.3<br />";
+				$query = $this->dbpointer->prepare('SELECT * FROM comments' . $this->sql . ';');
 				$query->execute();
 				$comments = $query->fetchAll();
 		
@@ -74,6 +85,7 @@ class Comment extends FSIP{
 					}
 				}
 			}
+//echo "constructing comments object 5.4<br />";
 			
 			$cache->save(serialize($this->comments));
 		}
@@ -87,13 +99,16 @@ class Comment extends FSIP{
 				$this->image_ids[] = $this->comments[$i]['image_id'];
 			}
 		}
+//echo "constructing comments object 6<br />";
 	
 		$this->image_ids = array_unique($this->image_ids, SORT_NUMERIC);
 		$this->image_ids = array_values($this->image_ids);
+//echo "constructing comments object 7. Comments is:<br />";
+//print_r($this->comments);
 	}
 	
 	public function __destruct() {
-		parent::__destruct();
+		//
 	}
 	
 	/**
@@ -118,7 +133,7 @@ class Comment extends FSIP{
 	 */
 	public function delete($permanent=false) {
 		if ($permanent === true) {
-			$this->deleteRow('comments', $this->comment_ids);
+			$this->dbpointer->deleteRow('comments', $this->comment_ids);
 		} else {
 			$fields = array('comment_deleted' => date('Y-m-d H:i:s'));
 			$this->updateFields($fields);
@@ -150,7 +165,7 @@ class Comment extends FSIP{
 		foreach($this->comments as $comment) {
 			$ids[] = $comment['comment_id'];
 		}
-		return parent::updateRow($fields, 'comments', $ids);
+		return $this->dbpointer->updateRow($fields, 'comments', $ids);
 	}
 	
 
@@ -164,8 +179,8 @@ class Comment extends FSIP{
 	 */
 	public function formatTime($time=null, $format=null, $empty=false) {
 		foreach($this->comments as &$comment) {
-			$comment['comment_created_format'] = parent::formatTime($comment['comment_created'], $format);
-			$comment['comment_modified_format'] = parent::formatTime($comment['comment_modified'], $format);
+			$comment['comment_created_format'] = formatTime($comment['comment_created'], $format);
+			$comment['comment_modified_format'] = formatTime($comment['comment_modified'], $format);
 		}
 		return true;
 	}

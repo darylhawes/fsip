@@ -1,27 +1,27 @@
 <?php
 
-class Gravatar extends Orbit{
+class Gravatar extends Orbit {
 	public $gravatar_default;
 	public $gravatar_size;
 	public $gravatar_max_rating;
 	
-	public function __construct(){
+	public function __construct() {
 		parent::__construct();
 		
 		$this->gravatar_size = $this->returnPref('gravatar_size');
 		$this->gravatar_default = $this->returnPref('gravatar_default');
 		$this->gravatar_max_rating = $this->returnPref('gravatar_max_rating', 'r');
 		
-		if(empty($this->gravatar_size) or !intval($this->gravatar_size)){
+		if (empty($this->gravatar_size) or !intval($this->gravatar_size)) {
 			$this->gravatar_size = 80;
 		}
 	}
 	
-	public function __destruct(){
+	public function __destruct() {
 		parent::__destruct();
 	}
 	
-	public function orbit_comment_add($fields){
+	public function orbit_comment_add($fields) {
 		$email = $fields['comment_author_email'];
 		$gravatar = 'http://www.gravatar.com/avatar/' . md5(strtolower(trim($email))) . '?d=' . urlencode($this->gravatar_default) . '&s=' . $this->gravatar_size . '&r=' . $this->gravatar_max_rating . '&$img=false';
 		$fields['comment_author_avatar'] = $gravatar;
@@ -59,14 +59,14 @@ class Gravatar extends Orbit{
 		<?php
 	}
 	
-	public function orbit_config_save(){
-		if(isset($_POST['gravatar_size'])){
+	public function orbit_config_save() {
+		if (isset($_POST['gravatar_size'])) {
 			$this->setPref('gravatar_size', $_POST['gravatar_size']);
 			$this->setPref('gravatar_default', $_POST['gravatar_default']);
 			$this->setPref('gravatar_max_rating', $_POST['gravatar_max_rating']);
 			$this->savePref();
 			
-			if($_POST['gravatar_size'] != $this->gravatar_size){
+			if ($_POST['gravatar_size'] != $this->gravatar_size) {
 				$query = $this->prepare('SELECT comment_id, comment_author_avatar FROM comments WHERE LOWER(comment_author_avatar) LIKE :comment_author_avatar;');
 				$query->execute(array(':comment_author_avatar' => '%www.gravatar.com%'));
 				$comments = $query->fetchAll();

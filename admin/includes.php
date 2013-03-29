@@ -7,19 +7,18 @@
 */
 
 require_once('../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
 $user = new User;
-
 $user->perm(true);
 
-$includes = $fsip->getincludes();
+$fm = getFileManager();
+
+$includes = $fm->getThemeIncludes();
 $include_count = count($includes);
 
 define('TAB', 'settings');
 define('TITLE', 'Theme Includes');
-require_once(PATH . INCLUDES . '/admin_header.php');
+require_once(PATH . INCLUDES . 'admin/admin_header.php');
 
 ?>
 
@@ -44,6 +43,6 @@ require_once(PATH . INCLUDES . '/admin_header.php');
 	
 <?php
 
-require_once(PATH . INCLUDES . '/admin_footer.php');
+require_once(PATH . INCLUDES . 'admin/admin_footer.php');
 
 ?>

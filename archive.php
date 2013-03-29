@@ -7,18 +7,22 @@
 */
 
 require_once('config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
-$fsip->recordStat('archive');
+$dbpointer = getDB();
+
+$dbpointer->recordStat('archive');
 
 $year = intval($_REQUEST['y']);
 $month = intval($_REQUEST['m']);
 $day = intval($_REQUEST['d']);
 
 $date = $year;
-if (!empty($month)) { $date .= '-' . $month; }
-if (!empty($day)) { $date .= '-' . $day; }
+if (!empty($month)) { 
+	$date .= '-' . $month; 
+}
+if (!empty($day)) { 
+	$date .= '-' . $day; 
+}
 
 $image_ids = new Find('images');
 $image_ids->page(null, 12);
@@ -27,7 +31,9 @@ $image_ids->privacy('public');
 $image_ids->sort('image_published', 'ASC');
 $image_ids->find();
 
-if (empty($image_ids)) { $fsip->addError('No images were found.', 'Try searching for the images you were seeking.', null, null, 404); }
+if (empty($image_ids)) { 
+	addError('No images were found.', 'Try searching for the images you were seeking.', null, null, 404); 
+}
 
 $images = new Image($image_ids);
 $images->formatTime();

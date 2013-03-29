@@ -7,14 +7,13 @@
 */
 
 require_once('../../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
+$dbpointer = getDB();
+
 $user = new User;
-
 $user->perm(true);
 
-$id = $fsip->findID(@$_POST['image_id']);
+$id = findID(@$_POST['image_id']);
 
 // Require at least 128M memory
 $mem = ini_get('memory_limit');
@@ -41,14 +40,14 @@ if (!is_int($id)) {
 } else {
 	if ($id == 0) {
 		// Delete existing geo data, start from scratch
-		$fsip->exec('DELETE FROM cities;');
-		$fsip->exec('DELETE FROM countries;');
+		$dbpointer->exec('DELETE FROM cities;');
+		$dbpointer->exec('DELETE FROM countries;');
 		
 		// Load countries
 		$countries = file_get_contents(PATH . DB . 'countries.json');
 		$countries = explode("\n", $countries);
 
-		$query = $fsip->prepare('INSERT INTO countries (country_id, country_code, country_name) VALUES (?, ?, ?);');
+		$query = $dbpointer->prepare('INSERT INTO countries (country_id, country_code, country_name) VALUES (?, ?, ?);');
 
 		foreach($countries as $country) {
 			$country = json_decode($country);
@@ -63,7 +62,7 @@ if (!is_int($id)) {
 	// Insert blocks of cities
 	$cities = @array_slice($cities, $id, 1000);
 	
-	$query = $fsip->prepare('INSERT INTO cities (city_id, city_name, city_state, country_code, city_name_raw, city_name_alt, city_pop, city_lat, city_long, city_class, city_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);');
+	$query = $dbpointer->prepare('INSERT INTO cities (city_id, city_name, city_state, country_code, city_name_raw, city_name_alt, city_pop, city_lat, city_long, city_class, city_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);');
 	
 	foreach($cities as $city) {
 		$city = json_decode($city);

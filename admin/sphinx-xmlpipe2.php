@@ -16,9 +16,9 @@ $path = implode('/', $path) . '/';
 header('Content-Type: application/xml');
 
 require_once($path . 'config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP();
+$dbpointer = getDB();
+
 $xml = new XMLWriter();
 
 $xml->openMemory();
@@ -77,7 +77,7 @@ $xml->endAttribute();
 	while($count <= $item_ids->count) {
 		$ids = array_slice($item_ids->ids, $count, 1000);
 		
-		$items = $fsip->getTable('items', $ids);
+		$items = $dbpointer->getTable('items', $ids);
 		
 		$item_ids = array();
 		$item_table_ids = array();
@@ -85,7 +85,7 @@ $xml->endAttribute();
 		
 		foreach($items as $item) {
 			$item_table = $item['item_table'];
-			$table_int = array_search($item_table, $fsip->tables_index);
+			$table_int = array_search($item_table, getTablesIndex());
 			
 			$item_ids[$table_int][] = $item['item_id'];
 			$item_table_ids[$table_int][] = $item['item_table_id'];
@@ -96,10 +96,10 @@ $xml->endAttribute();
 		
 		for($i=0; $i < $item_count; $i++) {
 			if ($item_tables[$i][0] == 'comments') {
-				$comments = $fsip->getTable('comments', $item_table_ids[$i]);
+				$comments = $dbpointer->getTable('comments', $item_table_ids[$i]);
 				$comment_count = count($comments);
 				
-				$table_int = array_search('comments', $fsip->tables_index);
+				$table_int = array_search('comments', getTablesIndex());
 				
 				for($j=0; $j < $comment_count; $j++) {
 					$xml->startElement('sphinx:document');
@@ -121,10 +121,10 @@ $xml->endAttribute();
 					$xml->endElement();
 				}
 			} elseif($item_tables[$i][0] == 'images') {
-				$images = $fsip->getTable('images', $item_table_ids[$i]);
+				$images = $dbpointer->getTable('images', $item_table_ids[$i]);
 				$image_count = count($images);
 				
-				$table_int = array_search('images', $fsip->tables_index);
+				$table_int = array_search('images', getTablesIndex());
 				
 				for($j=0; $j < $image_count; $j++){
 					$xml->startElement('sphinx:document');
@@ -146,10 +146,10 @@ $xml->endAttribute();
 					$xml->endElement();
 				}
 			} elseif($item_tables[$i][0] == 'pages') {
-				$pages = $fsip->getTable('pages', $item_table_ids[$i]);
+				$pages = $dbpointer->getTable('pages', $item_table_ids[$i]);
 				$page_count = count($pages);
 				
-				$table_int = array_search('pages', $fsip->tables_index);
+				$table_int = array_search('pages', getTablesIndex());
 				
 				for($j=0; $j < $page_count; $j++){
 					$xml->startElement('sphinx:document');
@@ -171,10 +171,10 @@ $xml->endAttribute();
 					$xml->endElement();
 				}
 			} elseif($item_tables[$i][0] == 'rights') {
-				$rights = $fsip->getTable('rights', $item_table_ids[$i]);
+				$rights = $dbpointer->getTable('rights', $item_table_ids[$i]);
 				$right_count = count($rights);
 				
-				$table_int = array_search('rights', $fsip->tables_index);
+				$table_int = array_search('rights', getTablesIndex());
 				
 				for($j=0; $j < $right_count; $j++){
 					$xml->startElement('sphinx:document');
@@ -196,10 +196,10 @@ $xml->endAttribute();
 					$xml->endElement();
 				}
 			} elseif($item_tables[$i][0] == 'sets') {
-				$sets = $fsip->getTable('sets', $item_table_ids[$i]);
+				$sets = $dbpointer->getTable('sets', $item_table_ids[$i]);
 				$set_count = count($sets);
 				
-				$table_int = array_search('sets', $fsip->tables_index);
+				$table_int = array_search('sets', getTablesIndex());
 				
 				for($j=0; $j < $set_count; $j++){
 					$xml->startElement('sphinx:document');
@@ -222,10 +222,10 @@ $xml->endAttribute();
 				}
 			}
 			elseif($item_tables[$i][0] == 'tags'){
-				$tags = $fsip->getTable('tags', $item_table_ids[$i]);
+				$tags = $dbpointer->getTable('tags', $item_table_ids[$i]);
 				$tag_count = count($tags);
 				
-				$table_int = array_search('tags', $fsip->tables_index);
+				$table_int = array_search('tags', getTablesIndex());
 				
 				for($j=0; $j < $tag_count; $j++){
 					$xml->startElement('sphinx:document');

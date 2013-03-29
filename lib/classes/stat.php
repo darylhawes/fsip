@@ -12,7 +12,7 @@
  * @version 1.1
  */
 
-class Stat extends FSIP {
+class Stat {
 	public $durations;
 	public $pages;
 	public $page_types;
@@ -25,6 +25,8 @@ class Stat extends FSIP {
 	public $stat_end_ts;
 	public $views;
 	public $visitors;
+
+	private $dbpointer;
 	
 	/**
 	 * Initiate Stat object
@@ -33,7 +35,7 @@ class Stat extends FSIP {
 	 * @param int|string $stat_end Date end
 	 */
 	public function __construct($stat_begin=null, $stat_end=null) {
-		parent::__construct();
+		$this->dbpointer = getDB();
 		
 		if (empty($stat_begin)) {
 			$this->stat_begin_ts = strtotime('-60 days');
@@ -56,7 +58,7 @@ class Stat extends FSIP {
 	}
 	
 	public function __destruct() {
-		parent::__destruct();
+		//
 	}
 	
 	/**
@@ -82,7 +84,7 @@ class Stat extends FSIP {
 		$this->views = 0;
 		$this->visitors = 0;
 		
-		$query = $this->prepare('SELECT MONTH(stat_date) as stat_month, YEAR(stat_date) as stat_year, COUNT(*) as stat_views FROM stats WHERE stat_date >= :stat_date_begin AND stat_date <= :stat_date_end GROUP BY stat_month, stat_year ORDER BY stat_year DESC, stat_month DESC;');
+		$query = $this->dbpointer->prepare('SELECT MONTH(stat_date) as stat_month, YEAR(stat_date) as stat_year, COUNT(*) as stat_views FROM stats WHERE stat_date >= :stat_date_begin AND stat_date <= :stat_date_end GROUP BY stat_month, stat_year ORDER BY stat_year DESC, stat_month DESC;');
 		$query->execute(array(':stat_date_begin' => $this->stat_begin, ':stat_date_end' => $this->stat_end));
 		$stats = $query->fetchAll();
 		
@@ -121,7 +123,7 @@ class Stat extends FSIP {
 			}
 		}
 		
-		$query = $this->prepare('SELECT MONTH(stat_date) as stat_month, YEAR(stat_date) as stat_year, COUNT(*) as stat_visitors FROM stats WHERE stat_duration = 0 AND stat_date >= :stat_date_begin AND stat_date <= :stat_date_end GROUP BY stat_month, stat_year ORDER BY stat_year DESC, stat_month DESC;');
+		$query = $this->dbpointer->prepare('SELECT MONTH(stat_date) as stat_month, YEAR(stat_date) as stat_year, COUNT(*) as stat_visitors FROM stats WHERE stat_duration = 0 AND stat_date >= :stat_date_begin AND stat_date <= :stat_date_end GROUP BY stat_month, stat_year ORDER BY stat_year DESC, stat_month DESC;');
 		$query->execute(array(':stat_date_begin' => $this->stat_begin, ':stat_date_end' => $this->stat_end));
 		$stats = $query->fetchAll();
 		
@@ -152,7 +154,7 @@ class Stat extends FSIP {
 		$this->views = 0;
 		$this->visitors = 0;
 		
-		$query = $this->prepare('SELECT DAY(stat_date) as stat_day, MONTH(stat_date) as stat_month, YEAR(stat_date) as stat_year, COUNT(*) as stat_views FROM stats WHERE stat_date >= :stat_date_begin AND stat_date <= :stat_date_end GROUP BY stat_day, stat_month, stat_year ORDER BY stat_year DESC, stat_month DESC, stat_day DESC;');		
+		$query = $this->dbpointer->prepare('SELECT DAY(stat_date) as stat_day, MONTH(stat_date) as stat_month, YEAR(stat_date) as stat_year, COUNT(*) as stat_views FROM stats WHERE stat_date >= :stat_date_begin AND stat_date <= :stat_date_end GROUP BY stat_day, stat_month, stat_year ORDER BY stat_year DESC, stat_month DESC, stat_day DESC;');		
 		$query->execute(array(':stat_date_begin' => $this->stat_begin, ':stat_date_end' => $this->stat_end));
 		$stats = $query->fetchAll();
 		
@@ -196,7 +198,7 @@ class Stat extends FSIP {
 			}
 		}
 		
-		$query = $this->prepare('SELECT DAY(stat_date) as stat_day, MONTH(stat_date) as stat_month, YEAR(stat_date) as stat_year, COUNT(*) as stat_visitors FROM stats WHERE stat_duration = 0 AND stat_date >= :stat_date_begin AND stat_date <= :stat_date_end GROUP BY stat_day, stat_month, stat_year ORDER BY stat_year DESC, stat_month DESC, stat_day DESC;');
+		$query = $this->dbpointer->prepare('SELECT DAY(stat_date) as stat_day, MONTH(stat_date) as stat_month, YEAR(stat_date) as stat_year, COUNT(*) as stat_visitors FROM stats WHERE stat_duration = 0 AND stat_date >= :stat_date_begin AND stat_date <= :stat_date_end GROUP BY stat_day, stat_month, stat_year ORDER BY stat_year DESC, stat_month DESC, stat_day DESC;');
 		$query->execute(array(':stat_date_begin' => $this->stat_begin, ':stat_date_end' => $this->stat_end));
 		$stats = $query->fetchAll();
 		
@@ -227,7 +229,7 @@ class Stat extends FSIP {
 		$this->views = 0;
 		$this->visitors = 0;
 		
-		$query = $this->prepare('SELECT HOUR(stat_date) AS stat_hour, DAY(stat_date) AS stat_day, MONTH(stat_date) AS stat_month, YEAR(stat_date) as stat_year, COUNT(*) AS stat_views FROM stats WHERE stat_date >= :stat_date_begin AND stat_date <= :stat_date_end GROUP BY stat_hour, stat_day, stat_month, stat_year ORDER BY stat_year DESC, stat_month DESC, stat_day DESC, stat_hour DESC;');
+		$query = $this->dbpointer->prepare('SELECT HOUR(stat_date) AS stat_hour, DAY(stat_date) AS stat_day, MONTH(stat_date) AS stat_month, YEAR(stat_date) as stat_year, COUNT(*) AS stat_views FROM stats WHERE stat_date >= :stat_date_begin AND stat_date <= :stat_date_end GROUP BY stat_hour, stat_day, stat_month, stat_year ORDER BY stat_year DESC, stat_month DESC, stat_day DESC, stat_hour DESC;');
 		$query->execute(array(':stat_date_begin' => $this->stat_begin, ':stat_date_end' => $this->stat_end));
 		$stats = $query->fetchAll();
 		
@@ -277,7 +279,7 @@ class Stat extends FSIP {
 			}
 		}
 		
-		$query = $this->prepare('SELECT HOUR(stat_date) AS stat_hour, DAY(stat_date) as stat_day, MONTH(stat_date) as stat_month, YEAR(stat_date) as stat_year, COUNT(*) as stat_visitors FROM stats WHERE stat_duration = 0 AND stat_date >= :stat_date_begin AND stat_date <= :stat_date_end GROUP BY stat_hour, stat_day, stat_month, stat_year ORDER BY stat_year DESC, stat_month DESC, stat_day DESC, stat_hour DESC;');
+		$query = $this->dbpointer->prepare('SELECT HOUR(stat_date) AS stat_hour, DAY(stat_date) as stat_day, MONTH(stat_date) as stat_month, YEAR(stat_date) as stat_year, COUNT(*) as stat_visitors FROM stats WHERE stat_duration = 0 AND stat_date >= :stat_date_begin AND stat_date <= :stat_date_end GROUP BY stat_hour, stat_day, stat_month, stat_year ORDER BY stat_year DESC, stat_month DESC, stat_day DESC, stat_hour DESC;');
 		$query->execute(array(':stat_date_begin' => $this->stat_begin, ':stat_date_end' => $this->stat_end));
 		$stats = $query->fetchAll();
 		
@@ -320,7 +322,7 @@ class Stat extends FSIP {
 	 * @return void
 	 */
 	public function getDurations() {
-		$query = $this->prepare('SELECT MAX(stat_duration) AS stat_duration FROM stats WHERE stat_date >= :stat_date_begin AND stat_date <= :stat_date_end GROUP BY stat_session');
+		$query = $this->dbpointer->prepare('SELECT MAX(stat_duration) AS stat_duration FROM stats WHERE stat_date >= :stat_date_begin AND stat_date <= :stat_date_end GROUP BY stat_session');
 		$query->execute(array(':stat_date_begin' => $this->stat_begin, ':stat_date_end' => $this->stat_end));
 		$this->durations = $query->fetchAll();
 	}
@@ -333,7 +335,7 @@ class Stat extends FSIP {
 	 */
 	public function getPages($limit=10) {
 		$limit = intval($limit);
-		$query = $this->prepare('SELECT COUNT(stat_page) as stat_count, stat_page FROM stats WHERE stat_date >= :stat_date_begin AND stat_date <= :stat_date_end GROUP BY stat_page ORDER BY stat_count DESC LIMIT 0, ' . $limit . ';');
+		$query = $this->dbpointer->prepare('SELECT COUNT(stat_page) as stat_count, stat_page FROM stats WHERE stat_date >= :stat_date_begin AND stat_date <= :stat_date_end GROUP BY stat_page ORDER BY stat_count DESC LIMIT 0, ' . $limit . ';');
 		$query->execute(array(':stat_date_begin' => $this->stat_begin, ':stat_date_end' => $this->stat_end));
 		$this->pages = $query->fetchAll();
 	}
@@ -346,7 +348,7 @@ class Stat extends FSIP {
 	 */
 	public function getPageTypes($limit=10) {
 		$limit = intval($limit);
-		$query = $this->prepare('SELECT COUNT(stat_page) as stat_count, stat_page_type FROM stats WHERE stat_date >= :stat_date_begin AND stat_date <= :stat_date_end GROUP BY stat_page_type ORDER BY stat_count DESC LIMIT 0, ' . $limit . ';');
+		$query = $this->dbpointer->prepare('SELECT COUNT(stat_page) as stat_count, stat_page_type FROM stats WHERE stat_date >= :stat_date_begin AND stat_date <= :stat_date_end GROUP BY stat_page_type ORDER BY stat_count DESC LIMIT 0, ' . $limit . ';');
 		$query->execute(array(':stat_date_begin' => $this->stat_begin, ':stat_date_end' => $this->stat_end));
 		$this->page_types = $query->fetchAll();
 	}
@@ -363,7 +365,7 @@ class Stat extends FSIP {
 		if ($include_local === false) {
 			$where_local = 'AND stat_local = 0';
 		}
-		$query = $this->prepare('SELECT stat_referrer, stat_date FROM stats WHERE stat_referrer != :stat_referrer AND stat_date >= :stat_date_begin AND stat_date <= :stat_date_end ' . @$where_local . ' ORDER BY stat_date DESC LIMIT 0, ' . $limit . ';');
+		$query = $this->dbpointer->prepare('SELECT stat_referrer, stat_date FROM stats WHERE stat_referrer != :stat_referrer AND stat_date >= :stat_date_begin AND stat_date <= :stat_date_end ' . @$where_local . ' ORDER BY stat_date DESC LIMIT 0, ' . $limit . ';');
 		$query->execute(array(':stat_referrer' => '', ':stat_date_begin' => $this->stat_begin, ':stat_date_end' => $this->stat_end));
 		$this->referrers_recent = $query->fetchAll();
 	}
@@ -380,7 +382,7 @@ class Stat extends FSIP {
 		if ($include_local === false) {
 			$where_local = 'AND stat_local = 0';
 		}
-		$query = $this->prepare('SELECT stat_referrer, COUNT(stat_referrer) as stat_referrer_count FROM stats WHERE stat_referrer != :stat_referrer AND stat_date >= :stat_date_begin AND stat_date <= :stat_date_end ' . @$where_local . ' GROUP BY stat_referrer ORDER BY stat_referrer_count DESC LIMIT 0, ' . $limit . ';');
+		$query = $this->dbpointer->prepare('SELECT stat_referrer, COUNT(stat_referrer) as stat_referrer_count FROM stats WHERE stat_referrer != :stat_referrer AND stat_date >= :stat_date_begin AND stat_date <= :stat_date_end ' . @$where_local . ' GROUP BY stat_referrer ORDER BY stat_referrer_count DESC LIMIT 0, ' . $limit . ';');
 		$query->execute(array(':stat_referrer' => '', ':stat_date_begin' => $this->stat_begin, ':stat_date_end' => $this->stat_end));
 		$this->referrers_popular = $query->fetchAll();
 	}

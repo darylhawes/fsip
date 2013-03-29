@@ -7,15 +7,15 @@
 */
 
 require_once('../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
+
 $user = new User;
+$dbpointer = getDB();
 
 $user->perm(true, 'guests');
 
 if (!empty($_GET['id'])) {
-	$guest_id = $fsip->findID($_GET['id']);
+	$guest_id = findID($_GET['id']);
 }
 
 if (!empty($_GET['act'])) {
@@ -24,9 +24,9 @@ if (!empty($_GET['act'])) {
 
 // SAVE CHANGES
 if (!empty($_POST['guest_id'])) {
-	$guest_id = $fsip->findID($_POST['guest_id']);
+	$guest_id = findID($_POST['guest_id']);
 	if ($_POST['guest_delete'] == 'delete') {
-		$fsip->deleteRow('guests', $guest_id);
+		$dbpointer->deleteRow('guests', $guest_id);
 	} else {
 		$guest_sets = @$_POST['guest_sets'];
 		
@@ -42,7 +42,7 @@ if (!empty($_POST['guest_id'])) {
 			$guest_inclusive = 0;
 		}
 		
-		$fields = array('guest_title' => $fsip->makeUnicode(@$_POST['guest_title']),
+		$fields = array('guest_title' => makeUnicode(@$_POST['guest_title']),
 			'guest_key' => @$_POST['guest_key'],
 			'guest_sets' => $guest_sets,
 			'guest_inclusive' => $guest_inclusive);
@@ -50,27 +50,27 @@ if (!empty($_POST['guest_id'])) {
 			$fields['guest_views'] = 0;
 		}
 		
-		$fsip->updateRow($fields, 'guests', $guest_id);
+		$dbpointer->updateRow($fields, 'guests', $guest_id);
 	}
 	unset($guest_id);
 } else {
-	$fsip->deleteEmptyRow('guests', array('guest_title', 'guest_key'));
+	$dbpointer->deleteEmptyRow('guests', array('guest_title', 'guest_key'));
 }
 
 // CREATE GUEST
 if (!empty($guest_act) and ($guest_act == 'add')) {
-	$guest_id = $fsip->addRow(null, 'guests');
+	$guest_id = $dbpointer->addRow(null, 'guests');
 }
 
 define('TAB', 'settings');
 
 // GET GUEST TO VIEW OR GUEST TO EDIT
 if (empty($guest_id)) {
-	$guests = $fsip->getTable('guests');
+	$guests = $dbpointer->getTable('guests');
 	$guest_count = @count($guests);
 	
 	define('TITLE', 'FSIP Guests');
-	require_once(PATH . INCLUDES . '/admin_header.php');
+	require_once(PATH . INCLUDES . 'admin/admin_header.php');
 
 ?>
 	
@@ -96,7 +96,7 @@ if (empty($guest_id)) {
 			echo '<tr class="ro">';
 				echo '<td><strong class="large"><a href="' . BASE . ADMINFOLDER . 'guests' . URL_ID . $guest['guest_id'] . URL_RW . '">' . $guest['guest_title'] . '</a></strong></td>';
 				echo '<td class="center">' . number_format($guest['guest_views']) . '</td>';
-				echo '<td>' . $fsip->formatTime($guest['guest_last_login'], null, '<em>Never</em>') . '</td>';
+				echo '<td>' . formatTime($guest['guest_last_login'], null, '<em>Never</em>') . '</td>';
 			echo '</tr>';
 		}
 	
@@ -105,12 +105,12 @@ if (empty($guest_id)) {
 	
 <?php
 	
-	require_once(PATH . INCLUDES . '/admin_footer.php');
+	require_once(PATH . INCLUDES . 'admin/admin_footer.php');
 	
 } else {
 	// Get guest
-	$guest = $fsip->getRow('guests', $guest_id);
-	$guest = $fsip->makeHTMLSafe($guest);
+	$guest = $dbpointer->getRow('guests', $guest_id);
+	$guest = makeHTMLSafe($guest);
 	
 	// Save credentials
 	$_SESSION['fsip']['guest'] = $guest;
@@ -120,7 +120,7 @@ if (empty($guest_id)) {
 	} else {
 		define('TITLE', 'FSIP Guest');
 	}
-	require_once(PATH . INCLUDES . '/admin_header.php');
+	require_once(PATH . INCLUDES . 'admin/admin_header.php');
 
 ?>
 	
@@ -162,7 +162,7 @@ if (empty($guest_id)) {
 						</tr>
 						<tr>
 							<td class="right" style="width: 5%;"><input type="radio" name="guest_sets" value="select" id="guest_sets_select" <?php if(!empty($guest['guest_sets'])){ echo 'checked="checked" '; } ?>/></td>
-							<td><label for="guest_sets_select">Restrict access to the protected images in the set: &#0160; <?php echo $fsip->showSets('guest_sets_select', @$guest['guest_sets']); ?></label></td>
+							<td><label for="guest_sets_select">Restrict access to the protected images in the set: &#0160; <?php echo showSets('guest_sets_select', @$guest['guest_sets']); ?></label></td>
 						</tr>
 						<tr>
 							<td></td>
@@ -185,14 +185,14 @@ if (empty($guest_id)) {
 			</tr>
 			<tr>
 				<td></td>
-				<td><input type="hidden" name="guest_id" value="<?php echo $guest['guest_id']; ?>" /><input type="submit" value="Save changes" /> or <a href="<?php echo $fsip->back(); ?>">cancel</a></td>
+				<td><input type="hidden" name="guest_id" value="<?php echo $guest['guest_id']; ?>" /><input type="submit" value="Save changes" /> or <a href="<?php echo back(); ?>">cancel</a></td>
 			</tr>
 		</table>
 	</form>
 
 <?php
 	
-	require_once(PATH . INCLUDES . '/admin_footer.php');
+	require_once(PATH . INCLUDES . 'admin/admin_footer.php');
 	
 }
 

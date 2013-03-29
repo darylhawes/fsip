@@ -12,21 +12,22 @@
  * @version 1.1
  */
 
-class Page extends FSIP {
+class Page {
 	public $images;
 	public $page_ids;
 	public $page_count = 0;
 	public $pages;
 	
 	protected $sql;
-	
+	private $dbpointer;
+
 	/**
 	 * Initiate Page object
 	 *
 	 * @param int|array|string $page Page search (IDs or page title)
 	 */
 	public function __construct($page_ids=null) {
-		parent::__construct();
+		$this->dbpointer = getDB();
 		
 		// Repage page array
 		$this->pages = array();
@@ -37,7 +38,7 @@ class Page extends FSIP {
 			$page_ids = $page_ids->ids;
 		}
 		
-		$this->page_ids = parent::convertToIntegerArray($page_ids);
+		$this->page_ids = convertToIntegerArray($page_ids);
 		
 		// Error checking
 		$this->sql = ' WHERE (pages.page_id IS NULL)';
@@ -61,7 +62,7 @@ class Page extends FSIP {
 			$this->pages = unserialize($pages);
 		} else {
 			if (count($this->page_ids) > 0) {			
-				$query = $this->prepare('SELECT * FROM pages' . $this->sql . ';');
+				$query = $this->dbpointer->prepare('SELECT * FROM pages' . $this->sql . ';');
 				$query->execute();
 				$pages = $query->fetchAll();
 		
@@ -97,7 +98,7 @@ class Page extends FSIP {
 	}
 	
 	public function __destruct() {
-		parent::__destruct();
+		//parent::__destruct();
 	}
 	
 	/**
@@ -160,10 +161,10 @@ class Page extends FSIP {
 					'version_text_raw' => $page_text_raw,
 					'version_created' => date('Y-m-d H:i:s'),
 					'version_similarity' => round($version_similarity));
-				$this->addRow($version_fields, 'versions');
+				$this->dbpointer->addRow($version_fields, 'versions');
 			}
 			
-			$this->updateRow($fields, 'pages', $this->pages[$i]['page_id']);
+			$this->dbpointer->updateRow($fields, 'pages', $this->pages[$i]['page_id']);
 		}
 		
 		return true;
@@ -177,7 +178,7 @@ class Page extends FSIP {
 	 */
 	public function delete($permanent=false) {
 		if ($permanent === true) {
-			$this->deleteRow('pages', $this->page_ids);
+			$this->dbpointer->deleteRow('pages', $this->page_ids);
 		} else {
 			$fields = array('page_deleted' => date('Y-m-d H:i:s'));
 			$this->updateFields($fields);
@@ -220,8 +221,8 @@ class Page extends FSIP {
 	 */
 	public function formatTime($time=null, $format=null, $empty=false) {
 		foreach($this->pages as &$page) {
-			$page['page_created_format'] = parent::formatTime($page['page_created'], $format);
-			$page['page_modified_format'] = parent::formatTime($page['page_modified'], $format);
+			$page['page_created_format'] = formatTime($page['page_created'], $format);
+			$page['page_modified_format'] = formatTime($page['page_modified'], $format);
 		}
 	}
 	
@@ -247,7 +248,7 @@ class Page extends FSIP {
 		
 		for($i = 0; $i < $this->page_count; ++$i) {
 			$this->pages[$i]['page_numeric'] = $values[$i];
-			$this->pages[$i]['page_alpha'] = ucwords($this->numberToWords($values[$i]));
+			$this->pages[$i]['page_alpha'] = ucwords(numberToWords($values[$i]));
 		}
 	}
 	
@@ -299,7 +300,7 @@ class Page extends FSIP {
 	 * @return array Array of version data
 	 */
 	public function getVersions() {
-		$query = $this->prepare('SELECT versions.* FROM versions, pages' . $this->sql . ' AND versions.page_id = pages.page_id ORDER BY versions.version_created DESC;');
+		$query = $this->dbpointer->prepare('SELECT versions.* FROM versions, pages' . $this->sql . ' AND versions.page_id = pages.page_id ORDER BY versions.version_created DESC;');
 		$query->execute();
 		$this->versions = $query->fetchAll();
 		
@@ -312,16 +313,16 @@ class Page extends FSIP {
 	 * @return array Array of version data
 	 */
 	public function getCitations() {
-		$query = $this->prepare('SELECT citations.* FROM citations, pages' . $this->sql . ' AND citations.page_id = pages.page_id;');
+		$query = $this->dbpointer->prepare('SELECT citations.* FROM citations, pages' . $this->sql . ' AND citations.page_id = pages.page_id;');
 		$query->execute();
 		$this->citations = $query->fetchAll();
 		
 		$citation_count = count($this->citations);
 		
 		for($i=0; $i < $citation_count; $i++) {
-			$domain = $this->siftDomain($this->citations[$i]['citation_uri_requested']);
-			if (file_exists(PATH . CACHE . 'favicons/' . $this->makeFilenameSafe($domain) . '.png')) {
-				$this->citations[$i]['citation_favicon_uri'] = LOCATION . BASE . CACHE . 'favicons/' . $this->makeFilenameSafe($domain) . '.png';
+			$domain = siftDomain($this->citations[$i]['citation_uri_requested']);
+			if (file_exists(PATH . CACHE . 'favicons/' . makeFilenameSafe($domain) . '.png')) {
+				$this->citations[$i]['citation_favicon_uri'] = LOCATION . BASE . CACHE . 'favicons/' . makeFilenameSafe($domain) . '.png';
 			}
 		}
 		
@@ -350,7 +351,7 @@ class Page extends FSIP {
 		}
 		
 		if (count($to_delete) > 0) {
-			$this->deleteRow('citations', $to_delete);
+			$this->dbpointer->deleteRow('citations', $to_delete);
 		}
 		
 		foreach($this->pages as $page) {
@@ -359,10 +360,10 @@ class Page extends FSIP {
 				if (isset($citations[$page['page_id']])) {
 					if (in_array($matches[1], $citations[$page['page_id']])) { continue; }
 				}
-				$this->loadCitation($match, 'page_id', $page['page_id']);
+				loadCitation($match, 'page_id', $page['page_id']);
 			}
 			
-			$query = $this->prepare('SELECT citations.* FROM citations, pages WHERE pages.page_id = :page_id AND citations.page_id = pages.page_id;');
+			$query = $this->dbpointer->prepare('SELECT citations.* FROM citations, pages WHERE pages.page_id = :page_id AND citations.page_id = pages.page_id;');
 			$query->execute(array(':page_id' => $page['page_id']));
 			$citations = $query->fetchAll();
 			
@@ -376,7 +377,7 @@ class Page extends FSIP {
 				}
 			}
 			
-			$this->updateRow(array('page_citations' => implode(' ', $page_citations)), 'pages', $page['page_id']);
+			$this->dbpointer->updateRow(array('page_citations' => implode(' ', $page_citations)), 'pages', $page['page_id']);
 		}
 	}
 }

@@ -6,7 +6,7 @@ class Tumblr extends Orbit {
 	
 	private $tumblr_password;
 	
-	public function __construct(){
+	public function __construct() {
 		parent::__construct();
 		
 		$this->tumblr_active = $this->returnPref('tumblr_active');
@@ -56,12 +56,12 @@ class Tumblr extends Orbit {
 		<p>Update your <a href="http://www.tumblr.com/">Tumblr</a>.</p>
 		<?php
 		if ($this->tumblr_active) {
-			$this->tumblr_format_image = $this->makeHTMLSafe($this->tumblr_format_image);
+			$this->tumblr_format_image = makeHTMLSafe($this->tumblr_format_image);
 			?>
 			<table>
 				<tr>
 					<td class="right"><label>Name:</label></td>
-					<td><a href="http://<?php echo $this->tumblr_name; ?>.tumblr.com/"><?php echo $this->tumblr_name; ?></a> &#0160; <a href="<?php echo $this->locationFull(array('unlink' => 'tumblr')); ?>"><button>Unlink from Tumblr</button></a></td>
+					<td><a href="http://<?php echo $this->tumblr_name; ?>.tumblr.com/"><?php echo $this->tumblr_name; ?></a> &#0160; <a href="<?php echo locationFull(array('unlink' => 'tumblr')); ?>"><button>Unlink from Tumblr</button></a></td>
 				</tr>
 				<tr>
 					<td class="right middle"><label for="tumblr_transmit">Transmit:</label></td>
@@ -90,7 +90,7 @@ class Tumblr extends Orbit {
 				<tr>
 					<td class="right"><label>Title:</label></td>
 					<td>
-						<a href="<?php echo $this->locationFull(array('link' => 'tumblr')); ?>"><button>Link to Tumblr</button></a><br /><br />
+						<a href="<?php echo locationFull(array('link' => 'tumblr')); ?>"><button>Link to Tumblr</button></a><br /><br />
 						<span class="quiet">Note: Link will be to the Tumblr account you are currently logged into.</span>
 					</td>
 				</tr>
@@ -117,16 +117,15 @@ class Tumblr extends Orbit {
 					
 					$this->savePref();
 					
-					$this->addNote('You successfully linked your Tumblr account.', 'success');
-					$location = $this->location();
-					$fsip::headerLocationRedirect($location);
+					addNote('You successfully linked your Tumblr account.', 'success');
+					headerLocationRedirect(location());
 					exit();
 					
 					break;
 			}
 		}
 		
-		if(!empty($_GET['link'])) {
+		if (!empty($_GET['link'])) {
 			switch($_GET['link']) {
 				case 'tumblr':
 					$tumblr_token = $this->tumblr->getRequestToken($this->locationFull(array('from' => 'tumblr')));
@@ -137,7 +136,7 @@ class Tumblr extends Orbit {
 					$this->savePref();
 					
 					$location = $tumblr_authorize_uri;
-					$fsip::headerLocationRedirect($location);
+					headerLocationRedirect($location);
 					exit();
 					
 					break;
@@ -154,9 +153,8 @@ class Tumblr extends Orbit {
 					$this->setPref('tumblr_oauth_secret', '');
 					$this->savePref();
 					
-					$this->addNote('You successfully unlinked your Tumblr account.', 'success');
-					$location = $this->location();
-					$fsip::headerLocationRedirect($location);
+					addNote('You successfully unlinked your Tumblr account.', 'success');
+					headerLocationRedirect(location());
 					exit();
 					
 					break;
@@ -182,7 +180,7 @@ class Tumblr extends Orbit {
 					
 					$this->addNote('You successfully linked your Tumblr account.', 'success');
 					$location = $this->location();
-					$fsip::headerLocationRedirect($location);
+					headerLocationRedirect($location);
 					exit();
 					
 					break;
@@ -200,7 +198,7 @@ class Tumblr extends Orbit {
 					
 					$this->addNote('You successfully unlinked your Tumblr account.', 'success');
 					$location = $this->location();
-					$fsip::headerLocationRedirect($location);
+					headerLocationRedirect($location);
 					exit();
 					
 					break;

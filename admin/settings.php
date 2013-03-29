@@ -7,26 +7,25 @@
 */
 
 require_once('../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
 $user = new User;
-
 $user->perm(true);
+
+$dbpointer = getDB();
 
 // Enter, exit recovery mode
 if (isset($_REQUEST['recovery'])) {
 	if ($_REQUEST['recovery'] == 1) {
 		$user->setPref('recovery_mode', true);
-		$fsip->addNote('You have entered recovery mode.', 'success');
+			addNote('You have entered recovery mode.', 'success');
 	} else {
 		$user->setPref('recovery_mode', false);
-		$fsip->addNote('You have exited recovery mode.', 'success');
+			addNote('You have exited recovery mode.', 'success');
 	}
 	$user->savePref();
 	
 	$location = LOCATION . BASE. ADMINFOLDER . 'dashboard' . URL_CAP;
-	$fsip::headerLocationRedirect($location);
+	headerLocationRedirect($location);
 	exit();
 }
 
@@ -40,14 +39,14 @@ if ($user->returnPref('recovery_mode') == true) {
 // Check for updates
 /* DEH remove all dead boomerang remote calls
 $latest = @$fsip->boomerang('latest');
-if($latest['build'] > FSIP::build){
-	$fsip->addNote('A new version of FSIP (v' . $latest['version'] . ') is available. 
+if($latest['build'] > FSIP_BUILD){
+	addNote('A new version of FSIP (v' . $latest['version'] . ') is available. 
 	Learn more and download the update at <a href="http://github.com/darylhawes/fsip">github.com</a>.', 'notice');
 } */
 
 define('TAB', 'settings');
 define('TITLE', 'FSIP Settings');
-require_once(PATH . INCLUDES . '/admin_header.php');
+require_once(PATH . INCLUDES . 'admin/admin_header.php');
 
 ?>
 
@@ -64,19 +63,15 @@ require_once(PATH . INCLUDES . '/admin_header.php');
 	<h2>FSIP</h2>
 	<table>
 		<tr>
-			<td class="right">Product:</td>
-			<td><?php echo FSIP::product ?></td>
-		</tr>
-		<tr>
 			<td class="right">Version:</td>
-			<td><?php echo FSIP::version; ?> <span class="small">(<?php echo FSIP::build; ?>)</span></td>
+			<td><?php echo FSIP_VERSION; ?> <span class="small">(<?php echo FSIP_BUILD; ?>)</span></td>
 		</tr>
 		<tr>
 			<td class="right">Database:</td>
 			<td>
 				<?php
 				
-				switch($fsip->db_type){
+				switch($dbpointer->db_type){
 					case 'mssql':
 						echo 'Microsoft SQL Server';
 						break;
@@ -99,7 +94,7 @@ require_once(PATH . INCLUDES . '/admin_header.php');
 		</tr>
 		<tr>
 			<td class="right">Theme:</td>
-			<td><?php $theme = $fsip->getRow('themes', $fsip->returnConf('theme_id')); if(!empty($theme)){ echo $theme['theme_title'] . ' <span class="small">(' . $theme['theme_build'] . ')</span>'; } else { echo '&#8212;'; } ?></td>
+			<td><?php $theme = $dbpointer->getRow('themes', returnConf('theme_id')); if(!empty($theme)){ echo $theme['theme_title'] . ' <span class="small">(' . $theme['theme_build'] . ')</span>'; } else { echo '&#8212;'; } ?></td>
 		</tr>
 		<tr>
 			<td class="right">Extensions:</td>
@@ -121,7 +116,7 @@ require_once(PATH . INCLUDES . '/admin_header.php');
 			<td class="right">
 				<?php
 				
-				switch($fsip->db_type) {
+				switch($dbpointer->db_type) {
 					case 'mssql':
 						echo 'Microsoft SQL Server';
 						break;
@@ -143,7 +138,7 @@ require_once(PATH . INCLUDES . '/admin_header.php');
 				version:
 			</td>
 			<td>
-				<?php echo $fsip->db_version; ?>
+				<?php echo $dbpointer->db_version; ?>
 			</td>
 		</tr>
 		<tr>
@@ -237,6 +232,6 @@ require_once(PATH . INCLUDES . '/admin_header.php');
 
 <?php
 
-require_once(PATH . INCLUDES . '/admin_footer.php');
+require_once(PATH . INCLUDES . 'admin/admin_footer.php');
 
 ?>

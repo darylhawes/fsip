@@ -27,7 +27,7 @@ if ($page == "README") {
 		echo "<h1>Redirecting</h1><p>You are being redirected. If you're still here after a few seconds please ".'<a href="'. LOCATION . BASE . 'README.html' .'">'."click here</a></p>";
 // No fsip-> object here yet
 //	$location = LOCATION . BASE . 'results' . URL_CAP;
-//	$fsip::headerLocationRedirect($location);
+//	headerLocationRedirect($location);
 
 		exit();
 	}
@@ -40,7 +40,7 @@ if ($page == "README") {
 		echo "<h1>Redirecting</h1><p>You are being redirected. If you're still here after a few seconds please ".'<a href="'. LOCATION . BASE  . "docs/" . $page.'.html">'."click here</a></p>";
 // No fsip-> object here yet
 //	$location = LOCATION . BASE . 'results' . URL_CAP;
-//	$fsip::headerLocationRedirect($location);
+//	headerLocationRedirect($location);
 		exit();
 	}
 	$infile = PATH . "docs/". $page.'.md';

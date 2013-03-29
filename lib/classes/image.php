@@ -12,7 +12,7 @@
  * @version 1.1
  */
 
-class Image extends FSIP {
+class Image {
 	public $comments;
 	public $db;
 	public $images = array();
@@ -29,14 +29,16 @@ class Image extends FSIP {
 	public $user;
 	
 	protected $sql;
-	
+
+	private $dbpointer;
+		
 	/**
 	 * Initiates Image object
 	 *
 	 * @param array|int|string $image_ids Image IDs (use Find class to locate them)
 	 */
 	public function __construct($image_ids=null) {
-		parent::__construct();
+		$this->dbpointer = getDB();
 		
 		// Reset image array
 		$this->images = array();
@@ -47,7 +49,7 @@ class Image extends FSIP {
 			$image_ids = $image_ids->ids;
 		}
 		
-		$this->image_ids = parent::convertToIntegerArray($image_ids);
+		$this->image_ids = convertToIntegerArray($image_ids);
 		
 		// Error checking
 		$this->sql = ' WHERE (images.image_id IS NULL)';
@@ -71,7 +73,7 @@ class Image extends FSIP {
 			$this->images = unserialize($images);
 		} else {
 			if(count($this->image_ids) > 0){
-				$query = $this->prepare('SELECT * FROM images' . $this->sql . ';');
+				$query = $this->dbpointer->prepare('SELECT * FROM images' . $this->sql . ';');
 				$query->execute();
 				$images = $query->fetchAll();
 
@@ -90,12 +92,12 @@ class Image extends FSIP {
 				// Attach additional fields
 				for($i = 0; $i < $image_count; ++$i) {
 					if (empty($this->images[$i]['image_directory'])) {	
-						$this->images[$i]['image_file'] = parent::correctWinPath(PATH . IMAGEDATA . $this->images[$i]['image_id'] . '.' . $this->images[$i]['image_ext']);
+						$this->images[$i]['image_file'] = correctWinPath(PATH . IMAGEDATA . $this->images[$i]['image_id'] . '.' . $this->images[$i]['image_ext']);
 					} else {
-						$this->images[$i]['image_file'] = parent::correctWinPath(PATH . IMAGEDATA . $this->images[$i]['image_directory'] . $this->images[$i]['image_id'] . '.' . $this->images[$i]['image_ext']);
+						$this->images[$i]['image_file'] = correctWinPath(PATH . IMAGEDATA . $this->images[$i]['image_directory'] . $this->images[$i]['image_id'] . '.' . $this->images[$i]['image_ext']);
 					}
 					$this->images[$i]['image_src'] = BASE . IMAGEDATA . $this->images[$i]['image_id'] . '.' . $this->images[$i]['image_ext'];
-					$title_url = $this->makeURL($this->images[$i]['image_title']);
+					$title_url = makeURL($this->images[$i]['image_title']);
 					if (empty($title_url) or (URL_RW != '/')) {
 						$this->images[$i]['image_uri_rel'] = BASE . 'image' . URL_ID . $this->images[$i]['image_id'] . URL_RW;
 					} else {
@@ -104,10 +106,10 @@ class Image extends FSIP {
 
 					$this->images[$i]['image_uri'] = LOCATION . $this->images[$i]['image_uri_rel'];
 
-					if($this->returnConf('comm_enabled') != true) {
+					if(returnConf('comm_enabled') != true) {
 						$this->images[$i]['image_comment_disabled'] = 1;
-					} elseif($this->returnConf('comm_close') == true) {
-						if((time() - strtotime($this->images[$i]['image_published'])) > $this->returnConf('comm_close_time')) {
+					} elseif(returnConf('comm_close') == true) {
+						if((time() - strtotime($this->images[$i]['image_published'])) > returnConf('comm_close_time')) {
 							$this->images[$i]['image_comment_disabled'] = 1;
 						}
 					}
@@ -121,7 +123,7 @@ class Image extends FSIP {
 	}
 	
 	public function __destruct() {
-		parent::__destruct();
+		//
 	}
 	
 	/**
@@ -131,10 +133,11 @@ class Image extends FSIP {
 	 * @return void
 	 */
 	public function hook($orbit=null) {
+//echo "in hook<br />";
 		if (!is_object($orbit)) {
 			$orbit = new Orbit;
 		}
-		
+//echo "calling orbit hook<br />";		
 		$this->images = $orbit->hook('image', $this->images, $this->images);
 	}
 	
@@ -169,8 +172,8 @@ class Image extends FSIP {
 			if (!is_file($file)) {
 				return false;
 			}
-			
-			$filename = $this->getFilename($file);
+			$fm = getFileManager();
+			$filename = $fm->getFilename($file);
 			
 			// Add image to database
 			$image_ext = $this->getExt($file);
@@ -179,8 +182,8 @@ class Image extends FSIP {
 			
 			// Configuration: default rights set
 			$right_id = null; //to avoid using a variable that is not declared
-			if ($this->returnConf('rights_default')) {
-				$right_id = $this->returnConf('rights_default_id');
+			if (returnConf('rights_default')) {
+				$right_id = returnConf('rights_default_id');
 			}
 			
 			$fields = array('user_id' => @$this->user['user_id'],
@@ -192,11 +195,11 @@ class Image extends FSIP {
 				'image_height' => $image_size['height'],
 				'image_width' => $image_size['width']);
 			
-			$image_id = $this->addRow($fields, 'images');
+			$image_id = $this->dbpointer->addRow($fields, 'images');
 			$image_ids[] = $image_id;
 
 			// Copy image to archive, delete original from shoebox
-			copy($file, parent::correctWinPath(PATH . IMAGEDATA . $image_id . '.' . $image_ext));
+			copy($file, correctWinPath(PATH . IMAGEDATA . $image_id . '.' . $image_ext));
 			@unlink($file);
 		}
 		
@@ -248,11 +251,11 @@ class Image extends FSIP {
 		}
 		
 		if (!empty($size_ids)) {
-			$size_ids = parent::convertToIntegerArray($size_ids);
+			$size_ids = convertToIntegerArray($size_ids);
 		}
 		
 		// Look up sizes in database
-		$query = $this->prepare('SELECT * FROM sizes');
+		$query = $this->dbpointer->prepare('SELECT * FROM sizes');
 		$query->execute();
 		$sizes = $query->fetchAll();
 		
@@ -274,7 +277,7 @@ class Image extends FSIP {
 				$size_append = $size['size_append'];
 				$size_watermark = $size['size_watermark'];
 				$size_label = $size['size_label'];
-				$size_dest = parent::correctWinPath(PATH . IMAGEDATA . $images[$i]['image_directory'] . $size_prepend . $images[$i]['image_id'] . $size_append . '.' . $images[$i]['image_ext']);
+				$size_dest = correctWinPath(PATH . IMAGEDATA . $images[$i]['image_directory'] . $size_prepend . $images[$i]['image_id'] . $size_append . '.' . $images[$i]['image_ext']);
 				
 				if (in_array($images[$i]['image_ext'], array('pdf', 'svg'))) {
 					$size_dest = $this->changeExt($size_dest, 'png');
@@ -297,15 +300,15 @@ class Image extends FSIP {
 				
 				// Apply watermark
 				if ($this->returnConf('thumb_watermark') and ($size_watermark == 1)) {
-					$watermark = parent::correctWinPath(PATH . WATERMARKS . $size_label . '.png');
+					$watermark = correctWinPath(PATH . WATERMARKS . $size_label . '.png');
 					if (!file_exists($watermark)) {
-						$watermark = parent::correctWinPath(PATH . WATERMARKS . 'watermark.png');
+						$watermark = correctWinPath(PATH . WATERMARKS . 'watermark.png');
 					}
 					$thumbnail->watermark($watermark);
 				}
 				
 				// Apply metadata
-				if ($this->returnConf('thumb_metadata')) {
+				if (returnConf('thumb_metadata')) {
 					$thumbnail->metadata();
 				}
 				
@@ -364,7 +367,7 @@ class Image extends FSIP {
 						if ($value !== false) {
 							$value = date('Y-m-d H:i:s', $value);
 						} else {
-							$this->addNote('The image&#8217;s publish date could not be determined, and was left unpublished.', 'error');
+							addNote('The image&#8217;s publish date could not be determined, and was left unpublished.', 'error');
 							$value = '';
 						}
 						$fields[$key] = $value;
@@ -399,7 +402,7 @@ class Image extends FSIP {
 			$values = array_values($fields);
 
 			// Add row to database
-			$query = $this->prepare('UPDATE images SET ' . implode(' = ?, ', $columns) . ' = ? WHERE image_id = ' . $this->images[$i]['image_id'] . ';');
+			$query = $this->dbpointer->prepare('UPDATE images SET ' . implode(' = ?, ', $columns) . ' = ? WHERE image_id = ' . $this->images[$i]['image_id'] . ';');
 			if (!$query->execute($values)) {
 				return false;
 			}
@@ -436,7 +439,7 @@ class Image extends FSIP {
 		
 			$sql_param_keys = array_keys($sql_params);
 			
-			$query = $this->prepare('SELECT tags.tag_parents FROM tags WHERE tags.tag_name = ' . implode(' OR tags.tag_name = ', $sql_param_keys) . ';');
+			$query = $this->dbpointer->prepare('SELECT tags.tag_parents FROM tags WHERE tags.tag_name = ' . implode(' OR tags.tag_name = ', $sql_param_keys) . ';');
 
 			$query->execute($sql_params);
 			$tags_db = $query->fetchAll();
@@ -469,7 +472,7 @@ class Image extends FSIP {
 
 			$sql_param_keys = array_keys($sql_params);
 		
-			$query = $this->prepare('SELECT tags.tag_id, tags.tag_name FROM tags WHERE tags.tag_name = ' . implode(' OR tags.tag_name = ', $sql_param_keys) . ';');
+			$query = $this->dbpointer->prepare('SELECT tags.tag_id, tags.tag_name FROM tags WHERE tags.tag_name = ' . implode(' OR tags.tag_name = ', $sql_param_keys) . ';');
 			$query->execute($sql_params);
 			$tags_db = $query->fetchAll();
 			$tags_db_names = array();
@@ -502,16 +505,16 @@ class Image extends FSIP {
 						continue;
 					} else {
 						$query = 'DELETE FROM links WHERE image_id = ' . $tag['image_id'] . ' AND tag_id = ' . $tag['tag_id'] . ';';
-						$this->exec($query);
+						$this->dbpointer->exec($query);
 						
-						$query = $this->prepare('SELECT COUNT(*) as count FROM links WHERE tag_id = ' . $tag['tag_id'] . ';');
+						$query = $this->dbpointer->prepare('SELECT COUNT(*) as count FROM links WHERE tag_id = ' . $tag['tag_id'] . ';');
 						$query->execute();
 						$tag_exists = $query->fetchAll();
 						$tag_count = $tag_exists[0]['count'];
 						
 						if ($tag_count < 1) {
 							$query = 'DELETE FROM tags WHERE tag_id = ' . $tag['tag_id'] . ';';
-							$this->exec($query);
+							$this->dbpointer->exec($query);
 						}
 					}
 				}
@@ -530,9 +533,9 @@ class Image extends FSIP {
 				$key = array_search($tag, $tags_db_names);
 				if ($key !== false) {
 					$query = 'INSERT INTO links (image_id, tag_id) VALUES (' . $this->images[$i]['image_id'] . ', ' . $tags_db[$key]['tag_id'] . ');';
-					$this->exec($query);
+					$this->dbpointer->exec($query);
 				} else {
-					$query = $this->prepare('INSERT INTO tags (tag_name) VALUES (:tag);');
+					$query = $this->dbpointer->prepare('INSERT INTO tags (tag_name) VALUES (:tag);');
 					$query->execute(array(':tag' => $tag));
 					$tag_id = intval($this->db->lastInsertId(TABLE_PREFIX . 'tags_tag_id_seq'));
 					
@@ -540,7 +543,7 @@ class Image extends FSIP {
 					$tags_db_names[] = $tag;
 					
 					$query = 'INSERT INTO links (image_id, tag_id) VALUES (' . $this->images[$i]['image_id'] . ', ' . $tag_id . ');';
-					$this->exec($query);
+					$this->dbpointer->exec($query);
 				}
 			}
 		}
@@ -548,7 +551,7 @@ class Image extends FSIP {
 		if (count($affected_image_ids) > 0) {
 			$now = date('Y-m-d H:i:s');
 			$image_tags = implode('; ', $tags_to_update);
-			$query = $this->prepare('UPDATE images SET image_modified = :image_modified, image_tags = :image_tags, image_tag_count = :image_tag_count WHERE image_id = :image_id;');
+			$query = $this->dbpointer->prepare('UPDATE images SET image_modified = :image_modified, image_tags = :image_tags, image_tag_count = :image_tag_count WHERE image_id = :image_id;');
 			foreach($affected_image_ids as $image_id) {
 				$query->execute(array(':image_modified' => $now, ':image_tags' => $image_tags, ':image_tag_count' => count($tags_to_update), ':image_id' => $image_id));
 			}
@@ -591,7 +594,7 @@ class Image extends FSIP {
 	
 		$sql_param_keys = array_keys($sql_params);
 	
-		$query = $this->prepare('SELECT tags.tag_parents FROM tags WHERE tags.tag_name = ' . implode(' OR tags.tag_name = ', $sql_param_keys) . ';');
+		$query = $this->dbpointer->prepare('SELECT tags.tag_parents FROM tags WHERE tags.tag_name = ' . implode(' OR tags.tag_name = ', $sql_param_keys) . ';');
 		
 		$query->execute($sql_params);
 		$tags_db = $query->fetchAll();
@@ -624,7 +627,7 @@ class Image extends FSIP {
 	
 		$sql_param_keys = array_keys($sql_params);
 		
-		$query = $this->prepare('SELECT tags.tag_id, tags.tag_name, tags.tag_parents FROM tags WHERE tags.tag_name = ' . implode(' OR tags.tag_name = ', $sql_param_keys) . ';');
+		$query = $this->dbpointer->prepare('SELECT tags.tag_id, tags.tag_name, tags.tag_parents FROM tags WHERE tags.tag_name = ' . implode(' OR tags.tag_name = ', $sql_param_keys) . ';');
 		
 		$query->execute($sql_params);
 		$tags_db = $query->fetchAll();
@@ -672,9 +675,9 @@ class Image extends FSIP {
 				$key = array_search($tag, $tags_db_names);
 				if ($key !== false) {
 					$query = 'INSERT INTO links (image_id, tag_id) VALUES (' . $this->images[$i]['image_id'] . ', ' . $tags_db[$key]['tag_id'] . ');';
-					$this->exec($query);
+					$this->dbpointer->exec($query);
 				} else {
-					$query = $this->prepare('INSERT INTO tags (tag_name) VALUES (:tag);');
+					$query = $this->dbpointer->prepare('INSERT INTO tags (tag_name) VALUES (:tag);');
 					$query->execute(array(':tag' => $tag));
 					$tag_id = intval($this->db->lastInsertId(TABLE_PREFIX . 'tags_tag_id_seq'));
 					
@@ -683,7 +686,7 @@ class Image extends FSIP {
 					$tags_db_names[] = $tag;
 					
 					$query = 'INSERT INTO links (image_id, tag_id) VALUES (' . $this->images[$i]['image_id'] . ', ' . $tag_id . ');';
-					$this->exec($query);
+					$this->dbpointer->exec($query);
 				}
 			}
 		}
@@ -694,7 +697,7 @@ class Image extends FSIP {
 			$affected_images = new Image($affected_image_ids);
 			$affected_images->getTags();
 			
-			$query = $this->prepare('UPDATE images SET image_modified = :image_modified, image_tags = :image_tags, image_tag_count = :image_tag_count WHERE image_id = :image_id;');
+			$query = $this->dbpointer->prepare('UPDATE images SET image_modified = :image_modified, image_tags = :image_tags, image_tag_count = :image_tag_count WHERE image_id = :image_id;');
 			
 			foreach($affected_images->images as $image) {
 				$query->execute(array(':image_modified' => $now, ':image_tags' => implode('; ', $image['image_tags_array']), ':image_tag_count' => count($image['image_tags']), ':image_id' => $image['image_id']));
@@ -742,7 +745,7 @@ class Image extends FSIP {
 					$tag_key = array_search($tag['tag_name'], $tags);
 					if ($tag_key !== false) {			
 						$query = 'DELETE FROM links WHERE image_id = ' . $tag['image_id'] . ' AND tag_id = ' . $tag['tag_id'] . ';';
-						$this->exec($query);
+						$this->dbpointer->exec($query);
 						$tags_db_ids[] = $tag['tag_id'];
 						$affected_image_ids[] = $this->images[$i]['image_id'];
 					}
@@ -756,7 +759,7 @@ class Image extends FSIP {
 			$affected_images = new Image($affected_image_ids);
 			$affected_images->getTags();
 			
-			$query = $this->prepare('UPDATE images SET image_modified = :image_modified, image_tags = :image_tags, image_tag_count = :image_tag_count WHERE image_id = :image_id;');
+			$query = $this->dbpointer->prepare('UPDATE images SET image_modified = :image_modified, image_tags = :image_tags, image_tag_count = :image_tag_count WHERE image_id = :image_id;');
 			
 			foreach($affected_images->images as $image){
 				$query->execute(array(':image_modified' => $now, ':image_tags' => implode('; ', $image['image_tags_array']), ':image_tag_count' => count($image['image_tags']), ':image_id' => $image['image_id']));
@@ -851,7 +854,7 @@ class Image extends FSIP {
 		$size = array();
 		
 		// ImageMagick version
-		if (class_exists('Imagick', false) and ($this->returnConf('thumb_imagick') or in_array($ext, array('pdf', 'svg')))) {
+		if (class_exists('Imagick', false) and (returnConf('thumb_imagick') or in_array($ext, array('pdf', 'svg')))) {
 			$image = new Imagick($file);
 			$size['width'] = $image->getImageWidth();
 			$size['height'] = $image->getImageHeight();
@@ -1030,7 +1033,7 @@ class Image extends FSIP {
 				':image_color_s' => $hsl_dom_s,
 				':image_color_l' => $hsl_dom_l);
 		
-			$query = $this->prepare('UPDATE images SET image_colors = :image_colors, image_color_r = :image_color_r, image_color_g = :image_color_g, image_color_b = :image_color_b, image_color_h = :image_color_h, image_color_s = :image_color_s, image_color_l = :image_color_l WHERE image_id = ' . $images[$i]['image_id'] . ';');
+			$query = $this->dbpointer->prepare('UPDATE images SET image_colors = :image_colors, image_color_r = :image_color_r, image_color_g = :image_color_g, image_color_b = :image_color_b, image_color_h = :image_color_h, image_color_s = :image_color_s, image_color_l = :image_color_l WHERE image_id = ' . $images[$i]['image_id'] . ';');
 			return $query->execute($fields);
 		}
 	}
@@ -1073,11 +1076,11 @@ class Image extends FSIP {
 							'exif_name' => $name,
 							'exif_value' => serialize($value));
 						
-						$this->addRow($fields, 'exifs');
+						$this->dbpointer->addRow($fields, 'exifs');
 						
 						// Check for date taken, insert to images table
 						if (($key == 'IFD0') and ($name == 'DateTime')) {
-							$query = $this->prepare('UPDATE images SET image_taken = :image_taken WHERE image_id = ' . $images[$i]['image_id'] . ';');
+							$query = $this->dbpointer->prepare('UPDATE images SET image_taken = :image_taken WHERE image_id = ' . $images[$i]['image_id'] . ';');
 							$query->execute(array(':image_taken' => date('Y-m-d H:i:s', strtotime($value))));
 						}
 				    }
@@ -1291,7 +1294,7 @@ class Image extends FSIP {
 	public function updateViews(){
 		for($i = 0; $i < $this->image_count; ++$i) {
 			$this->images[$i]['image_views']++;
-			$this->exec('UPDATE images SET image_views = ' . $this->images[$i]['image_views'] . ' WHERE image_id = ' . $this->images[$i]['image_id'] . ';');
+			$this->dbpointer->exec('UPDATE images SET image_views = ' . $this->images[$i]['image_views'] . ' WHERE image_id = ' . $this->images[$i]['image_id'] . ';');
 		}
 	}
 	
@@ -1312,7 +1315,7 @@ class Image extends FSIP {
 				@$this->exec('DELETE FROM links WHERE image_id = ' . $this->images[$i]['image_id'] . ';');
 			}
 		} else {
-			$query = $this->prepare('UPDATE comments SET comment_deleted = ? WHERE image_id = ' . implode(' OR image_id = ', $this->image_ids) . ';');
+			$query = $this->dbpointer->prepare('UPDATE comments SET comment_deleted = ? WHERE image_id = ' . implode(' OR image_id = ', $this->image_ids) . ';');
 			$query->execute(array(date('Y-m-d H:i:s')));
 			
 			$fields = array('image_deleted' => date('Y-m-d H:i:s'));
@@ -1336,7 +1339,7 @@ class Image extends FSIP {
 	 */
 	public function recover() {
 		for($i = 0; $i < $this->image_count; ++$i) {
-			$query = $this->prepare('UPDATE comments SET comment_deleted = ? WHERE image_id = ' . $this->images[$i]['image_id'] . ' AND comment_deleted = ?;');
+			$query = $this->dbpointer->prepare('UPDATE comments SET comment_deleted = ? WHERE image_id = ' . $this->images[$i]['image_id'] . ' AND comment_deleted = ?;');
 			$query->execute(array(null, $this->images[$i]['image_deleted']));
 		}
 		
@@ -1360,7 +1363,7 @@ class Image extends FSIP {
 	 * @return void
 	 */
 	public function getSizes($sizes=null) {
-		$sizes = $this->convertToArray($sizes);
+		$sizes = convertToArray($sizes);
 		
 		if (empty($sizes)) {
 			$sizes = array();
@@ -1398,10 +1401,10 @@ class Image extends FSIP {
 			
 				$value_slots = array_fill(0, $sizes_count, '?');
 			
-				$query = $this->prepare('SELECT * FROM sizes WHERE LOWER(size_title) = ' . implode(' OR LOWER(size_title) = ', $value_slots) . ' OR LOWER(size_label) = ' . implode(' OR LOWER(size_label) = ', $value_slots) . ' ORDER BY (size_width*size_height) DESC');
+				$query = $this->dbpointer->prepare('SELECT * FROM sizes WHERE LOWER(size_title) = ' . implode(' OR LOWER(size_title) = ', $value_slots) . ' OR LOWER(size_label) = ' . implode(' OR LOWER(size_label) = ', $value_slots) . ' ORDER BY (size_width*size_height) DESC');
 				$query->execute($sizes);
 			} else {
-				$query = $this->prepare('SELECT * FROM sizes ORDER BY (size_width*size_height) DESC');
+				$query = $this->dbpointer->prepare('SELECT * FROM sizes ORDER BY (size_width*size_height) DESC');
 				$query->execute();
 			}
 			
@@ -1432,7 +1435,7 @@ class Image extends FSIP {
 					$this->images[$j]['image_directory'] = '';
 				}
 				
-				$size['size_file'] = parent::correctWinPath(PATH . IMAGEDATA . $this->images[$j]['image_directory'] . $size_prepend . $this->images[$j]['image_id'] . $size_append . '.' . $this->images[$j]['image_ext']);
+				$size['size_file'] = correctWinPath(PATH . IMAGEDATA . $this->images[$j]['image_directory'] . $size_prepend . $this->images[$j]['image_id'] . $size_append . '.' . $this->images[$j]['image_ext']);
 				
 				$size['size_src'] = BASE . IMAGEDATA . $this->images[$j]['image_directory'] . $size_prepend . $this->images[$j]['image_id'] . $size_append . '.' . $image_ext;
 				
@@ -1501,7 +1504,7 @@ class Image extends FSIP {
 	 * @return array Associative array of EXIFs
 	 */
 	public function getEXIF() {
-		$query = $this->prepare('SELECT exifs.* FROM exifs, images' . $this->sql . ' AND images.image_id = exifs.image_id;');
+		$query = $this->dbpointer->prepare('SELECT exifs.* FROM exifs, images' . $this->sql . ' AND images.image_id = exifs.image_id;');
 		$query->execute();
 		$exifs = $query->fetchAll();
 		
@@ -1527,10 +1530,10 @@ class Image extends FSIP {
 	 */
 	public function getTags($show_hidden_tags=false, $published_only=false, $public_only=false) {
 		// Sort by tag name
-		if ($this->returnConf('tag_alpha')) {
-			$query = $this->prepare('SELECT tags.tag_name, tags.tag_id, images.image_id FROM tags, links, images' . $this->sql . ' AND tags.tag_id = links.tag_id AND links.image_id = images.image_id ORDER BY tags.tag_name;');
+		if (returnConf('tag_alpha')) {
+			$query = $this->dbpointer->prepare('SELECT tags.tag_name, tags.tag_id, images.image_id FROM tags, links, images' . $this->sql . ' AND tags.tag_id = links.tag_id AND links.image_id = images.image_id ORDER BY tags.tag_name;');
 		} else {// Sort by order added
-			$query = $this->prepare('SELECT tags.tag_name, tags.tag_id, images.image_id FROM tags, links, images' . $this->sql . ' AND tags.tag_id = links.tag_id AND links.image_id = images.image_id ORDER BY links.link_id;');
+			$query = $this->dbpointer->prepare('SELECT tags.tag_name, tags.tag_id, images.image_id FROM tags, links, images' . $this->sql . ' AND tags.tag_id = links.tag_id AND links.image_id = images.image_id ORDER BY links.link_id;');
 		}
 		$query->execute();
 		$tags = $query->fetchAll();
@@ -1550,7 +1553,7 @@ class Image extends FSIP {
 		
 		// Attach additional fields
 		for($i = 0; $i < $this->tag_count; ++$i) {
-			$title_url = $this->makeURL($this->tags[$i]['tag_name']);
+			$title_url = makeURL($this->tags[$i]['tag_name']);
 			if (empty($title_url) or (URL_RW != '/')) {
 				$this->tags[$i]['tag_uri_rel'] = BASE . 'tag' . URL_ID . $this->tags[$i]['tag_id'] . URL_RW;
 			} else {
@@ -1581,7 +1584,7 @@ class Image extends FSIP {
 	 * @return array Associative array of rights sets
 	 */
 	public function getRights() {
-		$query = $this->prepare('SELECT rights.*, images.image_id FROM rights, images' . $this->sql . ' AND rights.right_id = images.right_id AND rights.right_deleted IS NULL;');
+		$query = $this->dbpointer->prepare('SELECT rights.*, images.image_id FROM rights, images' . $this->sql . ' AND rights.right_id = images.right_id AND rights.right_deleted IS NULL;');
 		$query->execute();
 		$rights = $query->fetchAll();
 		
@@ -1636,7 +1639,7 @@ class Image extends FSIP {
 		
 		$ids = array_unique($ids);
 		
-		$users = $this->getTable('users', $ids);
+		$users = $this->dbpointer->getTable('users', $ids);
 		
 		$user_ids = array();
 		
@@ -1787,9 +1790,9 @@ class Image extends FSIP {
 	 */
 	public function getComments($published=true, $inline_responses=true) {
 		if ($published == true) {
-			$query = $this->prepare('SELECT * FROM comments, images' . $this->sql . ' AND comments.image_id = images.image_id AND  comments.comment_deleted IS NULL AND comments.comment_status > 0 ORDER BY comments.comment_created ASC;');
+			$query = $this->dbpointer->prepare('SELECT * FROM comments, images' . $this->sql . ' AND comments.image_id = images.image_id AND  comments.comment_deleted IS NULL AND comments.comment_status > 0 ORDER BY comments.comment_created ASC;');
 		} else {
-			$query = $this->prepare('SELECT * FROM comments, images' . $this->sql . ' AND comments.image_id = images.image_id AND comments.comment_deleted IS NULL ORDER BY comments.comment_created ASC;');
+			$query = $this->dbpointer->prepare('SELECT * FROM comments, images' . $this->sql . ' AND comments.image_id = images.image_id AND comments.comment_deleted IS NULL ORDER BY comments.comment_created ASC;');
 		}		
 		$query->execute();
 		$this->comments = $query->fetchAll();
@@ -1872,7 +1875,7 @@ class Image extends FSIP {
 		
 		$now = date('Y-m-d H:i:s');
 
-		$query = $this->prepare('UPDATE images SET image_modified = :image_modified, image_related = :image_related, image_related_hash = :image_related_hash WHERE image_id = :image_id;');
+		$query = $this->dbpointer->prepare('UPDATE images SET image_modified = :image_modified, image_related = :image_related, image_related_hash = :image_related_hash WHERE image_id = :image_id;');
 		
 		// Check to see if recently updated
 		for($i=0; $i < $this->image_count; $i++) { 
@@ -1924,7 +1927,7 @@ class Image extends FSIP {
 	 */
 	public function deSizeImage($original=false, $save_labels=null) {
 		// Open image directory
-		$dir = parent::correctWinPath(PATH . IMAGEDATA);
+		$dir = correctWinPath(PATH . IMAGEDATA);
 		$handle = opendir($dir);
 		$images = array();
 		
@@ -1975,10 +1978,10 @@ class Image extends FSIP {
 	 */
 	public function formatTime($time=null, $format=null, $empty=false) {
 		foreach($this->images as &$image) {
-			$image['image_taken_format'] = parent::formatTime($image['image_taken'], $format);
-			$image['image_uploaded_format'] = parent::formatTime($image['image_uploaded'], $format);
-			$image['image_published_format'] = parent::formatTime($image['image_published'], $format);
-			$image['image_modified_format'] = parent::formatTime($image['image_modified'], $format);
+			$image['image_taken_format'] = formatTime($image['image_taken'], $format);
+			$image['image_uploaded_format'] = formatTime($image['image_uploaded'], $format);
+			$image['image_published_format'] = formatTime($image['image_published'], $format);
+			$image['image_modified_format'] = formatTime($image['image_modified'], $format);
 		}
 	}
 }

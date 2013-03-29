@@ -7,15 +7,15 @@
 */
 
 require_once('../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
+$dbpointer = getDB();
+$fm = getFileManager();
+
 $user = new User;
-
 $user->perm(true, 'themes');
 
 // Load current themes
-$themes = $fsip->getTable('themes');
+$themes = $dbpointer->getTable('themes');
 
 $theme_ids = array();
 $theme_uids = array();
@@ -30,7 +30,7 @@ foreach($themes as $theme) {
 }
 
 // Seek all themes
-$seek_themes = $fsip->seekDirectory(PATH . THEMES, '');
+$seek_themes = $fm->seekDirectory(PATH . THEMES, '');
 
 $theme_deleted = array();
 
@@ -42,18 +42,18 @@ foreach($themes as $theme) {
 	}
 }
 
-$fsip->deleteRow('themes', $theme_deleted);
+$dbpointer->deleteRow('themes', $theme_deleted);
 
 // Determine which themes are new, install them
 $themes_installed = array();
 $themes_updated = array();
 
 foreach($seek_themes as &$theme_folder) {
-	$theme_folder = $fsip->getFilename($theme_folder);
+	$theme_folder = $fm->getFilename($theme_folder);
 	if (!in_array($theme_folder, $theme_folders)) {
 		$data = file_get_contents(PATH . THEMES . $theme_folder . '/theme.xml');
 		if (empty($data)) { 
-			$fsip->addNote('Could not install a new theme. Its XML file is missing or corrupted.', 'error'); 
+			addNote('Could not install a new theme. Its XML file is missing or corrupted.', 'error'); 
 			continue; 
 		}
 
@@ -67,7 +67,7 @@ foreach($seek_themes as &$theme_folder) {
 			'theme_creator_name' => $xml->creator->name,
 			'theme_creator_uri' => $xml->creator->uri);
 		
-		$theme_intalled_id = $fsip->addRow($fields, 'themes');
+		$theme_intalled_id = $dbpointer->addRow($fields, 'themes');
 		$themes_installed[] = $theme_intalled_id;
 	} else {
 		$data = file_get_contents(PATH . THEMES . $theme_folder . '/theme.xml');
@@ -83,7 +83,7 @@ foreach($seek_themes as &$theme_folder) {
 					'theme_version' => $xml->version,
 					'theme_creator_name' => $xml->creator->name,
 					'theme_creator_uri' => $xml->creator->uri);
-				$fsip->updateRow($fields, 'themes', $id);
+				$dbpointer->updateRow($fields, 'themes', $id);
 				$themes_updated[] = $id;
 			}
 		}
@@ -98,9 +98,9 @@ if ($themes_installed_count > 0) {
 		$notification = 'You have successfully installed ' . $themes_installed_count . ' themes.';
 	}
 	
-	$fsip->addNote($notification, 'success');
+	addNote($notification, 'success');
 	
-	$themes = $fsip->getTable('themes');
+	$themes = $dbpointer->getTable('themes');
 }
 
 $themes_updated_count = count($themes_updated);
@@ -111,9 +111,9 @@ if ($themes_updated_count > 0) {
 		$notification = 'You have successfully updated ' . $themes_updated_count . ' themes.';
 	}
 	
-	$fsip->addNote($notification, 'success');
+	addNote($notification, 'success');
 	
-	$themes = $fsip->getTable('themes');
+	$themes = $dbpointer->getTable('themes');
 }
 
 // Check for updates
@@ -140,12 +140,12 @@ if (!empty($latest_themes)) {
 }
 */
 
-$themes = $fsip->getTable('themes');
+$themes = $dbpointer->getTable('themes');
 $theme_count = @count($themes);
 
 define('TAB', 'settings');
 define('TITLE', 'FSIP Themes');
-require_once(PATH . INCLUDES . '/admin_header.php');
+require_once(PATH . INCLUDES . 'admin/admin_header.php');
 
 ?>
 
@@ -206,6 +206,6 @@ require_once(PATH . INCLUDES . '/admin_header.php');
 
 <?php
 
-require_once(PATH . INCLUDES . '/admin_footer.php');
+require_once(PATH . INCLUDES . 'admin/admin_footer.php');
 
 ?>

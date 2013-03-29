@@ -1,6 +1,6 @@
 <?php
 
-class Twitter extends Orbit{
+class Twitter extends Orbit {
 	public $twitter;
 	
 	public $twitter_screen_name;
@@ -8,7 +8,7 @@ class Twitter extends Orbit{
 	private $twitter_oauth_token;
 	private $twitter_oauth_secret;
 	
-	public function __construct(){
+	public function __construct() {
 		parent::__construct();
 		
 		$this->twitter_active = $this->returnPref('twitter_active');
@@ -29,33 +29,32 @@ class Twitter extends Orbit{
 		$this->twitter_oauth_token = $this->returnPref('twitter_oauth_token');
 		$this->twitter_oauth_secret = $this->returnPref('twitter_oauth_secret'); 
 		
-		if(!empty($this->twitter_oauth_token) and !empty($this->twitter_oauth_secret)){
+		if (!empty($this->twitter_oauth_token) and !empty($this->twitter_oauth_secret)) {
 			$this->twitter = new Twitter_TwitterOAuth('Ss0F1kxtvxkkmKGgvPx8w',
 				't55gKYkDtn5uKo1enMyF1E00RwOec9aDzNo7TFhzZx4',
 				$this->twitter_oauth_token,
 				$this->twitter_oauth_secret);
-		}
-		else{
+		} else {
 			$this->twitter = new Twitter_TwitterOAuth('Ss0F1kxtvxkkmKGgvPx8w',
 				't55gKYkDtn5uKo1enMyF1E00RwOec9aDzNo7TFhzZx4');
 		}
 	}
 	
-	public function __destruct(){
+	public function __destruct() {
 		parent::__destruct();
 	}
 	
-	public function orbit_config(){
+	public function orbit_config() {
 		?>
 		<p>Every time you publish an image your <a href="http://www.twitter.com/">Twitter</a> status will be updated.</p>
 		<?php
 		if($this->twitter_active){
-			$this->twitter_format_image = $this->makeHTMLSafe($this->twitter_format_image);
+			$this->twitter_format_image = makeHTMLSafe($this->twitter_format_image);
 			?>
 			<table>
 				<tr>
 					<td class="right"><label>Username:</label></td>
-					<td><a href="http://twitter.com/<?php echo $this->twitter_screen_name; ?>/"><?php echo $this->twitter_screen_name; ?></a> &#0160; <a href="<?php echo $this->locationFull(array('unlink' => 'twitter')); ?>"><button>Unlink from Twitter</button></a></td>
+					<td><a href="http://twitter.com/<?php echo $this->twitter_screen_name; ?>/"><?php echo $this->twitter_screen_name; ?></a> &#0160; <a href="<?php echo locationFull(array('unlink' => 'twitter')); ?>"><button>Unlink from Twitter</button></a></td>
 				</tr>
 				<tr>
 					<td class="right middle"><label for="twitter_transmit">Transmit:</label></td>
@@ -98,36 +97,35 @@ class Twitter extends Orbit{
 					</td>
 				</tr>
 				<tr>
-					<td class="right"><input type="checkbox" id="twitter_auto" name="twitter_auto" value="auto" <?php if($this->twitter_auto == 'auto'){ echo 'checked="checked"'; } ?> /></td>
+					<td class="right"><input type="checkbox" id="twitter_auto" name="twitter_auto" value="auto" <?php if ($this->twitter_auto == 'auto') { echo 'checked="checked"'; } ?> /></td>
 					<td><strong><label for="twitter_auto">Enable automatic mode.</label></strong> When you publish, your Twitter will be automatically updated.</td>
 				</tr>
 			</table>
 			<script type="text/javascript">
-				$(document).ready(function(){
+				$(document).ready(function() {
 					showHide();
 					
-					$('#twitter_uri_shortener').mouseup(function(){
+					$('#twitter_uri_shortener').mouseup(function() {
 						showHide();
 					});
 					
-					function showHide(){
+					function showHide() {
 						service = $('#twitter_uri_shortener').val();
 						$('table.service').hide();
-						if($('table#' + service)){
+						if ($('table#' + service)) {
 							$('table#' + service).show();
 						}
 					}
 				});
 			</script>
 			<?php
-		}
-		else{
+		} else {
 			?>
 			<table>
 				<tr>
 					<td class="right"><label>Username:</label></td>
 					<td>
-						<a href="<?php echo $this->locationFull(array('link' => 'twitter')); ?>"><button>Link to Twitter</button></a><br /><br />
+						<a href="<?php echo locationFull(array('link' => 'twitter')); ?>"><button>Link to Twitter</button></a><br /><br />
 						<span class="quiet">Note: Link will be to the Twitter account you are currently logged into.</span>
 					</td>
 				</tr>
@@ -136,9 +134,9 @@ class Twitter extends Orbit{
 		}
 	}
 	
-	public function orbit_config_load(){
-		if(!empty($_GET['from'])){
-			switch($_GET['from']){
+	public function orbit_config_load() {
+		if (!empty($_GET['from'])) {
+			switch($_GET['from']) {
 				case 'twitter':
 					$twitter_access_token = $this->twitter->getAccessToken($_GET['oauth_verifier']);
 					
@@ -153,17 +151,16 @@ class Twitter extends Orbit{
 					
 					$this->savePref();
 					
-					$this->addNote('You successfully linked your Twitter account.', 'success');
-					$location = $this->location();
-					$fsip::headerLocationRedirect($location);
+					addNote('You successfully linked your Twitter account.', 'success');
+					headerLocationRedirect(location());
 					exit();
 					
 					break;
 			}
 		}
 		
-		if(!empty($_GET['link'])){
-			switch($_GET['link']){
+		if (!empty($_GET['link'])) {
+			switch($_GET['link']) {
 				case 'twitter':
 					$twitter_token = $this->twitter->getRequestToken($this->locationFull(array('from' => 'twitter')));
 					$twitter_authorize_uri = $this->twitter->getAuthorizeURL($twitter_token['oauth_token']);
@@ -173,15 +170,15 @@ class Twitter extends Orbit{
 					$this->savePref();
 					
 					$location = $twitter_authorize_uri;
-					$fsip::headerLocationRedirect($location);
+					headerLocationRedirect($location);
 					exit();
 					
 					break;
 			}
 		}
 		
-		if(!empty($_GET['unlink'])){
-			switch($_GET['unlink']){
+		if (!empty($_GET['unlink'])) {
+			switch($_GET['unlink']) {
 				case 'twitter':
 					$this->twitter_active = false;
 					$this->setPref('twitter_active', false);
@@ -190,10 +187,8 @@ class Twitter extends Orbit{
 					$this->setPref('twitter_oauth_secret', '');
 					$this->savePref();
 					
-					$this->addNote('You successfully unlinked your Twitter account.', 'success');
-					// We do not have an fsip-> object to call for redirect so...
-					header('Location: ' . $this->location());
-					echo "<h1>Redirecting</h1><p>You are being redirected. If you're still here after a few seconds please ".'<a href="'. $this->location() .'">'."click here</a></p>";
+					addNote('You successfully unlinked your Twitter account.', 'success');
+					headerLocationRedirect(location());
 					exit();
 					
 					break;
@@ -207,7 +202,7 @@ class Twitter extends Orbit{
 		
 		if (strpos($this->twitter_transmit, 'image')) {
 			if (empty($_POST['twitter_format_image'])) {
-				$this->addNote('You must format your tweet in order for the Twitter extension to work.', 'notice');
+				addNote('You must format your tweet in order for the Twitter extension to work.', 'notice');
 			}
 		}
 		
@@ -264,7 +259,7 @@ class Twitter extends Orbit{
 		return $uri;
 	}
 	
-	public function upload_image($image){
+	public function upload_image($image) {
 		$image['image_uri'] = $this->shortenURI($image['image_uri'], $this->twitter_uri_shortener);
 		
 		$canvas = new Canvas($this->twitter_format_image);
@@ -278,11 +273,11 @@ class Twitter extends Orbit{
 	}
 	
 	
-	public function orbit_send_html_image(){
+	public function orbit_send_html_image() {
 		echo '<option value="twitter">Twitter</option>';
 	}
 	
-	public function orbit_send_twitter_image($images){
+	public function orbit_send_twitter_image($images) {
 		return $this->orbit_image($images, true);
 	}
 }

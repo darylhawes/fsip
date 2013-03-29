@@ -7,11 +7,10 @@
 */
 
 require_once('../../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
+$dbpointer = getDB();
+
 $user = new User;
-
 $user->perm(true);
 
 if (empty($_POST['image_id'])) {
@@ -25,7 +24,7 @@ if (empty($_POST['image_id'])) {
 	$now = date('Y-m-d H:i:s');
 	$image_tags = implode('; ', $images->images[0]['image_tags_array']);
 	
-	$query = $fsip->prepare('UPDATE images SET image_tags = :image_tags, image_tag_count = :image_tag_count WHERE image_id = :image_id;');
+	$query = $dbpointer->prepare('UPDATE images SET image_tags = :image_tags, image_tag_count = :image_tag_count WHERE image_id = :image_id;');
 	
 	$query->execute(array(':image_tags' => $image_tags, ':image_tag_count' => count($images->images[0]['image_tags_array']), ':image_id' => $images->images[0]['image_id']));
 }

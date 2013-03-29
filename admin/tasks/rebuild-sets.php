@@ -7,14 +7,11 @@
 */
 
 require_once('../../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
 $user = new User;
-
 $user->perm(true);
 
-$id = $fsip->findID(@$_POST['image_id']);
+$id = findID(@$_POST['image_id']);
 
 if (empty($id)) {
 	$sets = new Find('sets');

@@ -6,40 +6,59 @@
 // http://www.alkalineapp.com/
 */
 
+//echo "library 1<br />";
 require_once('../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
 $user = new User;
-
 $user->perm(true);
+//echo "library 6<br />";
 
-$fsip->setCallback();
+setCallback();
+//echo "library 7<br />";
+$db = getDB();
+$fm = getFileManager();
+//echo "library 8<br />";
 
 // Preference: page_limit
 if (!$max = $user->returnPref('page_limit')) {
 	$max = 100;
 }
+//echo "library 9<br />";
 
 $image_ids = new Find('images');
+//echo "library 10<br />";
 $image_ids->clearMemory();
+//echo "library 11<br />";
 $image_ids->page(null, $max);
+//echo "library 12<br />";
 $image_ids->find();
+//echo "<code>";
+//print_r($image_ids);
+//echo "</code>";
 
 $images = new Image($image_ids);
+//echo "library 13<br />";
 $images->getSizes('square');
+//echo "library 14<br />";
 $images->hook();
+//echo "library 14.1<br />";
+//echo "<code>";
+//print_r($images);
+//echo "</code>";
 
-$shoebox_count = $fsip->countDirectory(PATH . SHOEBOX);
+$shoebox_count = $fm->countDirectory(PATH . SHOEBOX);
+//echo "library 15<br />";
 if ($shoebox_count > 0) {
 	$shoebox_count = '(' . $shoebox_count . ') ';
 } else {
 	$shoebox_count = '';
 }
+//echo "library 16<br />";
 
 define('TAB', 'library');
 define('TITLE', 'FSIP Library');
-require_once(PATH . INCLUDES . '/admin_header.php');
+require_once(PATH . INCLUDES . 'admin/admin_header.php');
+//echo "library 17<br />";
 
 ?>
 
@@ -79,14 +98,14 @@ require_once(PATH . INCLUDES . '/admin_header.php');
 					<tr>
 						<td class="right middle"><label for="tags">EXIF metadata:</label></td>
 						<td>
-							<?php echo $fsip->showEXIFNames('exif_name'); ?>
+							<?php echo showEXIFNames('exif_name'); ?>
 							<input type="text" id="exif_value" name="exif_value" class="s" /><br />
 						</td>
 					</tr>
 					<tr>
 						<td class="right middle"><label for="rights">Rights set:</label></td>
 						<td class="quiet">
-							<?php echo $fsip->showRights('rights'); ?>
+							<?php echo showRights('rights'); ?>
 						</td>
 					</tr>
 					<tr>
@@ -223,7 +242,7 @@ require_once(PATH . INCLUDES . '/admin_header.php');
 		foreach($images->images as $image) {
 ?>
 			<a href="<?php echo BASE . ADMINFOLDER . 'image' . URL_ID . $image['image_id'] . URL_RW; ?>" class="nu">
-				<img src="<?php echo $image['image_src_square']; ?>" alt="" title="<?php echo $fsip->makeHTMLSafe($image['image_title']); ?>" class="frame tip" />
+				<img src="<?php echo $image['image_src_square']; ?>" alt="" title="<?php echo makeHTMLSafe($image['image_title']); ?>" class="frame tip" />
 			</a>
 <?php
 		}
@@ -259,6 +278,6 @@ require_once(PATH . INCLUDES . '/admin_header.php');
 
 <?php
 
-require_once(PATH . INCLUDES . '/admin_footer.php');
+require_once(PATH . INCLUDES . 'admin/admin_footer.php');
 
 ?>

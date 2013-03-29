@@ -8,9 +8,8 @@
 
 
 require_once('../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
+$fm = getFileManager();
 
 $_POST = array_map('strip_tags', $_POST);
 
@@ -33,23 +32,23 @@ if (!isset($_POST['install_email']))     { $_POST['install_email'] = ""; }
 
 // Diagnostic checks
 //DEH - if dir not exist try to create it and set permissions THEN warn.
-if ($fsip->checkPerm(PATH . DB) != '0777') {
-	$fsip->addNote('WARNING: Database folder at ('. PATH . DB .') may not be writable.<br />', 'notice');
+if ($fm->checkPerm(PATH . DB) != '0777') {
+	addNote('WARNING: Database folder at ('. PATH . DB .') may not be writable.<br />', 'notice');
 }
-if ($fsip->checkPerm(PATH . IMGFOLDER) != '0777') {
-	$fsip->addNote('WARNING:Images folder at ('. PATH . IMGFOLDER .') may not be writable.<br />', 'notice');
+if ($fm->checkPerm(PATH . IMGFOLDER) != '0777') {
+	addNote('WARNING:Images folder at ('. PATH . IMGFOLDER .') may not be writable.<br />', 'notice');
 }
-if ($fsip->checkPerm(PATH . SHOEBOX) != '0777') {
-	$fsip->addNote('WARNING:Shoebox folder at ('. PATH . SHOEBOX .') may not be writable.<br />', 'notice');
+if ($fm->checkPerm(PATH . SHOEBOX) != '0777') {
+	addNote('WARNING:Shoebox folder at ('. PATH . SHOEBOX .') may not be writable.<br />', 'notice');
 }
-if ($fsip->checkPerm(PATH . CACHE) != '0777') {
-	$fsip->addNote('WARNING:Cache folder at ('. PATH . CACHE .') may not be writable.<br />', 'notice');
+if ($fm->checkPerm(PATH . CACHE) != '0777') {
+	addNote('WARNING:Cache folder at ('. PATH . CACHE .') may not be writable.<br />', 'notice');
 }
-if (($fsip->checkPerm(PATH . 'config.json') != '0777') and (SERVER_TYPE != 'win')) {
-	$fsip->addNote('WARNING:Configuration file at ('.PATH.'config.json) may not be writable.<br />', 'notice');
+if (($fm->checkPerm(PATH . 'config.json') != '0777') and (SERVER_TYPE != 'win')) {
+	addNote('WARNING:Configuration file at ('.PATH.'config.json) may not be writable.<br />', 'notice');
 }
-if ($fsip->checkPerm(PATH . 'config.php') == '0777') {
-	$fsip->addNote('WARNING:Configuration file at ('.PATH.'config.php)  should not be writable.<br />', 'notice');
+if ($fm->checkPerm(PATH . 'config.php') == '0777') {
+	addNote('WARNING:Configuration file at ('.PATH.'config.php)  should not be writable.<br />', 'notice');
 }
 
 // Configuration setup
@@ -61,25 +60,25 @@ if (@$_POST['install'] == 'Install') {
 	$password = $_POST['install_db_pass'];
 	
 	if (!$config = file_get_contents(PATH . ADMINFOLDER . 'config_default.php', false)) {
-		$fsip->addNote('Cannot find default configuration file.', 'error');
+		addNote('Cannot find default configuration file.', 'error');
 	}
 
-	$config = $fsip->replaceVar('$base', $_POST['install_base'], $config);
-	$config = $fsip->replaceVar('$path', $_POST['install_path'], $config);
+	$config = $fm->replaceVar('$base', $_POST['install_base'], $config);
+	$config = $fm->replaceVar('$path', $_POST['install_path'], $config);
 	
 	if ( is_null($_POST['install_server'])) { 
 		$_POST['install_server'] = ""; 
 	}
 	if ($_POST['install_server'] == 'win') {
-		$config = $fsip->replaceVar('$server_type', 'win', $config);
+		$config = $fm->replaceVar('$server_type', 'win', $config);
 	}
 	
 	if ($_POST['install_db_type'] == 'mysql') {
 		if (empty($name)) {
-			$fsip->addNote('A database name is required for MySQL.', 'error');
+			addNote('A database name is required for MySQL.', 'error');
 		}
 		if (empty($username)) {
-			$fsip->addNote('A database username is required for MySQL.', 'error');
+			addNote('A database username is required for MySQL.', 'error');
 		}
 		
 		$dsn = 'mysql:';
@@ -96,21 +95,21 @@ if (@$_POST['install'] == 'Install') {
 		
 		$dsn .= 'dbname=' . $_POST['install_db_name'];
 
-		$config = $fsip->replaceVar('$db_dsn', $dsn, $config);
-		$config = $fsip->replaceVar('$db_type', 'mysql', $config);
-		$config = $fsip->replaceVar('$db_user', $username, $config);
-		$config = $fsip->replaceVar('$db_pass', $password, $config);
+		$config = $fm->replaceVar('$db_dsn', $dsn, $config);
+		$config = $fm->replaceVar('$db_type', 'mysql', $config);
+		$config = $fm->replaceVar('$db_user', $username, $config);
+		$config = $fm->replaceVar('$db_pass', $password, $config);
 	} elseif($_POST['install_db_type'] == 'sqlite') {
 		if (!empty($_POST['install_db_file'])) {
 			$path = $_POST['install_db_file'];
 		} else {
 			$path = PATH . DB . 'fsip.db';
-			$path = $fsip->correctWinPath($path);
+			$path = correctWinPath($path);
 			
-			$rand = $fsip->randInt();
+			$rand = randInt();
 			$rand = substr(md5($rand), 0, 8);
 			$path_new = PATH . DB . 'fsip_' . $rand . '.db';
-			$path_new = $fsip->correctWinPath($path_new);
+			$path_new = correctWinPath($path_new);
 			
 			if (copy($path, $path_new)) {
 				unlink($path);
@@ -119,22 +118,22 @@ if (@$_POST['install'] == 'Install') {
 			}
 		}
 		
-		$path = $fsip->correctWinPath($path);
+		$path = correctWinPath($path);
 		
 		$dsn = 'sqlite:' . $path;
 		
-		$config = $fsip->replaceVar('$db_dsn', $dsn, $config);
-		$config = $fsip->replaceVar('$db_type', 'sqlite', $config);
+		$config = $fm->replaceVar('$db_dsn', $dsn, $config);
+		$config = $fm->replaceVar('$db_type', 'sqlite', $config);
 		
-		if (($fsip->checkPerm($path) != '0777') and (SERVER_TYPE != 'win')) {
-			$fsip->addNote('Your SQLite database is not writable (chmod 777).', 'error');
+		if (($fm->checkPerm($path) != '0777') and (SERVER_TYPE != 'win')) {
+			addNote('Your SQLite database is not writable (chmod 777).', 'error');
 		}
 	} elseif ($_POST['install_db_type'] == 'pgsql') {
 		if (empty($name)) {
-			$fsip->addNote('A database name is required for PostgreSQL.', 'error');
+			addNote('A database name is required for PostgreSQL.', 'error');
 		}
 		if (empty($username)) {
-			$fsip->addNote('A database username is required for PostgreSQL.', 'error');
+			addNote('A database username is required for PostgreSQL.', 'error');
 		}
 		
 		$dsn = 'pgsql:';
@@ -151,26 +150,26 @@ if (@$_POST['install'] == 'Install') {
 		
 		$dsn .= 'dbname=' . $_POST['install_db_name'];
 		
-		$config = $fsip->replaceVar('$db_dsn', $dsn, $config);
-		$config = $fsip->replaceVar('$db_type', 'pgsql', $config);
-		$config = $fsip->replaceVar('$db_user', $username, $config);
-		$config = $fsip->replaceVar('$db_pass', $password, $config);
+		$config = $fm->replaceVar('$db_dsn', $dsn, $config);
+		$config = $fm->replaceVar('$db_type', 'pgsql', $config);
+		$config = $fm->replaceVar('$db_user', $username, $config);
+		$config = $fm->replaceVar('$db_pass', $password, $config);
 	}
 	
 	if (!empty($_POST['install_db_prefix'])) {
-		$config = $fsip->replaceVar('$table_prefix', $_POST['install_db_prefix'], $config);
+		$config = $fm->replaceVar('$table_prefix', $_POST['install_db_prefix'], $config);
 	}
 }
 
 
 // Database setup
 
-if ((@$_POST['install'] == 'Install') and ($fsip->countNotes('error') == 0)) {
+if ((@$_POST['install'] == 'Install') and (countNotes('error') == 0)) {
 	// Check to see if can connect
 	$db = new PDO($dsn, $username, $password);
 	$error = $db->errorInfo();
 	if (!empty($error[0])) {
-		$fsip->addNote('The database could not be contacted. ' . $error[0] . ' Check your settings.', 'error');
+		addNote('The database could not be contacted. ' . $error[0] . ' Check your settings.', 'error');
 	} else {
 		function appendTableName($query) {
 			if (!empty($_POST['install_db_prefix'])) {
@@ -233,17 +232,17 @@ if ((@$_POST['install'] == 'Install') and ($fsip->countNotes('error') == 0)) {
 		
 		$query->closeCursor();
 		
-		$fsip->setConf('theme_id', '1');
-		$fsip->setConf('theme_folder', 'fsipDefault');
-		$fsip->saveConf();
+		setConf('theme_id', '1');
+		setConf('theme_folder', 'fsipDefault');
+		saveConf();
 	}
 }
 
 define('TAB', 'Installation');
 define('TITLE', 'FSIP Installation');
 
-require_once(PATH . INCLUDES . '/admin_header.php');
-if ((@$_POST['install'] == 'Install') and ($fsip->countNotes('error') == 0)) {
+require_once(PATH . INCLUDES . 'admin/admin_header.php');
+if ((@$_POST['install'] == 'Install') and (countNotes('error') == 0)) {
 	
 	?>
 	
@@ -478,6 +477,6 @@ if ((@$_POST['install'] == 'Install') and ($fsip->countNotes('error') == 0)) {
 	<?php
 }
 
-require_once(PATH . INCLUDES . '/admin_footer.php');
+require_once(PATH . INCLUDES . 'admin/admin_footer.php');
 
 ?>

@@ -7,17 +7,15 @@
 */
 
 require_once('../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
 $user = new User;
 
 if ($user->perm()) {
 	$location = LOCATION . BASE. ADMINFOLDER . 'dashboard' . URL_CAP;
-	$fsip::headerLocationRedirect($location);
+	headerLocationRedirect($location);
 } else {
 	$location = LOCATION . BASE. 'login' . URL_CAP;
-	$fsip::headerLocationRedirect($location);
+	headerLocationRedirect($location);
 }
 
 

@@ -12,15 +12,16 @@
  * @version 1.1
  */
 
-class User extends FSIP {
+class User {
 	public $user;
+	private $dbpointer;
 	
 	/**
 	 * Initiate User object
 	 *
 	 */
 	public function __construct() {
-		parent::__construct();
+		$this->dbpointer = getDB();
 
 		// Login user by session data
 		if (!empty($_SESSION['fsip']['user'])) {
@@ -44,8 +45,7 @@ class User extends FSIP {
 		if (isset($this->user)) {
 			$_SESSION['fsip']['user'] = $this->user;
 		}
-		
-		parent::__destruct();
+		$this->dbpointer = null;
 	}
 	
 	/**
@@ -62,6 +62,46 @@ class User extends FSIP {
 		$this->user = $orbit->hook('user', $this->user, $this->user);
 	}
 	
+	// GUESTS
+	
+	/**
+	 * Authenticate guest access
+	 *
+	 * @param string $key Guest access key
+	 * @return void Redirects if unsuccessful
+	 */
+	public function access($key=null) {
+		// Logout
+		unset($_SESSION['fsip']['guest']);
+		
+		// Error checking
+		if (empty($key)) {
+			setcookie('guest_id', false, time()+$seconds, '/');
+			setcookie('guest_key', false, time()+$seconds, '/');
+			return false; 
+		}
+		
+		$key = strip_tags($key);
+		
+		$query = $this->dbpointer->prepare('SELECT * FROM guests WHERE guest_key = :guest_key;');
+		$query->execute(array(':guest_key' => $key));
+		$guests = $query->fetchAll();
+		$guest = $guests[0];
+		
+		if (!$guest) {
+			addError('Guest not found.', 'You are not authorized for this material.', null, null, 401);
+		}
+		
+		if (returnConf('guest_remember')) {
+			$seconds = returnConf('guest_remember_time');
+			$key = sha1(PATH . BASE . DB_DSN . DB_TYPE . $guest['guest_key']);
+			setcookie('guest_id', $guest['guest_id'], time()+$seconds, '/');
+			setcookie('guest_key', $key, time()+$seconds, '/');
+		}
+		
+		$_SESSION['fsip']['guest'] = $guest;
+	}
+
 	// AUTHENTICATION
 	
 	/**
@@ -79,7 +119,7 @@ class User extends FSIP {
 		} 
 		
 		// Check database
-		$query = $this->prepare('SELECT * FROM users WHERE user_user = :username AND user_pass = :password;');
+		$query = $this->dbpointer->prepare('SELECT * FROM users WHERE user_user = :username AND user_pass = :password;');
 		$query->execute(array(':username' => $username, ':password' => sha1($password . SALT)));
 		$this->user = $query->fetchAll();
 		
@@ -102,10 +142,10 @@ class User extends FSIP {
 		// Error checking
 		if (empty($user_id) or empty($user_key)) { return false ; }
 
-		$query = $this->prepare('SELECT * FROM users WHERE user_id = :user_id AND user_key = :user_key;');
+		$query = $this->dbpointer->prepare('SELECT * FROM users WHERE user_id = :user_id AND user_key = :user_key;');
 		$query->execute(array(':user_id' => $user_id, ':user_key' => $user_key));
 		$this->user = $query->fetchAll();
-		
+
 		if (!self::prep($remember)) {
 			return false;
 		}
@@ -119,11 +159,7 @@ class User extends FSIP {
 	 * @param bool $remember 
 	 * @return bool True if successful
 	 */
-	private function prep($remember=false) {
-		// Delete extra users on standard licenses
-		// DEH - remove commercial feature limitations
-		// $this->deleteDisallowedUsers();
-		
+	private function prep($remember=false) {		
 		// If overlapping users exist, destroy object
 		if (count($this->user) != 1) {
 			unset($this->user);
@@ -133,7 +169,7 @@ class User extends FSIP {
 		// If user exists, store their row
 		$this->user = $this->user[0];
 		
-		// Remove guest access
+		// Remove guest access??
 		unset($_SESSION['fsip']['guest']);
 		
 		$key = '';
@@ -159,7 +195,7 @@ class User extends FSIP {
 		
 		// Update database
 		$fields = array('user_last_login' => date('Y-m-d H:i:s'), 'user_key' => $key);
-		return $this->updateRow($fields, 'users', $this->user['user_id']);
+		return $this->dbpointer->updateRow($fields, 'users', $this->user['user_id']);
 	}
 	
 	/**
@@ -196,29 +232,36 @@ class User extends FSIP {
 	 * @return void
 	 */
 	public function perm($required=false, $permission=null) {
+//echo "checking user perm<br />";
 		if (empty($this->user)) {
+//echo "checking user perm, user NOT logged in<br />";
 			// user not logged in
 			if ($required === true) {
-				$_SESSION['fsip']['destination'] = $this->location();
+				$_SESSION['fsip']['destination'] = location();
 				session_write_close();
 				
 				$location = LOCATION . BASE . 'login' . URL_CAP;
-				$this->headerLocationRedirect($location);
+				headerLocationRedirect($location);
 				exit();
 			} else {
 				return false;
 			}
 		} else {
+//echo "checking user perm, user IS logged in<br />";
 			// $this->user is not empty, user is logged in
 			if (empty($permission)) {
+//echo "checking user perm, empty permission so returning true<br />";
 				return true;
 			} elseif($this->user['user_id'] == 1) {
+//echo "checking user perm, userid is 1 so returning true<br />";
 				return true;
 			} elseif(in_array($permission, $this->user['user_permissions'])) {
+//echo "checking user perm, permission is in user permission array returning true<br />";
 				return true;
 			} else {
 				if ($required === true) {
-					$this->addError(E_USER_ERROR, 'You do not have permission to access this module', null, null, 401);
+//echo "checking user perm, debugger adding error<br />";
+					addError(E_USER_ERROR, 'You do not have permission to access this module', null, null, 401);
 					exit();
 				} else {
 					return false;
@@ -238,8 +281,7 @@ class User extends FSIP {
 	 */
 	public function setPref($name='', $unset='') {
 		if (!$this->perm(true)) { return false; }
-		
-		return parent::setForm($this->user['user_preferences'], $name, $unset);
+		setForm($this->user['user_preferences'], $name, $unset);
 	}
 	
 	/**
@@ -251,8 +293,7 @@ class User extends FSIP {
 	 */
 	public function readPref($name='', $check=true) {
 		if (!$this->perm(true)) { return false; }
-		
-		return parent::readForm($this->user['user_preferences'], $name, $check);
+		readForm($this->user['user_preferences'], $name, $check);
 	}
 	
 	/**
@@ -264,8 +305,7 @@ class User extends FSIP {
 	 */
 	public function returnPref($name='', $default=null) {
 		if (!$this->perm(true)) { return false; }
-		
-		return parent::returnForm($this->user['user_preferences'], $name, $default);
+		returnForm($this->user['user_preferences'], $name, $default);
 	}
 	
 	/**
@@ -279,7 +319,7 @@ class User extends FSIP {
 		$fields = array('user_preferences' => serialize($this->user['user_preferences']));
 		
 		// Update database
-		return $this->updateFields($fields);
+		return $this->dbpointer->updateFields($fields);
 	}
 	
 	/**
@@ -306,7 +346,7 @@ class User extends FSIP {
 		if (count($fields) == 0) { return false; }
 		
 		// Update database
-		return $this->updateRow($fields, 'users', $this->user['user_id']);
+		return $this->dbpointer->updateRow($fields, 'users', $this->user['user_id']);
 	}
 	
 	// MAIL
@@ -321,8 +361,7 @@ class User extends FSIP {
 	 */
  	public function email($to=null, $subject='', $message='') {
 		if (!$this->perm(true)) { return false; }
-		
-		return parent::email($this->user['user_email'], $subject, $message);
+		email($this->user['user_email'], $subject, $message);
 	}
 }
 

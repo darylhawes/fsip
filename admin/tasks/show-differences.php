@@ -9,17 +9,16 @@
 error_reporting(E_ALL & ~E_DEPRECATED);
 
 require_once('../../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
+$dbpointer = getDB();
+
 $user = new User;
-
 $user->perm(true);
 
 $version_id = intval($_POST['version_id']);
-$version = $fsip->getRow('versions', $version_id);
+$version = $dbpointer->getRow('versions', $version_id);
 
-$comparison = $fsip->compare($version['version_title'] . "\n\n" . $version['version_text_raw'], $_POST['title'] . "\n\n" . $_POST['text_raw']);
+$comparison = compare($version['version_title'] . "\n\n" . $version['version_text_raw'], $_POST['title'] . "\n\n" . $_POST['text_raw']);
 
 // Bold title
 $comparison = preg_replace('#(.*?)\n#si', '<strong>\\1</strong>', $comparison, 1);

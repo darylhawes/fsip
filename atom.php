@@ -7,10 +7,10 @@
 */
 
 require_once('config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP();
-$fsip->recordStat('atom');
+$dbpointer = getDB();
+
+$dbpointer->recordStat('atom');
 
 header('Content-Type: application/xml');
 
@@ -20,7 +20,7 @@ require_once(PATH . CLASSES . 'cache_lite/Lite.php');
 // Set a few options
 $options = array(
     'cacheDir' => PATH . CACHE,
-    'lifeTime' => $fsip->returnConf('syndication_cache_time')
+    'lifeTime' => returnConf('syndication_cache_time')
 );
 
 // Create a Cache_Lite object
@@ -85,13 +85,13 @@ if ($xml = $cache->get('xml:visitor', 'xml')) {
 
 	<feed xmlns="http://www.w3.org/2005/Atom">
 
-		<title><?php echo $fsip->returnConf('web_title'); ?></title>
+		<title><?php echo returnConf('web_title'); ?></title>
 		<updated><?php echo date('c', $last_updated); ?></updated>
 		<link href="<?php echo BASE; ?>" />
 		<link rel="self" type="application/atom+xml" href="<?php echo LOCATION . BASE; ?>atom.php" />
 		<id>tag:<?php echo DOMAIN; ?>,2010:/</id>
 		<author>
-			<name><?php echo $fsip->returnConf('web_name'); ?></name>
+			<name><?php echo returnConf('web_name'); ?></name>
 		</author>
 
 		<?php echo $image_entries; ?>

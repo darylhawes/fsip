@@ -28,7 +28,7 @@
 					?>
 					<div id="userbar_home">
 						<strong>
-							<?php $title = $fsip->returnConf('web_title'); echo (!empty($title) ? $title : ''); ?>
+							<?php $title = returnConf('web_title'); echo (!empty($title) ? $title : ''); ?>
 						</strong> &#0160;
 						<a href="<?php echo BASE; ?>" target="<?php if($user->readPref('home_target')){ echo '_blank'; } ?>">Launch</a>
 					</div>
@@ -137,4 +137,4 @@
 	</div>
 	<div class="container">
 		<div id="content" class="span-24 last">
-			<?php if(!empty($fsip)){ echo $fsip->returnNotes(); } ?>
+			<?php echo returnNotes(); ?>

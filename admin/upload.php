@@ -6,19 +6,23 @@
 // http://www.alkalineapp.com/
 */
 
+//echo "uploads 1<br />";
 require_once('../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
+//echo "uploads 4<br />";
 $user = new User;
+//echo "uploads 5<br />";
 $orbit = new Orbit;
+//echo "uploads 6<br />";
+$db = getDB();
+//echo "uploads 7<br />";
 
 // cliqcliq Quickpic support
 if (isset($_REQUEST['context']) and ($_REQUEST['context'] == sha1(PATH . BASE . DB_DSN . DB_TYPE))) {
 	header('Content-Type: application/x-plist');
 	
 	$file = $_FILES['upload_file'];
-	move_uploaded_file($file['tmp_name'], $fsip->correctWinPath(PATH . SHOEBOX . $file['name']));
+	move_uploaded_file($file['tmp_name'], correctWinPath(PATH . SHOEBOX . $file['name']));
 	
 	echo '<?xml version="1.0" encoding="UTF-8"?>';
 	?>
@@ -33,27 +37,32 @@ if (isset($_REQUEST['context']) and ($_REQUEST['context'] == sha1(PATH . BASE . 
 }
 
 $user->perm(true, 'upload');
+//echo "uploads 8<br />";
 
 if (!empty($_FILES)) {
 	$filename = $_FILES['user_file']['name'][0];
 	$tmp_file = $_FILES['user_file']['tmp_name'][0];
-	copy($tmp_file, $fsip->correctWinPath(PATH . SHOEBOX . $filename));
+	copy($tmp_file, correctWinPath(PATH . SHOEBOX . $filename));
 	unlink($tmp_file);
 	
 	exit();
 }
+//echo "uploads 9<br />";
 
 if (isset($_GET['success']) and ($_GET['success'] == 1)) {
 	$location = LOCATION . BASE. ADMINFOLDER . 'shoebox' . URL_CAP;
-	$fsip::headerLocationRedirect($location);
+	headerLocationRedirect($location);
 	exit();
 }
 
+//echo "uploads 9.1<br />";
 $orbit->hook('shoebox');
+//echo "uploads 10<br />";
 
 define('TAB', 'upload');
 define('TITLE', 'FSIP Upload');
-require_once(PATH . INCLUDES . '/admin_header.php');
+require_once(PATH . INCLUDES . 'admin/admin_header.php');
+//echo "uploads 11<br />";
 
 // cliqcliq Quickpic support
 if(preg_match('#iphone|ipad#si', $_SERVER['HTTP_USER_AGENT']) and !isset($_GET['success'])){
@@ -96,15 +105,15 @@ if(preg_match('#iphone|ipad#si', $_SERVER['HTTP_USER_AGENT']) and !isset($_GET['
 
 				$smallestSize = array('post_max_size', 'upload_max_filesize', 'memory_limit');
 				$smallestSize = array_map('ini_get', $smallestSize);
-				$smallestSize = array_map(array($fsip, 'convertToBytes'), $smallestSize);
+				$smallestSize = array_map('convertToBytes', $smallestSize);
 				sort($smallestSize); //sort the numbers before converting back to a string
-				$smallestSize = array_map(array($fsip, 'convertBytesToShortString'), $smallestSize);
+				$smallestSize = array_map('convertBytesToShortString', $smallestSize);
 				echo $smallestSize[0]. '<span class="quiet"> (<a href="../docs/faq.md#file-size-limit-uploads">Why?</a>)</span>';
 
 				$sizes = array('post_max_size', 'upload_max_filesize', 'memory_limit');
 				$sizes = array_map('ini_get', $sizes);
-				$sizes = array_map(array($fsip, 'convertToBytes'), $sizes);
-				$sizes = array_map(array($fsip, 'convertBytesToShortString'), $sizes);
+				$sizes = array_map('convertToBytes', $sizes);
+				$sizes = array_map('convertBytesToShortString', $sizes);
 				$size_info = '<span class="max_sizes">Max post: '.$sizes[0]."<br />Max upload: ".$sizes[1]."<br />Max memory: ".$sizes[2]."</span>";
 				echo "<br /><br />$size_info";
 			?>
@@ -114,5 +123,5 @@ if(preg_match('#iphone|ipad#si', $_SERVER['HTTP_USER_AGENT']) and !isset($_GET['
 </div>
 
 <?php
-require_once(PATH . INCLUDES . '/admin_footer.php');
+require_once(PATH . INCLUDES . 'admin/admin_footer.php');
 ?>

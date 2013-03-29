@@ -7,14 +7,11 @@
 */
 
 require_once('../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
 $user = new User;
-
 $user->perm(true);
 
-$fsip->setCallback();
+setCallback();
 
 // Preference: page_limit
 if (!$max = $user->returnPref('page_limit')) {
@@ -31,7 +28,7 @@ $images->getSizes('square');
 
 define('TAB', 'library');
 define('TITLE', 'FSIP Search Results');
-require_once(PATH . INCLUDES . '/admin_header.php');
+require_once(PATH . INCLUDES . 'admin/admin_header.php');
 
 ?>
 
@@ -63,7 +60,7 @@ if ($image_ids->count_result > 0) {
 	<?php
 	for($i = 0; $i < $images->image_count; ++$i) {
 		?>
-		<a href="<?php echo BASE . ADMINFOLDER . 'image' . URL_ID . $images->images[$i]['image_id'] . URL_RW; ?>"><img src="<?php echo $images->images[$i]['image_src_square']; ?>" alt="" title="<?php echo $fsip->makeHTMLSafe($images->images[$i]['image_title']); ?>" class="frame tip" /></a>
+		<a href="<?php echo BASE . ADMINFOLDER . 'image' . URL_ID . $images->images[$i]['image_id'] . URL_RW; ?>"><img src="<?php echo $images->images[$i]['image_src_square']; ?>" alt="" title="<?php echo makeHTMLSafe($images->images[$i]['image_title']); ?>" class="frame tip" /></a>
 		<?php
 	}
 	?>
@@ -94,6 +91,6 @@ if ($image_ids->count_result > 0) {
 	}
 }
 
-require_once(PATH . INCLUDES . '/admin_header.php');
+require_once(PATH . INCLUDES . 'admin/admin_header.php');
 
 ?>

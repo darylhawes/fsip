@@ -12,22 +12,23 @@
  * @version 1.1
  */
 
-class Set extends FSIP {
+class Set {
 	public $images;
 	public $set_ids;
 	public $set_count = 0;
 	public $sets;
 	
 	protected $sql;
-	
+	private $dbpointer;
+
 	/**
 	 * Initiate Set object
 	 *
 	 * @param array|int|string $set_ids Search sets (set IDs, set titles)
 	 */
 	public function __construct($set_ids=null) {
-		parent::__construct();
-		
+		$this->dbpointer = getDB();
+
 		// Reset set array
 		$this->sets = array();
 		
@@ -37,7 +38,7 @@ class Set extends FSIP {
 			$set_ids = $set_ids->ids;
 		}
 		
-		$this->set_ids = parent::convertToIntegerArray($set_ids);
+		$this->set_ids = convertToIntegerArray($set_ids);
 		
 		// Error checking
 		$this->sql = ' WHERE (sets.set_id IS NULL)';
@@ -62,7 +63,7 @@ class Set extends FSIP {
 			$this->sets = unserialize($sets);
 		} else {
 			if (count($this->set_ids) > 0) {
-				$query = $this->prepare('SELECT * FROM sets' . $this->sql . ';');
+				$query = $this->dbpointer->prepare('SELECT * FROM sets' . $this->sql . ';');
 				$query->execute();
 				$sets = $query->fetchAll();
 		
@@ -99,7 +100,7 @@ class Set extends FSIP {
 	}
 	
 	public function __destruct() {
-		parent::__destruct();
+		//parent::__destruct();
 	}
 	
 	/**
@@ -127,7 +128,7 @@ class Set extends FSIP {
 		foreach($this->sets as $set) {
 			$ids[] = $set['set_id'];
 		}
-		return parent::updateRow($fields, 'sets', $ids);
+		return $this->dbpointer->updateRow($fields, 'sets', $ids);
 	}
 	
 	/**
@@ -167,7 +168,7 @@ class Set extends FSIP {
 	public function updateViews() {
 		for($i = 0; $i < $this->set_count; ++$i) {
 			$this->sets[$i]['set_views']++;
-			$this->exec('UPDATE sets SET set_views = ' . $this->sets[$i]['set_views'] . ' WHERE set_id = ' . $this->sets[$i]['set_id'] . ';');
+			$this->dbpointer->exec('UPDATE sets SET set_views = ' . $this->sets[$i]['set_views'] . ' WHERE set_id = ' . $this->sets[$i]['set_id'] . ';');
 		}
 	}
 	
@@ -181,8 +182,8 @@ class Set extends FSIP {
 	 */
 	public function formatTime($time=null, $format=null, $empty=false) {
 		foreach($this->sets as &$set) {
-			$set['set_created_format'] = parent::formatTime($set['set_created'], $format);
-			$set['set_modified_format'] = parent::formatTime($set['set_modified'], $format);
+			$set['set_created_format'] = formatTime($set['set_created'], $format);
+			$set['set_modified_format'] = formatTime($set['set_modified'], $format);
 		}
 	}
 	

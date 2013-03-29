@@ -7,60 +7,66 @@
 */
 
 require_once('../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
-
-$fsip = new FSIP;
+//echo "tags 1<br />";
 $user = new User;
-
 $user->perm(true, 'tags');
 
+$dbpointer = getDB();
+//echo "tags 2. dbpointer =<br />";
+//print_r($dbpointer);
 if (!empty($_GET['id'])) {
-	$tag_id = $fsip->findID($_GET['id']);
+	$tag_id = findID($_GET['id']);
 }
+//echo "tags 3<br />";
 
 // SAVE CHANGES
 if (!empty($_POST['tag_id'])) {
-	$tag_id = $fsip->findID($_POST['tag_id']);
+	$tag_id = findID($_POST['tag_id']);
 	$tag_name = $_POST['tag_name'];
 	
 	// Delete tags set
 	if (@$_POST['tag_delete'] == 'delete') {
-		$fsip->exec('DELETE FROM links WHERE tag_id = ' . $tag_id);
-		$fsip->deleteRow('tags', $tag_id);
+		$dbpointer->exec('DELETE FROM links WHERE tag_id = ' . $tag_id);
+		$dbpointer->deleteRow('tags', $tag_id);
 	} else {  // Update tags set
-		$query = $fsip->prepare('SELECT tag_id FROM tags WHERE tag_name = :tag_name AND tag_id != ' . $tag_id);
+		$query = $dbpointer->prepare('SELECT tag_id FROM tags WHERE tag_name = :tag_name AND tag_id != ' . $tag_id);
 		$query->execute(array(':tag_name' => $tag_name));
 		$tags = $query->fetchAll();
 		$tag = @$tags[0];
 		
 		// Tag parents
 		$tag_parents = json_decode($_POST['image_tags_input']);
-		$tag_parents = array_map(array($fsip, 'makeUnicode'), $tag_parents);
+		$tag_parents = array_map('makeUnicode', $tag_parents);
 		
-		$fields = array('tag_name' => $fsip->makeUnicode($tag_name),
+		$fields = array('tag_name' => makeUnicode($tag_name),
 			'tag_parents' => serialize($tag_parents));
-		$fsip->updateRow($fields, 'tags', $tag_id);
+		$dbpointer->updateRow($fields, 'tags', $tag_id);
 		
 		if (count($tags) == 1) {
-			$fsip->exec('UPDATE links SET tag_id = ' . $tag['tag_id'] . ' WHERE tag_id = ' . $tag_id);
-			$fsip->deleteRow('tags', $tag_id);
+			$dbpointer->exec('UPDATE links SET tag_id = ' . $tag['tag_id'] . ' WHERE tag_id = ' . $tag_id);
+			$dbpointer->deleteRow('tags', $tag_id);
 		}
 	}
 	
 	unset($tag_id);
 } else {
-	$fsip->deleteEmptyRow('tags', array('tag_name'));
+	$dbpointer->deleteEmptyRow('tags', array('tag_name'));
 }
 
-$tags = $fsip->getTags(true);
+//echo "tags 4<br />";
+
+$tags = $dbpointer->getTags(true);
+//echo "tags 4.1<br />";
 $tag_count = count($tags);
+//echo "tags 5<br />";
 
 define('TAB', 'features');
 
 // GET TAG CLOUD TO VIEW OR TAG TO EDIT
 if (empty($tag_id)) {
 	define('TITLE', 'FSIP Tags');
-	require_once(PATH . INCLUDES . '/admin_header.php');
+	require_once(PATH . INCLUDES . 'admin/admin_header.php');
+echo "tags 6<br />";
 
 ?>
 
@@ -84,7 +90,7 @@ if (empty($tag_id)) {
 
 <?php
 
-	require_once(PATH . INCLUDES . '/admin_footer.php');
+	require_once(PATH . INCLUDES . 'admin/admin_footer.php');
 } else {
 	// Update image count on rights set
 	$image_ids = new Find('images');
@@ -92,13 +98,13 @@ if (empty($tag_id)) {
 	$image_ids->find();
 	
 	// Get rights set
-	$tag = $fsip->getRow('tags', $tag_id);
-	$tag = $fsip->makeHTMLSafe($tag);
+	$tag = $dbpointer->getRow('tags', $tag_id);
+	$tag = makeHTMLSafe($tag);
 
 	if (!empty($tag['tag_name'])) {
 		define('TITLE', 'Tag: &#8220;' . $tag['tag_name']  . '&#8221;');
 	}
-	require_once(PATH . INCLUDES . '/admin_header.php');
+	require_once(PATH . INCLUDES . 'admin/admin_header.php');
 	
 ?>
 	
@@ -144,14 +150,14 @@ if (empty($tag_id)) {
 			</tr>
 			<tr>
 				<td></td>
-				<td><input type="hidden" name="tag_id" value="<?php echo $tag['tag_id']; ?>" /><input type="submit" value="Save changes" /> or <a href="<?php echo $fsip->back(); ?>">cancel</a></td>
+				<td><input type="hidden" name="tag_id" value="<?php echo $tag['tag_id']; ?>" /><input type="submit" value="Save changes" /> or <a href="<?php echo back(); ?>">cancel</a></td>
 			</tr>
 		</table>
 	</form>
 	
 <?php
 	
-	require_once(PATH . INCLUDES . '/admin_footer.php');
+	require_once(PATH . INCLUDES . 'admin/admin_footer.php');
 	
 }
 

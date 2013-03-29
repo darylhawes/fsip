@@ -12,13 +12,14 @@
  * @version 1.1
  */
 
-class Right extends FSIP {
+class Right {
 	public $images;
 	public $right_ids;
 	public $right_count = 0;
 	public $rights;
 	
 	protected $sql;
+	private $dbpointer;
 	
 	/**
 	 * Initiate Right object
@@ -26,7 +27,7 @@ class Right extends FSIP {
 	 * @param array|int|string $right_ids Search rights (right IDs, right titles)
 	 */
 	public function __construct($right_ids=null) {
-		parent::__construct();
+		$this->dbpointer = getDB();
 		
 		// Reright right array
 		$this->rights = array();
@@ -37,7 +38,7 @@ class Right extends FSIP {
 			$right_ids = $right_ids->ids;
 		}
 		
-		$this->right_ids = parent::convertToIntegerArray($right_ids);
+		$this->right_ids = convertToIntegerArray($right_ids);
 		
 		// Error checking
 		$this->sql = ' WHERE (rights.right_id IS NULL)';
@@ -84,7 +85,7 @@ class Right extends FSIP {
 	}
 	
 	public function __destruct() {
-		parent::__destruct();
+		//parent::__destruct();
 	}
 	
 	/**
@@ -112,7 +113,7 @@ class Right extends FSIP {
 		foreach($this->rights as $right) {
 			$ids[] = $right['right_id'];
 		}
-		return parent::updateRow($fields, 'rights', $ids);
+		return $this->dbpointer->updateRow($fields, 'rights', $ids);
 	}
 	
 	/**
@@ -123,7 +124,7 @@ class Right extends FSIP {
 	 */
 	public function delete($permanent=false) {
 		if ($permanent === true) {
-			$this->deleteRow('rights', $this->right_ids);
+			$this->dbpointer->deleteRow('rights', $this->right_ids);
 		} else {
 			$fields = array('right_deleted' => date('Y-m-d H:i:s'));
 			$this->updateFields($fields);
@@ -154,8 +155,8 @@ class Right extends FSIP {
 	 */
 	public function formatTime($time=null, $format=null, $empty=false) {
 		foreach($this->rights as &$right) {
-			$right['right_created_format'] = parent::formatTime($right['right_created'], $format);
-			$right['right_modified_format'] = parent::formatTime($right['right_modified'], $format);
+			$right['right_created_format'] = formatTime($right['right_created'], $format);
+			$right['right_modified_format'] = formatTime($right['right_modified'], $format);
 		}
 	}
 	
@@ -169,10 +170,10 @@ class Right extends FSIP {
 		$right_id = intval($right_id);
 		
 		if ($right_id == 0) {
-			$query = $this->prepare('UPDATE images SET right_id = ? WHERE right_id = ' . implode(' OR right_id = ', $this->right_ids) . ';');
+			$query = $this->dbpointer->prepare('UPDATE images SET right_id = ? WHERE right_id = ' . implode(' OR right_id = ', $this->right_ids) . ';');
 			$query->execute(array(null));
 		} else {
-			$query = $this->prepare('UPDATE images SET right_id = ? WHERE right_id = ' . implode(' OR right_id = ', $this->right_ids) . ';');
+			$query = $this->dbpointer->prepare('UPDATE images SET right_id = ? WHERE right_id = ' . implode(' OR right_id = ', $this->right_ids) . ';');
 			$query->execute(array($right_id));
 		}
 		

@@ -126,7 +126,7 @@ define('IMGFOLDER', LIB . 'images/');
 define('DATAFOLDER', FOLDER_PREFIX . 'data/');
 define('IMAGEDATA', DATAFOLDER . 'images/');
 define('DB', DATAFOLDER . 'db/');
-//define('IMAGES', DATA . 'images/'); //old IMAGES folder for stored photo/image stock. replace as you see .IMAGES. with .IMAGEDATA
-//define('ADMIN', FOLDER_PREFIX . 'admin/'); //backward compatible, replace as you see old . ADMIN . uses. 
+
+require_once(PATH . LIB . 'fsip_lib.php');
 
 ?>

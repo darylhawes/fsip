@@ -7,16 +7,14 @@
 */
 
 require_once('../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true, 'maintenance');
 
 define('TAB', 'settings');
 define('TITLE', 'FSIP Maintenance');
-require_once(PATH . INCLUDES . '/admin_header.php');
+require_once(PATH . INCLUDES . 'admin/admin_header.php');
 
 ?>
 
@@ -116,6 +114,6 @@ require_once(PATH . INCLUDES . '/admin_header.php');
 
 <?php
 
-require_once(PATH . INCLUDES . '/admin_footer.php');
+require_once(PATH . INCLUDES . 'admin/admin_footer.php');
 
 ?>

@@ -193,13 +193,19 @@ class Thumbnail extends FSIP {
 	 * @return Thumbnail
 	 */
 	public function watermark($watermark, $margin=null, $position=null) {
-		if (empty($margin)) { $margin = $this->returnConf('thumb_watermark_margin'); }
-		if (empty($position)) { $position = $this->returnConf('thumb_watermark_pos'); }
+		if (empty($margin)) { 
+			$margin = returnConf('thumb_watermark_margin'); 
+		}
+		if (empty($position)) { 
+			$position = returnConf('thumb_watermark_pos');
+		}
 		
-		$watermark = parent::correctWinPath($watermark);
+		$watermark = correctWinPath($watermark);
 		
 		// Check to see if watermark exists
-		if (!file_exists($watermark)) { $this->addNote('Watermark file could not be found', 'error'); return; }
+		if (!file_exists($watermark)) { 
+			addNote('Watermark file could not be found', 'error'); return; 
+		}
 		
 		if ($this->library == 'imagick'){
 			$image = new Imagick($this->path);

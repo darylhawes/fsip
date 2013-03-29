@@ -7,14 +7,11 @@
 */
 
 require_once('../../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
 $user = new User;
-
 $user->perm(true);
 
-$id = $fsip->findID(@$_POST['image_id']);
+$id = findID(@$_POST['image_id']);
 
 if (empty($id)) {
 	$image_ids = new Find('images', null, null, null, false);
@@ -28,11 +25,11 @@ if (empty($id)) {
 	
 	$dir = '';
 	
-	if ($fsip->returnConf('image_hdm') == true) {
-		if ($fsip->returnConf('image_hdm_format') == 'yyyy/mm/dd') {
+	if (returnConf('image_hdm') == true) {
+		if (returnConf('image_hdm_format') == 'yyyy/mm/dd') {
 			$dir = substr($image['image_uploaded'], 0, 10);
 			$dir = str_replace('-', '/', $dir);
-		} elseif($fsip->returnConf('image_hdm_format') == '1000') {
+		} elseif(returnConf('image_hdm_format') == '1000') {
 			if ($image['image_id'] < 1000) {
 				$dir = '0000';
 			} else {
@@ -43,7 +40,7 @@ if (empty($id)) {
 		$dir .= '/';
 	}
 	
-	$path = $fsip->correctWinPath(PATH . IMAGEDATA . $dir);
+	$path = correctWinPath(PATH . IMAGEDATA . $dir);
 	$dest = $path . $image['image_id'] . '.' . $image['image_ext'];
 	
 	if ($src != $dest) {
@@ -57,7 +54,7 @@ if (empty($id)) {
 		
 		foreach($sizes as $size) {
 			$src = $size['size_file'];
-			$dest = $fsip->correctWinPath(PATH . IMAGEDATA . $dir . $size['size_prepend'] . $image['image_id'] . $size['size_append'] . '.' . $image['image_ext']);
+			$dest = correctWinPath(PATH . IMAGEDATA . $dir . $size['size_prepend'] . $image['image_id'] . $size['size_append'] . '.' . $image['image_ext']);
 			
 			rename($src, $dest);
 		}

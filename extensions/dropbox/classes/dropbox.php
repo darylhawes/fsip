@@ -646,7 +646,7 @@ class Dropbox_Dropbox
 	 */
 	public function getUserAgent()
 	{
-		return (string) 'PHP Dropbox/'. self::VERSION .' '. $this->userAgent;
+		return (string) 'PHP Dropbox/'. FSIP_VERSION .' '. $this->userAgent;
 	}
 
 
@@ -813,7 +813,7 @@ class Dropbox_Dropbox
 
 		// redirect
 		$location = $url;
-		$fsip::headerLocationRedirect($location);
+		headerLocationRedirect($location);
 		exit;
 	}
 

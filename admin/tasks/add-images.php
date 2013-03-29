@@ -7,18 +7,17 @@
 */
 
 require_once('../../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
 $user = new User;
-
 $user->perm(true);
 
+$fm = getFileManager();
+
 if (empty($_POST['image_file'])) {
-	$image_files = $fsip->seekDirectory(PATH . SHOEBOX);
+	$image_files = $fm->seekDirectory(PATH . SHOEBOX);
 	$image_files = array_reverse($image_files);
-	if ($fsip->returnConf('shoe_max')) {
-		$image_files = array_splice($image_files, 0, $fsip->returnConf('shoe_max_count'));
+	if (returnConf('shoe_max')) {
+		$image_files = array_splice($image_files, 0, returnConf('shoe_max_count'));
 	}
 	$image_files = array_map('base64_encode', $image_files);
 	echo json_encode($image_files);
@@ -40,7 +39,7 @@ if (empty($_POST['image_file'])) {
 	}
 	
 	$image['image_tags'] = $tag_names;
-	echo $fsip->removeNull(json_encode($image));
+	echo removeNull(json_encode($image));
 }
 
 ?>

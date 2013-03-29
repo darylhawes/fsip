@@ -7,10 +7,10 @@
 */
 
 require_once('config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
-$fsip->recordStat('error');
+$dbpointer = getDB();
+
+$dbpointer->recordStat('error');
 
 $header = new Canvas;
 $header->load('header');

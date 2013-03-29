@@ -57,7 +57,7 @@ class Five extends Orbit{
 		<p>Update your <a href="http://www.500px.com/">500px</a>.</p>
 		<?php
 		if($this->five_active){
-			$this->five_format_image = $this->makeHTMLSafe($this->five_format_image);
+			$this->five_format_image = makeHTMLSafe($this->five_format_image);
 			?>
 			<table>
 				<tr>
@@ -106,9 +106,9 @@ class Five extends Orbit{
 					
 					$this->savePref();
 					
-					$this->addNote('You successfully linked your 500px account.', 'success');
+					addNote('You successfully linked your 500px account.', 'success');
 					$location = $this->location();
-					$fsip::headerLocationRedirect($location);
+					headerLocationRedirect($location);
 					exit();
 					
 					break;
@@ -126,7 +126,7 @@ class Five extends Orbit{
 					$this->savePref();
 					
 					$location = $five_authorize_uri;
-					$fsip::headerLocationRedirect($location);
+					headerLocationRedirect($location);
 					exit();
 					
 					break;
@@ -143,9 +143,9 @@ class Five extends Orbit{
 					$this->setPref('five_oauth_secret', '');
 					$this->savePref();
 					
-					$this->addNote('You successfully unlinked your 500px account.', 'success');
+					addNote('You successfully unlinked your 500px account.', 'success');
 					$location = $this->location();
-					$fsip::headerLocationRedirect($location);
+					headerLocationRedirect($location);
 					exit();
 					
 					break;
@@ -171,7 +171,7 @@ class Five extends Orbit{
 					
 					$this->addNote('You successfully linked your Tumblr account.', 'success');
 					$location = $this->location();
-					$fsip::headerLocationRedirect($location);
+					headerLocationRedirect($location);
 					exit();
 					
 					break;
@@ -189,7 +189,7 @@ class Five extends Orbit{
 					
 					$this->addNote('You successfully unlinked your Tumblr account.', 'success');
 					$location = $this->location();
-					$fsip::headerLocationRedirect($location);
+					headerLocationRedirect($location);
 					exit();
 					
 					break;

@@ -43,7 +43,7 @@ class Dropbox extends Orbit{
 			<table>
 				<tr>
 					<td class="right"><label>Username:</label></td>
-					<td><a href="http://dropbox.com/<?php echo $this->dropbox_username; ?>/"><?php echo $this->dropbox_username; ?></a> &#0160; <a href="<?php echo $this->locationFull(array('unlink' => 'dropbox')); ?>"><button>Unlink from Dropbox</button></a></td>
+					<td><a href="http://dropbox.com/<?php echo $this->dropbox_username; ?>/"><?php echo $this->dropbox_username; ?></a> &#0160; <a href="<?php echo locationFull(array('unlink' => 'dropbox')); ?>"><button>Unlink from Dropbox</button></a></td>
 				</tr>
 				<tr>
 					<td class="right pad"><label for="dropbox_folder">Folder:</label></td>
@@ -61,7 +61,7 @@ class Dropbox extends Orbit{
 				<tr>
 					<td class="right"><label>Username:</label></td>
 					<td>
-						<a href="<?php echo $this->locationFull(array('link' => 'dropbox')); ?>"><button>Link to Dropbox</button></a><br /><br />
+						<a href="<?php echo locationFull(array('link' => 'dropbox')); ?>"><button>Link to Dropbox</button></a><br /><br />
 						<span class="quiet">Note: Link is to the Dropbox account you are currently logged into.</span>
 					</td>
 				</tr>
@@ -92,9 +92,9 @@ class Dropbox extends Orbit{
 					
 					$this->savePref();
 					
-					$this->addNote('You successfully linked your Dropbox account.', 'success');
-					$location = $this->location();
-					$fsip::headerLocationRedirect($location);
+					addNote('You successfully linked your Dropbox account.', 'success');
+					$location = location();
+					headerLocationRedirect($location);
 					exit();
 					
 					break;
@@ -105,14 +105,14 @@ class Dropbox extends Orbit{
 			switch($_GET['link']){
 				case 'dropbox':
 					$dropbox_token = $this->dropbox->oAuthRequestToken();
-					$dropbox_authorize_uri = $this->dropbox->oAuthAuthorize($dropbox_token['oauth_token'], $this->locationFull(array('from' => 'dropbox')));
+					$dropbox_authorize_uri = $this->dropbox->oAuthAuthorize($dropbox_token['oauth_token'], locationFull(array('from' => 'dropbox')));
 					
 					$this->setPref('dropbox_oauth_token', $dropbox_token['oauth_token']);
 					$this->setPref('dropbox_oauth_secret', $dropbox_token['oauth_token_secret']);
 					$this->savePref();
 					
 					$location = $dropbox_authorize_uri;
-					$fsip::headerLocationRedirect($location);
+					headerLocationRedirect($location);
 					exit();
 					
 					break;
@@ -129,9 +129,8 @@ class Dropbox extends Orbit{
 					$this->setPref('dropbox_oauth_secret', '');
 					$this->savePref();
 					
-					$this->addNote('You successfully unlinked your Twitter account.', 'success');
-					$location = $this->location();
-					$fsip::headerLocationRedirect($location);
+					addNote('You successfully unlinked your Twitter account.', 'success');
+					headerLocationRedirect(location());
 					exit();
 					
 					break;
@@ -139,19 +138,19 @@ class Dropbox extends Orbit{
 		}
 	}
 	
-	public function orbit_config_save(){
+	public function orbit_config_save() {
 		$this->setPref('dropbox_folder', $_POST['dropbox_folder']);
 		$this->savePref();
 	}
 	
-	public function orbit_shoebox(){
-		if($this->dropbox_active != true){ return; }
+	public function orbit_shoebox() {
+		if ($this->dropbox_active != true) { return; }
 		
 		$folder = $this->dropbox->metadata($this->dropbox_folder);
 		
-		foreach($folder['contents'] as $file){
-			if($file['is_dir'] === true){ continue; }
-			if(strtotime($file['modified']) < $this->dropbox_accessed){ continue; }
+		foreach($folder['contents'] as $file) {
+			if ($file['is_dir'] === true) { continue; }
+			if (strtotime($file['modified']) < $this->dropbox_accessed){ continue; }
 			
 			$this->storeTask(array($this, 'get'), $file['path']);
 		}
@@ -160,9 +159,10 @@ class Dropbox extends Orbit{
 		$this->savePref();
 	}
 	
-	public function get($path){
+	public function get($path) {
 		$fetch = $this->dropbox->filesGet($path);
-		file_put_contents(PATH . SHOEBOX . $this->getFilename($path), base64_decode($fetch['data']));
+		$fm = getFileManager();
+		file_put_contents(PATH . SHOEBOX . $fm->getFilename($path), base64_decode($fetch['data']));
 	}
 }
 

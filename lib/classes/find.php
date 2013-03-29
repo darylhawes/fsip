@@ -12,7 +12,7 @@
  * @version 1.1
  */
 
-class Find extends FSIP {
+class Find {
 	public $admin;
 	public $cache;
 	public $ids;
@@ -50,6 +50,7 @@ class Find extends FSIP {
 	public $query;
 	
 	private $call;
+	private $dbpointer;
 	
 	protected $sql;
 	protected $sql_conds;
@@ -68,6 +69,10 @@ class Find extends FSIP {
 	protected $sql_order_by;
 	protected $sql_where;
 	
+	private $tables;
+	private $tables_cache;
+	private $tables_index;
+	
 	/**
 	 * Initiates Find class
 	 *
@@ -78,8 +83,10 @@ class Find extends FSIP {
 	 * @param bool $ignore_deleted Ignore "deleted" table rows (except in recovery mode)
 	 */
 	public function __construct($table=null, $ids=null, $auto_guest=true, $process_request=true, $ignore_deleted=true) {
-		parent::__construct();
-		
+//echo "contructing find";
+		$this->dbpointer = getDB();
+//echo "dbpointer has been set";
+//print_r($this->dbpointer);
 		// Error handling
 		if (empty($table)) { return false; }
 		
@@ -87,12 +94,18 @@ class Find extends FSIP {
 		$this->call = array();
 		$this->ids = array();
 		$this->table = $table;
+		$this->tables = getTables();
+		$this->tables_cache = getTablesCache();
+		$this->tables_index = getTablesIndex();
 		$this->table_id = $this->tables[$table];
+//echo "this table id = $this->table_id<br />";
 		$this->table_prefix = substr($this->table_id, 0, -2);
+//echo "this table prefix = $this->table_prefix<br />";
 		$this->page = 1;
 		$this->page_limit = LIMIT;
 		$this->page_limit_first = LIMIT;
 		$this->sql = 'SELECT ' . $this->table . '.' . $this->table_id . ' AS ' . $this->table_id;
+//echo "this sql = $this->sql<br />";
 		$this->sql_conds = array();
 		$this->sql_limit = '';
 		$this->sql_sorts = array();
@@ -118,8 +131,11 @@ class Find extends FSIP {
 		
 		// Optional starter set
 		if (isset($ids)) {
-			$ids = parent::convertToIntegerArray($ids);
+//echo "there are ids: $ids<br />";
+			$ids = convertToIntegerArray($ids);
 			$this->sql_conds[] = $this->table . '.' . $this->table_id . ' IN (' . implode(', ', $ids) . ')';
+//echo "sql conds are now set to:<br />";
+//print_r($this->sql_conds);
 		}
 		
 		// Don't show deleted items
@@ -139,6 +155,7 @@ class Find extends FSIP {
 			}
 			
 			if ($show_deleted === false) {
+//echo "show deleted is false and therefore calling null method<br />";
 				$this->null($this->table . '.' . $this->table_prefix . 'deleted');
 			}
 		}
@@ -340,7 +357,7 @@ class Find extends FSIP {
 	} //end object construction
 	
 	public function __destruct() {
-		parent::__destruct();
+//
 	}
 	
 	/**
@@ -704,13 +721,13 @@ class Find extends FSIP {
 		// Error checking
 		if (empty($tags)) { return false; }
 		
-		parent::convertToArray($tags);
+		convertToArray($tags);
 		
 		if (($this->table == 'images') and empty($fields)) {
 			// Find tags in database
 			if (is_numeric($tags[0])) {
-				parent::convertToIntegerArray($tags);
-				$query = $this->prepare('SELECT tags.tag_id FROM tags WHERE tags.tag_id = ' . implode(' OR tags.tag_id = ', $tags) . ';');
+				convertToIntegerArray($tags);
+				$query = $this->dbpointer->prepare('SELECT tags.tag_id FROM tags WHERE tags.tag_id = ' . implode(' OR tags.tag_id = ', $tags) . ';');
 				$query->execute();
 			} else {
 				$sql_params = array();
@@ -723,7 +740,7 @@ class Find extends FSIP {
 			
 				$sql_param_keys = array_keys($sql_params);
 			
-				$query = $this->prepare('SELECT tags.tag_id FROM tags WHERE LOWER(tags.tag_name) LIKE ' . implode(' OR LOWER(tags.tag_name) LIKE ', $sql_param_keys) . ';');
+				$query = $this->dbpointer->prepare('SELECT tags.tag_id FROM tags WHERE LOWER(tags.tag_name) LIKE ' . implode(' OR LOWER(tags.tag_name) LIKE ', $sql_param_keys) . ';');
 				$query->execute($sql_params);
 			}
 		
@@ -760,12 +777,12 @@ class Find extends FSIP {
 		
 		$tag_count = count($tags);
 		
-		parent::convertToArray($tags);
+		convertToArray($tags);
 		
 		// Find images with these tags in database
 		if (intval($tags[0])) {
-			parent::convertToIntegerArray($tags);
-			$query = $this->prepare('SELECT ' . $this->table . '.' .$this->table_prefix . 'id FROM images, links WHERE ' . $this->table . '.' .$this->table_prefix . 'id = links.image_id AND (links.tag_id = ' . implode(' OR links.tag_id = ', $tags) . ');');
+			convertToIntegerArray($tags);
+			$query = $this->dbpointer->prepare('SELECT ' . $this->table . '.' .$this->table_prefix . 'id FROM images, links WHERE ' . $this->table . '.' .$this->table_prefix . 'id = links.image_id AND (links.tag_id = ' . implode(' OR links.tag_id = ', $tags) . ');');
 			$query->execute();
 		} else {
 			$sql_params = array();
@@ -778,7 +795,7 @@ class Find extends FSIP {
 			
 			$sql_param_keys = array_keys($sql_params);
 			
-			$query = $this->prepare('SELECT ' . $this->table . '.' .$this->table_prefix . 'id FROM images, links, tags WHERE ' . $this->table . '.' .$this->table_prefix . 'id = links.image_id AND links.tag_id = tags.tag_id AND (LOWER(tags.tag_name) LIKE ' . implode(' OR LOWER(tags.tag_name) LIKE ', $sql_param_keys) . ');');
+			$query = $this->dbpointer->prepare('SELECT ' . $this->table . '.' .$this->table_prefix . 'id FROM images, links, tags WHERE ' . $this->table . '.' .$this->table_prefix . 'id = links.image_id AND links.tag_id = tags.tag_id AND (LOWER(tags.tag_name) LIKE ' . implode(' OR LOWER(tags.tag_name) LIKE ', $sql_param_keys) . ');');
 			$query->execute($sql_params);
 		}
 		
@@ -820,12 +837,12 @@ class Find extends FSIP {
 		// Error checking
 		if (empty($tags)) { return false; }
 		
-		parent::convertToArray($tags);
+		convertToArray($tags);
 		
 		// Find images with these tags in database
 		if (intval($tags[0])) {
-			parent::convertToIntegerArray($tags);
-			$query = $this->prepare('SELECT ' . $this->table . '.' .$this->table_prefix . 'id FROM images, links WHERE ' . $this->table . '.' .$this->table_prefix . 'id = links.image_id AND (links.tag_id = ' . implode(' OR links.tag_id = ', $tags) . ');');
+			convertToIntegerArray($tags);
+			$query = $this->dbpointer->prepare('SELECT ' . $this->table . '.' .$this->table_prefix . 'id FROM images, links WHERE ' . $this->table . '.' .$this->table_prefix . 'id = links.image_id AND (links.tag_id = ' . implode(' OR links.tag_id = ', $tags) . ');');
 			$query->execute();
 		} else {
 			$sql_params = array();
@@ -838,7 +855,7 @@ class Find extends FSIP {
 			
 			$sql_param_keys = array_keys($sql_params);
 			
-			$query = $this->prepare('SELECT ' . $this->table . '.' .$this->table_prefix . 'id FROM images, links, tags WHERE ' . $this->table . '.' .$this->table_prefix . 'id = links.image_id AND links.tag_id = tags.tag_id AND (LOWER(tags.tag_name) LIKE ' . implode(' OR LOWER(tags.tag_name) LIKE ', $sql_param_keys) . ');');
+			$query = $this->dbpointer->prepare('SELECT ' . $this->table . '.' .$this->table_prefix . 'id FROM images, links, tags WHERE ' . $this->table . '.' .$this->table_prefix . 'id = links.image_id AND links.tag_id = tags.tag_id AND (LOWER(tags.tag_name) LIKE ' . implode(' OR LOWER(tags.tag_name) LIKE ', $sql_param_keys) . ');');
 			$query->execute($sql_params);
 		}
 		$this->images = $query->fetchAll();
@@ -870,10 +887,10 @@ class Find extends FSIP {
 		
 		// Determine input type
 		if (is_string($set)) {
-			$query = $this->prepare('SELECT set_id, set_call, set_type, set_images, set_image_count FROM sets WHERE LOWER(set_title) LIKE :set_title_lower LIMIT 0, 1;');
+			$query = $this->dbpointer->prepare('SELECT set_id, set_call, set_type, set_images, set_image_count FROM sets WHERE LOWER(set_title) LIKE :set_title_lower LIMIT 0, 1;');
 			$query->execute(array(':set_title_lower' => strtolower($set)));
 		} elseif(is_int($set)) {
-			$query = $this->prepare('SELECT set_id, set_call, set_type, set_images, set_image_count FROM sets WHERE set_id = ' . $set . ' LIMIT 0, 1;');
+			$query = $this->dbpointer->prepare('SELECT set_id, set_call, set_type, set_images, set_image_count FROM sets WHERE set_id = ' . $set . ' LIMIT 0, 1;');
 			$query->execute();
 		} else {
 			return false;
@@ -990,10 +1007,10 @@ class Find extends FSIP {
 		
 		// Determine input type
 		if (is_string($right)) {
-			$query = $this->prepare('SELECT right_id FROM rights WHERE LOWER(right_title) LIKE :lower_right_title LIMIT 0, 1;');
+			$query = $this->dbpointer->prepare('SELECT right_id FROM rights WHERE LOWER(right_title) LIKE :lower_right_title LIMIT 0, 1;');
 			$query->execute(array(':lower_right_title' => strtolower($right)));
 		} elseif(is_int($right)) {
-			$query = $this->prepare('SELECT right_id FROM rights WHERE right_id = ' . $right . ' LIMIT 0, 1;');
+			$query = $this->dbpointer->prepare('SELECT right_id FROM rights WHERE right_id = ' . $right . ' LIMIT 0, 1;');
 			$query->execute();
 		} else {
 			return false;
@@ -1022,7 +1039,7 @@ class Find extends FSIP {
 		// Error checking
 		if (empty($users)) { return false; }
 		
-		$users = parent::convertToIntegerArray($users);
+		$users = convertToIntegerArray($users);
 		
 		$users_sql = array();
 		
@@ -1045,7 +1062,7 @@ class Find extends FSIP {
 		// Error checking
 		if (empty($categories)) { return false; }
 		
-		$categories = parent::convertToArray($categories);
+		$categories = convertToArray($categories);
 		
 		$categories_sql = array();
 		
@@ -1144,7 +1161,7 @@ class Find extends FSIP {
 		
 		if (($this->table == 'images') and empty($fields)) {
 			// Search title, description
-			$query = $this->prepare('SELECT images.image_id FROM images WHERE (LOWER(images.image_title) LIKE :image_title OR LOWER(images.image_description_raw) LIKE :image_description_raw OR LOWER(images.image_geo) LIKE :image_geo OR LOWER(images.image_tags) LIKE :image_tags)');
+			$query = $this->dbpointer->prepare('SELECT images.image_id FROM images WHERE (LOWER(images.image_title) LIKE :image_title OR LOWER(images.image_description_raw) LIKE :image_description_raw OR LOWER(images.image_geo) LIKE :image_geo OR LOWER(images.image_tags) LIKE :image_tags)');
 			$query->execute(array(':image_title' => $search_lower, ':image_description_raw' => $search_lower, ':image_geo' => $search_lower, ':image_tags' => $search_lower_tags));
 			$images = $query->fetchAll();
 		
@@ -1152,7 +1169,7 @@ class Find extends FSIP {
 				$ids[] = $image[$this->table_prefix . 'id'];
 			}
 		} elseif (($this->table == 'comments') and empty($fields)) {
-			$query = $this->prepare('SELECT comments.comment_id FROM comments WHERE (LOWER(comment_text) LIKE :comment_text) OR (LOWER(comment_author_name) LIKE :comment_author_name) OR (LOWER(comment_author_uri) LIKE :comment_author_uri) OR (LOWER(comment_author_email) LIKE :comment_author_email) OR (LOWER(comment_author_ip) LIKE :comment_author_ip);');
+			$query = $this->dbpointer->prepare('SELECT comments.comment_id FROM comments WHERE (LOWER(comment_text) LIKE :comment_text) OR (LOWER(comment_author_name) LIKE :comment_author_name) OR (LOWER(comment_author_uri) LIKE :comment_author_uri) OR (LOWER(comment_author_email) LIKE :comment_author_email) OR (LOWER(comment_author_ip) LIKE :comment_author_ip);');
 			$query->execute(array(':comment_text' => $search_lower, ':comment_author_name' => $search_lower, ':comment_author_uri' => $search_lower, ':comment_author_email' => $search_lower, ':comment_author_ip' => $search_lower));
 			$comments = $query->fetchAll();
 
@@ -1164,7 +1181,7 @@ class Find extends FSIP {
 			
 			$field_count = count($fields);
 			if ($field_count > 0) {
-				$query = $this->prepare('SELECT ' . $this->table . '.' . $this->table_prefix . 'id FROM ' . $this->table . ' WHERE (LOWER(' .  implode(' LIKE ?)) OR (LOWER(', $fields) . ' LIKE ?));');
+				$query = $this->dbpointer->prepare('SELECT ' . $this->table . '.' . $this->table_prefix . 'id FROM ' . $this->table . ' WHERE (LOWER(' .  implode(' LIKE ?)) OR (LOWER(', $fields) . ' LIKE ?));');
 			
 				$search_array = array_fill(0, $field_count, $search_lower);
 			
@@ -1208,7 +1225,7 @@ class Find extends FSIP {
 		
 		if (($this->table == 'images') and empty($fields)) {
 			// Search title, description
-			$query = $this->prepare('SELECT images.image_id FROM images WHERE (LOWER(images.image_title) LIKE :image_title_lower OR LOWER(images.image_description) LIKE :image_description_lower OR LOWER(images.image_geo) LIKE :image_geo_lower)');
+			$query = $this->dbpointer->prepare('SELECT images.image_id FROM images WHERE (LOWER(images.image_title) LIKE :image_title_lower OR LOWER(images.image_description) LIKE :image_description_lower OR LOWER(images.image_geo) LIKE :image_geo_lower)');
 			$query->execute(array(':image_title_lower' => $search_lower, ':image_description_lower' => $search_lower, ':image_geo_lower' => $search_lower));
 			$images = $query->fetchAll();
 		
@@ -1217,7 +1234,7 @@ class Find extends FSIP {
 			}
 		
 			// Search tags
-			$query = $this->prepare('SELECT images.image_id FROM images, links, tags WHERE images.image_id = links.image_id AND links.tag_id = tags.tag_id AND (LOWER(tags.tag_name) LIKE :tag_name_lower);');
+			$query = $this->dbpointer->prepare('SELECT images.image_id FROM images, links, tags WHERE images.image_id = links.image_id AND links.tag_id = tags.tag_id AND (LOWER(tags.tag_name) LIKE :tag_name_lower);');
 			$query->execute(array(':tag_name_lower' => $search_lower));
 		
 			$images = $query->fetchAll();
@@ -1226,7 +1243,7 @@ class Find extends FSIP {
 				$ids[] = $image[$this->table_prefix . 'id'];
 			}
 		} elseif (($this->table == 'comments') and empty($fields)) {
-			$query = $this->prepare('SELECT comments.comment_id FROM comments WHERE (LOWER(comment_text) LIKE :comment_text) OR (LOWER(comment_author_name) LIKE :comment_author_name) OR (LOWER(comment_author_uri) LIKE :comment_author_uri) OR (LOWER(comment_author_email) LIKE :comment_author_email) OR (LOWER(comment_author_ip) LIKE :comment_author_ip);');
+			$query = $this->dbpointer->prepare('SELECT comments.comment_id FROM comments WHERE (LOWER(comment_text) LIKE :comment_text) OR (LOWER(comment_author_name) LIKE :comment_author_name) OR (LOWER(comment_author_uri) LIKE :comment_author_uri) OR (LOWER(comment_author_email) LIKE :comment_author_email) OR (LOWER(comment_author_ip) LIKE :comment_author_ip);');
 			$query->execute(array(':comment_text' => $search_lower, ':comment_author_name' => $search_lower, ':comment_author_uri' => $search_lower, ':comment_author_email' => $search_lower, ':comment_author_ip' => $search_lower));
 			$comments = $query->fetchAll();
 
@@ -1238,7 +1255,7 @@ class Find extends FSIP {
 			
 			$field_count = count($fields);
 			if ($field_count > 0) {
-				$query = $this->prepare('SELECT ' . $this->table . '.' . $this->table_prefix . 'id FROM ' . $this->table . ' WHERE (LOWER(' .  implode(' LIKE ?)) OR (LOWER(', $fields) . ' LIKE ?));');
+				$query = $this->dbpointer->prepare('SELECT ' . $this->table . '.' . $this->table_prefix . 'id FROM ' . $this->table . ' WHERE (LOWER(' .  implode(' LIKE ?)) OR (LOWER(', $fields) . ' LIKE ?));');
 			
 				$search_array = array_fill(0, $field_count, $search_lower);
 			
@@ -1297,7 +1314,7 @@ class Find extends FSIP {
 				$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'privacy = ' . $privacy;
 			}
 		} elseif(is_array($privacy)) {
-			parent::convertToIntegerArray($privacy);
+			convertToIntegerArray($privacy);
 			
 			// Set fields to search
 			$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'privacy IN (' . implode(', ', $privacy) . ')';
@@ -1364,7 +1381,7 @@ class Find extends FSIP {
 		
 		if (!empty($min)) {
 			$min = floatval($min);
-			if ($this->db_type == 'pgsql') {
+			if ($this->dbpointer->db_type == 'pgsql') {
 				$this->sql_conds[] = '(CAST(' . $this->table . '.' .$this->table_prefix . 'width AS FLOAT) / CAST(' . $this->table . '.' .$this->table_prefix . 'height AS FLOAT)) < ' . $min;
 			} else {
 				$this->sql_conds[] = '(' . $this->table . '.' .$this->table_prefix . 'width / ' . $this->table . '.' .$this->table_prefix . 'height) < ' . $min;
@@ -1372,7 +1389,7 @@ class Find extends FSIP {
 		}
 		if(!empty($max)) {
 			$max = floatval($max);
-			if ($this->db_type == 'pgsql') {
+			if ($this->dbpointer->db_type == 'pgsql') {
 				$this->sql_conds[] = '(CAST(' . $this->table . '.' .$this->table_prefix . 'width AS FLOAT) / CAST(' . $this->table . '.' .$this->table_prefix . 'height AS FLOAT)) >' . $max;
 			} else {
 				$this->sql_conds[] = '(' . $this->table . '.' .$this->table_prefix . 'width / ' . $this->table . '.' .$this->table_prefix . 'height) > ' . $max;
@@ -1380,7 +1397,7 @@ class Find extends FSIP {
 		}
 		if (!empty($equal)) {
 			$equal = floatval($equal);
-			if ($this->db_type == 'pgsql') {
+			if ($this->dbpointer->db_type == 'pgsql') {
 				$this->sql_conds[] = '(CAST(' . $this->table . '.' .$this->table_prefix . 'width AS FLOAT) / CAST(' . $this->table . '.' .$this->table_prefix . 'height AS FLOAT)) = ' . $equal;
 			} else {
 				$this->sql_conds[] = '(' . $this->table . '.' .$this->table_prefix . 'width / ' . $this->table . '.' .$this->table_prefix . 'height) = ' . $equal;
@@ -1434,7 +1451,7 @@ class Find extends FSIP {
 		// Error checking
 		if (empty($image_ids)) { return false; }
 		
-		$image_ids = parent::convertToIntegerArray($image_ids);
+		$image_ids = convertToIntegerArray($image_ids);
 		
 		if (count($image_ids) > 0) {
 			$this->sql_conds[] = $this->table . '.image_id IN (' . implode(', ', $image_ids) . ')';
@@ -1453,7 +1470,7 @@ class Find extends FSIP {
 		// Error checking
 		if (empty($ids)) { return false; }
 		
-		$ids = parent::convertToIntegerArray($ids);
+		$ids = convertToIntegerArray($ids);
 		
 		if (!(count($ids) > 0)) { return false; }
 		
@@ -1487,7 +1504,7 @@ class Find extends FSIP {
 			$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'status = ' . $status;
 			
 		} elseif(is_array($status)) {
-			parent::convertToIntegerArray($status);
+			convertToIntegerArray($status);
 			
 			// Set fields to search
 			$this->sql_conds[] = $this->table . '.' . $this->table_prefix . 'status IN (' . implode(', ', $status) . ')';
@@ -1768,7 +1785,7 @@ class Find extends FSIP {
 		// Error checking
 		if (empty($column)) { return false; }
 		
-		$column = $this->sanitize($column);
+		$column = $this->dbpointer->sanitize($column);
 		
 		$column = strtolower($column);
 		$sort = strtoupper($sort);
@@ -1793,7 +1810,7 @@ class Find extends FSIP {
 	public function notnull($field) {
 		if (empty($field)) { return false; }
 		
-		$field = $this->sanitize($field);
+		$field = $this->dbpointer->sanitize($field);
 		
 		$this->sql_conds[] = $field . ' IS NOT NULL';
 		
@@ -1807,12 +1824,19 @@ class Find extends FSIP {
 	 * @return bool True if successful
 	 */
 	public function null($field) {
+//echo "in FIND class's NULL method field: $field<br />";
 		if (empty($field)) { return false; }
 		
-		$field = $this->sanitize($field);
+		$field = $this->dbpointer->sanitize($field);
+//echo "sql_conds before =<br />";
+//print_r($this->sql_conds);
+//echo "<br />";
 		
 		$this->sql_conds[] = $field . ' IS NULL';
-		
+//echo "sql_conds after =<br />";
+//print_r($this->sql_conds);
+//echo "<br />";
+
 		return true;
 	}
 	
@@ -1822,48 +1846,68 @@ class Find extends FSIP {
 	 * @return array Result IDs
 	 */
 	public function find() {
+//echo "in find method of find class 1<br />";
 		// Prepare SQL
 		$this->sql_from = ' FROM ' . implode(', ', $this->sql_tables);
+//echo "in find method of find class 2. FROM: $this->sql_from <br />";
 
 		if (count($this->sql_conds) > 0) {
 			$this->sql_where = ' WHERE ' . implode(' AND ', $this->sql_conds);
+//echo "in find method of find class 3. WHERE: $this->sql_where<br />";
+//echo "sql_conds =<br />";
+//print_r($this->sql_conds);
 		}
 		
 		if (count($this->sql_sorts) > 0) {
 			$this->sql_order_by = ' ORDER BY ' . implode(', ', $this->sql_sorts);
-			if (($this->db_type == 'pgsql') or ($this->db_type == 'mssql')) {
+//echo "in find method of find class 3.1. ORDER BY: $this->sql_order_by<br />";
+			if (($this->dbpointer->db_type == 'pgsql') or ($this->dbpointer->db_type == 'mssql')) {
 				$sql_sorts = str_ireplace(' ASC', '', $this->sql_sorts);
 				$sql_sorts = str_ireplace(' DESC', '', $this->sql_sorts);
 				$this->sql_group_by .= ', ' . implode(', ', $sql_sorts);
 			}
 		} elseif (empty($this->order)) {
 			$this->sql_order_by = ' ORDER BY ' . $this->table . '.' .$this->table_prefix . 'id DESC';
-			if (($this->db_type == 'pgsql') or ($this->db_type == 'mssql')) {
+//echo "in find method of find class 3.2. ORDER BY: $this->sql_order_by<br />";
+			if (($this->dbpointer->db_type == 'pgsql') or ($this->dbpointer->db_type == 'mssql')) {
 				$this->sql_group_by .= ', ' . $this->table . '.' .$this->table_prefix . 'id';
 			}
 		}
 		
 		if ((count($this->sql_join_on) > 0) and (count($this->sql_join_tables) > 0) and (!empty($this->sql_join_type))) {
 			$this->sql_join = ' ' . $this->sql_join_type . ' ' . implode(', ', $this->sql_join_tables) . ' ON ' . implode(', ', $this->sql_join_on);
+//echo "in find method of find class 3.3. JOIN: $this->sql_join<br />";
 		}
 		
 		if (count($this->sql_having_fields) > 0) {
 			$this->sql_having = ' HAVING ' . implode(', ', $this->sql_having_fields);
+//echo "in find method of find class 3.4. HAVING: $this->sql_having<br />";
 		}
 
 		// Prepare query without limit
 		$this->sql .= $this->sql_from . $this->sql_join . $this->sql_where . $this->sql_group_by . $this->sql_having . $this->sql_order_by;
-		
+//echo "in find method of find class 4. SQL = $this->sql<br />";
+//print_r($this->dbpointer);
 		// Execute query without limit
-		$query = $this->prepare($this->sql);
+		$query = $this->dbpointer->prepare($this->sql);
+//echo "in find method of find class 5. sql was: $this->sql<br />";
+//echo "in find method of find class 5.1 query was: $query<br />";
 		$query->execute($this->sql_params);
-		$images = $query->fetchAll();
+//echo "in find method of find class 5.2 params were:<br /><code>";
+//print_r($this->sql_params);
+//echo "</code><br />";
 
+		$images = $query->fetchAll();
+//echo "in find method of find class 6, images are:<br /><code>";
+//print_r($images);
+//echo "</code><br />";
 		// Grab images.ids of results
 		$ids = array();
 		foreach($images as $image) {
+//echo "in find method of find class 6.5 adding image id:".intval($image[$this->table_prefix . 'id'])."<br />";
 			$ids[] = intval($image[$this->table_prefix . 'id']);
 		}
+//echo "in find method of find class 7<br />";
 		
 		// Determine number of images
 		$this->count = count($images);
@@ -1886,6 +1930,7 @@ class Find extends FSIP {
 			
 			$this->page($page, $this->page_limit, $this->page_limit_first);
 		}
+//echo "in find method of find class 8<br />";
 		
 		// Determine pagination
 		if (!empty($this->page)) {
@@ -1897,12 +1942,13 @@ class Find extends FSIP {
 				$this->page_previous = $this->page - 1;
 			}
 		}
+//echo "in find method of find class 9<br />";
 		
 		// Add order, limit
 		$this->sql .= $this->sql_limit;
 		
 		// Execute query with order, limit
-		$query = $this->prepare($this->sql);
+		$query = $this->dbpointer->prepare($this->sql);
 		$query->execute($this->sql_params);
 		$images = $query->fetchAll();
 		
@@ -1996,14 +2042,14 @@ class Find extends FSIP {
 		$this->page_navigation_string = $pnavstr;
 
 		// Create a total_image_count variable for templates to insert.
-		$query = $this->prepare('SELECT COUNT(*) as count FROM images WHERE 1;');
+		$query = $this->dbpointer->prepare('SELECT COUNT(*) as count FROM images WHERE 1;');
 		$query->execute();
 		$ttlImages = $query->fetchAll();
 		$this->total_image_count = $ttlImages[0]['count'];
 	
 		// Create a published_public_image_count variable for templates to insert.
 		$now = date('Y-m-d H:i:s');
-		$query = $this->prepare("SELECT COUNT(*) as count FROM images WHERE image_published > 1 AND image_published < '$now'");
+		$query = $this->dbpointer->prepare("SELECT COUNT(*) as count FROM images WHERE image_published > 1 AND image_published < '$now'");
 		$query->execute();
 		$pubImages = $query->fetchAll();
 		$this->published_public_image_count = $pubImages[0]['count'];		

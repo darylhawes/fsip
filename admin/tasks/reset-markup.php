@@ -7,16 +7,15 @@
 */
 
 require_once('../../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
+$dbpointer = getDB();
+
 $user = new User;
-
 $user->perm(true);
 
-$markup = $fsip->returnConf('web_markup_ext');
+$markup = returnConf('web_markup_ext');
 
-$query = $fsip->prepare('SELECT image_id FROM images WHERE image_markup != :image_markup;');
+$query = $dbpointer->prepare('SELECT image_id FROM images WHERE image_markup != :image_markup;');
 $query->execute(array(':image_markup' => $markup));
 $images = $query->fetchAll();
 
@@ -27,7 +26,7 @@ foreach($images as $image) {
 }
 
 if (count($image_ids) > 0) {
-	$query = $fsip->prepare('UPDATE images SET image_description_raw = image_description, image_markup = :image_markup WHERE (image_id IN (' . implode(', ', $image_ids) . '));');
+	$query = $dbpointer->prepare('UPDATE images SET image_description_raw = image_description, image_markup = :image_markup WHERE (image_id IN (' . implode(', ', $image_ids) . '));');
 	$query->execute(array(':image_markup' => $markup));
 }
 

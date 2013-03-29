@@ -7,16 +7,18 @@
 */
 
 require_once('../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
+
 $orbit = new Orbit;
-$user = new User;
 
+$user = new User;
 $user->perm(true, 'pages');
 
+$dbpointer = getDB();
+
+
 if (!empty($_GET['id'])) {
-	$page_id = $fsip->findID($_GET['id']);
+	$page_id = findID($_GET['id']);
 }
 
 if (!empty($_GET['act'])) {
@@ -25,17 +27,17 @@ if (!empty($_GET['act'])) {
 
 // SAVE CHANGES
 if (!empty($_POST['page_id'])) {
-	$page_id = $fsip->findID($_POST['page_id']);
+	$page_id = findID($_POST['page_id']);
 	
 	$page = new Page($page_id);
 	
 	if (!empty($_POST['page_delete']) and ($_POST['page_delete'] == 'delete')) {
 		if ($page->delete()) {
-			$fsip->addNote('The page has been deleted.', 'success');
+			addNote('The page has been deleted.', 'success');
 		}
 	} elseif(!empty($_POST['page_recover']) and ($_POST['page_recover'] == 'recover')) {
 		if ($page->recover()) {
-			$fsip->addNote('The page has been recovered.', 'success');
+			addNote('The page has been recovered.', 'success');
 		}
 	} else {
 		$page->attachUser($user);
@@ -43,9 +45,9 @@ if (!empty($_POST['page_id'])) {
 		$page_title = trim($_POST['page_title']);
 		
 		if (!empty($_POST['page_title_url'])) {
-			$page_title_url = $fsip->makeURL($_POST['page_title_url']);
+			$page_title_url = makeURL($_POST['page_title_url']);
 		} else {
-			$page_title_url = $fsip->makeURL($page_title);
+			$page_title_url = makeURL($page_title);
 		}
 		
 		$page_text_raw = $_POST['page_text_raw'];
@@ -63,42 +65,42 @@ if (!empty($_POST['page_id'])) {
 			$page_text = $orbit->hook('markup_' . $page_markup_ext, $page_text_raw, $page_text_raw);
 			$page_title = $orbit->hook('markup_title_' . $page_markup_ext, $page_title, $page_title);
 			$page_excerpt = $orbit->hook('markup_' . $page_markup_ext, $page_excerpt_raw, $page_excerpt);
-		} elseif($fsip->returnConf('web_markup')) {
-			$page_markup_ext = $fsip->returnConf('web_markup_ext');
+		} elseif(returnConf('web_markup')) {
+			$page_markup_ext = returnConf('web_markup_ext');
 			$page_text = $orbit->hook('markup_' . $page_markup_ext, $page_text_raw, $page_text_raw);
 			$page_title = $orbit->hook('markup_title_' . $page_markup_ext, $page_title, $page_title);
 			$page_excerpt = $orbit->hook('markup_' . $page_markup_ext, $page_excerpt_raw, $page_excerpt);
 		} else {
 			$page_markup_ext = '';
-			$page_text = $fsip->nl2br($page_text_raw);
-			$page_excerpt = $fsip->nl2br($page_excerpt_raw);
+			$page_text = fsip_nl2br($page_text_raw);
+			$page_excerpt = fsip_nl2br($page_excerpt_raw);
 		}
 		
-		$page_images = implode(', ', $fsip->findIDRef($page_text));
+		$page_images = implode(', ', findIDRef($page_text));
 		
-		$page_words = $fsip->countWords($_POST['page_text_raw']);
+		$page_words = countWords($_POST['page_text_raw']);
 		
-		$fields = array('page_title' => $fsip->makeUnicode($page_title),
+		$fields = array('page_title' => makeUnicode($page_title),
 			'page_title_url' => $page_title_url,
-			'page_text' => $fsip->makeUnicode($page_text),
-			'page_text_raw' => $fsip->makeUnicode($page_text_raw),
-			'page_excerpt' => $fsip->makeUnicode($page_excerpt),
-			'page_excerpt_raw' => $fsip->makeUnicode($page_excerpt_raw),
+			'page_text' => makeUnicode($page_text),
+			'page_text_raw' => makeUnicode($page_text_raw),
+			'page_excerpt' => makeUnicode($page_excerpt),
+			'page_excerpt_raw' => makeUnicode($page_excerpt_raw),
 			'page_markup' => $page_markup_ext,
 			'page_images' => $page_images,
-			'page_category' => $fsip->makeUnicode(@$_POST['page_category']),
+			'page_category' => makeUnicode(@$_POST['page_category']),
 			'page_words' => $page_words);
 		
 		$page->updateFields($fields);
 	}
 	unset($page_id);
 } else {
-	$fsip->deleteEmptyRow('pages', array('page_title', 'page_text_raw'));
+	$dbpointer->deleteEmptyRow('pages', array('page_title', 'page_text_raw'));
 }
 
 // CREATE PAGE
 if (!empty($page_act) and ($page_act == 'add')) {
-	$page_id = $fsip->addRow(null, 'pages');
+	$page_id = $dbpointer->addRow(null, 'pages');
 }
 
 define('TAB', 'features');
@@ -113,7 +115,7 @@ if (empty($page_id)) {
 	$pages->hook();
 	
 	define('TITLE', 'FSIP Pages');
-	require_once(PATH . INCLUDES . '/admin_header.php');
+	require_once(PATH . INCLUDES . 'admin/admin_header.php');
 
 ?>
 	
@@ -139,11 +141,11 @@ if (empty($page_id)) {
 
 		foreach($pages->pages as $page) {
 			echo '<tr class="ro">';
-				echo '<td><strong class="large"><a href="' . BASE . ADMINFOLDER . 'pages' . URL_ID . $page['page_id'] . URL_RW . '" class="tip" title="' . htmlentities($fsip->fitStringByWord(strip_tags($page['page_text']), 150)) . '">' . $page['page_title'] . '</a></strong><br /><a href="' . BASE . 'page' . URL_ID . $page['page_title_url'] . URL_RW . '" class="nu quiet">' . $page['page_title_url'] . '</td>';
+				echo '<td><strong class="large"><a href="' . BASE . ADMINFOLDER . 'pages' . URL_ID . $page['page_id'] . URL_RW . '" class="tip" title="' . htmlentities(fitStringByWord(strip_tags($page['page_text']), 150)) . '">' . $page['page_title'] . '</a></strong><br /><a href="' . BASE . 'page' . URL_ID . $page['page_title_url'] . URL_RW . '" class="nu quiet">' . $page['page_title_url'] . '</td>';
 				echo '<td class="center">' . number_format($page['page_views']) . '</td>';
 				echo '<td class="center">' . number_format($page['page_words']) . '</td>';
-				echo '<td>' . $fsip->formatTime($page['page_created']) . '</td>';
-				echo '<td>' . ucfirst($fsip->formatRelTime($page['page_modified'])) . '</td>';
+				echo '<td>' . formatTime($page['page_created']) . '</td>';
+				echo '<td>' . ucfirst(formatRelTime($page['page_modified'])) . '</td>';
 			echo '</tr>';
 		}
 
@@ -151,20 +153,20 @@ if (empty($page_id)) {
 	</table>
 	
 <?php
-	require_once(PATH . INCLUDES . '/admin_footer.php');
+	require_once(PATH . INCLUDES . 'admin/admin_footer.php');
 } else {
 	$pages = new Page($page_id);
 	$pages->getCitations();
 	$pages->getVersions();
 	$page = $pages->pages[0];
-	$page = $fsip->makeHTMLSafe($page);
+	$page = makeHTMLSafe($page);
 	
 	if (!empty($page['page_title'])) {
 		define('TITLE', 'Page: &#8220;' . $page['page_title']  . '&#8221;');
 	} else {
 		define('TITLE', 'FSIP Page');
 	}
-	require_once(PATH . INCLUDES . '/admin_header.php');
+	require_once(PATH . INCLUDES . 'admin/admin_header.php');
 
 ?>
 	
@@ -239,7 +241,7 @@ if (empty($page_id)) {
 								if (!empty($citation['citation_site_name'])) {
 									echo ' <span class="quiet">(' . $citation['citation_site_name'] . ')</span>';
 								} else {
-									echo ' <span class="quiet">(' . $fsip->siftDomain($citation['citation_uri_requested']) . ')</span>';
+									echo ' <span class="quiet">(' . siftDomain($citation['citation_uri_requested']) . ')</span>';
 								}
 								echo '</td></tr>';
 							}
@@ -296,7 +298,7 @@ if (empty($page_id)) {
 					
 					echo '<option value="' . $version['version_id'] . '"';
 					if ($i == 2) { echo ' selected="selected"'; }
-					echo '>' . ucfirst($fsip->formatRelTime($version['version_created'])) . ' (#' . $version['version_id'] . ', ' . $similarity . ')</option>';
+					echo '>' . ucfirst(formatRelTime($version['version_created'])) . ' (#' . $version['version_id'] . ', ' . $similarity . ')</option>';
 				}
 				
 ?>
@@ -328,14 +330,14 @@ if (empty($page_id)) {
 				$images = new Image($image_ids);
 				$images->getSizes();
 	
-				if ($fsip->returnConf('post_size_label')) {
-					$label = 'image_src_' . $fsip->returnConf('post_size_label');
+				if (returnConf('post_size_label')) {
+					$label = 'image_src_' . returnConf('post_size_label');
 				} else {
 					$label = 'image_src_admin';
 				}
 		
 				foreach($images->images as $image) {
-					$image['image_title'] = $fsip->makeHTMLSafe($image['image_title']);
+					$image['image_title'] = makeHTMLSafe($image['image_title']);
 					echo '<a href="' . $image[$label] . '"><img src="' . $image['image_src_square'] .'" alt="' . $image['image_title']  . '" class="frame" id="image-' . $image['image_id'] . '" /></a>';
 					echo '<div class="none uri_rel image-' . $image['image_id'] . '">' . $image['image_uri_rel'] . '</div>';
 				}
@@ -348,13 +350,13 @@ if (empty($page_id)) {
 		<input type="hidden" id="page_citations" name="page_citations" value="<?php foreach($pages->citations as $citation) { echo $citation['citation_uri_requested']; } ?>" />
 		
 		<p>
-			<input type="submit" value="Save changes" /> or <a href="<?php echo $fsip->back(); ?>">cancel</a>
+			<input type="submit" value="Save changes" /> or <a href="<?php echo back(); ?>">cancel</a>
 		</p>
 	</form>
 
 <?php
 
-	require_once(PATH . INCLUDES . '/admin_footer.php');
+	require_once(PATH . INCLUDES . 'admin/admin_footer.php');
 }
 
 ?>

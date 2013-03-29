@@ -7,11 +7,10 @@
 */
 
 require_once('../../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
+$dbpointer = getDB();
+
 $user = new User;
-
 $user->perm(true);
 
 if (empty($_POST['image_id'])) {
@@ -19,7 +18,7 @@ if (empty($_POST['image_id'])) {
 	$image_ids->find();
 	echo json_encode($image_ids->ids);
 } else {
-	$fsip->updateCount('comments', 'images', 'image_comment_count', $_POST['image_id']);
+	$dbpointer->updateCount('comments', 'images', 'image_comment_count', $_POST['image_id']);
 }
 
 ?>

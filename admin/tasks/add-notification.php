@@ -7,15 +7,12 @@
 */
 
 require_once('../../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
 $user = new User;
-
 $user->perm(true);
 
 if (@!empty($_POST['message'])) {
-	@$fsip->addNote($_POST['message'], $_POST['type']);
+	@addNote($_POST['message'], $_POST['type']);
 }
 
 ?>

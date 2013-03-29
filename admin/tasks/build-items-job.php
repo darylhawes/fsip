@@ -12,26 +12,26 @@ ini_set('display_errors', 0);
 chdir(__DIR__);
 
 require_once('../../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
+$dbpointer = getDB();
 
 // Deny external execution
 if(!isset($argv)){ exit(); };
 
 $table_ids = array();
+$tables_index = getTablesIndex();
 
-foreach($fsip->tables_index as $key => $value) {
+foreach($tables_index as $key => $value) {
 	$table_ids[] = ++$key;
 }
 	
 foreach($table_ids as $id) {
-	$table = $fsip->tables_index[--$id];
+	$table = $tables_index[--$id];
 	
 	$ids = new Find($table);
 	$ids->find();
 	
-	$query = $fsip->prepare('SELECT item_table_id FROM items WHERE item_table = :item_table;');
+	$query = $dbpointer->prepare('SELECT item_table_id FROM items WHERE item_table = :item_table;');
 	$query->execute(array(':item_table' => $table));
 	$items = $query->fetchAll();
 	
@@ -46,9 +46,9 @@ foreach($table_ids as $id) {
 			continue; 
 		}
 
-		$fields = array('item_table' => $fsip->tables_index[$id],
+		$fields = array('item_table' => $tables_index[$id],
 			'item_table_id' => $item_id);
-		$fsip->addRow($fields, 'items');
+		$dbpointer->addRow($fields, 'items');
 	}
 	
 	$delete_ids = array();
@@ -60,7 +60,7 @@ foreach($table_ids as $id) {
 		$delete_ids[] = $item_id;
 	}
 	
-	$query = $fsip->prepare('DELETE FROM items WHERE item_table = :item_table AND item_table_id IN (' . implode(', ', $delete_ids) . ')');
+	$query = $dbpointer->prepare('DELETE FROM items WHERE item_table = :item_table AND item_table_id IN (' . implode(', ', $delete_ids) . ')');
 	$query->execute(array(':item_table' => $table));
 }
 

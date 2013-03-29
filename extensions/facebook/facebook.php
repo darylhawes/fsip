@@ -1,12 +1,12 @@
 <?php
 
-class FacebookHandler extends Orbit{
+class FacebookHandler extends Orbit {
 	public $facebook;
 	public $facebook_username;
 	
 	private $facebook_password;
 	
-	public function __construct(){
+	public function __construct() {
 		parent::__construct();
 		
 		$this->facebook_active = $this->returnPref('facebook_active');
@@ -31,12 +31,12 @@ class FacebookHandler extends Orbit{
 		$this->facebook = new Facebook($config);
 	}
 	
-	public function __destruct(){
+	public function __destruct() {
 		parent::__destruct();
 	}
 	
-	public function orbit_config(){
-		if($this->facebook_active){
+	public function orbit_config() {
+		if ($this->facebook_active) {
 			$params = array('access_token' => $this->facebook_access_token);
 			$albums = $this->facebook->api('me/albums', $params);
 		
@@ -50,8 +50,8 @@ class FacebookHandler extends Orbit{
 		?>
 		<p>Every time you publish an image, it will be uploaded to <a href="http://www.facebook.com/">Facebook</a>.</p>
 		<?php
-		if($this->facebook_active){
-			$this->facebook_format_image = $this->makeHTMLSafe($this->facebook_format_image);
+		if ($this->facebook_active) {
+			$this->facebook_format_image = makeHTMLSafe($this->facebook_format_image);
 			?>
 			<table>
 				<tr>
@@ -103,9 +103,9 @@ class FacebookHandler extends Orbit{
 		}
 	}
 	
-	public function orbit_config_load(){
-		if(!empty($_GET['from'])){
-			switch($_GET['from']){
+	public function orbit_config_load() {
+		if (!empty($_GET['from'])) {
+			switch($_GET['from']) {
 				case 'facebook':
 					/*
 					$params = array('client_id' => '7c4c834772300f94f220af8c5198cd4a',
@@ -128,10 +128,8 @@ class FacebookHandler extends Orbit{
 					
 					$this->savePref();
 					
-					$this->addNote('You successfully linked your Facebook account.', 'success');
-					
-					$location = $this->location();
-					$fsip::headerLocationRedirect($location);
+					addNote('You successfully linked your Facebook account.', 'success');
+					headerLocationRedirect(location());
 					exit();
 					
 					break;
@@ -139,8 +137,8 @@ class FacebookHandler extends Orbit{
 		}
 		
 		
-		if(!empty($_GET['link'])){
-			switch($_GET['link']){
+		if (!empty($_GET['link'])) {
+			switch($_GET['link']) {
 				case 'facebook':
 					$facebook_oauth_token = $this->facebook->getAccessToken();
 					
@@ -151,18 +149,18 @@ class FacebookHandler extends Orbit{
 						'cancel_url' => 'http://fsip.delargy.com/callback/',
 						'req_perms' => 'user_photos, publish_stream, offline_access');
 					
-					$location = http://fsip.sdelargy.com/callback/?' . http_build_query(
+					$location = ('http://fsip.sdelargy.com/callback/?' . http_build_query(
 						array('to' => $this->facebook->getLoginUrl($params),
-						'from' => $this->locationFull(array('from' => 'facebook'))))
+						'from' => locationFull(array('from' => 'facebook'))))
 					);
-					$fsip::headerLocationRedirect($location);
+					headerLocationRedirect($location);
 					
 					exit();
 			}
 		}
 		
-		if(!empty($_GET['unlink'])){
-			switch($_GET['unlink']){
+		if (!empty($_GET['unlink'])) {
+			switch($_GET['unlink']) {
 				case 'facebook':
 					$this->facebook_active = false;
 					
@@ -170,9 +168,8 @@ class FacebookHandler extends Orbit{
 					$this->setPref('facebook_session', '');
 					$this->savePref();
 					
-					$this->addNote('You successfully unlinked your Facebook account.', 'success');
-					$location = $this->location();
-					$fsip::headerLocationRedirect($location);
+					addNote('You successfully unlinked your Facebook account.', 'success');
+					headerLocationRedirect(location());
 					exit();
 					
 					break;
@@ -198,7 +195,7 @@ class FacebookHandler extends Orbit{
 					
 					$this->addNote('You successfully linked your Facebook account.', 'success');
 					$location = $this->location();
-					$fsip::headerLocationRedirect($location);
+					headerLocationRedirect($location);
 					exit();
 					
 					break;
@@ -216,7 +213,7 @@ class FacebookHandler extends Orbit{
 					
 					$this->addNote('You successfully unlinked your Facebook account.', 'success');
 					$location = $this->location();
-					$fsip::headerLocationRedirect($location);
+					headerLocationRedirect($location);
 					exit();
 					
 					break;
@@ -225,7 +222,7 @@ class FacebookHandler extends Orbit{
 		*/
 	}
 	
-	public function orbit_config_save(){
+	public function orbit_config_save() {
 		$now = time();
 		$this->setPref('facebook_last_image_time', $now);
 		$this->setPref('facebook_last_post_time', $now);
@@ -239,21 +236,21 @@ class FacebookHandler extends Orbit{
 		$this->savePref();
 	}
 	
-	public function orbit_image($images, $override=false){
-		if(($this->facebook_auto != 'auto') && ($override === false)){ return; }
-		if(strpos($this->facebook_transmit, 'image') === false){ return; }
-		if(count($images) < 1){ return; }
+	public function orbit_image($images, $override=false) {
+		if (($this->facebook_auto != 'auto') && ($override === false)) { return; }
+		if (strpos($this->facebook_transmit, 'image') === false) { return; }
+		if (count($images) < 1) { return; }
 
 		$now = time();
 
 		foreach($images as $image){
 			$image_published = strtotime($image['image_published']);
 
-			if(empty($image_published)){ continue; }
-			if($image_published > $now){ continue; }
-			if($override !== true){
-				if($image_published <= $this->facebook_last_image_time){ continue; }
-				if($image['image_privacy'] != 1){ continue; }
+			if (empty($image_published)) { continue; }
+			if ($image_published > $now) { continue; }
+			if ($override !== true){
+				if ($image_published <= $this->facebook_last_image_time) { continue; }
+				if ($image['image_privacy'] != 1) { continue; }
 			}
 
 			$this->storeTask(array($this, 'upload_image'), $image);
@@ -263,7 +260,7 @@ class FacebookHandler extends Orbit{
 		$this->savePref();
 	}
 
-	public function upload_image($image){
+	public function upload_image($image) {
 		$canvas = new Canvas($this->facebook_format_image);
 		$canvas->assignArray($image);
 		$canvas->generate();

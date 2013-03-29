@@ -12,7 +12,7 @@
  * @version 1.1
  */
 
-class Orbit extends FSIP {
+class Orbit {
 	public $id;
 	public $uid;
 	
@@ -28,6 +28,7 @@ class Orbit extends FSIP {
 	public $extension_count;
 	
 	private $db_safe;
+	private $dbpointer;
 	
 	/**
 	 * Initiate Orbit object
@@ -35,16 +36,17 @@ class Orbit extends FSIP {
 	 * @param int|array $id Orbit IDs (otherwise all)
 	 */
 	public function __construct($id=null) {
-		parent::__construct();
-		
+//echo "contructing orbit!<br />";
+		$this->dbpointer = getDB();
+
 		// Start Orbit Engine
 		if (!is_subclass_of($this, 'Orbit')) {
 			if (empty($_SESSION['fsip']['extensions'])) {
 				if (empty($id)) {
-					$query = $this->prepare('SELECT * FROM extensions WHERE extension_status > 0 ORDER BY extension_title ASC;');
+					$query = $this->dbpointer->prepare('SELECT * FROM extensions WHERE extension_status > 0 ORDER BY extension_title ASC;');
 				} else {
 					$id = intval($id);
-					$query = $this->prepare('SELECT * FROM extensions WHERE extension_id = ' . $id . ' AND extension_status > 0;');
+					$query = $this->dbpointer->prepare('SELECT * FROM extensions WHERE extension_id = ' . $id . ' AND extension_status > 0;');
 				}
 				$query->execute();
 				$extensions = $query->fetchAll();
@@ -53,7 +55,7 @@ class Orbit extends FSIP {
 
 				foreach($extensions as &$extension) {
 					$extension['extension_uid'] = strval($extension['extension_uid']);
-					$extension['extension_file'] = parent::correctWinPath(PATH . EXTENSIONS . $extension['extension_folder'] . '/' . $extension['extension_file'] . '.php');
+					$extension['extension_file'] = correctWinPath(PATH . EXTENSIONS . $extension['extension_folder'] . '/' . $extension['extension_file'] . '.php');
 					$extension['extension_hooks'] = unserialize($extension['extension_hooks']);
 				}
 			
@@ -65,11 +67,11 @@ class Orbit extends FSIP {
 		} else { // Prepare Orbit-powered extension
 			if (empty($_SESSION['fsip']['extensions'])) {
 				if (empty($id)) {
-					$query = $this->prepare('SELECT * FROM extensions WHERE extension_class = :extension_class AND extension_status > 0;');
+					$query = $this->dbpointer->prepare('SELECT * FROM extensions WHERE extension_class = :extension_class AND extension_status > 0;');
 					$query->execute(array(':extension_class' => get_class($this)));
 				} else {
 					$id = intval($id);
-					$query = $this->prepare('SELECT * FROM extensions WHERE extension_id = ' . $id . ' AND extension_status > 0;');
+					$query = $this->dbpointer->prepare('SELECT * FROM extensions WHERE extension_id = ' . $id . ' AND extension_status > 0;');
 					$query->execute();
 				}
 				$extensions = $query->fetchAll();
@@ -111,7 +113,7 @@ class Orbit extends FSIP {
 			}
 			
 			$this->uid = strval($this->uid);
-			$this->file = parent::correctWinPath(PATH . EXTENSIONS . $this->folder . '/' . $this->file . '.php');
+			$this->file = correctWinPath(PATH . EXTENSIONS . $this->folder . '/' . $this->file . '.php');
 			if (!is_array($this->hooks)) {
 				$this->hooks = unserialize($this->hooks);
 			}
@@ -128,8 +130,6 @@ class Orbit extends FSIP {
 	public function __destruct() {
 		// Save extension data
 		$_SESSION['fsip']['extensions'] = $this->extensions;
-		
-		parent::__destruct();
 	}
 	
 	/**
@@ -151,7 +151,7 @@ class Orbit extends FSIP {
 	 * @return void
 	 */
 	public function returnPref($name, $default=null) {
-		return parent::returnForm($this->preferences, $name, $default);
+		return returnForm($this->preferences, $name, $default);
 	}
 	
 	/**
@@ -162,7 +162,7 @@ class Orbit extends FSIP {
 	 * @return void
 	 */
 	public function readPref($name, $check=true) {
-		return parent::readForm($this->preferences, $name, $check);
+		return readForm($this->preferences, $name, $check);
 	}
 	
 	/**
@@ -171,7 +171,7 @@ class Orbit extends FSIP {
 	 * @return void
 	 */
 	public function savePref() {
-		$query = $this->prepare('UPDATE extensions SET extension_preferences = :extension_preferences WHERE extension_uid = :extension_uid;');
+		$query = $this->dbpointer->prepare('UPDATE extensions SET extension_preferences = :extension_preferences WHERE extension_uid = :extension_uid;');
 		return $query->execute(array(':extension_preferences' => serialize($this->preferences), ':extension_uid' => $this->uid));
 	}
 	
@@ -181,7 +181,7 @@ class Orbit extends FSIP {
 	 * @return PDOStatement
 	 */
 	public function reset() {
-		$query = $this->prepare('UPDATE extensions SET extension_preferences = "" WHERE extension_uid = :extension_uid;');
+		$query = $this->dbpointer->prepare('UPDATE extensions SET extension_preferences = "" WHERE extension_uid = :extension_uid;');
 		return $this->execute(array(':extension_uid' => $this->uid));
 	}
 	
@@ -296,6 +296,7 @@ class Orbit extends FSIP {
 	 * @return mixed Default value
 	 */
 	public function hook($hook) {
+//echo "in orbit hook method<br />";
 		// Find arguments
 		$arguments = func_get_args();
 		
@@ -307,40 +308,54 @@ class Orbit extends FSIP {
 		} else {
 			$argument_pass = false;
 		}
+//echo "in orbit hook method 2<br />";
 		
 		// Configuration: maint_disable
 		$safe_hooks = array('config', 'config_load', 'config_save');
 		if (!in_array($hook, $safe_hooks)) {
-			if ($this->returnConf('maint_disable')) {
+			if (returnConf('maint_disable')) {
 				return $argument_pass;
 			}
 		}
+//echo "in orbit hook method 3<br />";
 		
 		// Remove hook name
 		$arguments = array_slice($arguments, 1, count($arguments) - 2);
 		// Determine variable type
 		if (isset($arguments[0])) {
-			$argument_return_type = $this->getType($arguments[0]);
+			$argument_return_type = fsip_getType($arguments[0]);
 		}
 		
+//echo "in orbit hook method 4<br />";
 		// Find respective extensions, execute their code
 		if (!empty($this->extensions)) {
+//echo "in orbit hook method 4.1<br />";
 			foreach($this->extensions as $extension) {
+//echo "in orbit hook method 4.2<br />";
 				if (@in_array($hook, $extension['extension_hooks'])) {
+//echo "in orbit hook method 4.3. Attempting to require".$extension['extension_file']."<br />";
 					require_once($extension['extension_file']);
+//echo "in orbit hook method 4.4<br />";
 					$orbit = new $extension['extension_class']();
+//echo "in orbit hook method 4.5<br />";
 					$method = 'orbit_' . $hook;
+//echo "in orbit hook method 4.6<br />";
 					if (method_exists($orbit, $method)) {
 						// Do method
+//echo "in orbit hook method 4.7<br />";
 						$return = call_user_func_array(array($orbit, $method), $arguments);
+//echo "in orbit hook method 4.8<br />";
 						// If variable type is the same, pass it along to future extensions
-						if (!empty($argument_return_type) and ($this->getType($return) == $argument_return_type)) {
+						if (!empty($argument_return_type) and (fsip_getType($return) == $argument_return_type)) {
+//echo "in orbit hook method 4.9<br />";
 							$arguments = array_merge(array($return), array_splice($arguments, 1));
+//echo "in orbit hook method 4.10<br />";
 						}
 					}
 				}
 			}
 		}
+//echo "in orbit hook method 5<br />";
 		
 		if (isset($arguments[0])) {
 			return $arguments[0];

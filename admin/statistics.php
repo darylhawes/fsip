@@ -7,15 +7,15 @@
 */
 
 require_once('../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true, 'statistics');
 
-// PAST 24 HOURS
+$db = getDB();
 
+
+// PAST 24 HOURS
 $then = strtotime('-24 hours');
 
 $hourly = new Stat($then);
@@ -128,7 +128,7 @@ $stats->getPageTypes();
 $stats->getRecentReferrers(10, false);
 
 foreach($stats->referrers_recent as &$referrer) {
-	$referrer['stat_referrer_display'] = $fsip->fitString($fsip->minimizeURL($referrer['stat_referrer']), 30);
+	$referrer['stat_referrer_display'] = fitString(minimizeURL($referrer['stat_referrer']), 30);
 }
 
 // POPULAR REFERRS
@@ -136,12 +136,12 @@ foreach($stats->referrers_recent as &$referrer) {
 $stats->getPopularReferrers(10, false);
 
 foreach($stats->referrers_popular as &$referrer) {
-	$referrer['stat_referrer_display'] = $fsip->fitString($fsip->minimizeURL($referrer['stat_referrer']), 30);
+	$referrer['stat_referrer_display'] = fitString(minimizeURL($referrer['stat_referrer']), 30);
 }
 
 define('TAB', 'dashboard');
 define('TITLE', 'FSIP Statistics');
-require_once(PATH . INCLUDES . '/admin_header.php');
+include_once(PATH . INCLUDES . 'admin/admin_header.php');
 
 ?>
 
@@ -196,7 +196,7 @@ require_once(PATH . INCLUDES . '/admin_header.php');
 			foreach($stats->pages as $page) {
 				echo '<tr>';
 				echo '<td class="right">' . number_format($page['stat_count']) . '</td>';
-				echo '<td><a href="' . BASE . substr($page['stat_page'], 1) . '">' . $fsip->fitString($page['stat_page'], 30) . '</a></td>';
+				echo '<td><a href="' . BASE . substr($page['stat_page'], 1) . '">' . fitString($page['stat_page'], 30) . '</a></td>';
 				echo '</tr>';
 			}
 ?>
@@ -243,7 +243,7 @@ require_once(PATH . INCLUDES . '/admin_header.php');
 <?php
 			foreach($stats->referrers_recent as $referrer) {
 				echo '<tr>';
-				echo '<td class="right quiet">' . $fsip->formatRelTime($referrer['stat_date'], 'M j, g:i a') . '</td>';
+				echo '<td class="right quiet">' . formatRelTime($referrer['stat_date'], 'M j, g:i a') . '</td>';
 				echo '<td><a href="' . $referrer['stat_referrer'] . '">' . $referrer['stat_referrer_display'] . '</a></td>';
 				echo '</tr>';
 			}
@@ -254,6 +254,6 @@ require_once(PATH . INCLUDES . '/admin_header.php');
 
 <?php
 
-require_once(PATH . INCLUDES . '/admin_footer.php');
+require_once(PATH . INCLUDES . 'admin/admin_footer.php');
 
 ?>

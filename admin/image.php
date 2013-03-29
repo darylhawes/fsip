@@ -7,26 +7,26 @@
 */
 
 require_once('../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
+
 $orbit = new Orbit;
-$user = new User;
 
+$user = new User;
 $user->perm(true, 'images');
 
+
 // GET PHOTO
-if (!$image_id = $fsip->findID($_GET['id'])) {
+if (!$image_id = findID($_GET['id'])) {
 	$location = LOCATION . BASE. ADMINFOLDER . 'library' . URL_CAP;
-	$fsip::headerLocationRedirect($location);
+	headerLocationRedirect($location);
 	exit();
 }
 
 // SAVE CHANGES
 if (!empty($_POST['image_id'])) {
-	if (!$image_id = $fsip->findID($_POST['image_id'])) {
+	if (!$image_id = findID($_POST['image_id'])) {
 		$location = LOCATION . BASE. ADMINFOLDER . 'library' . URL_CAP;
-		$fsip::headerLocationRedirect($location);
+		headerLocationRedirect($location);
 		exit();
 	}
 	
@@ -34,11 +34,11 @@ if (!empty($_POST['image_id'])) {
 	
 	if (isset($_POST['image_delete']) && (@$_POST['image_delete'] == 'delete')) {
 		if ($images->delete()) {
-			$fsip->addNote('The image has been deleted.', 'success');
+			addNote('The image has been deleted.', 'success');
 		}
 	} elseif(isset($_POST['image_recover']) && (@$_POST['image_recover'] == 'recover')) {
 		if ($images->recover()) {
-			$fsip->addNote('The image has been recovered.', 'success');
+			addNote('The image has been recovered.', 'success');
 		}
 	} else {
 		$image_title = trim($_POST['image_title']);
@@ -51,13 +51,13 @@ if (!empty($_POST['image_id'])) {
 			$image_markup_ext = $_POST['image_markup'];
 			$image_title = $orbit->hook('markup_title_' . $image_markup_ext, $image_title, $image_title);
 			$image_description = $orbit->hook('markup_' . $image_markup_ext, $image_description_raw, $image_description_raw);
-		} elseif($fsip->returnConf('web_markup')) {
-			$image_markup_ext = $fsip->returnConf('web_markup_ext');
+		} elseif(returnConf('web_markup')) {
+			$image_markup_ext = returnConf('web_markup_ext');
 			$image_title = $orbit->hook('markup_title_' . $image_markup_ext, $image_title, $image_title);
 			$image_description = $orbit->hook('markup_' . $image_markup_ext, $image_description_raw, $image_description_raw);
 		} else {
 			$image_markup_ext = '';
-			$image_description = $fsip->nl2br($image_description_raw);
+			$image_description = fsip_nl2br($image_description_raw);
 		}
 		
 		if (isset($_POST['image_comment_disabled']) && (@$_POST['image_comment_disabled'] == 'disabled')) {
@@ -95,15 +95,15 @@ if (!empty($_POST['image_id'])) {
 		if ($_REQUEST['go'] == 'next') {
 			$_SESSION['fsip']['go'] = 'next';
 			$location = LOCATION . BASE. ADMINFOLDER .  'images' . URL_ID . $image_ids->ids_after[0] . URL_CAP;
-			$fsip::headerLocationRedirect($location);
+			headerLocationRedirect($location);
 		} else {
 			$_SESSION['fsip']['go'] = 'previous';
 			$location = LOCATION . BASE. ADMINFOLDER . 'images' . URL_ID . $image_ids->ids_before[0] . URL_CAP;
-			$fsip::headerLocationRedirect($location);
+			headerLocationRedirect($location);
 		}
 		exit();
 	} else {
-		$fsip->callback();
+		callback();
 	}
 }
 
@@ -117,13 +117,13 @@ $comments = $images->getComments();
 $exifs = $images->getEXIF();
 
 if (!$image = @$images->images[0]) {
-	$fsip->addNote('The image you requested could not be found.', 'error');
-	$fsip->callback();
+	addNote('The image you requested could not be found.', 'error');
+	callback();
 }
 
 $comment_count = count($comments);
 if ($comment_count > 0) {
-	$comment_action = '<a href="' . BASE . ADMINFOLDER . 'comments' . URL_CAP . '?image=' . $image['image_id'] . '"><button>View ' . $fsip->returnCount($comment_count, 'comment') . ' (' . $comment_count . ')</button></a>';
+	$comment_action = '<a href="' . BASE . ADMINFOLDER . 'comments' . URL_CAP . '?image=' . $image['image_id'] . '"><button>View ' . returnCount($comment_count, 'comment') . ' (' . $comment_count . ')</button></a>';
 } else {
 	$comment_action = '';
 }
@@ -137,7 +137,7 @@ if ($published <= $now) {
 }
 
 $image_colorkey = $image['image_colorkey'];
-$image = $fsip->makeHTMLSafe($image);
+$image = makeHTMLSafe($image);
 
 define('TAB', 'library');
 if (!empty($image['image_title'])) {
@@ -145,7 +145,7 @@ if (!empty($image['image_title'])) {
 } else {
 	define('TITLE', 'FSIP Image');
 }
-require_once(PATH . INCLUDES . '/admin_header.php');
+require_once(PATH . INCLUDES . 'admin/admin_header.php');
 
 ?>
 
@@ -200,17 +200,17 @@ if (empty($image['image_title'])) {
 			
 			<p>
 				<label for="image_published">Publish date:</label><br />
-				<input type="text" id="image_published" name="image_published" placeholder="Unpublished" value="<?php echo $fsip->formatTime($image['image_published']); ?>" />
+				<input type="text" id="image_published" name="image_published" placeholder="Unpublished" value="<?php echo formatTime($image['image_published']); ?>" />
 			</p>
 			
 			<p>
 				<label for="image_privacy">Privacy level:</label><br />
-				<?php echo $fsip->showPrivacy('image_privacy', $image['image_privacy']); ?>
+				<?php echo showPrivacy('image_privacy', $image['image_privacy']); ?>
 			</p>
 			
 			<p>
 				<label for="right_id">Rights set:</label><br />
-				<?php echo $fsip->showRights('right_id', $image['right_id']); ?>
+				<?php echo showRights('right_id', $image['right_id']); ?>
 			</p>
 			
 			<?php if (!empty($image_colorkey)) { ?>
@@ -269,7 +269,7 @@ if (empty($image['image_title'])) {
 						</label>
 					</td>
 				</tr>
-				<?php if ($fsip->returnConf('comm_enabled')) { ?>
+				<?php if (returnConf('comm_enabled')) { ?>
 				<tr>
 					<td class="right" style="width: 5%"><input type="checkbox" id="image_comment_disabled" name="image_comment_disabled" value="disabled" <?php if($image['image_comment_disabled'] == 1){ echo 'checked="checked"'; } ?> /></td>
 					<td>
@@ -319,10 +319,10 @@ if (empty($image['image_title'])) {
 				and
 				<select name="go">
 					<option value="">return to previous screen</option>
-					<option value="next" <?php echo $fsip->readForm($_SESSION['fsip'], 'go', 'next'); ?>>go to next image</option>
-					<option value="previous" <?php echo $fsip->readForm($_SESSION['fsip'], 'go', 'previous'); ?>>go to previous image</option>
+					<option value="next" <?php echo readForm($_SESSION['fsip'], 'go', 'next'); ?>>go to next image</option>
+					<option value="previous" <?php echo readForm($_SESSION['fsip'], 'go', 'previous'); ?>>go to previous image</option>
 				</select>
-				or <a href="<?php echo $fsip->back(); ?>" class="autosave_delete">cancel</a>
+				or <a href="<?php echo back(); ?>" class="autosave_delete">cancel</a>
 			</p>
 		</div>
 	</form>
@@ -330,6 +330,6 @@ if (empty($image['image_title'])) {
 
 <?php
 
-require_once(PATH . INCLUDES . '/admin_footer.php');
+require_once(PATH . INCLUDES . 'admin/admin_footer.php');
 
 ?>

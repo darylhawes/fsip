@@ -7,13 +7,14 @@
 */
 
 require_once('../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
 $user = new User;
+$user->perm(true, 'features');
+
 $orbit = new Orbit;
 
-$user->perm(true, 'features');
+$dbpointer = getDB();
+
 
 if (!empty($_GET['act']) and ($_GET['act'] != 'bulk')) {
 	Find::clearMemory();
@@ -26,7 +27,7 @@ $_POST = array_map('strip_tags', $_POST);
 // Process actions
 if (!empty($_POST['do']) and ($_POST['do'] == 'Do')) {
 	$act = $_POST['act'];
-	$image_ids = $fsip->convertToIntegerArray($_POST['image_ids']);
+	$image_ids = convertToIntegerArray($_POST['image_ids']);
 	
 	if (count($image_ids) > 0) {
 		if ($act == 'tag_add') {
@@ -41,7 +42,7 @@ if (!empty($_POST['do']) and ($_POST['do'] == 'Do')) {
 					$notification .= $tag_name;
 				}
 				$notification .= '&#8221;.';
-				$fsip->addNote($notification, 'success');
+				addNote($notification, 'success');
 			}
 		} elseif($act == 'tag_remove') {
 			$tag_name = $_POST['act_tag_name'];
@@ -55,7 +56,7 @@ if (!empty($_POST['do']) and ($_POST['do'] == 'Do')) {
 					$notification .= $tag_name;
 				}
 				$notification .= '&#8221;.';
-				$fsip->addNote($notification, 'success');
+				addNote($notification, 'success');
 			}
 		} elseif($act == 'send') {
 			if (!empty($_POST['act_send'])) {
@@ -65,7 +66,7 @@ if (!empty($_POST['do']) and ($_POST['do'] == 'Do')) {
 				$orbit->hook('send_' . $act_send . '_image', $images->images, null);
 			}
 		} elseif($act == 'set_add') {
-			$set = $fsip->getRow('sets', $_POST['act_set_id']);
+			$set = $dbpointer->getRow('sets', $_POST['act_set_id']);
 		
 			if (!empty($set['set_images'])) {
 				$set_images = explode(', ', $set['set_images']);
@@ -81,12 +82,12 @@ if (!empty($_POST['do']) and ($_POST['do'] == 'Do')) {
 			$fields = array('set_images' => $set_images,
 				'set_image_count' => $set_image_count);
 		
-			$bool = $fsip->updateRow($fields, 'sets', $_POST['act_set_id']);
+			$bool = $dbpointer->updateRow($fields, 'sets', $_POST['act_set_id']);
 			if ($bool === true) {
-				$fsip->addNote('You successfully added to the set &#8220;<a href="' . BASE . ADMINFOLDER . 'search' . URL_ACT . 'sets' . URL_AID . @$set['set_id'] . URL_RW . '">' . $set['set_title'] . '</a>&#8221;.', 'success');
+				addNote('You successfully added to the set &#8220;<a href="' . BASE . ADMINFOLDER . 'search' . URL_ACT . 'sets' . URL_AID . @$set['set_id'] . URL_RW . '">' . $set['set_title'] . '</a>&#8221;.', 'success');
 			}
 		} elseif($act == 'set_remove') {
-			$set = $fsip->getRow('sets', $_POST['act_set_id']);
+			$set = $dbpointer->getRow('sets', $_POST['act_set_id']);
 		
 			if (!empty($set['set_images'])) {
 				$set_images = explode(', ', $set['set_images']);
@@ -108,9 +109,9 @@ if (!empty($_POST['do']) and ($_POST['do'] == 'Do')) {
 			$fields = array('set_images' => $set_images,
 				'set_image_count' => $set_image_count);
 		
-			$bool = $fsip->updateRow($fields, 'sets', $_POST['act_set_id']);
+			$bool = $dbpointer->updateRow($fields, 'sets', $_POST['act_set_id']);
 			if ($bool === true) {
-				$fsip->addNote('You successfully removed from the set &#8220;<a href="' . BASE . ADMINFOLDER . 'search' . URL_ACT . 'sets' . URL_AID . $set['set_id'] . URL_RW . '">' . $set['set_title'] . '</a>&#8221;.', 'success');
+				addNote('You successfully removed from the set &#8220;<a href="' . BASE . ADMINFOLDER . 'search' . URL_ACT . 'sets' . URL_AID . $set['set_id'] . URL_RW . '">' . $set['set_title'] . '</a>&#8221;.', 'success');
 			}
 		} elseif($act == 'right') {
 			$right_id = intval($_POST['act_right_id']);
@@ -118,7 +119,7 @@ if (!empty($_POST['do']) and ($_POST['do'] == 'Do')) {
 				$images = new Image($image_ids);
 				$bool = $images->updateFields(array('right_id' => $right_id));
 				if ($bool === true) {
-					$fsip->addNote('You successfully changed rights sets.', 'success');
+					addNote('You successfully changed rights sets.', 'success');
 				}
 			}
 		} elseif($act == 'privacy') {
@@ -127,7 +128,7 @@ if (!empty($_POST['do']) and ($_POST['do'] == 'Do')) {
 				$images = new Image($image_ids);
 				$bool = $images->updateFields(array('image_privacy' => $privacy_id));
 				if ($bool === true) {
-					$fsip->addNote('You successfully changed privacy levels.', 'success');
+					addNote('You successfully changed privacy levels.', 'success');
 				}
 			}
 		} elseif($act == 'geo') {
@@ -136,7 +137,7 @@ if (!empty($_POST['do']) and ($_POST['do'] == 'Do')) {
 			$images = new Image($image_ids);
 			$bool = $images->updateFields(array('image_geo' => $geo));
 			if ($bool === true) {
-				$fsip->addNote('You successfully set the location.', 'success');
+				addNote('You successfully set the location.', 'success');
 			}
 		} elseif($act == 'publish') {
 			$publish = $_POST['act_publish'];
@@ -144,13 +145,13 @@ if (!empty($_POST['do']) and ($_POST['do'] == 'Do')) {
 			$images = new Image($image_ids);
 			$bool = $images->updateFields(array('image_published' => $publish));
 			if ($bool === true) {
-				$fsip->addNote('You successfully set the publication date.', 'success');
+				addNote('You successfully set the publication date.', 'success');
 			}
 		} elseif ($act == 'delete') {
-			if ($fsip->returnConf('bulk_delete')) {
+			if (returnConf('bulk_delete')) {
 				$images = new Image($image_ids);
 				$images->delete();
-				$fsip->addNote('The images were successfully deleted.', 'success');
+				addNote('The images were successfully deleted.', 'success');
 			}
 		}
 	}
@@ -174,7 +175,7 @@ $images->hook();
 
 define('TAB', 'features');
 define('TITLE', 'FSIP Features');
-require_once(PATH . INCLUDES . '/admin_header.php');
+require_once(PATH . INCLUDES . 'admin/admin_header.php');
 
 ?>
 
@@ -205,14 +206,14 @@ require_once(PATH . INCLUDES . '/admin_header.php');
 					<option value="privacy">Switch to privacy level</option>
 					<option value="geo">Set location</option>
 					<option value="publish">Publish on</option>
-					<?php if($fsip->returnConf('bulk_delete')){ echo '<option value="delete">Delete</option>'; } ?>
+					<?php if (returnConf('bulk_delete')) { echo '<option value="delete">Delete</option>'; } ?>
 				</select>
 				<input type="text" class="s image_tag" id="act_tag_name" name="act_tag_name" />
 				<input type="text" class="s image_geo" id="act_geo" name="act_geo" />
 				<input type="text" class="s" id="act_publish" name="act_publish" />
-				<?php echo $fsip->showSets('act_set_id', true, true); ?>
-				<?php echo $fsip->showRights('act_right_id'); ?>
-				<?php echo $fsip->showPrivacy('act_privacy_id'); ?>
+				<?php echo showSets('act_set_id', true, true); ?>
+				<?php echo showRights('act_right_id'); ?>
+				<?php echo showPrivacy('act_privacy_id'); ?>
 				<select id="act_send" name="act_send">
 					<?php $orbit->hook('send_html_image'); ?>
 				</select>
@@ -279,6 +280,6 @@ require_once(PATH . INCLUDES . '/admin_header.php');
 
 <?php
 
-require_once(PATH . INCLUDES . '/admin_footer.php');
+require_once(PATH . INCLUDES . 'admin/admin_footer.php');
 
 ?>

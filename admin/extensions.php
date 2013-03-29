@@ -7,31 +7,34 @@
 */
 
 require_once('../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
 $user = new User;
-
 $user->perm(true, 'extensions');
+//echo "extensions 1<br />";
+
+$dbpointer = getDB();
+$fm = getFileManager();
+
 
 if (!empty($_GET['id'])) {
-	$extension_id = $fsip->findID($_GET['id']);
+	$extension_id = findID($_GET['id']);
 }
 
 if (!empty($_GET['act'])) {
 	$extension_act = $_GET['act'];
 }
+//echo "extensions 2<br />";
 
 // SAVE CHANGES
 if (!empty($_POST['extension_id'])) {
-	$extension_id = $fsip->findID($_POST['extension_id']);
+	$extension_id = findID($_POST['extension_id']);
 	
 	// Reset extension
 	if (@$_POST['extension_reset'] == 'reset') {
 		$fields = array('extension_preferences' => '');
-		$bool = $fsip->updateRow($fields, 'extensions', $extension_id);
+		$bool = $dbpointer->updateRow($fields, 'extensions', $extension_id);
 		if ($bool === true) {
-			$fsip->addNote('You successfully reset the extension.', 'success');
+			addNote('You successfully reset the extension.', 'success');
 			$reset = 1;
 		}
 	}
@@ -39,9 +42,9 @@ if (!empty($_POST['extension_id'])) {
 	// Disable extension
 	if (@$_POST['extension_disable'] == 'disable') {
 		$fields = array('extension_status' => 0);
-		$bool = $fsip->updateRow($fields, 'extensions', $extension_id);
+		$bool = $dbpointer->updateRow($fields, 'extensions', $extension_id);
 		if ($bool === true) {
-			$fsip->addNote('You successfully disabled the extension.', 'success');
+			addNote('You successfully disabled the extension.', 'success');
 			$disable = 1;
 		}
 	}
@@ -49,9 +52,9 @@ if (!empty($_POST['extension_id'])) {
 	// Enable extension
 	if (@$_POST['extension_enable'] == 'enable') {
 		$fields = array('extension_status' => 1);
-		$bool = $fsip->updateRow($fields, 'extensions', $extension_id);
+		$bool = $dbpointer->updateRow($fields, 'extensions', $extension_id);
 		if ($bool === true) {
-			$fsip->addNote('You successfully enabled the extension.', 'success');
+			addNote('You successfully enabled the extension.', 'success');
 			$enable = 1;
 		}
 	}
@@ -69,15 +72,17 @@ if (!empty($_POST['extension_id'])) {
 }
 
 // Configuration: maint_disable
-if ($fsip->returnConf('maint_disable')) {
-	$fsip->addNote('All extensions have been disabled.', 'notice');
+if (returnConf('maint_disable')) {
+	addNote('All extensions have been disabled.', 'notice');
 }
+//echo "extensions 3<br />";
 
 // Load current extensions
-$extensions = $fsip->getTable('extensions');
+$extensions = $dbpointer->getTable('extensions');
 
 // Seek all extensions
-$seek_extensions = $fsip->seekDirectory(PATH . EXTENSIONS, '');
+$seek_extensions = $fm->seekDirectory(PATH . EXTENSIONS, '');
+//echo "extensions 4<br />";
 
 $extension_ids = array();
 $extension_uids = array();
@@ -92,6 +97,7 @@ foreach($extensions as $extension) {
 	$extension_folders[] = $extension['extension_folder'];
 	$extension_classes[] = $extension['extension_class'];
 }
+//echo "extensions 5<br />";
 
 
 // Determine which themes have been removed, delete rows from table
@@ -103,30 +109,37 @@ foreach($extensions as $extension) {
 		$extension_deleted[] = $extension['extension_id'];
 	}
 }
+//echo "extensions 6<br />";
 
-$fsip->deleteRow('extensions', $extension_deleted);
+$dbpointer->deleteRow('extensions', $extension_deleted);
 
 // Determine which extensions are new, install them
 $extensions_installed = array();
 $extensions_updated = array();
 
+//echo "extensions 7<br />";
+
 foreach($seek_extensions as &$extension_folder) {
-	if (strpos($fsip->getFilename($extension_folder), '.') === 0) { continue; }
+	if (strpos($fm->getFilename($extension_folder), '.') === 0) { continue; }
 	
-	$extension_folder = $fsip->getFilename($extension_folder);
+	$extension_folder = $fm->getFilename($extension_folder);
+//echo "extensions 8, extfolder=$extension_folder<br />";
 	if (!in_array($extension_folder, $extension_folders)) {
 		$data = file_get_contents(PATH . EXTENSIONS . $extension_folder . '/extension.xml');
 		if (empty($data)) { 
-			$fsip->addNote('Could not install a new extension. Its XML file is missing or corrupted.', 'error'); continue; 
+			addNote('Could not install a new extension. Its XML file is missing or corrupted.', 'error'); continue; 
 		}
 		
 		$xml = new SimpleXMLElement($data);
+//echo "extensions 8.1<br />";
 		
 		if (in_array($xml->class, $extension_classes)) {
-			$fsip->addNote('Could not install a new extension. Its class name interferes with a pre-existing extension.', 'error');
+			addNote('Could not install a new extension. Its class name interferes with a pre-existing extension.', 'error');
 		}
-		
+//echo "extensions 8.2, about to require: ".PATH . EXTENSIONS . $extension_folder . '/' . $xml->file . '.php'."<br />";
+
 		require_once(PATH . EXTENSIONS . $extension_folder . '/' . $xml->file . '.php');
+//echo "extensions 8.3<br />";
 		
 		$extension_methods = get_class_methods(strval($xml->class));
 		$extension_hooks = array();
@@ -149,9 +162,10 @@ foreach($seek_extensions as &$extension_folder) {
 			'extension_description' => $xml->description,
 			'extension_creator_name' => $xml->creator->name,
 			'extension_creator_uri' => $xml->creator->uri);
-		$extension_intalled_id = $fsip->addRow($fields, 'extensions');
+		$extension_intalled_id = $dbpointer->addRow($fields, 'extensions');
 		$extensions_installed[] = $extension_intalled_id;
 	} else {
+//echo "extensions 9<br />";
 		$data = file_get_contents(PATH . EXTENSIONS . $extension_folder . '/extension.xml');
 		$xml = new SimpleXMLElement($data);
 		$keys = array_keys($extension_classes, $xml->class);
@@ -180,12 +194,13 @@ foreach($seek_extensions as &$extension_folder) {
 					'extension_description' => $xml->description,
 					'extension_creator_name' => $xml->creator->name,
 					'extension_creator_uri' => $xml->creator->uri);
-				$fsip->updateRow($fields, 'extensions', $id);
+				$dbpointer->updateRow($fields, 'extensions', $id);
 				$extensions_updated[] = $id;
 			}
 		}
 	}
 }
+//echo "extensions 10<br />";
 
 $extensions_installed_count = count($extensions_installed);
 if($extensions_installed_count > 0){
@@ -196,9 +211,9 @@ if($extensions_installed_count > 0){
 		$notification = 'You have successfully installed ' . $extensions_installed_count . ' extensions.';
 	}
 	
-	$fsip->addNote($notification, 'success');
+	addNote($notification, 'success');
 	
-	$extensions = $fsip->getTable('extensions');
+	$extensions = $dbpointer->getTable('extensions');
 }
 
 $extensions_updated_count = count($extensions_updated);
@@ -210,9 +225,9 @@ if($extensions_updated_count > 0){
 		$notification = 'You have successfully updated ' . $extensions_updated_count . ' extensions.';
 	}
 	
-	$fsip->addNote($notification, 'success');
+	addNote($notification, 'success');
 	
-	$extensions = $fsip->getTable('extensions');
+	$extensions = $dbpointer->getTable('extensions');
 }
 
 define('TAB', 'settings');
@@ -243,11 +258,11 @@ if(empty($extension_id)){
 		}
 	}
 */	
-	$extensions = $fsip->getTable('extensions', null, null, null, array('extension_status DESC', 'extension_title ASC'));
+	$extensions = $dbpointer->getTable('extensions', null, null, null, array('extension_status DESC', 'extension_title ASC'));
 	$extensions_count = @count($extensions);
 	
 	define('TITLE', 'FSIP Extensions');
-	require_once(PATH . INCLUDES . '/admin_header.php');
+	require_once(PATH . INCLUDES . 'admin/admin_header.php');
 
 	?>
 
@@ -306,20 +321,20 @@ if(empty($extension_id)){
 	
 	<?php
 
-	require_once(PATH . INCLUDES . '/admin_footer.php');
+	require_once(PATH . INCLUDES . 'admin/admin_footer.php');
 	
 }
 else{
 	// Get extension
-	$extension = $fsip->getRow('extensions', $extension_id);
-	$extension = $fsip->makeHTMLSafe($extension);
+	$extension = $dbpointer->getRow('extensions', $extension_id);
+	$extension = makeHTMLSafe($extension);
 	
 	if($extension['extension_status'] > 0){
 		$orbit = new Orbit($extension_id);
 		$orbit->hook('config_load');
 	
 		define('TITLE', 'Extension: &#8220;' . $extension['extension_title']  . '&#8221;');
-		require_once(PATH . INCLUDES . '/admin_header.php');
+		require_once(PATH . INCLUDES . 'admin/admin_header.php');
 	
 		?>
 	
@@ -341,18 +356,18 @@ else{
 				</tr>
 				<tr>
 					<td></td>
-					<td><input type="hidden" name="extension_id" value="<?php echo $extension['extension_id']; ?>" /><input type="submit" value="Save changes" /> or <a href="<?php echo $fsip->back(); ?>">cancel</a></td>
+					<td><input type="hidden" name="extension_id" value="<?php echo $extension['extension_id']; ?>" /><input type="submit" value="Save changes" /> or <a href="<?php echo back(); ?>">cancel</a></td>
 				</tr>
 			</table>
 		</form>
 	
 		<?php
 	
-		require_once(PATH . INCLUDES . '/admin_footer.php');
+		require_once(PATH . INCLUDES . 'admin/admin_footer.php');
 	}
 	else{
 		define('TITLE', 'Extension: &#8220;' . $extension['extension_title']  . '&#8221;');
-		require_once(PATH . INCLUDES . '/admin_header.php');
+		require_once(PATH . INCLUDES . 'admin/admin_header.php');
 		
 		?>
 		
@@ -370,14 +385,14 @@ else{
 				</tr>
 				<tr>
 					<td></td>
-					<td><input type="hidden" name="extension_id" value="<?php echo $extension['extension_id']; ?>" /><input type="submit" value="Save changes" /> or <a href="<?php echo $fsip->back(); ?>">cancel</a></td>
+					<td><input type="hidden" name="extension_id" value="<?php echo $extension['extension_id']; ?>" /><input type="submit" value="Save changes" /> or <a href="<?php echo back(); ?>">cancel</a></td>
 				</tr>
 			</table>
 		</form>
 		
 		<?php
 	
-		require_once(PATH . INCLUDES . '/admin_footer.php');
+		require_once(PATH . INCLUDES . 'admin/admin_footer.php');
 	}
 	
 }

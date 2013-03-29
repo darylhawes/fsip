@@ -7,11 +7,8 @@
 */
 
 require_once('../../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
 $user = new User;
-
 $user->perm(true);
 
 $valid = false;
@@ -28,12 +25,12 @@ if (isset($_REQUEST['max'])) {
 if (!empty($_REQUEST['series'])) {
 	if ($valid == true) {
 		$location = LOCATION . BASE. ADMINFOLDER . 'maintenance' . URL_CAP . '#rebuild-thumbnail-series';
-		$fsip::headerLocationRedirect($location);
+		headerLocationRedirect($location);
 		exit();
 	} else {
-		$fsip->addNote('You must select a valid series when rebuilding thumbnails by series.', 'error');
+		addNote('You must select a valid series when rebuilding thumbnails by series.', 'error');
 		$location = LOCATION . BASE. ADMINFOLDER . 'maintenance' . URL_CAP;
-		$fsip::headerLocationRedirect($location);
+		headerLocationRedirect($location);
 		exit();
 	}
 }

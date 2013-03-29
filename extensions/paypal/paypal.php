@@ -1,7 +1,7 @@
 <?php
 
-class PayPal extends Orbit{
-	public function __construct(){
+class PayPal extends Orbit {
+	public function __construct() {
 		parent::__construct();
 		
 		$this->pp_email = $this->returnPref('pp_email');
@@ -14,23 +14,23 @@ class PayPal extends Orbit{
 		$this->pp_tag = $this->returnPref('pp_tag');
 	}
 	
-	public function __destruct(){
+	public function __destruct() {
 		parent::__destruct();
 	}
 	
-	public function orbit_image($images){
-		if(!empty($this->pp_email)){
-			foreach($images as &$image){
-				if(!empty($this->pp_tag)){
-					if(!empty($image['image_tags_array'])){
-						if(!in_array($this->pp_tag, $image['image_tags_array'])){
+	public function orbit_image($images) {
+		if (!empty($this->pp_email)) {
+			foreach($images as &$image) {
+				if (!empty($this->pp_tag)) {
+					if (!empty($image['image_tags_array'])) {
+						if (!in_array($this->pp_tag, $image['image_tags_array'])) {
 							continue;
 						}
 					}
 				}
 				$paypal = '<form target="paypal" action="https://www.paypal.com/cgi-bin/webscr" method="post"><input type="hidden" name="item_name" value="Image #' . $image['image_id'];
-				if(!empty($image['image_title'])){
-					$paypal .= ' (' . $this->makeStringSafe($image['image_title']) . ')';
+				if (!empty($image['image_title'])) {
+					$paypal .= ' (' . makeStringSafe($image['image_title']) . ')';
 				}
 				$paypal .= '">' . $this->pp_items_html . $this->pp_submit_html . '</form>';
 				$image['image_paypal'] = $paypal;
@@ -40,15 +40,15 @@ class PayPal extends Orbit{
 		return $images;
 	}
 	
-	public function makeStringSafe($str){
+	public function makeStringSafe($str) {
 		$find = array('&#8220;', '&#8221;', '&#8217;');
 		$replace = array('&quot;', '&quot;', '&apos;');
 		$str = str_replace($find, $replace, $str);
 		return strtr(utf8_decode($str), utf8_decode('“”’ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûýýþÿŔŕ'), 'pppaaaaaaaceeeeiiiidnoooooouuuuybsaaaaaaaceeeeiiiidnoooooouuuyybyRr');
 	}
 	
-	public function orbit_body_close(){
-		if(!empty($this->pp_email)){
+	public function orbit_body_close() {
+		if (!empty($this->pp_email)) {
 			?>
 			<script src="<?php echo BASE . EXTENSIONS . $this->folder; ?>/js/minicart.js" type="text/javascript"></script>
 		    <script type="text/javascript">
@@ -58,9 +58,9 @@ class PayPal extends Orbit{
 		}
 	}
 	
-	public function orbit_config(){
-		$this->pp_email = $this->makeHTMLSafe($this->pp_email);
-		$this->pp_tag = $this->makeHTMLSafe($this->pp_tag);
+	public function orbit_config() {
+		$this->pp_email = makeHTMLSafe($this->pp_email);
+		$this->pp_tag = makeHTMLSafe($this->pp_tag);
 		
 		?>
 		<p>To accept payments using this extension you will need a PayPal account. For more information on PayPal, visit <a href="http://www.paypal.com/">PayPal&#8217;s Web site</a>. Add the Canvas tag <code>{Image_PayPal}</code> to a <code>{block:Images}</code> in your template. You will receive an email from PayPal when you make a sale.</p>
@@ -81,9 +81,9 @@ class PayPal extends Orbit{
 						
 						$currencies = array('USD', 'AUD', 'BRL', 'GBP', 'CAD', 'CZK', 'DKK', 'EUR', 'HKD', 'HUF', 'ILS', 'JPY', 'MXN', 'TWD', 'NZD', 'NOK', 'PHP', 'PLN', 'SGD', 'SEK', 'CHF', 'THB');
 						
-						foreach($currencies as $currency){
+						foreach($currencies as $currency) {
 							echo '<option value="' . $currency . '"';
-							if($currency == $this->pp_currency){
+							if ($currency == $this->pp_currency) {
 								echo ' selected="selected"';
 							}
 							echo '>' . $currency . '</option>';
@@ -113,22 +113,21 @@ class PayPal extends Orbit{
 					
 					$pp_items = $this->returnPref('pp_items');
 					
-					if(empty($pp_items)){
+					if (empty($pp_items)) {
 						?>
 						<input type="text" id="pp_item_0" name="pp_item_0" placeholder="Name" class="s pp_item" />
 						<input type="text" id="pp_price_0" name="pp_price_0" placeholder="Price" class="xs pp_price" />
 						<a id="pp_add_item"><button>Add another item</button></a>
 						<?php
-					}
-					else{
+					} else {
 						$pp_items = unserialize($pp_items);
 						$pp_item_count = count($pp_items);
 						
-						for($i=0; $i < $pp_item_count; $i++){
+						for($i=0; $i < $pp_item_count; $i++) {
 							$item_label = 'pp_item_' . $i;
 							$price_label = 'pp_price_' . $i;
 							?>
-							<input type="text" id="<?php echo $item_label; ?>" name="<?php echo $item_label; ?>" value="<?php echo $this->makeHTMLSafe($pp_items[$i]['name']); ?>" placeholder="Name" class="s pp_item" />
+							<input type="text" id="<?php echo $item_label; ?>" name="<?php echo $item_label; ?>" value="<?php echo makeHTMLSafe($pp_items[$i]['name']); ?>" placeholder="Name" class="s pp_item" />
 							<input type="text" id="<?php echo $price_label; ?>" name="<?php echo $price_label; ?>" value="<?php echo $pp_items[$i]['price']; ?>" placeholder="Price" class="xs pp_price" />
 							<?php
 							if($pp_item_count != ($i + 1)){ echo '<br />'; }
@@ -190,7 +189,7 @@ class PayPal extends Orbit{
 				$item_label = 'pp_item_' . $i;
 				$price_label = 'pp_price_' . $i;
 				if(!empty($_POST[$item_label]) and !empty($_POST[$price_label])){
-					$pp_items[] = array('name' => $this->reverseHTMLSafe($_POST[$item_label]),
+					$pp_items[] = array('name' => reverseHTMLSafe($_POST[$item_label]),
 						'price' => $_POST[$price_label]);
 				}
 			}
@@ -209,31 +208,31 @@ class PayPal extends Orbit{
 			<table><input type="hidden" name="on0" value="Item"><select name="os0" class="paypal_items">';
 			if($_POST['pp_format'] == 'emdash'){
 				foreach($pp_items as $item){
-					$pp_items_html .= '<option value="' . $this->makeHTMLSafe($item['name']) . '">' . $this->makeHTMLSafe($item['name']) . ' &#8212; ' . $item['price'] . '</option>';
+					$pp_items_html .= '<option value="' . makeHTMLSafe($item['name']) . '">' . makeHTMLSafe($item['name']) . ' &#8212; ' . $item['price'] . '</option>';
 				}
 			}
 			else{
 				foreach($pp_items as $item){
-					$pp_items_html .= '<option value="' . $this->makeHTMLSafe($item['name']) . '">' . $this->makeHTMLSafe($item['name']) . ' (' . $item['price'] . ')</option>';
+					$pp_items_html .= '<option value="' . makeHTMLSafe($item['name']) . '">' . makeHTMLSafe($item['name']) . ' (' . $item['price'] . ')</option>';
 				}
 			}
 			$pp_items_html .= '</select><input type="hidden" name="currency_code" value="USD">';
 			$i = 0;
 			foreach($pp_items as $item){
-				$pp_items_html .= '<input type="hidden" name="option_select' . $i . '" value="' . $this->makeHTMLSafe($item['name']) . '">';
+				$pp_items_html .= '<input type="hidden" name="option_select' . $i . '" value="' . makeHTMLSafe($item['name']) . '">';
 				$pp_items_html .= '<input type="hidden" name="option_amount' . $i . '" value="' . number_format(preg_replace('#[^0-9\.]#si', '', $item['price']), 2, '.', '') . '">';
 				$i++;
 			}
 			$pp_items_html .= '<input type="hidden" name="option_index" value="0">';
 			
-			$this->setPref('pp_email', $this->reverseHTMLSafe($_POST['pp_email']));
+			$this->setPref('pp_email', reverseHTMLSafe($_POST['pp_email']));
 			$this->setPref('pp_currency', $_POST['pp_currency']);
 			$this->setPref('pp_shipping', $_POST['pp_shipping']);
 			$this->setPref('pp_tax_rate', $_POST['pp_tax_rate']);
 			$this->setPref('pp_items', serialize($pp_items));
 			$this->setPref('pp_items_html', $pp_items_html);
 			$this->setPref('pp_format', $_POST['pp_format']);
-			$this->setPref('pp_tag', $this->reverseHTMLSafe($_POST['pp_tag']));
+			$this->setPref('pp_tag', reverseHTMLSafe($_POST['pp_tag']));
 			if(empty($_POST['pp_submit_html'])){
 				$_POST['pp_submit_html'] = '<br />' . "\n\n" . '<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_cart_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!" style="border:none; -webkit-box-shadow: none; -moz-box-shadow: none;">' . "\n\n" . '<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">';
 			}

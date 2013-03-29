@@ -12,7 +12,7 @@
  * @version 1.1
  */
 
-class Geo extends FSIP {
+class Geo {
 	public $city;
 	public $lat;
 	public $long;
@@ -38,7 +38,6 @@ class Geo extends FSIP {
 	 * @param int $radius Search radius (in miles)
 	 */
 	public function __construct($geo=null, $radius=1) {
-		parent::__construct();
 		
 		// Store data to object
 		$this->states = array('AL' => 'Alabama',
@@ -258,7 +257,7 @@ class Geo extends FSIP {
 	}
 	
 	public function __destruct() {
-		parent::__destruct();
+		//
 	}
 	
 	/**

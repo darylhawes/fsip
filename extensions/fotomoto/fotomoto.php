@@ -1,9 +1,9 @@
 <?php
 
-class Fotomoto extends Orbit{
+class Fotomoto extends Orbit {
 	private $fm_account_id;
 	
-	public function __construct(){
+	public function __construct() {
 		parent::__construct();
 		
 		$this->fm_account_id = $this->returnPref('fm_account_id');
@@ -14,23 +14,22 @@ class Fotomoto extends Orbit{
 		$this->fm_ecard_html = $this->returnPref('fm_ecard_html');
 	}
 	
-	public function __destruct(){
+	public function __destruct() {
 		parent::__destruct();
 	}
 	
-	public function orbit_image($images){
-		if(!empty($this->fm_account_id)){
-			if(!empty($images[0]['image_src_admin'])){
-				foreach($images as &$image){
+	public function orbit_image($images) {
+		if (!empty($this->fm_account_id)) {
+			if (!empty($images[0]['image_src_admin'])) {
+				foreach($images as &$image) {
 					$image['image_fotomoto_buy'] = '<a href="#" onclick="FOTOMOTO.API.showWindow(FOTOMOTO.API.BUY,\'' . $image['image_src_admin'] . '\'); event.preventDefault();">' . $this->fm_buy_html . '</a>';
 					$image['image_fotomoto_print'] = '<a href="#" onclick="FOTOMOTO.API.showWindow(FOTOMOTO.API.PRINT,\'' . $image['image_src_admin'] . '\'); event.preventDefault();">' . $this->fm_print_html . '</a>';
 					$image['image_fotomoto_file'] = '<a href="#" onclick="FOTOMOTO.API.showWindow(FOTOMOTO.API.FILE,\'' . $image['image_src_admin'] . '\'); event.preventDefault();">' . $this->fm_file_html . '</a>';
 					$image['image_fotomoto_card'] = '<a href="#" onclick="FOTOMOTO.API.showWindow(FOTOMOTO.API.CARD,\'' . $image['image_src_admin'] . '\'); event.preventDefault();">' . $this->fm_card_html . '</a>';
 					$image['image_fotomoto_ecard'] = '<a href="#" onclick="FOTOMOTO.API.showWindow(FOTOMOTO.API.ECARD,\'' . $image['image_src_admin'] . '\'); event.preventDefault();">' . $this->fm_ecard_html . '</a>';
 				}
-			}
-			else{
-				foreach($images as &$image){
+			} else {
+				foreach($images as &$image) {
 					$src = BASE . IMAGEDATA . $image['image_directory'] . $image['image_id'] . '_admin.' . $image['image_ext'];
 					$image['image_fotomoto_buy'] = '<a href="#" onclick="FOTOMOTO.API.showWindow(FOTOMOTO.API.BUY,\'' . $src . '\'); event.preventDefault();">' . $this->fm_buy_html . '</a>';
 					$image['image_fotomoto_print'] = '<a href="#" onclick="FOTOMOTO.API.showWindow(FOTOMOTO.API.PRINT,\'' . $src . '\'); event.preventDefault();">' . $this->fm_print_html . '</a>';
@@ -44,15 +43,15 @@ class Fotomoto extends Orbit{
 		}
 	}
 	
-	public function orbit_body_close(){
-		if(!empty($this->fm_account_id)){
+	public function orbit_body_close() {
+		if (!empty($this->fm_account_id)) {
 			?>
 			<script type="text/javascript" src="http://widget.fotomoto.com/stores/script/<?php echo $this->fm_account_id; ?>.js?api=true"></script>
 			<?php
 		}
 	}
 	
-	public function orbit_config(){
+	public function orbit_config() {
 		$this->fm_account_id = $this->makeHTMLSafe($this->fm_account_id);
 		$this->fm_buy_html = $this->makeHTMLSafe($this->fm_buy_html);
 		$this->fm_print_html = $this->makeHTMLSafe($this->fm_print_html);
@@ -115,13 +114,13 @@ class Fotomoto extends Orbit{
 		<?php
 	}
 	
-	public function orbit_config_save(){
-		if(isset($_POST['fm_account_id'])){
-			if(empty($_POST['fm_buy_html'])){ $_POST['fm_buy_html'] = 'Buy image'; }
-			if(empty($_POST['fm_print_html'])){ $_POST['fm_print_html'] = 'Buy print'; }
-			if(empty($_POST['fm_file_html'])){ $_POST['fm_file_html'] = 'Buy file'; }
-			if(empty($_POST['fm_card_html'])){ $_POST['fm_card_html'] = 'Buy card'; }
-			if(empty($_POST['fm_ecard_html'])){ $_POST['fm_ecard_html'] = 'Send ecard'; }
+	public function orbit_config_save() {
+		if (isset($_POST['fm_account_id'])) {
+			if (empty($_POST['fm_buy_html'])) { $_POST['fm_buy_html'] = 'Buy image'; }
+			if (empty($_POST['fm_print_html'])) { $_POST['fm_print_html'] = 'Buy print'; }
+			if (empty($_POST['fm_file_html'])) { $_POST['fm_file_html'] = 'Buy file'; }
+			if (empty($_POST['fm_card_html'])) { $_POST['fm_card_html'] = 'Buy card'; }
+			if (empty($_POST['fm_ecard_html'])) { $_POST['fm_ecard_html'] = 'Send ecard'; }
 			
 			$this->setPref('fm_account_id', $this->reverseHTMLSafe($_POST['fm_account_id']));
 			$this->setPref('fm_buy_html', $this->reverseHTMLSafe($_POST['fm_buy_html']));
