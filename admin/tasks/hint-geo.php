@@ -7,9 +7,6 @@
 */
 
 require_once('../../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
-
-$fsip = new FSIP;
 
 $hint = strip_tags($_GET['term']);
 

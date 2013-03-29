@@ -13,9 +13,7 @@ if (empty($_SERVER['PHP_AUTH_USER'])) {
 }
 
 require_once('../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP();
 $user = new User();
 
 if ($user->auth($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) === false) {
@@ -32,7 +30,7 @@ require_once(PATH . CLASSES . 'cache_lite/Lite.php');
 // Set a few options
 $options = array(
     'cacheDir' => PATH . CACHE,
-    'lifeTime' => $fsip->returnConf('syndication_cache_time')
+    'lifeTime' => returnConf('syndication_cache_time')
 );
 
 // Create a Cache_Lite object

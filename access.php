@@ -7,15 +7,14 @@
 */
 
 require_once('config.php');
-require_once(PATH . CLASSES . 'fsip.php');
+$user = new User();
 
-$fsip = new FSIP;
-$fsip->access($_REQUEST['id']);
+$user->access($_REQUEST['id']);
 
 session_write_close();
 
 $location = LOCATION . BASE;
-$fsip::headerLocationRedirect($location);
+headerLocationRedirect($location);
 exit();
 
 ?>

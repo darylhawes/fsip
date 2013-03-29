@@ -7,9 +7,7 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
 $user = new User;
 
 $user->perm(true, 'tags');
@@ -38,9 +36,9 @@ if(!empty($_POST['tag_id'])){
 		
 		// Tag parents
 		$tag_parents = json_decode($_POST['image_tags_input']);
-		$tag_parents = array_map(array($fsip, 'makeUnicode'), $tag_parents);
+		$tag_parents = array_map('makeUnicode', $tag_parents);
 		
-		$fields = array('tag_name' => $fsip->makeUnicode($tag_name),
+		$fields = array('tag_name' => makeUnicode($tag_name),
 			'tag_parents' => serialize($tag_parents));
 		$fsip->updateRow($fields, 'tags', $tag_id);
 		
@@ -53,10 +51,10 @@ if(!empty($_POST['tag_id'])){
 	unset($tag_id);
 }
 else{
-	$fsip->deleteEmptyRow('tags', array('tag_name'));
+	$dbpointer->deleteEmptyRow('tags', array('tag_name'));
 }
 
-$tags = $fsip->getTags(true);
+$tags = $dbpointer->getTags(true);
 $tag_count = count($tags);
 
 define('TAB', 'features');

@@ -7,14 +7,34 @@
 */
 
 require_once('../../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
-
-$fsip = new FSIP;
 
 $hint = strip_tags($_GET['term']);
 
-$tags = $fsip->hintTag($hint);
+$tags = hintTag($hint);
 
 echo json_encode($tags);
 
+/**
+ * List tags by search, for suggestions
+ *
+ * @param string $hint Search string
+ * @return array
+ */
+function hintTag($hint) {
+	$hint_lower = strtolower($hint);
+	
+	$sql = 'SELECT DISTINCT(tags.tag_name) FROM tags WHERE LOWER(tags.tag_name) LIKE :hint_lower ORDER BY tags.tag_name ASC';
+	$dbpointer = getDB();
+	$query = $dbpointer->prepare($sql);
+	$query->execute(array(':hint_lower' => $hint_lower . '%'));
+	$tags = $query->fetchAll();
+	
+	$tags_list = array();
+	
+	foreach($tags as $tag) {
+		$tags_list[] = $tag['tag_name'];
+	}
+	
+	return $tags_list;
+}
 ?>

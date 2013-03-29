@@ -7,16 +7,18 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
+//echo "comments 1<br />";
 
-$fsip = new FSIP;
 $orbit = new Orbit;
-$user = new User;
 
+$user = new User;
 $user->perm(true, 'editor');
+//echo "comments 3<br />";
+
+$dbpointer = getDB();
 
 if (!empty($_GET['id'])) {
-	$comment_id = $fsip->findID($_GET['id']);
+	$comment_id = findID($_GET['id']);
 }
 
 if (!empty($_GET['act'])) {
@@ -29,14 +31,15 @@ if (!empty($_GET['act'])) {
 		$comment_ids->saveMemory();
 		
 		$location = LOCATION . BASE. ADMINFOLDER . 'comments' . URL_ACT . 'results' . URL_RW;
-		$fsip::headerLocationRedirect($location);
+		headerLocationRedirect($location);
 		exit();
 	}
 }
+//echo "comments 4<br />";
 
 // SAVE CHANGES
 if (!empty($_POST['comment_id'])) {
-	$comment_id = $fsip->findID($_POST['comment_id']);
+	$comment_id = findID($_POST['comment_id']);
 	
 	$comment = new Comment($comment_id);
 	
@@ -44,24 +47,24 @@ if (!empty($_POST['comment_id'])) {
 		$comment_text_raw = $_POST['raw_response'];
 		
 		if (!empty($_POST['image_id'])) {
-			$id = $fsip->findID($_POST['image_id']);
+			$id = findID($_POST['image_id']);
 			$id_type = 'image_id';
 		}
 		
 		// Configuration: comm_markup
-		if ($fsip->returnConf('web_markup')) {
-			$comm_markup_ext = $fsip->returnConf('web_markup_ext');
+		if (returnConf('web_markup')) {
+			$comm_markup_ext = returnConf('web_markup_ext');
 			$comment_text = $orbit->hook('markup_' . $comm_markup_ext, $comment_text_raw, $comment_text_raw);
 		} else {
 			$comm_markup_ext = '';
-			$comment_text = $fsip->nl2br($comment_text_raw);
+			$comment_text = fsip_nl2br($comment_text_raw);
 		}
 		
 		$fields = array($id_type => $id,
 			'comment_response' => $comment_id,
 			'comment_status' => 1,
-			'comment_text' => $fsip->makeUnicode($comment_text),
-			'comment_text_raw' => $fsip->makeUnicode($comment_text_raw),
+			'comment_text' => makeUnicode($comment_text),
+			'comment_text_raw' => makeUnicode($comment_text_raw),
 			'comment_markup' => $comm_markup_ext,
 			'user_id' => $user->user['user_id'],
 			'comment_author_name' => $user->user['user_name'],
@@ -71,50 +74,50 @@ if (!empty($_POST['comment_id'])) {
 		
 		$fields = $orbit->hook('comment_add', $fields, $fields);
 		
-		if (!$comment_id = $fsip->addRow($fields, 'comments')) {
-			$fsip->addNote('The response could not be added.', 'error');
+		if (!$comment_id = $dbpointer->addRow($fields, 'comments')) {
+			addNote('The response could not be added.', 'error');
 		} else {
 			// Update comment counts
 			if ($id_type == 'image_id') {
-				$fsip->updateCount('comments', 'images', 'image_comment_count', $id);
+				$dbpointer->updateCount('comments', 'images', 'image_comment_count', $id);
 			}
 			
-			$fsip->addNote('The response was successfully added.', 'success');
+			addNote('The response was successfully added.', 'success');
 		}
 	}
 	
 	if (isset($_POST['comment_delete']) and ($_POST['comment_delete'] == 'delete')) {
 		if ($comment->delete()) {
-			$fsip->addNote('The comment has been deleted.', 'success');
+			addNote('The comment has been deleted.', 'success');
 		}
 		
 		// Update comment counts
 		if (!empty($_POST['image_id'])) {
-			$id = $fsip->findID($_POST['image_id']);
+			$id = findID($_POST['image_id']);
 			$id_type = 'image_id';
 		}
 		
 		if ($id_type == 'image_id') {
-			$fsip->updateCount('comments', 'images', 'image_comment_count', $id);
+			$dbpointer->updateCount('comments', 'images', 'image_comment_count', $id);
 		}
 	} elseif (isset($_POST['comment_recover']) and ($_POST['comment_recover'] == 'recover')) {
 		if ($comment->recover()){
-			$fsip->addNote('The comment has been recovered.', 'success');
+			addNote('The comment has been recovered.', 'success');
 		}
 		
 		// Update comment counts
 		if (!empty($_POST['image_id'])) {
-			$id = $fsip->findID($_POST['image_id']);
+			$id = findID($_POST['image_id']);
 			$id_type = 'image_id';
 		}
 		
 		if ($id_type == 'image_id') {
-			$fsip->updateCount('comments', 'images', 'image_comment_count', $id);
+			$dbpointer->updateCount('comments', 'images', 'image_comment_count', $id);
 		}
 	} elseif (!empty($_POST['comment_quick'])) {
 		if ($_POST['comment_quick'] == 'go_image') {
 			$location = LOCATION . BASE. ADMINFOLDER . 'image' . URL_ID . $comment->comments[0]['image_id'] . URL_RW;
-			$fsip::headerLocationRedirect($location);
+			headerLocationRedirect($location);
 			exit();
 		} elseif($_POST['comment_quick'] == 'publish') {
 			$fields = array('comment_status' => 1);
@@ -122,22 +125,22 @@ if (!empty($_POST['comment_id'])) {
 		} elseif($_POST['comment_quick'] == 'unpublish') {
 			$fields = array('comment_status' => 0);
 			$comment->updateFields($fields);
-		} elseif($_POST['comment_quick'] == 'spam') {
+		} elseif ($_POST['comment_quick'] == 'spam') {
 			$fields = array('comment_status' => -1);
 			$comment->updateFields($fields);
-		} elseif($_POST['comment_quick'] == 'delete') {
-			if($comment->delete()){
-				$fsip->addNote('The comment has been deleted.', 'success');
+		} elseif ($_POST['comment_quick'] == 'delete') {
+			if ($comment->delete()) {
+				addNote('The comment has been deleted.', 'success');
 			}
 
 			// Update comment counts
 			if (!empty($_POST['image_id'])) {
-				$id = $fsip->findID($_POST['image_id']);
+				$id = findID($_POST['image_id']);
 				$id_type = 'image_id';
 			}
 
 			if ($id_type == 'image_id') {
-				$fsip->updateCount('comments', 'images', 'image_comment_count', $id);
+				$dbpointer->updateCount('comments', 'images', 'image_comment_count', $id);
 			}
 		}
 	} else {
@@ -148,12 +151,12 @@ if (!empty($_POST['comment_id'])) {
 		if (!empty($_POST['comm_markup'])) {
 			$comment_markup_ext = $_POST['comm_markup'];
 			$comment_text = $orbit->hook('markup_' . $comment_markup_ext, $comment_text_raw, $comment_text);
-		} elseif($fsip->returnConf('comm_markup')) {
-			$comment_markup_ext = $fsip->returnConf('comm_markup_ext');
+		} elseif(returnConf('comm_markup')) {
+			$comment_markup_ext = returnConf('comm_markup_ext');
 			$comment_text = $orbit->hook('markup_' . $comment_markup_ext, $comment_text_raw, $comment_text);
 		} else {
 			$comment_markup_ext = '';
-			$comment_text = $fsip->nl2br($comment_text_raw);
+			$comment_text = fsip_nl2br($comment_text_raw);
 		}
 		
 		
@@ -163,8 +166,8 @@ if (!empty($_POST['comment_id'])) {
 			$comment_status = 1;
 		}
 		
-		$fields = array('comment_text_raw' => $fsip->makeUnicode($comment_text_raw),
-			'comment_text' => $fsip->makeUnicode($comment_text),
+		$fields = array('comment_text_raw' => makeUnicode($comment_text_raw),
+			'comment_text' => makeUnicode($comment_text),
 			'comment_status' => $comment_status);
 		
 		$comment->updateFields($fields);
@@ -201,28 +204,35 @@ if (!empty($_POST['comment_id'])) {
 	}
 }
 
+//echo "comments 6<br />";
 define('TAB', 'comments');
 
 // GET COMMENTS TO VIEW OR PILE TO EDIT
 if (empty($comment_id)) {
+//echo "comments 7<br />";
 	$comment_ids = new Find('comments');
 	$comment_ids->page(null, 50);
 	if (isset($comment_act) and ($comment_act == 'results')) { 
 		$comment_ids->memory(); 
 	}
 	$comment_ids->find();
+//echo "comments 8<br />";
 	
 	$comments = new Comment($comment_ids);
+//echo "comments 9<br />";
+//print_r($comments);
 	$comments->formatTime();
-	$comments->comments = $fsip->stripTags($comments->comments);
-	
+//echo "comments 9.1<br />";
+	$comments->comments = stripTags($comments->comments);
+//echo "comments 9.2<br />";
+
 	$image_ids = $comments->image_ids;
 	
 	$images = new Image($image_ids);
 	$images->getSizes('square');
 	
 	define('TITLE', 'FSIP Comments');
-	require_once(PATH . INCLUDES . '/admin_header.php');
+	require_once(PATH . INCLUDES . 'admin/admin_header.php');
 
 	?>
 	
@@ -284,7 +294,7 @@ if (empty($comment_id)) {
 	
 <?php
 	// Configuration: comm_enabled
-	if (!$fsip->returnConf('comm_enabled')) {
+	if (!returnConf('comm_enabled')) {
 ?>
 		<p class="notice">New comments have been disabled. You can enabled comments in your <a href="<?php echo BASE . ADMINFOLDER . 'configuration' . URL_CAP; ?>">configuration</a>.</p><br />
 <?php
@@ -325,8 +335,8 @@ if (empty($comment_id)) {
 				echo '<option value="go_image">Go to image</option>';
 			}
 			echo '</select> <input type="hidden" name="comment_id" value="' . $comment['comment_id'] . '" /><input type="submit" value="Do" /></form>\'></button></div>';
-			echo '<strong><a href="' . BASE . ADMINFOLDER . 'comments' . URL_ID . $comment['comment_id'] . URL_RW . '" class="large tip" title="' . $fsip->makeHTMLSafe($fsip->fitStringByWord(strip_tags($comment['comment_text']), 150)) . '">';
-			echo $fsip->fitStringByWord(strip_tags($comment['comment_text']), 50);
+			echo '<strong><a href="' . BASE . ADMINFOLDER . 'comments' . URL_ID . $comment['comment_id'] . URL_RW . '" class="large tip" title="' . makeHTMLSafe(fitStringByWord(strip_tags($comment['comment_text']), 150)) . '">';
+			echo fitStringByWord(strip_tags($comment['comment_text']), 50);
 			echo '</a></strong><br /><span class="quiet">';
 			
 			if (!empty($comment['user_id'])) {
@@ -373,14 +383,14 @@ if (empty($comment_id)) {
 <?php
 	}
 	
-	require_once(PATH . INCLUDES . '/admin_footer.php');
+	require_once(PATH . INCLUDES . 'admin/admin_footer.php');
 	
 } else {
-	$comment = $fsip->getRow('comments', $comment_id);
-	$comment = $fsip->makeHTMLSafe($comment);
+	$comment = $dbpointer->getRow('comments', $comment_id);
+	$comment = makeHTMLSafe($comment);
 	
 	define('TITLE', 'FSIP Comment');
-	require_once(PATH . INCLUDES . '/admin_header.php');
+	require_once(PATH . INCLUDES . 'admin/admin_header.php');
 	
 	$email_action = '';
 	
@@ -448,7 +458,7 @@ if (empty($comment_id)) {
 					<p>
 						<label>Web site:</label><br />
 						<span class="quiet">
-							<a href="<?php echo $comment['comment_author_uri']; ?>"><?php echo $fsip->fitString($fsip->minimizeURL($comment['comment_author_uri']), 100); ?></a>
+							<a href="<?php echo $comment['comment_author_uri']; ?>"><?php echo fitString(minimizeURL($comment['comment_author_uri']), 100); ?></a>
 						</span>
 					</p>
 <?php
@@ -493,16 +503,16 @@ if (empty($comment_id)) {
 			and
 			<select name="go">
 				<option value="">return to previous screen</option>
-				<option value="next" <?php echo $fsip->readForm($_SESSION['fsip'], 'go', 'next'); ?>>go to next comment</option>
-				<option value="previous" <?php echo $fsip->readForm($_SESSION['fsip'], 'go', 'previous'); ?>>go to previous comment</option>
+				<option value="next" <?php echo readForm($_SESSION['fsip'], 'go', 'next'); ?>>go to next comment</option>
+				<option value="previous" <?php echo readForm($_SESSION['fsip'], 'go', 'previous'); ?>>go to previous comment</option>
 			</select>
-			or <a href="<?php echo $fsip->back(); ?>">cancel</a>
+			or <a href="<?php echo back(); ?>">cancel</a>
 		</p>
 	</form>
 
 <?php
 	
-	require_once(PATH . INCLUDES . '/admin_footer.php');
+	require_once(PATH . INCLUDES . 'admin/admin_footer.php');
 	
 }
 

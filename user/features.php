@@ -7,9 +7,7 @@
 */
 
 require_once('./../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
 $user = new User;
 $orbit = new Orbit;
 
@@ -218,14 +216,14 @@ require_once(PATH . ADMIN . 'includes/header.php');
 					<option value="privacy">Switch to privacy level</option>
 					<option value="geo">Set location</option>
 					<option value="publish">Publish on</option>
-					<?php if($fsip->returnConf('bulk_delete')){ echo '<option value="delete">Delete</option>'; } ?>
+					<?php if(returnConf('bulk_delete')){ echo '<option value="delete">Delete</option>'; } ?>
 				</select>
 				<input type="text" class="s image_tag" id="act_tag_name" name="act_tag_name" />
 				<input type="text" class="s image_geo" id="act_geo" name="act_geo" />
 				<input type="text" class="s" id="act_publish" name="act_publish" />
-				<?php echo $fsip->showSets('act_set_id', true, true); ?>
-				<?php echo $fsip->showRights('act_right_id'); ?>
-				<?php echo $fsip->showPrivacy('act_privacy_id'); ?>
+				<?php echo showSets('act_set_id', true, true); ?>
+				<?php echo showRights('act_right_id'); ?>
+				<?php echo showPrivacy('act_privacy_id'); ?>
 				<select id="act_send" name="act_send">
 					<?php $orbit->hook('send_html_image'); ?>
 				</select>
