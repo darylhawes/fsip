@@ -49,11 +49,6 @@
 
 <p>FSIP is open source software and <a href="https://github.com/darylhawes/fsip"> available for download for free on GitHub</a>.</p>
 
-
-<h6 id="#why-web-site">Why do I need my own Web site?</h6>
-
-<p>FSIP installs on your Web site so you have absolute control over it. If our Web site becomes unavailable or we should cease operations, your FSIP-powered Web site will continue to work just fine. Unlike &#8220;hosted&#8221; solutions, you never sacrifice the copyrights associated with your work.</p>
-
 <h6 id="#how-difficult">How difficult is it to install? Can I do it myself?</h6>
 
 <p>Installing FSIP is about as difficult as installing a CMS such as <a href="http://www.wordpress.org/">WordPress</a>.</p>
