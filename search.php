@@ -7,9 +7,8 @@
 */
 
 require_once('config.php');
-require_once(PATH . CLASSES . 'fsip.php');
 
-$fsip = new FSIP;
+$dbpointer = getDB();
 
 if (isset($_REQUEST['type'])) {
 	$type = $_REQUEST['type'];
@@ -25,11 +24,11 @@ if (isset($_REQUEST['type'])) {
 	$_SESSION['fsip']['search']['table'] = $type;
 	
 	$location = LOCATION . BASE . 'results' . URL_CAP;
-	$fsip::headerLocationRedirect($location);
+	headerLocationRedirect($location);
 	exit();
 }
 
-$fsip->recordStat('home');
+$dbpointer->recordStat('home');
 
 $header = new Canvas;
 $header->load('header');
@@ -38,8 +37,8 @@ $header->display();
 
 $content = new Canvas;
 $content->load('search');
-$content->assign('EXIF_Names', $fsip->showEXIFNames('exif_name'));
-$content->assign('Rights', $fsip->showRights('rights'));
+$content->assign('EXIF_Names', showEXIFNames('exif_name'));
+$content->assign('Rights', showRights('rights'));
 $content->display();
 
 $footer = new Canvas;
