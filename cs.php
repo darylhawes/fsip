@@ -9,7 +9,6 @@
 //Compatibility Suite
 class CS {
 	const build = 3;
-	const copyright = 'Powered by <a href="http://github.com/darylhawes/fsip">FSIP</a> based on <a href="http://www.alkalineapp.com/">Alkaline</a> under MIT license.';
 	const version = '1.2';
 	
 	public $compatible;
