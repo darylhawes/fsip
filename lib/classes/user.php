@@ -119,7 +119,7 @@ class User {
 		} 
 		
 		// Check database
-		$query = $this->dbpointer->prepare('SELECT * FROM users WHERE user_user = :username AND user_pass = :password;');
+		$query = $this->dbpointer->prepare('SELECT * FROM users WHERE user_username = :username AND user_pass = :password;');
 		$query->execute(array(':username' => $username, ':password' => sha1($password . SALT)));
 		$this->user = $query->fetchAll();
 		
@@ -176,7 +176,7 @@ class User {
 		
 		// Store "remember me" data
 		if ($remember == true) {
-			$key = $this->user['user_id'] . $this->user['user_user'] . $this->user['user_pass'] . DB_DSN . time();
+			$key = $this->user['user_id'] . $this->user['user_username'] . $this->user['user_pass'] . DB_DSN . time();
 			$key = sha1($key . SALT);
 			setcookie('uid', $this->user['user_id'], time()+USER_REMEMBER, BASE);
 			setcookie('key', $key, time()+USER_REMEMBER, BASE);
@@ -348,21 +348,7 @@ class User {
 		// Update database
 		return $this->dbpointer->updateRow($fields, 'users', $this->user['user_id']);
 	}
-	
-	// MAIL
-	
-	/**
-	 * Send email to user
-	 *
-	 * @param string $to - left as null for this function in order to match parent function's signature.
-	 * @param string $subject 
-	 * @param string $message 
-	 * @return void
-	 */
- 	public function email($to=null, $subject='', $message='') {
-		if (!$this->perm(true)) { return false; }
-		email($this->user['user_email'], $subject, $message);
-	}
+
 }
 
 ?>
