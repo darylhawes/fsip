@@ -1630,38 +1630,37 @@ function siftDomain($uri) {
  * @return True if successful
  */
 function email($to=0, $subject=null, $message=null) {
-/* DEH temp bypass
+	$dbpointer = getDB();
 	if (empty($subject) or empty($message))
 	{ 
 		return false;
 	}
 	
 	if ($to == 0) {
-		$to = returnConf('web_email');
+		$to = returnConf('web_email'); // Get the core email address from site settings.
 	}
 	
 	if (is_int($to) or preg_match('#[0-9]+#s', $to)) {
-		$query = $this->prepare('SELECT user_email FROM users WHERE user_id = ' . $to);
+		$query = $dbpointer->prepare('SELECT user_email FROM users WHERE user_id = ' . $to);
 		$query->execute();
 		$user = $query->fetch();
 		$to = $user['user_email'];
 	}
 	
-	$source = strip_tags($this->returnConf('web_title'));
+	$source = strip_tags(returnConf('web_title'));
 	
 	if (empty($source))
 	{
 		$source = 'FSIP'; 
 	}
-	
+
 	$subject = $source . ': ' . $subject;
 	$message = $message . "\r\n\n" . '-- ' . $source;
-	$headers = 'From: ' . $this->returnConf('web_email') . "\r\n" .
-		'Reply-To: ' . $this->returnConf('web_email') . "\r\n" .
+	$headers = 'From: ' . returnConf('web_email') . "\r\n" .
+		'Reply-To: ' . returnConf('web_email') . "\r\n" .
 		'X-Mailer: PHP/' . phpversion();
 	
 	return mail($to, $subject, $message, $headers);
-*/
 }
 
 
