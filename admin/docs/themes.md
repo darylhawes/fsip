@@ -160,8 +160,8 @@ These insertions are not available on all of your templates.
 - `image_tags` -- comma-separated tags (or use `{block:Tags}` instead)
 - `image_tag_count`
 - `user_id`
-- `user_user`
-- `user_name`
+- `user_username`
+- `user_realname`
 - `user_email`
 - `user_last_login`
 - `user_created`
