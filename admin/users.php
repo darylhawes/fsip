@@ -6,33 +6,48 @@
 // http://www.alkalineapp.com/
 */
 
+//echo "users 1<br />";
 require_once('../config.php');
-require_once(PATH . CLASSES . 'fsip.php');
-
-$fsip = new FSIP;
+//echo "users 2<br />";
 $user = new User;
+//echo "users 3<br />";
+$db = getDB();
 
 $user->perm(true, 'users');
+//echo "users 4<br />";
 
 if (!empty($_GET['id'])) {
-	$user_db_id = $fsip->findID($_GET['id']);
+	$user_db_id = findID($_GET['id']);
 }
+//echo "users 5<br />";
 
+$user_db_act = 'none';
 if (!empty($_GET['act'])) {
+//echo "GET act is not empty, set user_db_act to ".$_GET['act'];
 	$user_db_act = $_GET['act'];
 }
+if (!empty($_POST['act'])) {
+//echo "POST act is not empty, set user_db_act to ".$_GET['act'];
+	$user_db_act = $_POST['act'];
+}
 
-// SAVE CHANGES
+//echo "users 6 - user_db_act = $user_db_act<br />";
+//echo "users 6.1 - full GET is<br />";
+//print_r($_GET);
+//echo "<br />";
+
+// SAVE USER UPDATES, PASSWORD RESET, ETC
 if (!empty($_POST['user_id'])) {
-	$user_db_id = $fsip->findID($_POST['user_id']);
+//echo "users 7<br />";
+	$user_db_id = findID($_POST['user_id']);
 	if (isset($_POST['user_delete']) and $_POST['user_delete'] == 'delete') {
-		$fsip->deleteRow('users', $user_db_id);
+		$db->deleteRow('users', $user_db_id);
 	} else {
 		if ($_POST['user_reset_pass'] == 'reset_pass') {
-			$rand = $fsip->randInt();
+			$rand = randInt();
 			echo $rand;
 			$pass = substr(sha1($rand), 0, 8);
-			$fsip->email($_POST['user_email'], 'Password reset', 'Your password has been reset:' . "\r\n\n" . $pass . "\r\n\n" . LOCATION . BASE . ADMINFOLDER);
+			email($_POST['user_email'], 'Password reset', 'Your password has been reset:' . "\r\n\n" . $pass . "\r\n\n" . LOCATION . BASE . ADMINFOLDER);
 			$_POST['user_pass'] = $pass;
 		}
 		
@@ -58,235 +73,167 @@ if (!empty($_POST['user_id'])) {
 		
 		$permissions = array_unique($permissions);
 		
-		$fields = array('user_name' => $fsip->makeUnicode($_POST['user_name']),
-			'user_user' => $_POST['user_user'],
+		$fields = array('user_realname' => makeUnicode($_POST['user_realname']),
+			'user_username' => $_POST['user_username'],
 			'user_email' => $_POST['user_email'],
+			'user_uri' => $_POST['user_uri'],
 			'user_permissions' => serialize($permissions));
 		if (!empty($_POST['user_pass']) and $_POST['user_pass'] != '********') {
 			$fields['user_pass'] = sha1($_POST['user_pass']);
 		}
-		$fsip->updateRow($fields, 'users', $user_db_id);
+
+		$db->updateRow($fields, 'users', $user_db_id);
 	}
 	unset($user_db_id);
-} else { //$_POST['user_id'] is empty
-	$fsip->deleteEmptyRow('users', array('user_user', 'user_pass', 'user_name'));
-}
+} 
 
-// CREATE User
-if (!empty($user_db_act) and $user_db_act == 'add') {
-	$user_db_id = $fsip->addRow(null, 'users');
-}
+//echo "users 9<br />";
 
 define('TAB', 'settings');
 
-// GET USERS TO VIEW OR USER TO EDIT
-if (empty($user_db_id)) {
+//echo "users 10<br />";
+
+// GET LIST OF USERS TO VIEW OR GET A USER TO EDIT
+if ($user_db_act == 'none') {
+//echo "users act==none<br />";
+//print_r($db);
 	// Update image counts
-	$fsip->updateCounts('images', 'users', 'user_image_count');
-	$fsip->updateCounts('comments', 'users', 'user_comment_count');
+	$db->updateCounts('images', 'users', 'user_image_count');
+	$db->updateCounts('comments', 'users', 'user_comment_count');
+//echo "<br />users 11.1<br />";
 	
-	$user_dbs = $fsip->getTable('users');
+	$user_dbs = $db->getTable('users');
 	$user_db_count = @count($user_dbs);
+//echo "users 11.2<br />";
 	
 	define('TITLE', 'FSIP Users');
-	require_once(PATH . INCLUDES . '/admin_header.php');
-	
-?>	
-	<div class="actions"><a href="<?php echo BASE . ADMINFOLDER . 'users' . URL_ACT . 'add' . URL_RW; ?>"><button>Add user</button></a></div>
+//echo "users 11.3<br />Requiring:".PATH . INCLUDES . 'admin/admin_header.php';
 
-	<h1><img src="<?php echo BASE . IMGFOLDER; ?>icons/users.png" alt="" /> Users (<?php echo $user_db_count; ?>)</h1>
+	require_once(PATH . INCLUDES . 'admin/admin_header.php');
+//echo "users 11.4<br />";
 	
-	<p>Users can add images to your library and modify this installation.</p>
+	// Include table of users from html include file.
+	require_once(PATH . INCLUDES . "admin/users/view_inc.html");
+//echo "users 11.5, about to include footer<br />";
 	
-	<p>
-		<input type="search" name="filter" placeholder="Filter" class="s" results="0" />
-	</p>
-	
-	<table class="filter">
-		<tr>
-			<th>Username</th>
-			<th>Name</th>
-			<th>Email</th>
-			<th class="center" style="width:10%">Images</th>
-			<th class="center" style="width:10%">Comments</th>
-			<th>Last login</th>
-		</tr>
-<?php	
-		foreach($user_dbs as $user_db) {
-			echo '<tr class="ro">';
-				echo '<td><strong class="large"><a href="' . BASE . ADMINFOLDER . 'users' . URL_ID . $user_db['user_id'] . URL_RW . '">' . $user_db['user_user'] . '</a></strong></td>';
-				echo '<td>' . $user_db['user_name'] . '</td>';
-				echo '<td><a href="mailto:' . $user_db['user_email'] . '">' . $user_db['user_email'] . '</a></td>';
-				echo '<td class="center"><a href="' . BASE . ADMINFOLDER . 'search' . URL_ACT . 'users' . URL_AID . $user_db['user_id'] . URL_RW . '">' . number_format($user_db['user_image_count']) . '</a></td>';
-				echo '<td class="center"><a href="' . BASE . ADMINFOLDER . 'comments' . URL_ACT . 'users' . URL_AID . $user_db['user_id'] . URL_RW . '">' . number_format($user_db['user_comment_count']) . '</a></td>';
-				echo '<td>' . $fsip->formatTime($user_db['user_last_login'], null, '<em>Never</em>') . '</td>';
-			echo '</tr>';
+	require_once(PATH . INCLUDES . 'admin/admin_footer.php');
+//echo "users 11.6<br />";
+
+} else if ($user_db_act == 'view_user' || $user_db_act == 'add') {
+//echo "users 12<br />";
+
+	if ($user_db_act == 'view_user') {
+		// save_string is what the button's named at the end of the form
+		$save_string = 'Save changes';
+
+		// If we're editing a user then first we need to fetch their information
+
+		// Update image count
+		$db->updateCount('images', 'users', 'user_image_count', $user_db_id);
+
+		// Get user
+		$user_db = $db->getRow('users', $user_db_id);
+		$user_db_perms = unserialize($user_db['user_permissions']);
+		$user_db = makeHTMLSafe($user_db);
+		$user_image_count = $user_db['user_image_count'];
+
+		if (empty($user_image_count)) {
+			$user_image_count = 0;
 		}
-	
-?>
-	</table>
-	
-<?php
-	
-	require_once(PATH . INCLUDES . '/admin_footer.php');
-	
-} else { //$user_db_id not empty
-	// Update image count
-	$fsip->updateCount('images', 'users', 'user_image_count', $user_db_id);
-	
-	// Get user
-	$user_db = $fsip->getRow('users', $user_db_id);
-	$user_db_perms = unserialize($user_db['user_permissions']);
-	$user_db = $fsip->makeHTMLSafe($user_db);
-	$user_image_count = $user_db['user_image_count'];
-	
-	if (empty($user_image_count)) {
-		$user_image_count = 0;
-	}
-	
-	if (!empty($user_db['user_name'])) {
-		define('TITLE', 'User: ' . $user_db['user_name']);
-	} else {
-		define('TITLE', 'User');
-	}
-	require_once(PATH . INCLUDES . '/admin_header.php');
 
-?>
-	
-	<div class="actions">
-		<a href="mailto:<?php echo $user_db['user_email']; ?>"><button>Email user</button></a>
-		<a href="<?php echo BASE . ADMINFOLDER . 'search' . URL_ACT . 'users' . URL_AID . $user_db['user_id'] . URL_RW; ?>"><button>View images (<?php echo $user_image_count; ?>)</button></a>
-	</div>
-	
+		if (!empty($user_db['user_realname'])) {
+			define('TITLE', 'Edit User: ' . $user_db['user_realname']);
+		} else {
+			define('TITLE', 'Edit User');
+		}
+
+	} else {
+		$save_string = 'Add user';
+		define('TITLE', 'Add User');
+	}
+
+	require_once(PATH . INCLUDES . 'admin/admin_header.php');
+
+	if ($user_db_act == 'view_user') {
+?>	
+		<div class="actions">
+			<a href="mailto:<?php echo $user_db['user_email']; ?>"><button>Email user</button></a>
+			<a href="<?php echo BASE . ADMINFOLDER . 'search' . URL_ACT . 'users' . URL_AID . $user_db['user_id'] . URL_RW; ?>"><button>View user's images (<?php echo $user_image_count; ?>)</button></a>
+		</div>
 <?php
-	
-	if (empty($user_db['user_name'])) {
+		echo '<h1><img src="' . BASE . IMGFOLDER . 'icons/users.png" alt="" /> User: ' . $user_db['user_realname'] . '</h1>';
+	} else {
 		echo '<h1><img src="' . BASE . IMGFOLDER . 'icons/users.png" alt="" /> New User</h1>';
-	} else {
-		echo '<h1><img src="' . BASE . IMGFOLDER . 'icons/users.png" alt="" /> User: ' . $user_db['user_name'] . '</h1>';
-	}
+	}		
 	
-?>
+	require_once(PATH . INCLUDES . "admin/users/edit_or_add_inc.html");
 	
-	<form id="user" action="<?php echo BASE . ADMINFOLDER . 'users' . URL_CAP; ?>" method="post">
-		<table>
-			<tr>
-				<td class="right middle"><label for="user_name">Name:</label></td>
-				<td><input type="text" id="user_name" name="user_name" value="<?php echo $user_db['user_name']; ?>" class="s notempty" /></td>
-			</tr>
-			<tr>
-				<td class="right middle"><label for="user_user">Username:</label></td>
-				<td><input type="text" id="user_user" name="user_user" value="<?php echo $user_db['user_user']; ?>" class="s notempty" /></td>
-			</tr>
-			<tr>
-				<td class="right middle"><label for="user_pass">Password:</label></td>
-				<td>
-					<input type="password" id="user_pass" name="user_pass" value="<?php if(!empty($user_db['user_user'])){ echo '********'; } ?>" class="s notempty" />
-				</td>
-			</tr>
-			<tr>
-				<td class="right middle"><label for="user_email">Email:</label></td>
-				<td><input type="text" id="user_email" name="user_email" value="<?php echo $user_db['user_email']; ?>" class="m" /></td>
-			</tr>
-			<tr>
-				<td class="right middle"><label for="user_uri">Web site:</label></td>
-				<td><input type="text" id="user_uri" name="user_uri" placeholder="http://www.johnsmith.com/" value="<?php echo $user_db['user_uri']; ?>" class="m" /></td>
-			</tr>
-<?php
-			if (($user_db['user_id'] != 1) and ($user_db['user_id'] != $user->user['user_id'])) {
-?>
-				<tr>
-					<td class="right pad"><label>Access control:</label></td>
-					<td>
-						<table>
-							<tr>
-								<td class="input"><input type="checkbox" id="user_permission_upload" name="user_permission_upload" value="true" <?php if(in_array('upload', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td style="width: 15em;"><label for="user_permission_upload">Upload</label></td>
-								<td class="input"><input type="checkbox" id="user_permission_shoebox" name="user_permission_shoebox" value="true" <?php if(in_array('shoebox', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_shoebox">Shoebox</label></td>
-							</tr>
-							<tr>
-								<td class="input"><input type="checkbox" id="user_permission_library" name="user_permission_library" value="true" <?php if(in_array('library', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_library">Library</label> (edit images)</td>
-							</tr>
-							<tr>
-								<td colspan="4"></td>
-							</tr>
-							<tr>
-								<td class="input"><input type="checkbox" id="user_permission_comments" name="user_permission_comments" value="true" <?php if(in_array('comments', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_comments">Comments</label></td>
-							</tr>
-							<tr>
-								<td colspan="4"></td>
-							</tr>
-							<tr>
-								<td class="input"><input type="checkbox" id="user_permission_editor" name="user_permission_editor" value="true" <?php if(in_array('editor', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_editor">Editor</label> (bulk edit images)</td>
-								<td class="input"><input type="checkbox" id="user_permission_tags" name="user_permission_tags" value="true" <?php if(in_array('tags', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_tags">Tags</label></td>
-							</tr>
-							<tr>
-								<td class="input"><input type="checkbox" id="user_permission_sets" name="user_permission_sets" value="true" <?php if(in_array('sets', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_sets">Sets</label></td>
-								<td class="input"><input type="checkbox" id="user_permission_pages" name="user_permission_pages" value="true" <?php if(in_array('pages', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_pages">Pages</label></td>
-							</tr>
-							<tr>
-								<td class="input"><input type="checkbox" id="user_permission_rights" name="user_permission_rights" value="true" <?php if(in_array('rights', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_rights">Rights</label></td>
-							</tr>
-							<tr>
-								<td colspan="4"></td>
-							</tr>
-							<tr>
-								<td class="input"><input type="checkbox" id="user_permission_statistics" name="user_permission_statistics" value="true" <?php if(in_array('statistics', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_statistics">Statistics</label></td>
-								<td class="input"><input type="checkbox" id="user_permission_thumbnails" name="user_permission_thumbnails" value="true" <?php if(in_array('thumbnails', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_thumbnails">Thumbnails</label></td>
-							</tr>
-							<tr>
-								<td class="input"><input type="checkbox" id="user_permission_users" name="user_permission_users" value="true" <?php if(in_array('users', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_users">Users</label></td>
-								<td class="input"><input type="checkbox" id="user_permission_guests" name="user_permission_guests" value="true" <?php if(in_array('guests', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_guests">Guests</label></td>
-							</tr>
-							<tr>
-								<td class="input"><input type="checkbox" id="user_permission_themes" name="user_permission_themes" value="true" <?php if(in_array('themes', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_themes">Themes</label></td>
-								<td class="input"><input type="checkbox" id="user_permission_extensions" name="user_permission_extensions" value="true" <?php if(in_array('extensions', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_extensions">Extensions</label></td>
-							</tr>
-							<tr>
-								<td class="input"><input type="checkbox" id="user_permission_configuration" name="user_permission_configuration" value="true" <?php if(in_array('configuration', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_configuration">Configuration</label></td>
-								<td class="input"><input type="checkbox" id="user_permission_maintenance" name="user_permission_maintenance" value="true" <?php if(in_array('maintenance', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_maintenance">Maintenance</label></td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-<?php
-			}
-?>
-			<tr>
-				<td class="right"><input type="checkbox" id="user_reset_pass" name="user_reset_pass" value="reset_pass" /></td>
-				<td><strong><label for="user_reset_pass">Reset password.</label></strong> This action cannot be undone.</td>
-			</tr>
-			<tr>
-				<td class="right"><input type="checkbox" id="user_delete" name="user_delete" value="delete" /></td>
-				<td><strong><label for="user_delete">Delete this user.</label></strong> This action cannot be undone.</td>
-			</tr>
-			<tr>
-				<td></td>
-				<td><input type="hidden" name="user_id" value="<?php echo $user_db['user_id']; ?>" /><input type="submit" value="Save changes" /> or <a href="<?php echo $fsip->back(); ?>">cancel</a></td>
-			</tr>
-		</table>
-	</form>
+//echo "users , about to include footer<br />";
+	require_once(PATH . INCLUDES . 'admin/admin_footer.php');
 
-<?php
+} else if ($user_db_act == 'save') {
+//echo "IN ACT = SAVE 1 <br />";
+	// Create a new table row for the new user
+	$user_db_id = $db->addRow(null, 'users');
+//echo "IN ACT = SAVE 2<br />";
+
+	// Save the new user's data into the new row in our database
+	$permissions = array();
 	
-	require_once(PATH . INCLUDES . '/admin_footer.php');
+	if (@$_POST['user_permission_upload'] == 'true') { $permissions[] = 'upload'; $permissions[] = 'library'; }
+	if (@$_POST['user_permission_shoebox'] == 'true') { $permissions[] = 'shoebox'; $permissions[] = 'library'; }
+	if (@$_POST['user_permission_library'] == 'true') { $permissions[] = 'images'; $permissions[] = 'library'; }
+	if (@$_POST['user_permission_editor'] == 'true') { $permissions[] = 'editor'; $permissions[] = 'features'; }
+	if (@$_POST['user_permission_tags'] == 'true') { $permissions[] = 'tags'; $permissions[] = 'features'; }
+	if (@$_POST['user_permission_sets'] == 'true') { $permissions[] = 'sets'; $permissions[] = 'features'; }
+	if (@$_POST['user_permission_pages'] == 'true') { $permissions[] = 'pages'; $permissions[] = 'features'; }
+	if (@$_POST['user_permission_rights'] == 'true') { $permissions[] = 'rights'; $permissions[] = 'features'; }
+	if (@$_POST['user_permission_comments'] == 'true') { $permissions[] = 'comments'; }
+	if (@$_POST['user_permission_statistics'] == 'true') { $permissions[] = 'statistics'; }
+	if (@$_POST['user_permission_thumbnails'] == 'true') { $permissions[] = 'thumbnails'; $permissions[] = 'settings'; }
+	if (@$_POST['user_permission_users'] == 'true') { $permissions[] = 'users'; $permissions[] = 'settings'; }
+	if (@$_POST['user_permission_guests'] == 'true') { $permissions[] = 'guests'; $permissions[] = 'settings'; }
+	if (@$_POST['user_permission_themes'] == 'true') { $permissions[] = 'themes'; $permissions[] = 'settings'; }
+	if (@$_POST['user_permission_extensions'] == 'true') { $permissions[] = 'extensions'; $permissions[] = 'settings'; }
+	if (@$_POST['user_permission_configuration'] == 'true') { $permissions[] = 'configuration'; $permissions[] = 'settings'; }
+	if (@$_POST['user_permission_maintenance'] == 'true') { $permissions[] = 'maintenance'; $permissions[] = 'settings'; }
+//echo "IN ACT = SAVE 3<br />";
 	
+	$permissions = array_unique($permissions);
+	
+	$fields = array('user_realname' => makeUnicode($_POST['user_realname']),
+		'user_username' => $_POST['user_username'],
+		'user_email' => $_POST['user_email'],
+		'user_uri' => $_POST['user_uri'],
+		'user_permissions' => serialize($permissions));
+	if (!empty($_POST['user_pass']) and $_POST['user_pass'] != '********') {
+		$fields['user_pass'] = sha1($_POST['user_pass']);
+	}
+	$db->updateRow($fields, 'users', $user_db_id);
+//echo "IN ACT = SAVE 3<br />";
+	unset($user_db_id);
+
+//echo "IN ACT = SAVE 4<br />";
+
+	// Update image counts
+	$db->updateCounts('images', 'users', 'user_image_count');
+//echo "IN ACT = SAVE 5<br />";
+	$db->updateCounts('comments', 'users', 'user_comment_count');
+//echo "IN ACT = SAVE 6<br />";
+	
+	$user_dbs = $db->getTable('users');
+	$user_db_count = @count($user_dbs);
+//echo "IN ACT = SAVE 6<br />";
+
+	define('TITLE', 'FSIP Added new user: '. $_POST['user_username']);
+
+	require_once(PATH . INCLUDES . 'admin/admin_header.php');
+	
+	// Include table of users from html include file.
+	require_once(PATH . INCLUDES . "admin/users/view_inc.html");
+//echo "users in act = save, about to include footer<br />";
+	
+	require_once(PATH . INCLUDES . 'admin/admin_footer.php');
 }
 
 ?>
