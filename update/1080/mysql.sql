@@ -9,5 +9,5 @@ ALTER TABLE `guests` CHANGE `guest_title` `guest_title` varchar(255) default NUL
 ALTER TABLE `pages` CHANGE `page_title` `page_title` varchar(255) default NULL;
 ALTER TABLE `rights` CHANGE `right_title` `right_title` varchar(255) default NULL;
 ALTER TABLE `sets` CHANGE `set_title` `set_title` varchar(255) default NULL;
-ALTER TABLE `users` CHANGE `user_user` `user_user` varchar(32) default NULL;
+ALTER TABLE `users` CHANGE `user_username` `user_username` varchar(32) default NULL;
 ALTER TABLE `users` CHANGE `user_pass` `user_pass` varchar(40) default NULL;

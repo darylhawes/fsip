@@ -9,7 +9,6 @@ if ($web_title  == "(Untitled Site)") {
 	addNote('Welcome to FSIP. You should begin by <a href="' . BASE . ADMINFOLDER . 'configuration' . URL_CAP . '">configuring your site with a custom title.</a> ');
 }
 $pg_title = (defined('TITLE') ? TITLE. ' - '. $web_title  : 'FSIP'. ' - '. $web_title );
-
 ?>
 
 <!DOCTYPE html>
@@ -35,9 +34,9 @@ $pg_title = (defined('TITLE') ? TITLE. ' - '. $web_title  : 'FSIP'. ' - '. $web_
 	<div id="header_holder">
 		<div class="container">
 			<div id="userbar" class="span-24 right">
-				<?php
+<?php
 				if(!empty($user) and $user->perm()){
-					?>
+?>
 					<div id="userbar_home">
 						<strong>
 							<?php $title = returnConf('web_title'); echo (!empty($title) ? $title : ''); ?>
@@ -47,25 +46,25 @@ $pg_title = (defined('TITLE') ? TITLE. ' - '. $web_title  : 'FSIP'. ' - '. $web_
 					
 					<div id="userbar_user">
 						<strong>
-							<?php echo $user->user['user_user']; ?>
+							<?php echo $user->user['user_username']; ?>
 						</strong> &#0160;
 						<a href="<?php echo BASE . ADMINFOLDER . 'search' . URL_ACT . 'me' . URL_RW; ?>">My Images</a>,
 						<a href="<?php echo BASE . ADMINFOLDER . 'comments' . URL_ACT . 'me' . URL_RW; ?>">Comments</a> &#0160;
 						<a href="<?php echo BASE . USERFOLDER . 'preferences' . URL_CAP; ?>">Preferences</a> &#0160;
 						<a href="<?php echo BASE . 'logout' . URL_CAP; ?>">Logout</a>
 					</div>
-					<?php
+<?php
 				}
-				?>
+?>
 			</div>
 			<div id="header" class="span-24 last">
 				<div class="span-6 append-1">
 					<a href="<?php echo BASE . ADMINFOLDER; ?>"><img src="<?php echo BASE . IMGFOLDER; ?>fsip.png" alt="FSIP" class="logo" /></a>
 				</div>
 				<div id="panels" class="span-17 last">
-					<?php
+<?php
 					if(!empty($user) and $user->perm()){
-						?>
+?>
 						<div id="search_panel" class="span-17 append-1">
 							<form action="<?php echo BASE . ADMINFOLDER . 'search' . URL_CAP; ?>" method="post">
 								<select name="search_type" id="search_type">
@@ -77,41 +76,40 @@ $pg_title = (defined('TITLE') ? TITLE. ' - '. $web_title  : 'FSIP'. ' - '. $web_
 							</form>
 							<!-- <a href="<?php echo BASE . ADMINFOLDER . 'library' . URL_CAP; ?>#advanced" class="advanced_link">Advanced Search</a> -->
 						</div>
-						<?php
+<?php
 					}
-					?>
+?>
 				</div>
 			</div>
 			<div id="navigation" class="span-24 last">
 				<ul>
-					<?php
-
+<?php
 					if (@!defined('TAB') or (@TAB == 'dashboard') or (@TAB == 'upload') or (@TAB == 'shoebox') or (@TAB == 'library') or (@TAB == 'comments') or (@TAB == 'features') or (@TAB == 'settings')) {
 						?>
 						<li id="tab_dashboard">
-							<a href="<?php echo BASE . ADMINFOLDER . 'dashboard' . URL_CAP; ?>"<?php if(@TAB == 'dashboard'){ echo ' class="selected"'; } ?>>Dashboard &#9662;</a>
+							<a href="<?php echo BASE . ADMINFOLDER . 'dashboard' . URL_CAP; ?>"<?php if (@TAB == 'dashboard') { echo ' class="selected"'; } ?>>Dashboard &#9662;</a>
 							<ul>
 								<li id="sub_statistics"><a href="<?php echo BASE . ADMINFOLDER; ?>statistics<?php echo URL_CAP; ?>"><img src="<?php echo BASE . IMGFOLDER; ?>minis/stats.png" alt="" /> Statistics</a></li>
 								<li id="sub_preferences"><a href="<?php echo BASE . USERFOLDER; ?>preferences<?php echo URL_CAP; ?>"><img src="<?php echo BASE . IMGFOLDER; ?>minis/preferences.png" alt="" /> Preferences</a></li>
 							</ul>
 						</li>
-						<?php if($badges['images'] > 0 ){ ?>
+						<?php if ($badges['images'] > 0 ) { ?>
 						<li id="tab_shoebox" class="alt">
-							<a href="<?php echo BASE . ADMINFOLDER . 'shoebox' . URL_CAP; ?>"<?php if(@TAB == 'shoebox'){ echo ' class="selected"'; } ?>>Shoebox</a>
+							<a href="<?php echo BASE . ADMINFOLDER . 'shoebox' . URL_CAP; ?>"<?php if (@TAB == 'shoebox') { echo ' class="selected"'; } ?>>Shoebox</a>
 						</li>
-						<?php } else{ ?>
+						<?php } else { ?>
 						<li id="tab_upload">
-							<a href="<?php echo BASE . ADMINFOLDER . 'upload' . URL_CAP; ?>"<?php if(@TAB == 'upload'){ echo ' class="selected"'; } ?>>Upload</a>
+							<a href="<?php echo BASE . ADMINFOLDER . 'upload' . URL_CAP; ?>"<?php if (@TAB == 'upload') { echo ' class="selected"'; } ?>>Upload</a>
 						</li>
 						<?php } ?>
 						<li id="tab_library">
-							<a href="<?php echo BASE . ADMINFOLDER . 'library' . URL_CAP; ?>"<?php if(@TAB == 'library'){ echo ' class="selected"'; } ?>>Images<?php if($badges['images'] > 0){ echo ' (' . number_format($badges['images']) . ')'; } ?></a>
+							<a href="<?php echo BASE . ADMINFOLDER . 'library' . URL_CAP; ?>"<?php if (@TAB == 'library') { echo ' class="selected"'; } ?>>Images<?php if($badges['images'] > 0){ echo ' (' . number_format($badges['images']) . ')'; } ?></a>
 						</li>
 						<li id="tab_comments">
-							<a href="<?php echo BASE . ADMINFOLDER . 'comments' . URL_CAP; ?>"<?php if(@TAB == 'comments'){ echo ' class="selected"'; } ?>>Comments<?php if($badges['comments'] > 0){ echo ' (' . number_format($badges['comments']) . ')'; } ?></a>
+							<a href="<?php echo BASE . ADMINFOLDER . 'comments' . URL_CAP; ?>"<?php if (@TAB == 'comments') { echo ' class="selected"'; } ?>>Comments<?php if($badges['comments'] > 0){ echo ' (' . number_format($badges['comments']) . ')'; } ?></a>
 						</li>
 						<li id="tab_features">
-							<a href="<?php echo BASE . ADMINFOLDER . 'features' . URL_CAP; ?>"<?php if(@TAB == 'features'){ echo ' class="selected"'; } ?>>Editor <span>&#9662;</span></a>
+							<a href="<?php echo BASE . ADMINFOLDER . 'features' . URL_CAP; ?>"<?php if (@TAB == 'features') { echo ' class="selected"'; } ?>>Editor <span>&#9662;</span></a>
 							<ul>
 								<li id="sub_tags"><a href="<?php echo BASE . ADMINFOLDER . 'tags' . URL_CAP; ?>"><img src="<?php echo BASE . IMGFOLDER; ?>minis/tags.png" alt="" /> Tags</a></li>
 								<li id="sub_sets"><a href="<?php echo BASE . ADMINFOLDER. 'sets' . URL_CAP; ?>"><img src="<?php echo BASE . IMGFOLDER; ?>minis/sets.png" alt="" /> Sets</a></li>
@@ -120,7 +118,7 @@ $pg_title = (defined('TITLE') ? TITLE. ' - '. $web_title  : 'FSIP'. ' - '. $web_
 							</ul>
 						</li>
 						<li id="tab_settings">
-							<a href="<?php echo BASE . ADMINFOLDER . 'settings' . URL_CAP; ?>"<?php if(@TAB == 'settings'){ echo ' class="selected"'; } ?>>Settings <span>&#9662;</span></a>
+							<a href="<?php echo BASE . ADMINFOLDER . 'settings' . URL_CAP; ?>"<?php if (@TAB == 'settings') { echo ' class="selected"'; } ?>>Settings <span>&#9662;</span></a>
 							<ul>
 								<li id="sub_users"><a href="<?php echo BASE . ADMINFOLDER . 'users' . URL_CAP; ?>"><img src="<?php echo BASE . IMGFOLDER; ?>minis/users.png" alt="" /> Users</a></li>
 								<li id="sub_guests"><a href="<?php echo BASE . ADMINFOLDER . 'guests' . URL_CAP; ?>"><img src="<?php echo BASE . IMGFOLDER; ?>minis/guests.png" alt="" /> Guests</a></li>
@@ -135,15 +133,14 @@ $pg_title = (defined('TITLE') ? TITLE. ' - '. $web_title  : 'FSIP'. ' - '. $web_
 						<li id="tab_help">
 							<a href="<?php echo BASE . ADMINFOLDER . 'help' . URL_CAP; ?>"<?php if(@TAB == 'help'){ echo ' class="selected"'; } ?>>Help</a>
 						</li>
-						<?php
-					}
-					else{
-						?>
+<?php
+					} else {
+?>
 						<li><a href="" class="selected"><?php echo TAB; ?></a></li>
-						<?php
+<?php
 					}
 
-					?>
+?>
 				</ul>
 			</div>
 		</div>

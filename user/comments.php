@@ -63,7 +63,7 @@ if(!empty($_POST['comment_id'])){
 			'comment_text_raw' => makeUnicode($comment_text_raw),
 			'comment_markup' => $comm_markup_ext,
 			'user_id' => $user->user['user_id'],
-			'comment_author_name' => $user->user['user_name'],
+			'comment_author_name' => $user->user['user_realname'],
 			'comment_author_uri' => $user->user['user_uri'],
 			'comment_author_email' => $user->user['user_email'],
 			'comment_author_ip' => $_SERVER['REMOTE_ADDR']);

@@ -30,7 +30,7 @@ if (!empty($_POST['user_id'])) {
 			$rand = $fsip->randInt();
 			echo $rand;
 			$pass = substr(sha1($rand), 0, 8);
-			$fsip->email($_POST['user_email'], 'Password reset', 'Your password has been reset:' . "\r\n\n" . $pass . "\r\n\n" . LOCATION . BASE . ADMIN);
+			email($_POST['user_email'], 'Password reset', 'Your password has been reset:' . "\r\n\n" . $pass . "\r\n\n" . LOCATION . BASE . ADMIN);
 			$_POST['user_pass'] = $pass;
 		}
 		
@@ -56,8 +56,8 @@ if (!empty($_POST['user_id'])) {
 		
 		$permissions = array_unique($permissions);
 		
-		$fields = array('user_name' => $fsip->makeUnicode($_POST['user_name']),
-			'user_user' => $_POST['user_user'],
+		$fields = array('user_realname' => $fsip->makeUnicode($_POST['user_realname']),
+			'user_username' => $_POST['user_username'],
 			'user_email' => $_POST['user_email'],
 			'user_permissions' => serialize($permissions));
 		if (!empty($_POST['user_pass']) and $_POST['user_pass'] != '********') {
@@ -67,7 +67,7 @@ if (!empty($_POST['user_id'])) {
 	}
 	unset($user_db_id);
 } else { //$_POST['user_id'] is empty
-	$fsip->deleteEmptyRow('users', array('user_user', 'user_pass', 'user_name'));
+	$fsip->deleteEmptyRow('users', array('user_username', 'user_pass', 'user_realname'));
 }
 
 // CREATE User
@@ -112,8 +112,8 @@ if (empty($user_db_id)) {
 <?php	
 		foreach($user_dbs as $user_db) {
 			echo '<tr class="ro">';
-				echo '<td><strong class="large"><a href="' . BASE . ADMIN . 'users' . URL_ID . $user_db['user_id'] . URL_RW . '">' . $user_db['user_user'] . '</a></strong></td>';
-				echo '<td>' . $user_db['user_name'] . '</td>';
+				echo '<td><strong class="large"><a href="' . BASE . ADMIN . 'users' . URL_ID . $user_db['user_id'] . URL_RW . '">' . $user_db['user_username'] . '</a></strong></td>';
+				echo '<td>' . $user_db['user_realname'] . '</td>';
 				echo '<td><a href="mailto:' . $user_db['user_email'] . '">' . $user_db['user_email'] . '</a></td>';
 				echo '<td class="center"><a href="' . BASE . ADMIN . 'search' . URL_ACT . 'users' . URL_AID . $user_db['user_id'] . URL_RW . '">' . number_format($user_db['user_image_count']) . '</a></td>';
 				echo '<td class="center"><a href="' . BASE . ADMIN . 'comments' . URL_ACT . 'users' . URL_AID . $user_db['user_id'] . URL_RW . '">' . number_format($user_db['user_comment_count']) . '</a></td>';
@@ -142,8 +142,8 @@ if (empty($user_db_id)) {
 		$user_image_count = 0;
 	}
 	
-	if (!empty($user_db['user_name'])) {
-		define('TITLE', 'User: ' . $user_db['user_name']);
+	if (!empty($user_db['user_realname'])) {
+		define('TITLE', 'User: ' . $user_db['user_realname']);
 	} else {
 		define('TITLE', 'User');
 	}
@@ -158,10 +158,10 @@ if (empty($user_db_id)) {
 	
 <?php
 	
-	if (empty($user_db['user_name'])) {
+	if (empty($user_db['user_realname'])) {
 		echo '<h1><img src="' . BASE . ADMIN . 'images/icons/users.png" alt="" /> New User</h1>';
 	} else {
-		echo '<h1><img src="' . BASE . ADMIN . 'images/icons/users.png" alt="" /> User: ' . $user_db['user_name'] . '</h1>';
+		echo '<h1><img src="' . BASE . ADMIN . 'images/icons/users.png" alt="" /> User: ' . $user_db['user_realname'] . '</h1>';
 	}
 	
 ?>
@@ -169,17 +169,17 @@ if (empty($user_db_id)) {
 	<form id="user" action="<?php echo BASE . ADMIN . 'users' . URL_CAP; ?>" method="post">
 		<table>
 			<tr>
-				<td class="right middle"><label for="user_name">Name:</label></td>
-				<td><input type="text" id="user_name" name="user_name" value="<?php echo $user_db['user_name']; ?>" class="s notempty" /></td>
+				<td class="right middle"><label for="user_realname">Name:</label></td>
+				<td><input type="text" id="user_realname" name="user_realname" value="<?php echo $user_db['user_realname']; ?>" class="s notempty" /></td>
 			</tr>
 			<tr>
-				<td class="right middle"><label for="user_user">Username:</label></td>
-				<td><input type="text" id="user_user" name="user_user" value="<?php echo $user_db['user_user']; ?>" class="s notempty" /></td>
+				<td class="right middle"><label for="user_username">Username:</label></td>
+				<td><input type="text" id="user_username" name="user_username" value="<?php echo $user_db['user_username']; ?>" class="s notempty" /></td>
 			</tr>
 			<tr>
 				<td class="right middle"><label for="user_pass">Password:</label></td>
 				<td>
-					<input type="password" id="user_pass" name="user_pass" value="<?php if(!empty($user_db['user_user'])){ echo '********'; } ?>" class="s notempty" />
+					<input type="password" id="user_pass" name="user_pass" value="<?php if(!empty($user_db['user_username'])){ echo '********'; } ?>" class="s notempty" />
 				</td>
 			</tr>
 			<tr>

@@ -1,12 +1,13 @@
+
 	<form id="user" action="<?php echo BASE . ADMINFOLDER . 'users' . URL_CAP; ?>" method="post">
 		<table>
 			<tr>
-				<td class="right middle"><label for="user_name">Name:</label></td>
-				<td><input type="text" id="user_name" name="user_name" value="<?php echo (isset($user_db)) ?  $user_db['user_name'] :  ''; ?>" class="s notempty" /></td>
+				<td class="right middle"><label for="user_realname">Name:</label></td>
+				<td><input type="text" id="user_realname" name="user_realname" value="<?php echo (isset($user_db)) ?  $user_db['user_realname'] :  ''; ?>" class="s notempty" /></td>
 			</tr>
 			<tr>
-				<td class="right middle"><label for="user_user">Username:</label></td>
-				<td><input type="text" id="user_user" name="user_user" value="<?php echo (isset($user_db)) ?  $user_db['user_user'] :  ''; ?>" class="s notempty" /></td>
+				<td class="right middle"><label for="user_username">Username:</label></td>
+				<td><input type="text" id="user_username" name="user_username" value="<?php echo (isset($user_db)) ?  $user_db['user_username'] :  ''; ?>" class="s notempty" /></td>
 			</tr>
 			<tr>
 				<td class="right middle"><label for="user_pass">Password:</label></td>
@@ -20,12 +21,12 @@
 			</tr>
 			<tr>
 				<td class="right middle"><label for="user_uri">Web site:</label></td>
-				<td><input type="text" id="user_uri" name="user_uri" placeholder="http://www.johnsmith.com/" value="<?php echo (isset($user_db)) ?  $user_db['user_uri'] :  ''; ?>" class="m" /></td>
+				<td><input type="text" id="user_uri" name="user_uri" placeholder="http://www.yoursite.com/" value="<?php echo (isset($user_db)) ?  $user_db['user_uri'] :  ''; ?>" class="m" /></td>
 			</tr>
 <?php
 			if ((isset($user_db)) && ($user_db['user_id'] != 1) && ($user_db['user_id'] != $user->user['user_id'])) {
-				// don't let the user change their own permissions and the admin 
-				// user does not have permissions applied so skip
+				// don't let the user change their own permissions and the SuperAdmin/root 
+				// user has all permissions applied so skip
 				require_once(PATH . INCLUDES . "admin/users/edit_access_inc.html");
 			}
 ?>
@@ -46,7 +47,16 @@
 					<input type="hidden" name="user_id" value="<?php echo $user_db['user_id']; ?>" />
 <?php 
 				}
-?>				
+?>
+<?php 
+				if (isset($user_db_act) && $user_db_act == 'add') {
+					// the current step is to display the add user form. On submission the
+					// next step will be to save the changes, so change our action var to 'save'
+?>
+					<input type="hidden" name="act" value="save" />
+<?php 
+				}
+?>
 				<input type="submit" value="<?php echo $save_string;?>" /> or <a href="<?php echo back(); ?>">cancel</a></td>
 			</tr>
 		</table>

@@ -1,3 +1,4 @@
+
 	<div class="actions"><a href="<?php echo BASE . ADMINFOLDER . 'users' . URL_ACT . 'add' . URL_RW; ?>"><button>Add user</button></a></div>
 
 	<h1><img src="<?php echo BASE . IMGFOLDER; ?>icons/users.png" alt="" /> Users (<?php echo $user_db_count; ?>)</h1>
@@ -20,8 +21,8 @@
 <?php	
 		foreach($user_dbs as $user_db) {
 			echo '<tr class="ro">';
-				echo '<td><strong class="large"><a href="' . BASE . ADMINFOLDER . 'users' . URL_ACT . 'view_user' . URL_AID . $user_db['user_id'] . URL_RW . '">' . $user_db['user_user'] . '</a></strong></td>';
-				echo '<td>' . $user_db['user_name'] . '</td>';
+				echo '<td><strong class="large"><a href="' . BASE . ADMINFOLDER . 'users' . URL_ACT . 'view_user' . URL_AID . $user_db['user_id'] . URL_RW . '">' . $user_db['user_username'] . '</a></strong></td>';
+				echo '<td>' . $user_db['user_realname'] . '</td>';
 				echo '<td><a href="mailto:' . $user_db['user_email'] . '">' . $user_db['user_email'] . '</a></td>';
 				echo '<td class="center"><a href="' . BASE . ADMINFOLDER . 'search' . URL_ACT . 'users' . URL_AID . $user_db['user_id'] . URL_RW . '">' . number_format($user_db['user_image_count']) . '</a></td>';
 				echo '<td class="center"><a href="' . BASE . ADMINFOLDER . 'comments' . URL_ACT . 'users' . URL_AID . $user_db['user_id'] . URL_RW . '">' . number_format($user_db['user_comment_count']) . '</a></td>';

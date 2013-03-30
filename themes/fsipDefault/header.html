@@ -35,7 +35,7 @@ $user = new User();
 					if(!empty($user) and $user->perm()){
 							?>
 									<strong>
-											<?php echo $user->user['user_user']; ?>
+											<?php echo $user->user['user_username']; ?>
 									</strong> &#0160;
 									<a href="<?php echo BASE . ADMINFOLDER . 'search' . URL_ACT . 'me' . URL_RW; ?>">My Images</a>,
 									<a href="<?php echo BASE . ADMINFOLDER . 'comments' . URL_ACT . 'me' . URL_RW; ?>">Comments</a> &#0160;
