@@ -156,9 +156,6 @@ echo "tags 6<br />";
 	</form>
 	
 <?php
-	
-	require_once(PATH . INCLUDES . 'admin/admin_footer.php');
-	
+	require_once(PATH . INCLUDES . 'admin/admin_footer.php');	
 }
-
 ?>
