@@ -178,17 +178,22 @@ class DB {
 	 * @param string $tables Comma-separated tables
 	 * @return string Comma-separated tables
 	 */
-	protected function appendTablePrefix($tables_to_append) {
+	protected function appendTablePrefix($tables_to_append='') {
 		if (strpos($tables_to_append, ',') === false) {
 			$tables_to_append = trim($tables_to_append);
 			$tables_to_append = TABLE_PREFIX . $tables_to_append;
 		} else {
 			$tables_to_append = explode(',', $tables_to_append);
 			$tables_to_append = array_map('trim', $tables_to_append);
-			foreach($tables_to_append as &$table) {
-				$table = TABLE_PREFIX . $tables_to_append;
+			$tta = array();
+//			print_r($tables_to_append);
+			foreach($tables_to_append as $table) {
+//				$table = TABLE_PREFIX . $tables_to_append;
+				$tta[] = TABLE_PREFIX . $table;
 			}
-			$tables_to_append = implode(', ', $tables_to_append);
+//			print_r($tta);
+//			$tables_to_append = implode(', ', $tables_to_append);
+			$tables_to_append = implode(', ', $tta);
 		}
 		return $tables_to_append;
 	}
@@ -331,11 +336,6 @@ class DB {
 		
 		$query->execute($sql_params);
 		$contents = $query->fetchAll();
-		
-		// Delete extra users on standard licenses
-		if (($table == 'users') and (count($contents) > 1)) {
-			$this->deleteDisallowedUsers();
-		}
 		
 		$contents_ordered = array();
 		
@@ -720,7 +720,6 @@ class DB {
 	 * @return bool True if successful
 	 */
 	public function updateCounts($count_table, $result_table, $result_field) {
-
 		$count_table = $this->sanitize($count_table);
 		$result_table = $this->sanitize($result_table);
 		
