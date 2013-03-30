@@ -1529,10 +1529,11 @@ class Image {
 	 * @return array Associative array of tags
 	 */
 	public function getTags($show_hidden_tags=false, $published_only=false, $public_only=false) {
-		// Sort by tag name
 		if (returnConf('tag_alpha')) {
+			// Sort by tag name
 			$query = $this->dbpointer->prepare('SELECT tags.tag_name, tags.tag_id, images.image_id FROM tags, links, images' . $this->sql . ' AND tags.tag_id = links.tag_id AND links.image_id = images.image_id ORDER BY tags.tag_name;');
-		} else {// Sort by order added
+		} else {  
+			// Sort by order added
 			$query = $this->dbpointer->prepare('SELECT tags.tag_name, tags.tag_id, images.image_id FROM tags, links, images' . $this->sql . ' AND tags.tag_id = links.tag_id AND links.image_id = images.image_id ORDER BY links.link_id;');
 		}
 		$query->execute();
