@@ -246,7 +246,7 @@ class Debugger {
 		if (!isset($_SESSION['fsip']) || !isset($_SESSION['fsip']['errors'])) { return; }
 		//TODO check if admin user should be only one to see errors and if admin is logged in else return
 		//				$user = new User();
-//				if(!empty($user) and $user->perm()){
+//				if(!empty($user) and $user->userIsLoggedIn()){
 //
 		$count = @count($_SESSION['fsip']['errors']);
 		
@@ -301,6 +301,7 @@ class Debugger {
 	 * @return array
 	 */
 	public function getDebugString() {
+	// DEH - beef this up and add a new function to addDebugNote and include those messages here
 		if (returnConf('maint_debug')) {
 			$_SESSION['fsip']['debug']['execution_time'] = microtime(true) - $_SESSION['fsip']['debug']['start_time'];
 			return 'Execution time: ' . round($debug['execution_time'], 3) . ' seconds. Queries: ' . $debug['queries']  . '. ';
@@ -401,7 +402,7 @@ class FSIPException extends Exception implements Serializable {
 		
 		if (returnConf('stat_ignore_user')) {
 			$user = new User();
-			if($user->perm(false)){
+			if ($user->userIsLoggedIn(false)) {
 				return;
 			}
 		}
@@ -409,7 +410,7 @@ class FSIPException extends Exception implements Serializable {
 		if (empty($_SESSION['fsip']['duration_start']) or ((time() - @$_SESSION['fsip']['duration_recent']) > 3600)) {
 			$duration = 0;
 			$_SESSION['fsip']['duration_start'] = time();
-		} else{
+		} else {
 			$duration = time() - $_SESSION['fsip']['duration_start'];
 		}
 		
@@ -426,7 +427,7 @@ class FSIPException extends Exception implements Serializable {
 		
 		if (stripos($referrer, LOCATION . BASE) === false) {
 			$local = 0;
-		} else{
+		} else {
 			$local = 1;
 		}
 
@@ -443,6 +444,4 @@ class FSIPException extends Exception implements Serializable {
 			$this->dbpointer->exec('UPDATE guests SET guest_views = ' . $_SESSION['fsip']['guest']['guest_views'] . ' WHERE guest_id = ' . $_SESSION['fsip']['guest']['guest_id'] . ';');
 		}
 	}
-	
-
 }

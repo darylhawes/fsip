@@ -147,7 +147,7 @@ class Find {
 				$show_deleted = true;
 			} elseif ($this->admin == true) {
 				$user = new User();
-				if (!empty($user) and $user->perm()) {
+				if (!empty($user) and $user->userIsLoggedIn()) {
 					if ($user->returnPref('recovery_mode') === true) {
 						$show_deleted = true;
 					}

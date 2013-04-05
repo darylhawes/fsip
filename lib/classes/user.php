@@ -70,9 +70,9 @@ class User {
 	 * @param string $key Guest access key
 	 * @return void Redirects if unsuccessful
 	 */
-	public function access($key=null) {
+//	public function access($key=null) {
 		// Logout
-		unset($_SESSION['fsip']['guest']);
+/*		unset($_SESSION['fsip']['guest']);
 		
 		// Error checking
 		if (empty($key)) {
@@ -99,8 +99,8 @@ class User {
 			setcookie('guest_key', $key, time()+$seconds, '/');
 		}
 		
-		$_SESSION['fsip']['guest'] = $guest;
-	}
+		$_SESSION['fsip']['guest'] = $guest;*/
+//	}
 
 	// AUTHENTICATION
 	
@@ -169,8 +169,7 @@ class User {
 		// If user exists, store their row
 		$this->user = $this->user[0];
 		
-		// Remove guest access??
-		unset($_SESSION['fsip']['guest']);
+//		unset($_SESSION['fsip']['guest']);
 		
 		$key = '';
 		
@@ -224,44 +223,63 @@ class User {
 	
 	// PERMISSIONS
 	
+	
+	/**
+	 * Is there a valid user currently logged in?
+	 *
+	 * @param bool $required Redirects (on failure) if true
+	 * @return bool true if there is a user logged in
+	 */
+	 public function userIsLoggedIn($required=false) {
+		if (!empty($this->user)) {
+			return true;
+		}
+		if ($required === true) {
+			redirectToLogin();
+		}
+		return false;
+	 }
+
 	/**
 	 * Verify user has permission to access module
 	 *
-	 * @param bool $required Redirects (on failure) if true
 	 * @param string $permission Permission string
+	 * @param bool $required Redirects (on failure) if true
+	 * @param int $userid The userid of the user we are checking a permission against, if not the currently logged in user.
 	 * @return void
 	 */
-	public function perm($required=false, $permission=null) {
+	public function userHasPermission($permission=null, $required=false, $userid=null) {
 //echo "checking user perm<br />";
-		if (empty($this->user)) {
+		if (empty($this->user) && $userid == null) {
 //echo "checking user perm, user NOT logged in<br />";
 			// user not logged in
 			if ($required === true) {
-				$_SESSION['fsip']['destination'] = location();
-				session_write_close();
-				
-				$location = LOCATION . BASE . 'login' . URL_CAP;
-				headerLocationRedirect($location);
-				exit();
+				redirectToLogin();
 			} else {
 				return false;
 			}
 		} else {
 //echo "checking user perm, user IS logged in<br />";
-			// $this->user is not empty, user is logged in
+			// $this->user is not empty, a user is logged in
+			if ($userid != null and is_numeric($userid)) {
+				// We're checking a permission on a user who is not currently logged in
+				
+				// TODO - implement this case
+			}
+
 			if (empty($permission)) {
 //echo "checking user perm, empty permission so returning true<br />";
 				return true;
-			} elseif($this->user['user_id'] == 1) {
-//echo "checking user perm, userid is 1 so returning true<br />";
+			} elseif ($this->isAdmin()) {
+//echo "checking if isAdmin is true so returning true<br />";
 				return true;
-			} elseif(in_array($permission, $this->user['user_permissions'])) {
+			} elseif (in_array($permission, $this->user['user_permissions'])) {
 //echo "checking user perm, permission is in user permission array returning true<br />";
 				return true;
 			} else {
 				if ($required === true) {
 //echo "checking user perm, debugger adding error<br />";
-					addError(E_USER_ERROR, 'You do not have permission to access this module', null, null, 401);
+					addError(E_USER_ERROR, 'You do not have permission to access this area of the site.', null, null, 401);
 					exit();
 				} else {
 					return false;
@@ -280,7 +298,7 @@ class User {
 	 * @return void
 	 */
 	public function setPref($name='', $unset='') {
-		if (!$this->perm(true)) { return false; }
+		if (!$this->userIsLoggedIn(true)) { return false; }
 		setForm($this->user['user_preferences'], $name, $unset);
 	}
 	
@@ -292,7 +310,7 @@ class User {
 	 * @return void
 	 */
 	public function readPref($name='', $check=true) {
-		if (!$this->perm(true)) { return false; }
+		if (!$this->userIsLoggedIn(true)) { return false; }
 		readForm($this->user['user_preferences'], $name, $check);
 	}
 	
@@ -304,7 +322,7 @@ class User {
 	 * @return void
 	 */
 	public function returnPref($name='', $default=null) {
-		if (!$this->perm(true)) { return false; }
+		if (!$this->userIsLoggedIn(true)) { return false; }
 		returnForm($this->user['user_preferences'], $name, $default);
 	}
 	
@@ -314,7 +332,7 @@ class User {
 	 * @return void
 	 */
 	public function savePref() {
-		if (!$this->perm(true)) { return false; }
+		if (!$this->userIsLoggedIn(true)) { return false; }
 		
 		$fields = array('user_preferences' => serialize($this->user['user_preferences']));
 		
@@ -330,7 +348,7 @@ class User {
 	 * @return void
 	 */
 	public function updateFields($fields=array(), $overwrite=true) {
-		if (!$this->perm(true)) { return false; }
+		if (!$this->userIsLoggedIn(true)) { return false; }
 		
 		// Verify each key has changed; if not, unset the key
 		foreach($fields as $key => $value) {
@@ -349,6 +367,128 @@ class User {
 		return $this->dbpointer->updateRow($fields, 'users', $this->user['user_id']);
 	}
 
-}
+	// NEW METHODS
 
+	/**
+	 * Determine if a user is the superuser or not. The superuser has complete access to 
+	 *  the site and all functions.
+	 *
+	 * @param int userid May be left null to mean the currently logged in user
+	 * @return bool True if user is superuser, false if not
+	 */
+	public function isSuperUser($userid=null) {
+		// If there is no user logged in and no user specified then the answer is no
+		if (empty($this->user) && $userid == null) {
+			return false;
+		}
+		if ($userid == 1) {
+			return true;
+		}
+		if ($userid == null and $this->user['user_id'] == 1) {
+			return true;
+		} 
+		return false;
+	}
+
+
+	/**
+	 * Determine if a user is an admin user or not. Allows access to 
+	 *   the /admin section but does not grant full access to all permissions.
+	 *
+	 * @param int userid May be left null to mean the currently logged in user
+	 * @return bool True if user is an admin, false if not
+	 */
+	public function isAdmin($userid=null) {
+		// If there is no user logged in and no user specified then the answer is no
+		if (empty($this->user) && $userid == null) {
+			return false;
+		}
+		// if the user in question is a superuser then they are also a defacto admin
+		if ($this->isSuperUser($userid)) {
+			return true;
+		}
+		// if the user in question is the currently logged in user
+		if ($userid == null) {
+			if (in_array('admin', $this->user['user_permissions'])) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		// check database for the specified user's permissions
+		$query = $this->dbpointer->prepare('SELECT user_permissions FROM users WHERE user_id = :user_id;');
+		$query->execute(array(':user_id' => $user_id));
+		$userperms = $query->fetchAll();
+		$userperms = unserialize($userperms);
+		if (in_array('admin', $userperms)) {
+			return true;
+		}
+		// none of our checks have been able to determine that this user is an admin in the system
+		return false;
+	}
+
+	/**
+	 * Determine if a user is an image reviewer or not.
+	 *
+	 * @param int userid May be left null to mean the currently logged in user
+	 * @return bool True if user is an image reviewer, false if not
+	 */
+	public function isImageReviewer($userid=null) {
+		// 'reviwer' permission will determine if a user is allowed to publish images to the live site
+		return $this->userHasSpecificPermission($userid, 'reviewer');
+	}
+
+	/**
+	 * Determine if a user is an image contributor or not.
+	 *
+	 * @param int userid May be left null to mean the currently logged in user
+	 * @return bool True if user is an image contributor, false if not
+	 */
+	public function isImageContributor($userid=null) {
+		// 'contributor' permission will determine if the user is allowed to upload files
+		return $this->userHasSpecificPermission($userid, 'contributor');
+	}
+
+
+	/**
+	 * Determine if a user has a named permission.
+	 *
+	 * @param int userid May be left null to mean the currently logged in user
+	 * @param int userid May be left null to mean the currently logged in user
+	 * @return bool True if user is an image reviewer, false if not
+	 */
+	private function userHasSpecificPermission($userid=null, $permission_sought=null) {
+		// If there is no user logged in and no user specified then the answer is no
+		if (empty($this->user) && $userid == null) {
+			return false;
+		}
+		// if the user in question is an admin or superuser then they are allowed access to anything
+		if ($this->isAdmin($userid)) {
+			return true;
+		}
+		if ($permission_sought == 'admin') {
+			// we've failed our isAdmin check and we're looking to see if the user has admin capabilities!
+			return false;
+		}
+		// if the user in question is the currently logged in user
+		if ($userid == null) {
+			if (in_array($permission_sought, $this->user['user_permissions'])) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		// check database for the specified user's permissions
+		$query = $this->dbpointer->prepare('SELECT user_permissions FROM users WHERE user_id = :user_id;');
+		$query->execute(array(':user_id' => $user_id));
+		$userperms = $query->fetchAll();
+		$userperms = unserialize($userperms);
+		if (in_array($permission_sought, $userperms)) {
+			return true;
+		}
+		// none of our checks have been able to determine that this user has the sought permission
+		return false;
+	}
+
+}
 ?>

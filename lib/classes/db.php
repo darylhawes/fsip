@@ -16,9 +16,9 @@ class DB {
 	 * @return void
 	 **/
 	public function __construct() {
-//		$this->setDebugSQL(true);
+//		$this->setDebugSQL(true); // add SQL calls to addNotes perhaps? In debug add and use new addDebugNote method.
 		$this->setDebugSQL(false);
-
+//echo "creating db object";
 		// Get tables
 		$this->tables = getTables();
 
@@ -601,7 +601,7 @@ class DB {
 			$show_deleted = false;
 			if (Files::isInAdminPath() === true) {
 				$user = new User();
-				if (!empty($user) and $user->perm()) {
+				if (!empty($user) and $user->userHasPermission('admin', false)) {
 					if ($user->returnPref('recovery_mode') === true) {
 						$show_deleted = true;
 					}
@@ -630,7 +630,7 @@ class DB {
 		
 		if (returnConf('stat_ignore_user')) {
 			$user = new User();
-			if($user->perm(false)){
+			if($user->userIsLoggedIn()){
 				return;
 			}
 		}
