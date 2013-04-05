@@ -11,7 +11,7 @@ require_once('../../config.php');
 $dbpointer = getDB();
 
 $user = new User;
-$user->perm(true);
+$user->userHasPermission('admin', true);
 
 $markup = returnConf('web_markup_ext');
 

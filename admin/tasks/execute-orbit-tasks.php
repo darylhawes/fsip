@@ -9,7 +9,7 @@
 require_once('../../config.php');
 
 $user = new User;
-$user->perm(true);
+$user->userHasPermission('admin', true);
 
 if (empty($_POST['image_id'])) {
 	$count = $_SESSION['fsip']['tasks'];

@@ -11,7 +11,7 @@ require_once('../config.php');
 //echo "dashboard 2<br />";
 
 $user = new User;
-$user->perm(true);
+$user->userHasPermission('dashboard', true);
 //echo "dashboard 6<br />";
 
 setCallback();

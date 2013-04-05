@@ -10,7 +10,7 @@ require_once('./../config.php');
 
 $user = new User;
 
-$user->perm(true);
+$user->userIsLoggedIn(true);
 
 $fsip->setCallback();
 

@@ -10,7 +10,7 @@ require_once('../../config.php');
 
 $user = new User;
 
-$user->perm(true);
+$user->userHasPermission('admin', true);
 
 if (!empty($_POST['id'])) {
 	revertVersion($_POST['id']);

@@ -9,7 +9,7 @@
 require_once('../../config.php');
 
 $user = new User;
-$user->perm(true);
+$user->userHasPermission('admin', true);
 
 $image_id = intval($_REQUEST['image_id']);
 $format = strtolower(strip_tags(strval($_REQUEST['format'])));

@@ -36,7 +36,7 @@ if (isset($_REQUEST['context']) and ($_REQUEST['context'] == sha1(PATH . BASE . 
 	<?php
 }
 
-$user->perm(true, 'upload');
+$user->userHasPermission('upload', true);
 //echo "uploads 8<br />";
 
 if (!empty($_FILES)) {

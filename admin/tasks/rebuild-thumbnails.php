@@ -9,7 +9,7 @@
 require_once('../../config.php');
 
 $user = new User;
-$user->perm(true);
+$user->userHasPermission('admin', true);
 
 if (empty($_POST['image_id'])) {
 	$image_ids = new Find('images', null, null, null, false);

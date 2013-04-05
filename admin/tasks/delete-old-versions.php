@@ -11,7 +11,7 @@ require_once('../../config.php');
 $user = new User;
 $dbpointer = getDB();
 
-$user->perm(true);
+$user->userHasPermission('admin', true);
 
 $id = findID(@$_POST['image_id']);
 

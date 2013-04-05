@@ -12,10 +12,10 @@ require_once('../config.php');
 $orbit = new Orbit;
 
 $user = new User;
-$user->perm(true, 'images');
+$user->userHasPermission('images', true);
 
 
-// GET PHOTO
+// GET IMAGE
 if (!$image_id = findID($_GET['id'])) {
 	$location = LOCATION . BASE. ADMINFOLDER . 'library' . URL_CAP;
 	headerLocationRedirect($location);

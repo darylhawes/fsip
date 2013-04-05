@@ -9,7 +9,7 @@
 require_once('../config.php');
 
 $user = new User;
-$user->perm(true, 'extensions');
+$user->userHasPermission('extensions', true);
 //echo "extensions 1<br />";
 
 $dbpointer = getDB();

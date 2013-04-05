@@ -12,7 +12,7 @@ require_once('../config.php');
 $user = new User;
 $dbpointer = getDB();
 
-$user->perm(true, 'guests');
+$user->userHasPermission('guests', true);
 
 if (!empty($_GET['id'])) {
 	$guest_id = findID($_GET['id']);

@@ -11,7 +11,7 @@ require_once('./../config.php');
 $user = new User;
 $orbit = new Orbit;
 
-$user->perm(true, 'features');
+$user->userHasPermission('features', true);
 
 if(!empty($_GET['act']) and ($_GET['act'] != 'bulk')){
 	Find::clearMemory();
@@ -192,7 +192,7 @@ require_once(PATH . ADMIN . 'includes/header.php');
 <div class="span-24 last">
 	<?php
 	
-	if($user->perm(false, 'editor')){
+	if($user->userHasPermission('editor', false)){
 		?>
 		<div class="actions">
 			<a href="#select_all" id="select_all"><button>Select all</button></a>

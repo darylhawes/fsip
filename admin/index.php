@@ -10,7 +10,7 @@ require_once('../config.php');
 
 $user = new User;
 
-if ($user->perm()) {
+if ($user->userHasPermission('dashboard')) {
 	$location = LOCATION . BASE. ADMINFOLDER . 'dashboard' . URL_CAP;
 	headerLocationRedirect($location);
 } else {

@@ -12,7 +12,7 @@ require_once('./../config.php');
 $orbit = new Orbit;
 
 $user = new User;
-$user->perm(true, 'editor');
+$user->userHasPermission('editor', true);
 //echo "comments 3<br />";
 
 $dbpointer = getDB();

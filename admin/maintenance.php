@@ -10,7 +10,7 @@ require_once('../config.php');
 
 $user = new User;
 
-$user->perm(true, 'maintenance');
+$user->userHasPermission('maintenance', true);
 
 define('TAB', 'settings');
 define('TITLE', 'FSIP Maintenance');

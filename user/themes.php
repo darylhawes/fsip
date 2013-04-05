@@ -10,7 +10,7 @@ require_once('./../config.php');
 
 
 $user = new User;
-$user->perm(true, 'themes');
+$user->userHasPermission('themes', true);
 
 $fm = getFileManager();
 

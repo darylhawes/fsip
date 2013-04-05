@@ -10,7 +10,7 @@ require_once('../config.php');
 
 $user = new User;
 
-if ($user->perm()) {
+if ($user->userIsLoggedIn()) {
 	$page = "dashboard";
 } else {
 	$page = "login";

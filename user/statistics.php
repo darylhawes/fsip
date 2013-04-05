@@ -10,7 +10,7 @@ require_once('./../config.php');
 
 $user = new User;
 
-$user->perm(true, 'statistics');
+$user->userHasPermission('statistics', true);
 
 // PAST 24 HOURS
 

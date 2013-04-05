@@ -11,7 +11,7 @@ require_once('../../config.php');
 $user = new User;
 $fm = getFileManager();
 
-$user->perm(true, 'maintenance');
+$user->userHasPermission('maintenance', true);
 
 $fm->emptyDirectory(PATH . CACHE . 'tasks/');
 

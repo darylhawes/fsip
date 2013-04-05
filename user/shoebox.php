@@ -11,7 +11,7 @@ require_once('./../config.php');
 $orbit = new Orbit;
 
 $user = new User;
-$user->perm(true, 'shoebox');
+$user->userHasPermission('shoebox', true);
 
 $fm = getFileManager();
 

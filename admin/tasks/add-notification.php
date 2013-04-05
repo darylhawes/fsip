@@ -9,7 +9,7 @@
 require_once('../../config.php');
 
 $user = new User;
-$user->perm(true);
+$user->userHasPermission('admin', true);
 
 if (@!empty($_POST['message'])) {
 	@addNote($_POST['message'], $_POST['type']);

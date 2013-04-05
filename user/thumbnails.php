@@ -9,7 +9,7 @@ require_once('./../config.php');
 
 $user = new User;
 
-$user->perm(true, 'thumbnails');
+$user->userHasPermission('thumbnails', true);
 
 if(!empty($_GET['id'])){
 	$size_id = $fsip->findID($_GET['id']);

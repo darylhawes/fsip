@@ -9,7 +9,7 @@
 require_once('../config.php');
 //echo "tags 1<br />";
 $user = new User;
-$user->perm(true, 'tags');
+$user->userHasPermission('tags', true);
 
 $dbpointer = getDB();
 //echo "tags 2. dbpointer =<br />";

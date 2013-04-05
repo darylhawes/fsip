@@ -12,7 +12,7 @@ $dbpointer = getDB();
 $fm = getFileManager();
 
 $user = new User;
-$user->perm(true, 'themes');
+$user->userHasPermission('themes', true);
 
 // Load current themes
 $themes = $dbpointer->getTable('themes');

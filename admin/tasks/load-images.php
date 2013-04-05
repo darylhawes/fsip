@@ -9,7 +9,7 @@
 require_once('../../config.php');
 
 $user = new User;
-$user->perm(true);
+$user->userHasPermission('admin', true);
 
 $image_ids = new Find('images');
 $image_ids->sort('image_uploaded', 'DESC');

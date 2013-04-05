@@ -9,7 +9,7 @@
 require_once('../config.php');
 
 $user = new User;
-$user->perm(true);
+$user->userHasPermission('admin', true);
 
 $fm = getFileManager();
 
@@ -30,7 +30,7 @@ require_once(PATH . INCLUDES . 'admin/admin_header.php');
 		<th class="center">Canvas tag</th>
 	</tr>
 <?php
-	
+
 	foreach($includes as $include) {
 		echo '<tr>';
 		echo '<td><strong>' . $include . '</strong></td>';
@@ -40,9 +40,7 @@ require_once(PATH . INCLUDES . 'admin/admin_header.php');
 
 ?>
 </table>
-	
+
 <?php
-
 require_once(PATH . INCLUDES . 'admin/admin_footer.php');
-
 ?>

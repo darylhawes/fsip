@@ -11,7 +11,7 @@ require_once('../config.php');
 //echo "comments 1<br />";
 
 $user = new User;
-$user->perm(true, 'sets');
+$user->userHasPermission('sets', true);
 
 $orbit = new Orbit;
 

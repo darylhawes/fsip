@@ -9,7 +9,7 @@
 require_once('../config.php');
 
 $user = new User;
-$user->perm(true, 'features');
+$user->userHasPermission('features', true);
 
 $orbit = new Orbit;
 
@@ -182,7 +182,7 @@ require_once(PATH . INCLUDES . 'admin/admin_header.php');
 <div class="span-24 last">
 <?php
 	
-	if ($user->perm(false, 'editor')) {
+	if ($user->userHasPermission('editor'), false) {
 ?>
 		<div class="actions">
 			<a href="#select_all" id="select_all"><button>Select all</button></a>

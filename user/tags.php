@@ -10,7 +10,7 @@ require_once('./../config.php');
 
 $user = new User;
 
-$user->perm(true, 'tags');
+$user->userHasPermission('tags', true);
 
 if(!empty($_GET['id'])){
 	$tag_id = $fsip->findID($_GET['id']);

@@ -11,7 +11,7 @@ require_once('./../config.php');
 $user = new User;
 $orbit = new Orbit;
 
-$user->perm(true, 'sets');
+$user->userHasPermission('sets', true);
 
 if (!empty($_GET['id'])) {
 	$set_id = $fsip->findID($_GET['id']);
