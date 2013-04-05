@@ -10,7 +10,7 @@ require_once('./../config.php');
 
 $user = new User;
 
-$user->perm(true, 'users');
+$user->userHasPermisson('users', true);
 
 if (!empty($_GET['id'])) {
 	$user_db_id = $fsip->findID($_GET['id']);

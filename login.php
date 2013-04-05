@@ -28,7 +28,7 @@ if (!empty($remember) and ($remember == 1)) {
 
 // DEH This is where we run updates on login if present. 
 //This should be moved to an admin function with an addNote() pointing to the update page when available.
-if ($user->perm()) {
+if ($user->userHasPermission('admin', false)) {
 	if (file_exists(PATH . 'update/index.php')) {
 		$location = LOCATION . BASE . 'update/';
 		headerLocationRedirect($location);
@@ -38,6 +38,10 @@ if ($user->perm()) {
 		headerLocationRedirect($location);
 		exit();
 	}
+} else {
+	$location = LOCATION . BASE;
+	headerLocationRedirect($location);
+	exit();
 }
 
 if (!empty($username) or !empty($password)) {
