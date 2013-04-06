@@ -167,7 +167,7 @@ class Files {
 	 * @param string $file Full path to file
 	 * @return string Octal value (e.g., 0644)
 	 */
-	public static function checkPerm($file) {
+	public static function checkFilePerm($file) {
 		return substr(sprintf('%o', @fileperms($file)), -4);
 	}
 	

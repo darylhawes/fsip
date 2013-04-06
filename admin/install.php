@@ -32,22 +32,22 @@ if (!isset($_POST['install_email']))     { $_POST['install_email'] = ""; }
 
 // Diagnostic checks
 //DEH - if dir not exist try to create it and set permissions THEN warn.
-if ($fm->checkPerm(PATH . DB) != '0777') {
+if ($fm->checkFilePerm(PATH . DB) != '0777') {
 	addNote('WARNING: Database folder at ('. PATH . DB .') may not be writable.<br />', 'notice');
 }
-if ($fm->checkPerm(PATH . IMGFOLDER) != '0777') {
+if ($fm->checkFilePerm(PATH . IMGFOLDER) != '0777') {
 	addNote('WARNING:Images folder at ('. PATH . IMGFOLDER .') may not be writable.<br />', 'notice');
 }
-if ($fm->checkPerm(PATH . SHOEBOX) != '0777') {
+if ($fm->checkFilePerm(PATH . SHOEBOX) != '0777') {
 	addNote('WARNING:Shoebox folder at ('. PATH . SHOEBOX .') may not be writable.<br />', 'notice');
 }
-if ($fm->checkPerm(PATH . CACHE) != '0777') {
+if ($fm->checkFilePerm(PATH . CACHE) != '0777') {
 	addNote('WARNING:Cache folder at ('. PATH . CACHE .') may not be writable.<br />', 'notice');
 }
-if (($fm->checkPerm(PATH . 'config.json') != '0777') and (SERVER_TYPE != 'win')) {
+if (($fm->checkFilePerm(PATH . 'config.json') != '0777') and (SERVER_TYPE != 'win')) {
 	addNote('WARNING:Configuration file at ('.PATH.'config.json) may not be writable.<br />', 'notice');
 }
-if ($fm->checkPerm(PATH . 'config.php') == '0777') {
+if ($fm->checkFilePerm(PATH . 'config.php') == '0777') {
 	addNote('WARNING:Configuration file at ('.PATH.'config.php)  should not be writable.<br />', 'notice');
 }
 
@@ -125,7 +125,7 @@ if (@$_POST['install'] == 'Install') {
 		$config = $fm->replaceVar('$db_dsn', $dsn, $config);
 		$config = $fm->replaceVar('$db_type', 'sqlite', $config);
 		
-		if (($fm->checkPerm($path) != '0777') and (SERVER_TYPE != 'win')) {
+		if (($fm->checkFilePerm($path) != '0777') and (SERVER_TYPE != 'win')) {
 			addNote('Your SQLite database is not writable (chmod 777).', 'error');
 		}
 	} elseif ($_POST['install_db_type'] == 'pgsql') {
