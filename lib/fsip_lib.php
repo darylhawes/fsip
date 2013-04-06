@@ -47,7 +47,7 @@ if (!empty($_SERVER['HTTP_REFERER']) and ($_SERVER['HTTP_REFERER'] != LOCATION .
 //unset($_SESSION['fsip']['extensions']);
 
 // Log-in GUESTS via cookie
-if (!empty($_COOKIE['guest_key']) and !empty($_COOKIE['guest_id']) and empty($_SESSION['fsip']['guest'])) {
+/*if (!empty($_COOKIE['guest_key']) and !empty($_COOKIE['guest_id']) and empty($_SESSION['fsip']['guest'])) {
 	$query = $this->dbpointer->prepare('SELECT * FROM guests WHERE guest_id = :guest_id LIMIT 0, 1;');
 	$query->execute(array(':guest_id' => $_COOKIE['guest_id']));
 	$guests = $query->fetchAll();
@@ -56,7 +56,7 @@ if (!empty($_COOKIE['guest_key']) and !empty($_COOKIE['guest_id']) and empty($_S
 	if ($_COOKIE['guest_key'] == sha1(PATH . BASE . DB_DSN . DB_TYPE . $guest['guest_key'])) {
 		$this->access($guest['guest_key']);
 	}
-}
+}*/
 
 
 // Debug info
