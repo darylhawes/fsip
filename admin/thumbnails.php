@@ -7,7 +7,7 @@
 */
 require_once('../config.php');
 
-$dbpointer = getDB();
+global $db;
 
 $user = new User;
 $user->userHasPermission('thumbnails', true);
@@ -26,10 +26,10 @@ if (!empty($_POST['size_id'])) {
 	
 	// Delete size
 	if (@$_POST['size_delete'] == 'delete') {
-		$dbpointer->deleteRow('sizes', $size_id);
+		$db->deleteRow('sizes', $size_id);
 	} else {  // Update size
 		// Check for file append, prepend duplicates--will overwrite
-		$query = $dbpointer->prepare('SELECT size_title FROM sizes WHERE size_append = :size_append AND size_prepend = :size_prepend AND size_id != ' . $size_id);
+		$query = $db->prepare('SELECT size_title FROM sizes WHERE size_append = :size_append AND size_prepend = :size_prepend AND size_id != ' . $size_id);
 		$query->execute(array(':size_append' => @$_POST['size_append'], ':size_prepend' => @$_POST['size_prepend']));
 		$sizes = $query->fetchAll();
 		
@@ -52,7 +52,7 @@ if (!empty($_POST['size_id'])) {
 				'size_prepend' => @$_POST['size_prepend'],
 				'size_watermark' => $size_watermark);
 		
-			$dbpointer->updateRow($fields, 'sizes', $size_id);
+			$db->updateRow($fields, 'sizes', $size_id);
 		}
 	}
 	
@@ -72,19 +72,19 @@ if (!empty($_POST['size_id'])) {
 		unset($size_id);
 	}
 } else {
-	$dbpointer->deleteEmptyRow('sizes', array('size_title'));
+	$db->deleteEmptyRow('sizes', array('size_title'));
 }
 
 // CREATE SIZE
 if (!empty($size_act) and ($size_act == 'build')) {
-	$size_id = $dbpointer->addRow(null, 'sizes');
+	$size_id = $db->addRow(null, 'sizes');
 }
 
 define('TAB', 'settings');
 
 // GET SIZES TO VIEW OR SIZE TO EDIT
 if (empty($size_id)) {
-	$sizes = $dbpointer->getTable('sizes', null, null, null, 'size_title ASC');
+	$sizes = $db->getTable('sizes', null, null, null, 'size_title ASC');
 	$size_count = @count($sizes);
 	
 	define('TITLE', 'FSIP Thumbnails');
@@ -129,7 +129,7 @@ if (empty($size_id)) {
 	
 } else {
 	// Get sizes set
-	$size = $dbpointer->getRow('sizes', $size_id);
+	$size = $db->getRow('sizes', $size_id);
 	$size = makeHTMLSafe($size);
 
 	// Dashboard thumbnail warning

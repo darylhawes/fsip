@@ -20,7 +20,7 @@ class Canvas {
 	protected $value;
 	protected $objects;
 	
-	private $dbpointer;
+	private $db;
 
 	/**
 	 * Initiates Canvas class
@@ -28,7 +28,8 @@ class Canvas {
 	 * @param string $template Template
 	 */
 	public function __construct($template=null) {
-		$this->dbpointer = getDB();
+		global $db;
+		$this->db = $db;
 		
 		$this->objects = array();
 		$this->template = (empty($template)) ? '' : $template . "\n";

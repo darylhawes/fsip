@@ -15,7 +15,7 @@ $user->userHasPermission('sets', true);
 
 $orbit = new Orbit;
 
-$dbpointer = getDB();
+global $db;
 
 
 if (!empty($_GET['id'])) {
@@ -95,7 +95,7 @@ if (!empty($_POST['set_id'])) {
 	}
 	unset($set_id);
 } else {
-	$dbpointer->deleteEmptyRow('sets', array('set_title'));
+	$db->deleteEmptyRow('sets', array('set_title'));
 }
 
 // CREATE PILE
@@ -109,7 +109,7 @@ if ($set_act == 'build') {
 	} else {
 		$fields = array('set_type' => 'static');
 	}
-	$set_id = $dbpointer->addRow($fields, 'sets');
+	$set_id = $db->addRow($fields, 'sets');
 	
 	$images = new Find('images');
 	$images->sets($set_id);
@@ -120,7 +120,7 @@ if ($set_act == 'build') {
 	
 	$fields = array('set_images' => $set_images,
 		'set_image_count' => $set_image_count);
-	$dbpointer->updateRow($fields, 'sets', $set_id);
+	$db->updateRow($fields, 'sets', $set_id);
 }
 
 define('TAB', 'features');

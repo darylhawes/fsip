@@ -29,8 +29,8 @@ function revertVersion($version_id) {
 	if (!$version_id = intval($version_id)) { 
 		return false; 
 	}
-	$dbpointer = getDB();
-	$version = $dbpointer->getRow('versions', $version_id);
+	global $db;
+	$version = $db->getRow('versions', $version_id);
 	
 	if (empty($version)) { 
 		return false; 

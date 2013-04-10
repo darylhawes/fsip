@@ -11,7 +11,7 @@ require_once('../config.php');
 //echo "users 2<br />";
 $user = new User;
 //echo "users 3<br />";
-$db = getDB();
+global $db;
 
 $user->userHasPermission('users', true);
 //echo "users 4<br />";

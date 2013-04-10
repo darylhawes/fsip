@@ -8,9 +8,9 @@
 
 require_once('config.php');
 
-$dbpointer = getDB();
+global $db;
 
-$dbpointer->recordStat('error');
+$db->recordStat('error');
 
 $header = new Canvas;
 $header->load('header');

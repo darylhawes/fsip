@@ -8,7 +8,7 @@
 
 require_once('../../config.php');
 
-$dbpointer = getDB();
+global $db;
 
 $user = new User;
 $user->userHasPermission('admin', true);
@@ -18,7 +18,7 @@ if (empty($_POST['image_id'])) {
 	$image_ids->find();
 	echo json_encode($image_ids->ids);
 } else {
-	$dbpointer->updateCount('comments', 'images', 'image_comment_count', $_POST['image_id']);
+	$db->updateCount('comments', 'images', 'image_comment_count', $_POST['image_id']);
 }
 
 ?>

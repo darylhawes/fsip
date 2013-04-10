@@ -12,8 +12,7 @@ $user = new User;
 $user->userHasPermission('extensions', true);
 //echo "extensions 1<br />";
 
-$dbpointer = getDB();
-$fm = getFileManager();
+global $db;
 
 
 if (!empty($_GET['id'])) {
@@ -32,7 +31,7 @@ if (!empty($_POST['extension_id'])) {
 	// Reset extension
 	if (@$_POST['extension_reset'] == 'reset') {
 		$fields = array('extension_preferences' => '');
-		$bool = $dbpointer->updateRow($fields, 'extensions', $extension_id);
+		$bool = $db->updateRow($fields, 'extensions', $extension_id);
 		if ($bool === true) {
 			addNote('You successfully reset the extension.', 'success');
 			$reset = 1;
@@ -42,7 +41,7 @@ if (!empty($_POST['extension_id'])) {
 	// Disable extension
 	if (@$_POST['extension_disable'] == 'disable') {
 		$fields = array('extension_status' => 0);
-		$bool = $dbpointer->updateRow($fields, 'extensions', $extension_id);
+		$bool = $db->updateRow($fields, 'extensions', $extension_id);
 		if ($bool === true) {
 			addNote('You successfully disabled the extension.', 'success');
 			$disable = 1;
@@ -52,7 +51,7 @@ if (!empty($_POST['extension_id'])) {
 	// Enable extension
 	if (@$_POST['extension_enable'] == 'enable') {
 		$fields = array('extension_status' => 1);
-		$bool = $dbpointer->updateRow($fields, 'extensions', $extension_id);
+		$bool = $db->updateRow($fields, 'extensions', $extension_id);
 		if ($bool === true) {
 			addNote('You successfully enabled the extension.', 'success');
 			$enable = 1;
@@ -78,10 +77,10 @@ if (returnConf('maint_disable')) {
 //echo "extensions 3<br />";
 
 // Load current extensions
-$extensions = $dbpointer->getTable('extensions');
+$extensions = $db->getTable('extensions');
 
 // Seek all extensions
-$seek_extensions = $fm->seekDirectory(PATH . EXTENSIONS, '');
+$seek_extensions = Files::seekDirectory(PATH . EXTENSIONS, '');
 //echo "extensions 4<br />";
 
 $extension_ids = array();
@@ -111,7 +110,7 @@ foreach($extensions as $extension) {
 }
 //echo "extensions 6<br />";
 
-$dbpointer->deleteRow('extensions', $extension_deleted);
+$db->deleteRow('extensions', $extension_deleted);
 
 // Determine which extensions are new, install them
 $extensions_installed = array();
@@ -120,9 +119,9 @@ $extensions_updated = array();
 //echo "extensions 7<br />";
 
 foreach($seek_extensions as &$extension_folder) {
-	if (strpos($fm->getFilename($extension_folder), '.') === 0) { continue; }
+	if (strpos(Files::getFilename($extension_folder), '.') === 0) { continue; }
 	
-	$extension_folder = $fm->getFilename($extension_folder);
+	$extension_folder = Files::getFilename($extension_folder);
 //echo "extensions 8, extfolder=$extension_folder<br />";
 	if (!in_array($extension_folder, $extension_folders)) {
 		$data = file_get_contents(PATH . EXTENSIONS . $extension_folder . '/extension.xml');
@@ -162,7 +161,7 @@ foreach($seek_extensions as &$extension_folder) {
 			'extension_description' => $xml->description,
 			'extension_creator_name' => $xml->creator->name,
 			'extension_creator_uri' => $xml->creator->uri);
-		$extension_intalled_id = $dbpointer->addRow($fields, 'extensions');
+		$extension_intalled_id = $db->addRow($fields, 'extensions');
 		$extensions_installed[] = $extension_intalled_id;
 	} else {
 //echo "extensions 9<br />";
@@ -194,7 +193,7 @@ foreach($seek_extensions as &$extension_folder) {
 					'extension_description' => $xml->description,
 					'extension_creator_name' => $xml->creator->name,
 					'extension_creator_uri' => $xml->creator->uri);
-				$dbpointer->updateRow($fields, 'extensions', $id);
+				$db->updateRow($fields, 'extensions', $id);
 				$extensions_updated[] = $id;
 			}
 		}
@@ -213,7 +212,7 @@ if($extensions_installed_count > 0){
 	
 	addNote($notification, 'success');
 	
-	$extensions = $dbpointer->getTable('extensions');
+	$extensions = $db->getTable('extensions');
 }
 
 $extensions_updated_count = count($extensions_updated);
@@ -227,7 +226,7 @@ if($extensions_updated_count > 0){
 	
 	addNote($notification, 'success');
 	
-	$extensions = $dbpointer->getTable('extensions');
+	$extensions = $db->getTable('extensions');
 }
 
 define('TAB', 'settings');
@@ -258,7 +257,7 @@ if(empty($extension_id)){
 		}
 	}
 */	
-	$extensions = $dbpointer->getTable('extensions', null, null, null, array('extension_status DESC', 'extension_title ASC'));
+	$extensions = $db->getTable('extensions', null, null, null, array('extension_status DESC', 'extension_title ASC'));
 	$extensions_count = @count($extensions);
 	
 	define('TITLE', 'FSIP Extensions');
@@ -326,7 +325,7 @@ if(empty($extension_id)){
 }
 else{
 	// Get extension
-	$extension = $dbpointer->getRow('extensions', $extension_id);
+	$extension = $db->getRow('extensions', $extension_id);
 	$extension = makeHTMLSafe($extension);
 	
 	if($extension['extension_status'] > 0){

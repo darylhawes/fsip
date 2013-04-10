@@ -8,7 +8,7 @@
 
 require_once('../../config.php');
 
-$dbpointer = getDB();
+global $db;
 
 $user = new User;
 $user->userHasPermission('admin', true);
@@ -24,7 +24,7 @@ if (empty($_POST['image_id'])) {
 	$now = date('Y-m-d H:i:s');
 	$image_tags = implode('; ', $images->images[0]['image_tags_array']);
 	
-	$query = $dbpointer->prepare('UPDATE images SET image_tags = :image_tags, image_tag_count = :image_tag_count WHERE image_id = :image_id;');
+	$query = $db->prepare('UPDATE images SET image_tags = :image_tags, image_tag_count = :image_tag_count WHERE image_id = :image_id;');
 	
 	$query->execute(array(':image_tags' => $image_tags, ':image_tag_count' => count($images->images[0]['image_tags_array']), ':image_id' => $images->images[0]['image_id']));
 }

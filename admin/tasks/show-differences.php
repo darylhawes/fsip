@@ -10,13 +10,13 @@ error_reporting(E_ALL & ~E_DEPRECATED);
 
 require_once('../../config.php');
 
-$dbpointer = getDB();
+global $db;
 
 $user = new User;
 $user->userHasPermission('admin', true);
 
 $version_id = intval($_POST['version_id']);
-$version = $dbpointer->getRow('versions', $version_id);
+$version = $db->getRow('versions', $version_id);
 
 $comparison = compare($version['version_title'] . "\n\n" . $version['version_text_raw'], $_POST['title'] . "\n\n" . $_POST['text_raw']);
 

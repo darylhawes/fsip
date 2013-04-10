@@ -70,12 +70,12 @@ if(!empty($_POST['comment_id'])){
 		
 		$fields = $orbit->hook('comment_add', $fields, $fields);
 		
-		if (!$comment_id = $dbpointer->addRow($fields, 'comments')) {
+		if (!$comment_id = $db->addRow($fields, 'comments')) {
 			addNote('The response could not be added.', 'error');
 		} else {
 			// Update comment counts
 			if ($id_type == 'image_id') {
-				$dbpointer->updateCount('comments', 'images', 'image_comment_count', $id);
+				$db->updateCount('comments', 'images', 'image_comment_count', $id);
 			}
 			
 			addNote('The response was successfully added.', 'success');

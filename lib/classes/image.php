@@ -14,7 +14,6 @@
 
 class Image {
 	public $comments;
-	public $db;
 	public $images = array();
 	public $pages;
 	public $related;
@@ -30,7 +29,7 @@ class Image {
 	
 	protected $sql;
 
-	private $dbpointer;
+	private $db;
 		
 	/**
 	 * Initiates Image object
@@ -38,7 +37,8 @@ class Image {
 	 * @param array|int|string $image_ids Image IDs (use Find class to locate them)
 	 */
 	public function __construct($image_ids=null) {
-		$this->dbpointer = getDB();
+		global $db;
+		$this->db = $db;
 		
 		// Reset image array
 		$this->images = array();
@@ -73,7 +73,7 @@ class Image {
 			$this->images = unserialize($images);
 		} else {
 			if(count($this->image_ids) > 0){
-				$query = $this->dbpointer->prepare('SELECT * FROM images' . $this->sql . ';');
+				$query = $this->db->prepare('SELECT * FROM images' . $this->sql . ';');
 				$query->execute();
 				$images = $query->fetchAll();
 
@@ -195,7 +195,7 @@ class Image {
 				'image_height' => $image_size['height'],
 				'image_width' => $image_size['width']);
 			
-			$image_id = $this->dbpointer->addRow($fields, 'images');
+			$image_id = $this->db->addRow($fields, 'images');
 			$image_ids[] = $image_id;
 
 			// Copy image to archive, delete original from shoebox
@@ -255,7 +255,7 @@ class Image {
 		}
 		
 		// Look up sizes in database
-		$query = $this->dbpointer->prepare('SELECT * FROM sizes');
+		$query = $this->db->prepare('SELECT * FROM sizes');
 		$query->execute();
 		$sizes = $query->fetchAll();
 		
@@ -402,7 +402,7 @@ class Image {
 			$values = array_values($fields);
 
 			// Add row to database
-			$query = $this->dbpointer->prepare('UPDATE images SET ' . implode(' = ?, ', $columns) . ' = ? WHERE image_id = ' . $this->images[$i]['image_id'] . ';');
+			$query = $this->db->prepare('UPDATE images SET ' . implode(' = ?, ', $columns) . ' = ? WHERE image_id = ' . $this->images[$i]['image_id'] . ';');
 			if (!$query->execute($values)) {
 				return false;
 			}
@@ -439,7 +439,7 @@ class Image {
 		
 			$sql_param_keys = array_keys($sql_params);
 			
-			$query = $this->dbpointer->prepare('SELECT tags.tag_parents FROM tags WHERE tags.tag_name = ' . implode(' OR tags.tag_name = ', $sql_param_keys) . ';');
+			$query = $this->db->prepare('SELECT tags.tag_parents FROM tags WHERE tags.tag_name = ' . implode(' OR tags.tag_name = ', $sql_param_keys) . ';');
 
 			$query->execute($sql_params);
 			$tags_db = $query->fetchAll();
@@ -472,7 +472,7 @@ class Image {
 
 			$sql_param_keys = array_keys($sql_params);
 		
-			$query = $this->dbpointer->prepare('SELECT tags.tag_id, tags.tag_name FROM tags WHERE tags.tag_name = ' . implode(' OR tags.tag_name = ', $sql_param_keys) . ';');
+			$query = $this->db->prepare('SELECT tags.tag_id, tags.tag_name FROM tags WHERE tags.tag_name = ' . implode(' OR tags.tag_name = ', $sql_param_keys) . ';');
 			$query->execute($sql_params);
 			$tags_db = $query->fetchAll();
 			$tags_db_names = array();
@@ -505,16 +505,16 @@ class Image {
 						continue;
 					} else {
 						$query = 'DELETE FROM links WHERE image_id = ' . $tag['image_id'] . ' AND tag_id = ' . $tag['tag_id'] . ';';
-						$this->dbpointer->exec($query);
+						$this->db->exec($query);
 						
-						$query = $this->dbpointer->prepare('SELECT COUNT(*) as count FROM links WHERE tag_id = ' . $tag['tag_id'] . ';');
+						$query = $this->db->prepare('SELECT COUNT(*) as count FROM links WHERE tag_id = ' . $tag['tag_id'] . ';');
 						$query->execute();
 						$tag_exists = $query->fetchAll();
 						$tag_count = $tag_exists[0]['count'];
 						
 						if ($tag_count < 1) {
 							$query = 'DELETE FROM tags WHERE tag_id = ' . $tag['tag_id'] . ';';
-							$this->dbpointer->exec($query);
+							$this->db->exec($query);
 						}
 					}
 				}
@@ -533,9 +533,8 @@ class Image {
 				$key = array_search($tag, $tags_db_names);
 				if ($key !== false) {
 					$query = 'INSERT INTO links (image_id, tag_id) VALUES (' . $this->images[$i]['image_id'] . ', ' . $tags_db[$key]['tag_id'] . ');';
-					$this->dbpointer->exec($query);
 				} else {
-					$query = $this->dbpointer->prepare('INSERT INTO tags (tag_name) VALUES (:tag);');
+					$query = $this->db->prepare('INSERT INTO tags (tag_name) VALUES (:tag);');
 					$query->execute(array(':tag' => $tag));
 					$tag_id = intval($this->db->lastInsertId(TABLE_PREFIX . 'tags_tag_id_seq'));
 					
@@ -543,7 +542,7 @@ class Image {
 					$tags_db_names[] = $tag;
 					
 					$query = 'INSERT INTO links (image_id, tag_id) VALUES (' . $this->images[$i]['image_id'] . ', ' . $tag_id . ');';
-					$this->dbpointer->exec($query);
+					$this->db->exec($query);
 				}
 			}
 		}
@@ -551,7 +550,7 @@ class Image {
 		if (count($affected_image_ids) > 0) {
 			$now = date('Y-m-d H:i:s');
 			$image_tags = implode('; ', $tags_to_update);
-			$query = $this->dbpointer->prepare('UPDATE images SET image_modified = :image_modified, image_tags = :image_tags, image_tag_count = :image_tag_count WHERE image_id = :image_id;');
+			$query = $this->db->prepare('UPDATE images SET image_modified = :image_modified, image_tags = :image_tags, image_tag_count = :image_tag_count WHERE image_id = :image_id;');
 			foreach($affected_image_ids as $image_id) {
 				$query->execute(array(':image_modified' => $now, ':image_tags' => $image_tags, ':image_tag_count' => count($tags_to_update), ':image_id' => $image_id));
 			}
@@ -594,7 +593,7 @@ class Image {
 	
 		$sql_param_keys = array_keys($sql_params);
 	
-		$query = $this->dbpointer->prepare('SELECT tags.tag_parents FROM tags WHERE tags.tag_name = ' . implode(' OR tags.tag_name = ', $sql_param_keys) . ';');
+		$query = $this->db->prepare('SELECT tags.tag_parents FROM tags WHERE tags.tag_name = ' . implode(' OR tags.tag_name = ', $sql_param_keys) . ';');
 		
 		$query->execute($sql_params);
 		$tags_db = $query->fetchAll();
@@ -627,7 +626,7 @@ class Image {
 	
 		$sql_param_keys = array_keys($sql_params);
 		
-		$query = $this->dbpointer->prepare('SELECT tags.tag_id, tags.tag_name, tags.tag_parents FROM tags WHERE tags.tag_name = ' . implode(' OR tags.tag_name = ', $sql_param_keys) . ';');
+		$query = $this->db->prepare('SELECT tags.tag_id, tags.tag_name, tags.tag_parents FROM tags WHERE tags.tag_name = ' . implode(' OR tags.tag_name = ', $sql_param_keys) . ';');
 		
 		$query->execute($sql_params);
 		$tags_db = $query->fetchAll();
@@ -675,9 +674,9 @@ class Image {
 				$key = array_search($tag, $tags_db_names);
 				if ($key !== false) {
 					$query = 'INSERT INTO links (image_id, tag_id) VALUES (' . $this->images[$i]['image_id'] . ', ' . $tags_db[$key]['tag_id'] . ');';
-					$this->dbpointer->exec($query);
+					$this->db->exec($query);
 				} else {
-					$query = $this->dbpointer->prepare('INSERT INTO tags (tag_name) VALUES (:tag);');
+					$query = $this->db->prepare('INSERT INTO tags (tag_name) VALUES (:tag);');
 					$query->execute(array(':tag' => $tag));
 					$tag_id = intval($this->db->lastInsertId(TABLE_PREFIX . 'tags_tag_id_seq'));
 					
@@ -686,7 +685,7 @@ class Image {
 					$tags_db_names[] = $tag;
 					
 					$query = 'INSERT INTO links (image_id, tag_id) VALUES (' . $this->images[$i]['image_id'] . ', ' . $tag_id . ');';
-					$this->dbpointer->exec($query);
+					$this->db->exec($query);
 				}
 			}
 		}
@@ -697,7 +696,7 @@ class Image {
 			$affected_images = new Image($affected_image_ids);
 			$affected_images->getTags();
 			
-			$query = $this->dbpointer->prepare('UPDATE images SET image_modified = :image_modified, image_tags = :image_tags, image_tag_count = :image_tag_count WHERE image_id = :image_id;');
+			$query = $this->db->prepare('UPDATE images SET image_modified = :image_modified, image_tags = :image_tags, image_tag_count = :image_tag_count WHERE image_id = :image_id;');
 			
 			foreach($affected_images->images as $image) {
 				$query->execute(array(':image_modified' => $now, ':image_tags' => implode('; ', $image['image_tags_array']), ':image_tag_count' => count($image['image_tags']), ':image_id' => $image['image_id']));
@@ -745,7 +744,7 @@ class Image {
 					$tag_key = array_search($tag['tag_name'], $tags);
 					if ($tag_key !== false) {			
 						$query = 'DELETE FROM links WHERE image_id = ' . $tag['image_id'] . ' AND tag_id = ' . $tag['tag_id'] . ';';
-						$this->dbpointer->exec($query);
+						$this->db->exec($query);
 						$tags_db_ids[] = $tag['tag_id'];
 						$affected_image_ids[] = $this->images[$i]['image_id'];
 					}
@@ -759,7 +758,7 @@ class Image {
 			$affected_images = new Image($affected_image_ids);
 			$affected_images->getTags();
 			
-			$query = $this->dbpointer->prepare('UPDATE images SET image_modified = :image_modified, image_tags = :image_tags, image_tag_count = :image_tag_count WHERE image_id = :image_id;');
+			$query = $this->db->prepare('UPDATE images SET image_modified = :image_modified, image_tags = :image_tags, image_tag_count = :image_tag_count WHERE image_id = :image_id;');
 			
 			foreach($affected_images->images as $image){
 				$query->execute(array(':image_modified' => $now, ':image_tags' => implode('; ', $image['image_tags_array']), ':image_tag_count' => count($image['image_tags']), ':image_id' => $image['image_id']));
@@ -1033,7 +1032,7 @@ class Image {
 				':image_color_s' => $hsl_dom_s,
 				':image_color_l' => $hsl_dom_l);
 		
-			$query = $this->dbpointer->prepare('UPDATE images SET image_colors = :image_colors, image_color_r = :image_color_r, image_color_g = :image_color_g, image_color_b = :image_color_b, image_color_h = :image_color_h, image_color_s = :image_color_s, image_color_l = :image_color_l WHERE image_id = ' . $images[$i]['image_id'] . ';');
+			$query = $this->db->prepare('UPDATE images SET image_colors = :image_colors, image_color_r = :image_color_r, image_color_g = :image_color_g, image_color_b = :image_color_b, image_color_h = :image_color_h, image_color_s = :image_color_s, image_color_l = :image_color_l WHERE image_id = ' . $images[$i]['image_id'] . ';');
 			return $query->execute($fields);
 		}
 	}
@@ -1076,11 +1075,11 @@ class Image {
 							'exif_name' => $name,
 							'exif_value' => serialize($value));
 						
-						$this->dbpointer->addRow($fields, 'exifs');
+						$this->db->addRow($fields, 'exifs');
 						
 						// Check for date taken, insert to images table
 						if (($key == 'IFD0') and ($name == 'DateTime')) {
-							$query = $this->dbpointer->prepare('UPDATE images SET image_taken = :image_taken WHERE image_id = ' . $images[$i]['image_id'] . ';');
+							$query = $this->db->prepare('UPDATE images SET image_taken = :image_taken WHERE image_id = ' . $images[$i]['image_id'] . ';');
 							$query->execute(array(':image_taken' => date('Y-m-d H:i:s', strtotime($value))));
 						}
 				    }
@@ -1294,7 +1293,7 @@ class Image {
 	public function updateViews(){
 		for($i = 0; $i < $this->image_count; ++$i) {
 			$this->images[$i]['image_views']++;
-			$this->dbpointer->exec('UPDATE images SET image_views = ' . $this->images[$i]['image_views'] . ' WHERE image_id = ' . $this->images[$i]['image_id'] . ';');
+			$this->db->exec('UPDATE images SET image_views = ' . $this->images[$i]['image_views'] . ' WHERE image_id = ' . $this->images[$i]['image_id'] . ';');
 		}
 	}
 	
@@ -1315,7 +1314,7 @@ class Image {
 				@$this->exec('DELETE FROM links WHERE image_id = ' . $this->images[$i]['image_id'] . ';');
 			}
 		} else {
-			$query = $this->dbpointer->prepare('UPDATE comments SET comment_deleted = ? WHERE image_id = ' . implode(' OR image_id = ', $this->image_ids) . ';');
+			$query = $this->db->prepare('UPDATE comments SET comment_deleted = ? WHERE image_id = ' . implode(' OR image_id = ', $this->image_ids) . ';');
 			$query->execute(array(date('Y-m-d H:i:s')));
 			
 			$fields = array('image_deleted' => date('Y-m-d H:i:s'));
@@ -1339,7 +1338,7 @@ class Image {
 	 */
 	public function recover() {
 		for($i = 0; $i < $this->image_count; ++$i) {
-			$query = $this->dbpointer->prepare('UPDATE comments SET comment_deleted = ? WHERE image_id = ' . $this->images[$i]['image_id'] . ' AND comment_deleted = ?;');
+			$query = $this->db->prepare('UPDATE comments SET comment_deleted = ? WHERE image_id = ' . $this->images[$i]['image_id'] . ' AND comment_deleted = ?;');
 			$query->execute(array(null, $this->images[$i]['image_deleted']));
 		}
 		
@@ -1401,10 +1400,10 @@ class Image {
 			
 				$value_slots = array_fill(0, $sizes_count, '?');
 			
-				$query = $this->dbpointer->prepare('SELECT * FROM sizes WHERE LOWER(size_title) = ' . implode(' OR LOWER(size_title) = ', $value_slots) . ' OR LOWER(size_label) = ' . implode(' OR LOWER(size_label) = ', $value_slots) . ' ORDER BY (size_width*size_height) DESC');
+				$query = $this->db->prepare('SELECT * FROM sizes WHERE LOWER(size_title) = ' . implode(' OR LOWER(size_title) = ', $value_slots) . ' OR LOWER(size_label) = ' . implode(' OR LOWER(size_label) = ', $value_slots) . ' ORDER BY (size_width*size_height) DESC');
 				$query->execute($sizes);
 			} else {
-				$query = $this->dbpointer->prepare('SELECT * FROM sizes ORDER BY (size_width*size_height) DESC');
+				$query = $this->db->prepare('SELECT * FROM sizes ORDER BY (size_width*size_height) DESC');
 				$query->execute();
 			}
 			
@@ -1504,7 +1503,7 @@ class Image {
 	 * @return array Associative array of EXIFs
 	 */
 	public function getEXIF() {
-		$query = $this->dbpointer->prepare('SELECT exifs.* FROM exifs, images' . $this->sql . ' AND images.image_id = exifs.image_id;');
+		$query = $this->db->prepare('SELECT exifs.* FROM exifs, images' . $this->sql . ' AND images.image_id = exifs.image_id;');
 		$query->execute();
 		$exifs = $query->fetchAll();
 		
@@ -1531,10 +1530,10 @@ class Image {
 	public function getTags($show_hidden_tags=false, $published_only=false, $public_only=false) {
 		if (returnConf('tag_alpha')) {
 			// Sort by tag name
-			$query = $this->dbpointer->prepare('SELECT tags.tag_name, tags.tag_id, images.image_id FROM tags, links, images' . $this->sql . ' AND tags.tag_id = links.tag_id AND links.image_id = images.image_id ORDER BY tags.tag_name;');
+			$query = $this->db->prepare('SELECT tags.tag_name, tags.tag_id, images.image_id FROM tags, links, images' . $this->sql . ' AND tags.tag_id = links.tag_id AND links.image_id = images.image_id ORDER BY tags.tag_name;');
 		} else {  
 			// Sort by order added
-			$query = $this->dbpointer->prepare('SELECT tags.tag_name, tags.tag_id, images.image_id FROM tags, links, images' . $this->sql . ' AND tags.tag_id = links.tag_id AND links.image_id = images.image_id ORDER BY links.link_id;');
+			$query = $this->db->prepare('SELECT tags.tag_name, tags.tag_id, images.image_id FROM tags, links, images' . $this->sql . ' AND tags.tag_id = links.tag_id AND links.image_id = images.image_id ORDER BY links.link_id;');
 		}
 		$query->execute();
 		$tags = $query->fetchAll();
@@ -1585,7 +1584,7 @@ class Image {
 	 * @return array Associative array of rights sets
 	 */
 	public function getRights() {
-		$query = $this->dbpointer->prepare('SELECT rights.*, images.image_id FROM rights, images' . $this->sql . ' AND rights.right_id = images.right_id AND rights.right_deleted IS NULL;');
+		$query = $this->db->prepare('SELECT rights.*, images.image_id FROM rights, images' . $this->sql . ' AND rights.right_id = images.right_id AND rights.right_deleted IS NULL;');
 		$query->execute();
 		$rights = $query->fetchAll();
 		
@@ -1640,7 +1639,7 @@ class Image {
 		
 		$ids = array_unique($ids);
 		
-		$users = $this->dbpointer->getTable('users', $ids);
+		$users = $this->db->getTable('users', $ids);
 		
 		$user_ids = array();
 		
@@ -1791,9 +1790,9 @@ class Image {
 	 */
 	public function getComments($published=true, $inline_responses=true) {
 		if ($published == true) {
-			$query = $this->dbpointer->prepare('SELECT * FROM comments, images' . $this->sql . ' AND comments.image_id = images.image_id AND  comments.comment_deleted IS NULL AND comments.comment_status > 0 ORDER BY comments.comment_created ASC;');
+			$query = $this->db->prepare('SELECT * FROM comments, images' . $this->sql . ' AND comments.image_id = images.image_id AND  comments.comment_deleted IS NULL AND comments.comment_status > 0 ORDER BY comments.comment_created ASC;');
 		} else {
-			$query = $this->dbpointer->prepare('SELECT * FROM comments, images' . $this->sql . ' AND comments.image_id = images.image_id AND comments.comment_deleted IS NULL ORDER BY comments.comment_created ASC;');
+			$query = $this->db->prepare('SELECT * FROM comments, images' . $this->sql . ' AND comments.image_id = images.image_id AND comments.comment_deleted IS NULL ORDER BY comments.comment_created ASC;');
 		}		
 		$query->execute();
 		$this->comments = $query->fetchAll();
@@ -1876,7 +1875,7 @@ class Image {
 		
 		$now = date('Y-m-d H:i:s');
 
-		$query = $this->dbpointer->prepare('UPDATE images SET image_modified = :image_modified, image_related = :image_related, image_related_hash = :image_related_hash WHERE image_id = :image_id;');
+		$query = $this->db->prepare('UPDATE images SET image_modified = :image_modified, image_related = :image_related, image_related_hash = :image_related_hash WHERE image_id = :image_id;');
 		
 		// Check to see if recently updated
 		for($i=0; $i < $this->image_count; $i++) { 

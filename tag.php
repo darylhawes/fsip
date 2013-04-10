@@ -8,16 +8,16 @@
 
 require_once('config.php');
 
-$dbpointer = getDB();
+global $db;
 
-$dbpointer->recordStat('tag');
+$db->recordStat('tag');
 
 $id = findID($_GET['id']);
 if (!$id) { 
 	addError('No tag was found.', 'Try searching for the images you were seeking.', null, null, 404); 
 }
 
-$tag = $dbpointer->getRow('tags', $id);
+$tag = $db->getRow('tags', $id);
 
 if (!$tag) { 
 	addError('No tag was found.', 'Try searching for the images you were seeking.', null, null, 404); 

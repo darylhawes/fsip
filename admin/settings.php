@@ -11,7 +11,7 @@ require_once('../config.php');
 $user = new User;
 $user->userHasPermission('admin', true);
 
-$dbpointer = getDB();
+global $db;
 
 // Enter, exit recovery mode
 if (isset($_REQUEST['recovery'])) {
@@ -71,7 +71,7 @@ require_once(PATH . INCLUDES . 'admin/admin_header.php');
 			<td>
 				<?php
 				
-				switch($dbpointer->db_type){
+				switch($db->db_type){
 					case 'mssql':
 						echo 'Microsoft SQL Server';
 						break;
@@ -94,7 +94,7 @@ require_once(PATH . INCLUDES . 'admin/admin_header.php');
 		</tr>
 		<tr>
 			<td class="right">Theme:</td>
-			<td><?php $theme = $dbpointer->getRow('themes', returnConf('theme_id')); if(!empty($theme)){ echo $theme['theme_title'] . ' <span class="small">(' . $theme['theme_build'] . ')</span>'; } else { echo '&#8212;'; } ?></td>
+			<td><?php $theme = $db->getRow('themes', returnConf('theme_id')); if(!empty($theme)){ echo $theme['theme_title'] . ' <span class="small">(' . $theme['theme_build'] . ')</span>'; } else { echo '&#8212;'; } ?></td>
 		</tr>
 		<tr>
 			<td class="right">Extensions:</td>
@@ -116,7 +116,7 @@ require_once(PATH . INCLUDES . 'admin/admin_header.php');
 			<td class="right">
 				<?php
 				
-				switch($dbpointer->db_type) {
+				switch($db->db_type) {
 					case 'mssql':
 						echo 'Microsoft SQL Server';
 						break;
@@ -138,7 +138,7 @@ require_once(PATH . INCLUDES . 'admin/admin_header.php');
 				version:
 			</td>
 			<td>
-				<?php echo $dbpointer->db_version; ?>
+				<?php echo $db->db_version; ?>
 			</td>
 		</tr>
 		<tr>

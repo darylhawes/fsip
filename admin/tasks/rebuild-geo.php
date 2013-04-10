@@ -8,7 +8,7 @@
 
 require_once('../../config.php');
 
-$dbpointer = getDB();
+global $db;
 
 $user = new User;
 $user->userHasPermission('admin', true);
@@ -40,14 +40,14 @@ if (!is_int($id)) {
 } else {
 	if ($id == 0) {
 		// Delete existing geo data, start from scratch
-		$dbpointer->exec('DELETE FROM cities;');
-		$dbpointer->exec('DELETE FROM countries;');
+		$db->exec('DELETE FROM cities;');
+		$db->exec('DELETE FROM countries;');
 		
 		// Load countries
 		$countries = file_get_contents(PATH . DB . 'countries.json');
 		$countries = explode("\n", $countries);
 
-		$query = $dbpointer->prepare('INSERT INTO countries (country_id, country_code, country_name) VALUES (?, ?, ?);');
+		$query = $db->prepare('INSERT INTO countries (country_id, country_code, country_name) VALUES (?, ?, ?);');
 
 		foreach($countries as $country) {
 			$country = json_decode($country);
@@ -62,7 +62,7 @@ if (!is_int($id)) {
 	// Insert blocks of cities
 	$cities = @array_slice($cities, $id, 1000);
 	
-	$query = $dbpointer->prepare('INSERT INTO cities (city_id, city_name, city_state, country_code, city_name_raw, city_name_alt, city_pop, city_lat, city_long, city_class, city_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);');
+	$query = $db->prepare('INSERT INTO cities (city_id, city_name, city_state, country_code, city_name_raw, city_name_alt, city_pop, city_lat, city_long, city_class, city_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);');
 	
 	foreach($cities as $city) {
 		$city = json_decode($city);

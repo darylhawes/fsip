@@ -19,7 +19,7 @@ class Right {
 	public $rights;
 	
 	protected $sql;
-	private $dbpointer;
+	private $db;
 	
 	/**
 	 * Initiate Right object
@@ -27,7 +27,8 @@ class Right {
 	 * @param array|int|string $right_ids Search rights (right IDs, right titles)
 	 */
 	public function __construct($right_ids=null) {
-		$this->dbpointer = getDB();
+		global $db;
+		$this->db = $db;
 		
 		// Reright right array
 		$this->rights = array();
@@ -113,7 +114,7 @@ class Right {
 		foreach($this->rights as $right) {
 			$ids[] = $right['right_id'];
 		}
-		return $this->dbpointer->updateRow($fields, 'rights', $ids);
+		return $this->db->updateRow($fields, 'rights', $ids);
 	}
 	
 	/**
@@ -124,7 +125,7 @@ class Right {
 	 */
 	public function delete($permanent=false) {
 		if ($permanent === true) {
-			$this->dbpointer->deleteRow('rights', $this->right_ids);
+			$this->db->deleteRow('rights', $this->right_ids);
 		} else {
 			$fields = array('right_deleted' => date('Y-m-d H:i:s'));
 			$this->updateFields($fields);
@@ -170,10 +171,10 @@ class Right {
 		$right_id = intval($right_id);
 		
 		if ($right_id == 0) {
-			$query = $this->dbpointer->prepare('UPDATE images SET right_id = ? WHERE right_id = ' . implode(' OR right_id = ', $this->right_ids) . ';');
+			$query = $this->db->prepare('UPDATE images SET right_id = ? WHERE right_id = ' . implode(' OR right_id = ', $this->right_ids) . ';');
 			$query->execute(array(null));
 		} else {
-			$query = $this->dbpointer->prepare('UPDATE images SET right_id = ? WHERE right_id = ' . implode(' OR right_id = ', $this->right_ids) . ';');
+			$query = $this->db->prepare('UPDATE images SET right_id = ? WHERE right_id = ' . implode(' OR right_id = ', $this->right_ids) . ';');
 			$query->execute(array($right_id));
 		}
 		

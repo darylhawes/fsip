@@ -15,8 +15,8 @@ $user->userHasPermission('admin', true);
 
 setCallback();
 //echo "library 7<br />";
-$db = getDB();
-$fm = getFileManager();
+global $db;
+
 //echo "library 8<br />";
 
 // Preference: page_limit
@@ -46,7 +46,7 @@ $images->hook();
 //print_r($images);
 //echo "</code>";
 
-$shoebox_count = $fm->countDirectory(PATH . SHOEBOX);
+$shoebox_count = Files::countDirectory(PATH . SHOEBOX);
 //echo "library 15<br />";
 if ($shoebox_count > 0) {
 	$shoebox_count = '(' . $shoebox_count . ') ';

@@ -17,7 +17,7 @@ header('Content-Type: application/xml');
 
 require_once($path . 'config.php');
 
-$dbpointer = getDB();
+global $db;
 
 $xml = new XMLWriter();
 
@@ -77,7 +77,7 @@ $xml->endAttribute();
 	while($count <= $item_ids->count) {
 		$ids = array_slice($item_ids->ids, $count, 1000);
 		
-		$items = $dbpointer->getTable('items', $ids);
+		$items = $db->getTable('items', $ids);
 		
 		$item_ids = array();
 		$item_table_ids = array();
@@ -96,7 +96,7 @@ $xml->endAttribute();
 		
 		for($i=0; $i < $item_count; $i++) {
 			if ($item_tables[$i][0] == 'comments') {
-				$comments = $dbpointer->getTable('comments', $item_table_ids[$i]);
+				$comments = $db->getTable('comments', $item_table_ids[$i]);
 				$comment_count = count($comments);
 				
 				$table_int = array_search('comments', getTablesIndex());
@@ -121,7 +121,7 @@ $xml->endAttribute();
 					$xml->endElement();
 				}
 			} elseif($item_tables[$i][0] == 'images') {
-				$images = $dbpointer->getTable('images', $item_table_ids[$i]);
+				$images = $db->getTable('images', $item_table_ids[$i]);
 				$image_count = count($images);
 				
 				$table_int = array_search('images', getTablesIndex());
@@ -146,7 +146,7 @@ $xml->endAttribute();
 					$xml->endElement();
 				}
 			} elseif($item_tables[$i][0] == 'pages') {
-				$pages = $dbpointer->getTable('pages', $item_table_ids[$i]);
+				$pages = $db->getTable('pages', $item_table_ids[$i]);
 				$page_count = count($pages);
 				
 				$table_int = array_search('pages', getTablesIndex());
@@ -171,7 +171,7 @@ $xml->endAttribute();
 					$xml->endElement();
 				}
 			} elseif($item_tables[$i][0] == 'rights') {
-				$rights = $dbpointer->getTable('rights', $item_table_ids[$i]);
+				$rights = $db->getTable('rights', $item_table_ids[$i]);
 				$right_count = count($rights);
 				
 				$table_int = array_search('rights', getTablesIndex());
@@ -196,7 +196,7 @@ $xml->endAttribute();
 					$xml->endElement();
 				}
 			} elseif($item_tables[$i][0] == 'sets') {
-				$sets = $dbpointer->getTable('sets', $item_table_ids[$i]);
+				$sets = $db->getTable('sets', $item_table_ids[$i]);
 				$set_count = count($sets);
 				
 				$table_int = array_search('sets', getTablesIndex());
@@ -222,7 +222,7 @@ $xml->endAttribute();
 				}
 			}
 			elseif($item_tables[$i][0] == 'tags'){
-				$tags = $dbpointer->getTable('tags', $item_table_ids[$i]);
+				$tags = $db->getTable('tags', $item_table_ids[$i]);
 				$tag_count = count($tags);
 				
 				$table_int = array_search('tags', getTablesIndex());

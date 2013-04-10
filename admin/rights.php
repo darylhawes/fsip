@@ -14,7 +14,7 @@ $user->userHasPermission('rights', true);
 
 $orbit = new Orbit;
 
-$dbpointer = getDB();
+global $db;
 
 
 if (!empty($_GET['id'])) {
@@ -78,19 +78,19 @@ if (!empty($_POST['right_id'])) {
 	
 	unset($right_id);
 } else {
-	$dbpointer->deleteEmptyRow('rights', array('right_title'));
+	$db->deleteEmptyRow('rights', array('right_title'));
 }
 
 // CREATE RIGHTS SET
 if (isset($right_act) and ($right_act == 'add')) {
-	$right_id = $dbpointer->addRow(null, 'rights');
+	$right_id = $db->addRow(null, 'rights');
 }
 
 define('TAB', 'features');
 
 // GET RIGHTS SETS TO VIEW OR RIGHTS SET TO EDIT
 if (empty($right_id)) {
-	$dbpointer->updateCounts('images', 'rights', 'right_image_count');
+	$db->updateCounts('images', 'rights', 'right_image_count');
 	
 	$right_ids = new Find('rights');
 	$right_ids->sort('right_modified', 'DESC');
@@ -145,10 +145,10 @@ if (empty($right_id)) {
 	$image_ids->find();
 	
 	$fields = array('right_image_count' => $image_ids->count);
-	$dbpointer->updateRow($fields, 'rights', $right_id, false);
+	$db->updateRow($fields, 'rights', $right_id, false);
 	
 	// Get rights set
-	$right = $dbpointer->getRow('rights', $right_id);
+	$right = $db->getRow('rights', $right_id);
 	$right = makeHTMLSafe($right);
 
 	if (!empty($right['right_title'])) {

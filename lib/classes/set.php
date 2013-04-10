@@ -19,7 +19,7 @@ class Set {
 	public $sets;
 	
 	protected $sql;
-	private $dbpointer;
+	private $db;
 
 	/**
 	 * Initiate Set object
@@ -27,7 +27,8 @@ class Set {
 	 * @param array|int|string $set_ids Search sets (set IDs, set titles)
 	 */
 	public function __construct($set_ids=null) {
-		$this->dbpointer = getDB();
+		global $db;
+		$this->db = $db;
 
 		// Reset set array
 		$this->sets = array();
@@ -63,7 +64,7 @@ class Set {
 			$this->sets = unserialize($sets);
 		} else {
 			if (count($this->set_ids) > 0) {
-				$query = $this->dbpointer->prepare('SELECT * FROM sets' . $this->sql . ';');
+				$query = $this->db->prepare('SELECT * FROM sets' . $this->sql . ';');
 				$query->execute();
 				$sets = $query->fetchAll();
 		
@@ -128,7 +129,7 @@ class Set {
 		foreach($this->sets as $set) {
 			$ids[] = $set['set_id'];
 		}
-		return $this->dbpointer->updateRow($fields, 'sets', $ids);
+		return $this->db->updateRow($fields, 'sets', $ids);
 	}
 	
 	/**
@@ -168,7 +169,7 @@ class Set {
 	public function updateViews() {
 		for($i = 0; $i < $this->set_count; ++$i) {
 			$this->sets[$i]['set_views']++;
-			$this->dbpointer->exec('UPDATE sets SET set_views = ' . $this->sets[$i]['set_views'] . ' WHERE set_id = ' . $this->sets[$i]['set_id'] . ';');
+			$this->db->exec('UPDATE sets SET set_views = ' . $this->sets[$i]['set_views'] . ' WHERE set_id = ' . $this->sets[$i]['set_id'] . ';');
 		}
 	}
 	

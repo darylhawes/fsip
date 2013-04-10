@@ -8,7 +8,7 @@
 
 require_once('../../../config.php');
 
-$dbpointer = getDB();
+global $db;
 
 if(!empty($_POST['image_id'])){
 	$id = $_POST['image_id'];
@@ -27,7 +27,7 @@ $_POST[$comment_author_uri] = $_POST['author_uri'];
 $comment_id = addComments();
 
 if ($comment_id > 0) {
-	$comment = $dbpointer->getRow('comments', $comment_id);
+	$comment = $db->getRow('comments', $comment_id);
 	echo $comment['comment_text'];
 }
 

@@ -8,14 +8,14 @@
 
 require_once('../../config.php');
 
-$dbpointer = getDB();
+global $db;
 
 $user = new User;
 $user->userHasPermission('admin', true);
 
 $markup = returnConf('web_markup_ext');
 
-$query = $dbpointer->prepare('SELECT image_id FROM images WHERE image_markup != :image_markup;');
+$query = $db->prepare('SELECT image_id FROM images WHERE image_markup != :image_markup;');
 $query->execute(array(':image_markup' => $markup));
 $images = $query->fetchAll();
 
@@ -26,7 +26,7 @@ foreach($images as $image) {
 }
 
 if (count($image_ids) > 0) {
-	$query = $dbpointer->prepare('UPDATE images SET image_description_raw = image_description, image_markup = :image_markup WHERE (image_id IN (' . implode(', ', $image_ids) . '));');
+	$query = $db->prepare('UPDATE images SET image_description_raw = image_description, image_markup = :image_markup WHERE (image_id IN (' . implode(', ', $image_ids) . '));');
 	$query->execute(array(':image_markup' => $markup));
 }
 

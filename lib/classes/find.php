@@ -50,7 +50,7 @@ class Find {
 	public $query;
 	
 	private $call;
-	private $dbpointer;
+	private $db;
 	
 	protected $sql;
 	protected $sql_conds;
@@ -84,9 +84,10 @@ class Find {
 	 */
 	public function __construct($table=null, $ids=null, $auto_guest=true, $process_request=true, $ignore_deleted=true) {
 //echo "contructing find";
-		$this->dbpointer = getDB();
+		global $db;
+		$this->db = $db;
 //echo "dbpointer has been set";
-//print_r($this->dbpointer);
+//print_r($this->db);
 		// Error handling
 		if (empty($table)) { return false; }
 		
@@ -727,7 +728,7 @@ class Find {
 			// Find tags in database
 			if (is_numeric($tags[0])) {
 				convertToIntegerArray($tags);
-				$query = $this->dbpointer->prepare('SELECT tags.tag_id FROM tags WHERE tags.tag_id = ' . implode(' OR tags.tag_id = ', $tags) . ';');
+				$query = $this->db->prepare('SELECT tags.tag_id FROM tags WHERE tags.tag_id = ' . implode(' OR tags.tag_id = ', $tags) . ';');
 				$query->execute();
 			} else {
 				$sql_params = array();
@@ -740,7 +741,7 @@ class Find {
 			
 				$sql_param_keys = array_keys($sql_params);
 			
-				$query = $this->dbpointer->prepare('SELECT tags.tag_id FROM tags WHERE LOWER(tags.tag_name) LIKE ' . implode(' OR LOWER(tags.tag_name) LIKE ', $sql_param_keys) . ';');
+				$query = $this->db->prepare('SELECT tags.tag_id FROM tags WHERE LOWER(tags.tag_name) LIKE ' . implode(' OR LOWER(tags.tag_name) LIKE ', $sql_param_keys) . ';');
 				$query->execute($sql_params);
 			}
 		
@@ -782,7 +783,7 @@ class Find {
 		// Find images with these tags in database
 		if (intval($tags[0])) {
 			convertToIntegerArray($tags);
-			$query = $this->dbpointer->prepare('SELECT ' . $this->table . '.' .$this->table_prefix . 'id FROM images, links WHERE ' . $this->table . '.' .$this->table_prefix . 'id = links.image_id AND (links.tag_id = ' . implode(' OR links.tag_id = ', $tags) . ');');
+			$query = $this->db->prepare('SELECT ' . $this->table . '.' .$this->table_prefix . 'id FROM images, links WHERE ' . $this->table . '.' .$this->table_prefix . 'id = links.image_id AND (links.tag_id = ' . implode(' OR links.tag_id = ', $tags) . ');');
 			$query->execute();
 		} else {
 			$sql_params = array();
@@ -795,7 +796,7 @@ class Find {
 			
 			$sql_param_keys = array_keys($sql_params);
 			
-			$query = $this->dbpointer->prepare('SELECT ' . $this->table . '.' .$this->table_prefix . 'id FROM images, links, tags WHERE ' . $this->table . '.' .$this->table_prefix . 'id = links.image_id AND links.tag_id = tags.tag_id AND (LOWER(tags.tag_name) LIKE ' . implode(' OR LOWER(tags.tag_name) LIKE ', $sql_param_keys) . ');');
+			$query = $this->db->prepare('SELECT ' . $this->table . '.' .$this->table_prefix . 'id FROM images, links, tags WHERE ' . $this->table . '.' .$this->table_prefix . 'id = links.image_id AND links.tag_id = tags.tag_id AND (LOWER(tags.tag_name) LIKE ' . implode(' OR LOWER(tags.tag_name) LIKE ', $sql_param_keys) . ');');
 			$query->execute($sql_params);
 		}
 		
@@ -842,7 +843,7 @@ class Find {
 		// Find images with these tags in database
 		if (intval($tags[0])) {
 			convertToIntegerArray($tags);
-			$query = $this->dbpointer->prepare('SELECT ' . $this->table . '.' .$this->table_prefix . 'id FROM images, links WHERE ' . $this->table . '.' .$this->table_prefix . 'id = links.image_id AND (links.tag_id = ' . implode(' OR links.tag_id = ', $tags) . ');');
+			$query = $this->db->prepare('SELECT ' . $this->table . '.' .$this->table_prefix . 'id FROM images, links WHERE ' . $this->table . '.' .$this->table_prefix . 'id = links.image_id AND (links.tag_id = ' . implode(' OR links.tag_id = ', $tags) . ');');
 			$query->execute();
 		} else {
 			$sql_params = array();
@@ -855,7 +856,7 @@ class Find {
 			
 			$sql_param_keys = array_keys($sql_params);
 			
-			$query = $this->dbpointer->prepare('SELECT ' . $this->table . '.' .$this->table_prefix . 'id FROM images, links, tags WHERE ' . $this->table . '.' .$this->table_prefix . 'id = links.image_id AND links.tag_id = tags.tag_id AND (LOWER(tags.tag_name) LIKE ' . implode(' OR LOWER(tags.tag_name) LIKE ', $sql_param_keys) . ');');
+			$query = $this->db->prepare('SELECT ' . $this->table . '.' .$this->table_prefix . 'id FROM images, links, tags WHERE ' . $this->table . '.' .$this->table_prefix . 'id = links.image_id AND links.tag_id = tags.tag_id AND (LOWER(tags.tag_name) LIKE ' . implode(' OR LOWER(tags.tag_name) LIKE ', $sql_param_keys) . ');');
 			$query->execute($sql_params);
 		}
 		$this->images = $query->fetchAll();
@@ -887,10 +888,10 @@ class Find {
 		
 		// Determine input type
 		if (is_string($set)) {
-			$query = $this->dbpointer->prepare('SELECT set_id, set_call, set_type, set_images, set_image_count FROM sets WHERE LOWER(set_title) LIKE :set_title_lower LIMIT 0, 1;');
+			$query = $this->db->prepare('SELECT set_id, set_call, set_type, set_images, set_image_count FROM sets WHERE LOWER(set_title) LIKE :set_title_lower LIMIT 0, 1;');
 			$query->execute(array(':set_title_lower' => strtolower($set)));
 		} elseif(is_int($set)) {
-			$query = $this->dbpointer->prepare('SELECT set_id, set_call, set_type, set_images, set_image_count FROM sets WHERE set_id = ' . $set . ' LIMIT 0, 1;');
+			$query = $this->db->prepare('SELECT set_id, set_call, set_type, set_images, set_image_count FROM sets WHERE set_id = ' . $set . ' LIMIT 0, 1;');
 			$query->execute();
 		} else {
 			return false;
@@ -1007,10 +1008,10 @@ class Find {
 		
 		// Determine input type
 		if (is_string($right)) {
-			$query = $this->dbpointer->prepare('SELECT right_id FROM rights WHERE LOWER(right_title) LIKE :lower_right_title LIMIT 0, 1;');
+			$query = $this->db->prepare('SELECT right_id FROM rights WHERE LOWER(right_title) LIKE :lower_right_title LIMIT 0, 1;');
 			$query->execute(array(':lower_right_title' => strtolower($right)));
 		} elseif(is_int($right)) {
-			$query = $this->dbpointer->prepare('SELECT right_id FROM rights WHERE right_id = ' . $right . ' LIMIT 0, 1;');
+			$query = $this->db->prepare('SELECT right_id FROM rights WHERE right_id = ' . $right . ' LIMIT 0, 1;');
 			$query->execute();
 		} else {
 			return false;
@@ -1161,7 +1162,7 @@ class Find {
 		
 		if (($this->table == 'images') and empty($fields)) {
 			// Search title, description
-			$query = $this->dbpointer->prepare('SELECT images.image_id FROM images WHERE (LOWER(images.image_title) LIKE :image_title OR LOWER(images.image_description_raw) LIKE :image_description_raw OR LOWER(images.image_geo) LIKE :image_geo OR LOWER(images.image_tags) LIKE :image_tags)');
+			$query = $this->db->prepare('SELECT images.image_id FROM images WHERE (LOWER(images.image_title) LIKE :image_title OR LOWER(images.image_description_raw) LIKE :image_description_raw OR LOWER(images.image_geo) LIKE :image_geo OR LOWER(images.image_tags) LIKE :image_tags)');
 			$query->execute(array(':image_title' => $search_lower, ':image_description_raw' => $search_lower, ':image_geo' => $search_lower, ':image_tags' => $search_lower_tags));
 			$images = $query->fetchAll();
 		
@@ -1169,7 +1170,7 @@ class Find {
 				$ids[] = $image[$this->table_prefix . 'id'];
 			}
 		} elseif (($this->table == 'comments') and empty($fields)) {
-			$query = $this->dbpointer->prepare('SELECT comments.comment_id FROM comments WHERE (LOWER(comment_text) LIKE :comment_text) OR (LOWER(comment_author_name) LIKE :comment_author_name) OR (LOWER(comment_author_uri) LIKE :comment_author_uri) OR (LOWER(comment_author_email) LIKE :comment_author_email) OR (LOWER(comment_author_ip) LIKE :comment_author_ip);');
+			$query = $this->db->prepare('SELECT comments.comment_id FROM comments WHERE (LOWER(comment_text) LIKE :comment_text) OR (LOWER(comment_author_name) LIKE :comment_author_name) OR (LOWER(comment_author_uri) LIKE :comment_author_uri) OR (LOWER(comment_author_email) LIKE :comment_author_email) OR (LOWER(comment_author_ip) LIKE :comment_author_ip);');
 			$query->execute(array(':comment_text' => $search_lower, ':comment_author_name' => $search_lower, ':comment_author_uri' => $search_lower, ':comment_author_email' => $search_lower, ':comment_author_ip' => $search_lower));
 			$comments = $query->fetchAll();
 
@@ -1181,7 +1182,7 @@ class Find {
 			
 			$field_count = count($fields);
 			if ($field_count > 0) {
-				$query = $this->dbpointer->prepare('SELECT ' . $this->table . '.' . $this->table_prefix . 'id FROM ' . $this->table . ' WHERE (LOWER(' .  implode(' LIKE ?)) OR (LOWER(', $fields) . ' LIKE ?));');
+				$query = $this->db->prepare('SELECT ' . $this->table . '.' . $this->table_prefix . 'id FROM ' . $this->table . ' WHERE (LOWER(' .  implode(' LIKE ?)) OR (LOWER(', $fields) . ' LIKE ?));');
 			
 				$search_array = array_fill(0, $field_count, $search_lower);
 			
@@ -1225,7 +1226,7 @@ class Find {
 		
 		if (($this->table == 'images') and empty($fields)) {
 			// Search title, description
-			$query = $this->dbpointer->prepare('SELECT images.image_id FROM images WHERE (LOWER(images.image_title) LIKE :image_title_lower OR LOWER(images.image_description) LIKE :image_description_lower OR LOWER(images.image_geo) LIKE :image_geo_lower)');
+			$query = $this->db->prepare('SELECT images.image_id FROM images WHERE (LOWER(images.image_title) LIKE :image_title_lower OR LOWER(images.image_description) LIKE :image_description_lower OR LOWER(images.image_geo) LIKE :image_geo_lower)');
 			$query->execute(array(':image_title_lower' => $search_lower, ':image_description_lower' => $search_lower, ':image_geo_lower' => $search_lower));
 			$images = $query->fetchAll();
 		
@@ -1234,7 +1235,7 @@ class Find {
 			}
 		
 			// Search tags
-			$query = $this->dbpointer->prepare('SELECT images.image_id FROM images, links, tags WHERE images.image_id = links.image_id AND links.tag_id = tags.tag_id AND (LOWER(tags.tag_name) LIKE :tag_name_lower);');
+			$query = $this->db->prepare('SELECT images.image_id FROM images, links, tags WHERE images.image_id = links.image_id AND links.tag_id = tags.tag_id AND (LOWER(tags.tag_name) LIKE :tag_name_lower);');
 			$query->execute(array(':tag_name_lower' => $search_lower));
 		
 			$images = $query->fetchAll();
@@ -1243,7 +1244,7 @@ class Find {
 				$ids[] = $image[$this->table_prefix . 'id'];
 			}
 		} elseif (($this->table == 'comments') and empty($fields)) {
-			$query = $this->dbpointer->prepare('SELECT comments.comment_id FROM comments WHERE (LOWER(comment_text) LIKE :comment_text) OR (LOWER(comment_author_name) LIKE :comment_author_name) OR (LOWER(comment_author_uri) LIKE :comment_author_uri) OR (LOWER(comment_author_email) LIKE :comment_author_email) OR (LOWER(comment_author_ip) LIKE :comment_author_ip);');
+			$query = $this->db->prepare('SELECT comments.comment_id FROM comments WHERE (LOWER(comment_text) LIKE :comment_text) OR (LOWER(comment_author_name) LIKE :comment_author_name) OR (LOWER(comment_author_uri) LIKE :comment_author_uri) OR (LOWER(comment_author_email) LIKE :comment_author_email) OR (LOWER(comment_author_ip) LIKE :comment_author_ip);');
 			$query->execute(array(':comment_text' => $search_lower, ':comment_author_name' => $search_lower, ':comment_author_uri' => $search_lower, ':comment_author_email' => $search_lower, ':comment_author_ip' => $search_lower));
 			$comments = $query->fetchAll();
 
@@ -1255,7 +1256,7 @@ class Find {
 			
 			$field_count = count($fields);
 			if ($field_count > 0) {
-				$query = $this->dbpointer->prepare('SELECT ' . $this->table . '.' . $this->table_prefix . 'id FROM ' . $this->table . ' WHERE (LOWER(' .  implode(' LIKE ?)) OR (LOWER(', $fields) . ' LIKE ?));');
+				$query = $this->db->prepare('SELECT ' . $this->table . '.' . $this->table_prefix . 'id FROM ' . $this->table . ' WHERE (LOWER(' .  implode(' LIKE ?)) OR (LOWER(', $fields) . ' LIKE ?));');
 			
 				$search_array = array_fill(0, $field_count, $search_lower);
 			
@@ -1381,7 +1382,7 @@ class Find {
 		
 		if (!empty($min)) {
 			$min = floatval($min);
-			if ($this->dbpointer->db_type == 'pgsql') {
+			if ($this->db->db_type == 'pgsql') {
 				$this->sql_conds[] = '(CAST(' . $this->table . '.' .$this->table_prefix . 'width AS FLOAT) / CAST(' . $this->table . '.' .$this->table_prefix . 'height AS FLOAT)) < ' . $min;
 			} else {
 				$this->sql_conds[] = '(' . $this->table . '.' .$this->table_prefix . 'width / ' . $this->table . '.' .$this->table_prefix . 'height) < ' . $min;
@@ -1389,7 +1390,7 @@ class Find {
 		}
 		if(!empty($max)) {
 			$max = floatval($max);
-			if ($this->dbpointer->db_type == 'pgsql') {
+			if ($this->db->db_type == 'pgsql') {
 				$this->sql_conds[] = '(CAST(' . $this->table . '.' .$this->table_prefix . 'width AS FLOAT) / CAST(' . $this->table . '.' .$this->table_prefix . 'height AS FLOAT)) >' . $max;
 			} else {
 				$this->sql_conds[] = '(' . $this->table . '.' .$this->table_prefix . 'width / ' . $this->table . '.' .$this->table_prefix . 'height) > ' . $max;
@@ -1397,7 +1398,7 @@ class Find {
 		}
 		if (!empty($equal)) {
 			$equal = floatval($equal);
-			if ($this->dbpointer->db_type == 'pgsql') {
+			if ($this->db->db_type == 'pgsql') {
 				$this->sql_conds[] = '(CAST(' . $this->table . '.' .$this->table_prefix . 'width AS FLOAT) / CAST(' . $this->table . '.' .$this->table_prefix . 'height AS FLOAT)) = ' . $equal;
 			} else {
 				$this->sql_conds[] = '(' . $this->table . '.' .$this->table_prefix . 'width / ' . $this->table . '.' .$this->table_prefix . 'height) = ' . $equal;
@@ -1785,7 +1786,7 @@ class Find {
 		// Error checking
 		if (empty($column)) { return false; }
 		
-		$column = $this->dbpointer->sanitize($column);
+		$column = $this->db->sanitize($column);
 		
 		$column = strtolower($column);
 		$sort = strtoupper($sort);
@@ -1810,7 +1811,7 @@ class Find {
 	public function notnull($field) {
 		if (empty($field)) { return false; }
 		
-		$field = $this->dbpointer->sanitize($field);
+		$field = $this->db->sanitize($field);
 		
 		$this->sql_conds[] = $field . ' IS NOT NULL';
 		
@@ -1827,7 +1828,7 @@ class Find {
 //echo "in FIND class's NULL method field: $field<br />";
 		if (empty($field)) { return false; }
 		
-		$field = $this->dbpointer->sanitize($field);
+		$field = $this->db->sanitize($field);
 //echo "sql_conds before =<br />";
 //print_r($this->sql_conds);
 //echo "<br />";
@@ -1861,7 +1862,7 @@ class Find {
 		if (count($this->sql_sorts) > 0) {
 			$this->sql_order_by = ' ORDER BY ' . implode(', ', $this->sql_sorts);
 //echo "in find method of find class 3.1. ORDER BY: $this->sql_order_by<br />";
-			if (($this->dbpointer->db_type == 'pgsql') or ($this->dbpointer->db_type == 'mssql')) {
+			if (($this->db->db_type == 'pgsql') or ($this->db->db_type == 'mssql')) {
 				$sql_sorts = str_ireplace(' ASC', '', $this->sql_sorts);
 				$sql_sorts = str_ireplace(' DESC', '', $this->sql_sorts);
 				$this->sql_group_by .= ', ' . implode(', ', $sql_sorts);
@@ -1869,7 +1870,7 @@ class Find {
 		} elseif (empty($this->order)) {
 			$this->sql_order_by = ' ORDER BY ' . $this->table . '.' .$this->table_prefix . 'id DESC';
 //echo "in find method of find class 3.2. ORDER BY: $this->sql_order_by<br />";
-			if (($this->dbpointer->db_type == 'pgsql') or ($this->dbpointer->db_type == 'mssql')) {
+			if (($this->db->db_type == 'pgsql') or ($this->db->db_type == 'mssql')) {
 				$this->sql_group_by .= ', ' . $this->table . '.' .$this->table_prefix . 'id';
 			}
 		}
@@ -1887,9 +1888,9 @@ class Find {
 		// Prepare query without limit
 		$this->sql .= $this->sql_from . $this->sql_join . $this->sql_where . $this->sql_group_by . $this->sql_having . $this->sql_order_by;
 //echo "in find method of find class 4. SQL = $this->sql<br />";
-//print_r($this->dbpointer);
+//print_r($this->db);
 		// Execute query without limit
-		$query = $this->dbpointer->prepare($this->sql);
+		$query = $this->db->prepare($this->sql);
 //echo "in find method of find class 5. sql was: $this->sql<br />";
 //echo "in find method of find class 5.1 query was: $query<br />";
 		$query->execute($this->sql_params);
@@ -1948,7 +1949,7 @@ class Find {
 		$this->sql .= $this->sql_limit;
 		
 		// Execute query with order, limit
-		$query = $this->dbpointer->prepare($this->sql);
+		$query = $this->db->prepare($this->sql);
 		$query->execute($this->sql_params);
 		$images = $query->fetchAll();
 		
@@ -2042,14 +2043,14 @@ class Find {
 		$this->page_navigation_string = $pnavstr;
 
 		// Create a total_image_count variable for templates to insert.
-		$query = $this->dbpointer->prepare('SELECT COUNT(*) as count FROM images WHERE 1;');
+		$query = $this->db->prepare('SELECT COUNT(*) as count FROM images WHERE 1;');
 		$query->execute();
 		$ttlImages = $query->fetchAll();
 		$this->total_image_count = $ttlImages[0]['count'];
 	
 		// Create a published_public_image_count variable for templates to insert.
 		$now = date('Y-m-d H:i:s');
-		$query = $this->dbpointer->prepare("SELECT COUNT(*) as count FROM images WHERE image_published > 1 AND image_published < '$now'");
+		$query = $this->db->prepare("SELECT COUNT(*) as count FROM images WHERE image_published > 1 AND image_published < '$now'");
 		$query->execute();
 		$pubImages = $query->fetchAll();
 		$this->published_public_image_count = $pubImages[0]['count'];		

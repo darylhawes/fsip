@@ -9,20 +9,22 @@
 require_once('../config.php');
 
 $user = new User;
-
+//echo "statistics 1<br />";
 $user->userHasPermission('statistics', true);
 
-$db = getDB();
+global $db;
 
 
 // PAST 24 HOURS
 $then = strtotime('-24 hours');
+//echo "statistics 2<br />";
 
 $hourly = new Stat($then);
 $hourly->getHourly();
 
 $h_views = number_format($hourly->views);
 $h_visitors = number_format($hourly->visitors);
+//echo "statistics 3<br />";
 
 $views = array();
 $visitors = array();
@@ -31,22 +33,26 @@ foreach($hourly->stats as $stat) {
 	$views[] = array($stat['stat_ts_js'], $stat['stat_views']);
 	$visitors[] = array($stat['stat_ts_js'], $stat['stat_visitors']);
 }
+//echo "statistics 4<br />";
 
 $h_views_json = json_encode($views);
 $h_visitors_json = json_encode($visitors);
 
-// PAST 30 DAYS
+/// PAST 30 DAYS
+//echo "statistics 5<br />";
 
 $then = strtotime('-30 days');
 
 $daily = new Stat($then);
 $daily->getDaily();
+//echo "statistics 6<br />";
 
 $d_views = number_format($daily->views);
 $d_visitors = number_format($daily->visitors);
 
 $views = array();
 $visitors = array();
+//echo "statistics 7<br />";
 
 foreach($daily->stats as $stat) {
 	$views[] = array($stat['stat_ts_js'], $stat['stat_views']);
@@ -55,6 +61,7 @@ foreach($daily->stats as $stat) {
 
 $d_views_json = json_encode($views);
 $d_visitors_json = json_encode($visitors);
+//echo "statistics 8<br />";
 
 // PAST 12 MONTHS
 
@@ -65,6 +72,7 @@ $monthly->getMonthly();
 
 $m_views = number_format($monthly->views);
 $m_visitors = number_format($monthly->visitors);
+//echo "statistics 9<br />";
 
 $views = array();
 $visitors = array();
@@ -76,9 +84,9 @@ foreach($monthly->stats as $stat) {
 
 $m_views_json = json_encode($views);
 $m_visitors_json = json_encode($visitors);
+//echo "statistics 10<br />";
 
 // DURATIONS
-
 $then = strtotime('-60 days');
 
 $stats = new Stat($then);
@@ -87,6 +95,7 @@ $stats->getDurations();
 $levels = array('&#0060;30 seconds' => 30, '30-60 seconds' => 60, '1-2 minutes' => 120, '2-5 minutes' => 300, '5-10 minutes' => 600, '10-30 minutes' => 1800, '&#0062; 30 minutes');
 $zeros = array_fill(0, count($levels), 0);
 $last = implode('', array_slice($levels, -1, 1));
+//echo "statistics 11<br />";
 
 $keys = array_slice($levels, 0, -1);
 $keys = array_keys($keys);
@@ -96,6 +105,7 @@ $durations = array_combine($keys, $zeros);
 $durations_count = count($stats->durations);
 
 $accounted_for = 0;
+//echo "statistics 12<br />";
 
 foreach($stats->durations as $duration) {
 	foreach($levels as $level_text => $level_max) {
@@ -106,6 +116,7 @@ foreach($stats->durations as $duration) {
 		}
 	}
 }
+//echo "statistics 13<br />";
 
 $durations[$last] = $durations_count - $accounted_for;
 
@@ -114,6 +125,7 @@ if ($durations_count > 0) {
 		$durations[$text] = round(($duration / $durations_count) * 100, 1);
 	}
 }
+//echo "statistics 14<br />";
 
 // PAGES
 
@@ -122,6 +134,7 @@ $stats->getPages();
 // PAGE TYPES
 
 $stats->getPageTypes();
+//echo "statistics 15<br />";
 
 // RECENT REFERRERS
 
@@ -134,14 +147,19 @@ foreach($stats->referrers_recent as &$referrer) {
 // POPULAR REFERRS
 
 $stats->getPopularReferrers(10, false);
+//echo "statistics 16<br />";
 
 foreach($stats->referrers_popular as &$referrer) {
 	$referrer['stat_referrer_display'] = fitString(minimizeURL($referrer['stat_referrer']), 30);
 }
+//echo "statistics 17<br />";
 
 define('TAB', 'dashboard');
+//echo "statistics 18<br />";
 define('TITLE', 'FSIP Statistics');
+//echo "statistics 19. now including".PATH . INCLUDES . 'admin/admin_header.php'."<br />";
 include_once(PATH . INCLUDES . 'admin/admin_header.php');
+//echo "statistics 20<br />";
 
 ?>
 

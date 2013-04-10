@@ -11,9 +11,9 @@ require_once('../config.php');
 $user = new User;
 $user->userHasPermission('tags', true);
 
-$dbpointer = getDB();
+global $db;
 //echo "tags 2. dbpointer =<br />";
-//print_r($dbpointer);
+//print_r($db);
 if (!empty($_GET['id'])) {
 	$tag_id = findID($_GET['id']);
 }
@@ -26,10 +26,10 @@ if (!empty($_POST['tag_id'])) {
 	
 	// Delete tags set
 	if (@$_POST['tag_delete'] == 'delete') {
-		$dbpointer->exec('DELETE FROM links WHERE tag_id = ' . $tag_id);
-		$dbpointer->deleteRow('tags', $tag_id);
+		$db->exec('DELETE FROM links WHERE tag_id = ' . $tag_id);
+		$db->deleteRow('tags', $tag_id);
 	} else {  // Update tags set
-		$query = $dbpointer->prepare('SELECT tag_id FROM tags WHERE tag_name = :tag_name AND tag_id != ' . $tag_id);
+		$query = $db->prepare('SELECT tag_id FROM tags WHERE tag_name = :tag_name AND tag_id != ' . $tag_id);
 		$query->execute(array(':tag_name' => $tag_name));
 		$tags = $query->fetchAll();
 		$tag = @$tags[0];
@@ -40,22 +40,22 @@ if (!empty($_POST['tag_id'])) {
 		
 		$fields = array('tag_name' => makeUnicode($tag_name),
 			'tag_parents' => serialize($tag_parents));
-		$dbpointer->updateRow($fields, 'tags', $tag_id);
+		$db->updateRow($fields, 'tags', $tag_id);
 		
 		if (count($tags) == 1) {
-			$dbpointer->exec('UPDATE links SET tag_id = ' . $tag['tag_id'] . ' WHERE tag_id = ' . $tag_id);
-			$dbpointer->deleteRow('tags', $tag_id);
+			$db->exec('UPDATE links SET tag_id = ' . $tag['tag_id'] . ' WHERE tag_id = ' . $tag_id);
+			$db->deleteRow('tags', $tag_id);
 		}
 	}
 	
 	unset($tag_id);
 } else {
-	$dbpointer->deleteEmptyRow('tags', array('tag_name'));
+	$db->deleteEmptyRow('tags', array('tag_name'));
 }
 
 //echo "tags 4<br />";
 
-$tags = $dbpointer->getTags(true);
+$tags = $db->getTags(true);
 //echo "tags 4.1<br />";
 $tag_count = count($tags);
 //echo "tags 5<br />";
@@ -66,7 +66,7 @@ define('TAB', 'features');
 if (empty($tag_id)) {
 	define('TITLE', 'FSIP Tags');
 	require_once(PATH . INCLUDES . 'admin/admin_header.php');
-echo "tags 6<br />";
+//echo "tags 6<br />";
 
 ?>
 
@@ -89,7 +89,6 @@ echo "tags 6<br />";
 	</p>
 
 <?php
-
 	require_once(PATH . INCLUDES . 'admin/admin_footer.php');
 } else {
 	// Update image count on rights set
@@ -98,7 +97,7 @@ echo "tags 6<br />";
 	$image_ids->find();
 	
 	// Get rights set
-	$tag = $dbpointer->getRow('tags', $tag_id);
+	$tag = $db->getRow('tags', $tag_id);
 	$tag = makeHTMLSafe($tag);
 
 	if (!empty($tag['tag_name'])) {

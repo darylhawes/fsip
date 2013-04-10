@@ -13,7 +13,7 @@ chdir(__DIR__);
 
 require_once('../../config.php');
 
-$dbpointer = getDB();
+global $db;
 
 // Deny external execution
 if(!isset($argv)){ exit(); };
@@ -31,7 +31,7 @@ foreach($table_ids as $id) {
 	$ids = new Find($table);
 	$ids->find();
 	
-	$query = $dbpointer->prepare('SELECT item_table_id FROM items WHERE item_table = :item_table;');
+	$query = $db->prepare('SELECT item_table_id FROM items WHERE item_table = :item_table;');
 	$query->execute(array(':item_table' => $table));
 	$items = $query->fetchAll();
 	
@@ -48,7 +48,7 @@ foreach($table_ids as $id) {
 
 		$fields = array('item_table' => $tables_index[$id],
 			'item_table_id' => $item_id);
-		$dbpointer->addRow($fields, 'items');
+		$db->addRow($fields, 'items');
 	}
 	
 	$delete_ids = array();
@@ -60,7 +60,7 @@ foreach($table_ids as $id) {
 		$delete_ids[] = $item_id;
 	}
 	
-	$query = $dbpointer->prepare('DELETE FROM items WHERE item_table = :item_table AND item_table_id IN (' . implode(', ', $delete_ids) . ')');
+	$query = $db->prepare('DELETE FROM items WHERE item_table = :item_table AND item_table_id IN (' . implode(', ', $delete_ids) . ')');
 	$query->execute(array(':item_table' => $table));
 }
 

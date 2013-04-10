@@ -51,10 +51,10 @@ if(!empty($_POST['tag_id'])){
 	unset($tag_id);
 }
 else{
-	$dbpointer->deleteEmptyRow('tags', array('tag_name'));
+	$db->deleteEmptyRow('tags', array('tag_name'));
 }
 
-$tags = $dbpointer->getTags(true);
+$tags = $db->getTags(true);
 $tag_count = count($tags);
 
 define('TAB', 'features');

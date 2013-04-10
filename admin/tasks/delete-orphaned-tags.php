@@ -10,18 +10,18 @@ require_once('../../config.php');
 
 $user = new User;
 
-$dbpointer = getDB();
+global $db;
 
 $user->userHasPermission('admin', true);
 
 $id = findID(@$_POST['image_id']);
 
 if (empty($id)) {
-	$query = $dbpointer->prepare('SELECT DISTINCT tags.tag_id FROM tags;');
+	$query = $db->prepare('SELECT DISTINCT tags.tag_id FROM tags;');
 	$query->execute();
 	$tags = $query->fetchAll();
 	
-	$query = $dbpointer->prepare('SELECT DISTINCT tags.tag_id FROM tags, links WHERE tags.tag_id = links.tag_id;');
+	$query = $db->prepare('SELECT DISTINCT tags.tag_id FROM tags, links WHERE tags.tag_id = links.tag_id;');
 	$query->execute();
 	$tags_in_use = $query->fetchAll();
 	
@@ -41,7 +41,7 @@ if (empty($id)) {
 	
 	echo json_encode($tag_ids);
 } else {
-	$dbpointer->exec('DELETE FROM tags WHERE tag_id = ' . intval($id));
+	$db->exec('DELETE FROM tags WHERE tag_id = ' . intval($id));
 }
 
 ?>

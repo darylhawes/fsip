@@ -13,7 +13,7 @@ $user->userHasPermission('features', true);
 
 $orbit = new Orbit;
 
-$dbpointer = getDB();
+global $db;
 
 
 if (!empty($_GET['act']) and ($_GET['act'] != 'bulk')) {
@@ -66,7 +66,7 @@ if (!empty($_POST['do']) and ($_POST['do'] == 'Do')) {
 				$orbit->hook('send_' . $act_send . '_image', $images->images, null);
 			}
 		} elseif($act == 'set_add') {
-			$set = $dbpointer->getRow('sets', $_POST['act_set_id']);
+			$set = $db->getRow('sets', $_POST['act_set_id']);
 		
 			if (!empty($set['set_images'])) {
 				$set_images = explode(', ', $set['set_images']);
@@ -82,12 +82,12 @@ if (!empty($_POST['do']) and ($_POST['do'] == 'Do')) {
 			$fields = array('set_images' => $set_images,
 				'set_image_count' => $set_image_count);
 		
-			$bool = $dbpointer->updateRow($fields, 'sets', $_POST['act_set_id']);
+			$bool = $db->updateRow($fields, 'sets', $_POST['act_set_id']);
 			if ($bool === true) {
 				addNote('You successfully added to the set &#8220;<a href="' . BASE . ADMINFOLDER . 'search' . URL_ACT . 'sets' . URL_AID . @$set['set_id'] . URL_RW . '">' . $set['set_title'] . '</a>&#8221;.', 'success');
 			}
 		} elseif($act == 'set_remove') {
-			$set = $dbpointer->getRow('sets', $_POST['act_set_id']);
+			$set = $db->getRow('sets', $_POST['act_set_id']);
 		
 			if (!empty($set['set_images'])) {
 				$set_images = explode(', ', $set['set_images']);
@@ -109,7 +109,7 @@ if (!empty($_POST['do']) and ($_POST['do'] == 'Do')) {
 			$fields = array('set_images' => $set_images,
 				'set_image_count' => $set_image_count);
 		
-			$bool = $dbpointer->updateRow($fields, 'sets', $_POST['act_set_id']);
+			$bool = $db->updateRow($fields, 'sets', $_POST['act_set_id']);
 			if ($bool === true) {
 				addNote('You successfully removed from the set &#8220;<a href="' . BASE . ADMINFOLDER . 'search' . URL_ACT . 'sets' . URL_AID . $set['set_id'] . URL_RW . '">' . $set['set_title'] . '</a>&#8221;.', 'success');
 			}
@@ -176,13 +176,12 @@ $images->hook();
 define('TAB', 'features');
 define('TITLE', 'FSIP Features');
 require_once(PATH . INCLUDES . 'admin/admin_header.php');
-
 ?>
 
 <div class="span-24 last">
+
 <?php
-	
-	if ($user->userHasPermission('editor'), false) {
+	if ($user->userHasPermission('editor', false)) {
 ?>
 		<div class="actions">
 			<a href="#select_all" id="select_all"><button>Select all</button></a>

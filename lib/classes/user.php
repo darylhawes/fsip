@@ -14,14 +14,15 @@
 
 class User {
 	public $user;
-	private $dbpointer;
+	private $db;
 	
 	/**
 	 * Initiate User object
 	 *
 	 */
 	public function __construct() {
-		$this->dbpointer = getDB();
+		global $db;
+		$this->db = $db;
 
 		// Login user by session data
 		if (!empty($_SESSION['fsip']['user'])) {
@@ -45,7 +46,7 @@ class User {
 		if (isset($this->user)) {
 			$_SESSION['fsip']['user'] = $this->user;
 		}
-		$this->dbpointer = null;
+		$this->db = null;
 	}
 	
 	/**
@@ -83,13 +84,13 @@ class User {
 		
 		$key = strip_tags($key);
 		
-		$query = $this->dbpointer->prepare('SELECT * FROM guests WHERE guest_key = :guest_key;');
+		$query = $this->db->prepare('SELECT * FROM guests WHERE guest_key = :guest_key;');
 		$query->execute(array(':guest_key' => $key));
 		$guests = $query->fetchAll();
 		$guest = $guests[0];
 		
 		if (!$guest) {
-			addError('Guest not found.', 'You are not authorized for this material.', null, null, 401);
+			Debugger::addError('Guest not found.', 'You are not authorized for this material.', null, null, 401);
 		}
 		
 		if (returnConf('guest_remember')) {
@@ -119,7 +120,7 @@ class User {
 		} 
 		
 		// Check database
-		$query = $this->dbpointer->prepare('SELECT * FROM users WHERE user_username = :username AND user_pass = :password;');
+		$query = $this->db->prepare('SELECT * FROM users WHERE user_username = :username AND user_pass = :password;');
 		$query->execute(array(':username' => $username, ':password' => sha1($password . SALT)));
 		$this->user = $query->fetchAll();
 		
@@ -142,7 +143,7 @@ class User {
 		// Error checking
 		if (empty($user_id) or empty($user_key)) { return false ; }
 
-		$query = $this->dbpointer->prepare('SELECT * FROM users WHERE user_id = :user_id AND user_key = :user_key;');
+		$query = $this->db->prepare('SELECT * FROM users WHERE user_id = :user_id AND user_key = :user_key;');
 		$query->execute(array(':user_id' => $user_id, ':user_key' => $user_key));
 		$this->user = $query->fetchAll();
 
@@ -194,7 +195,7 @@ class User {
 		
 		// Update database
 		$fields = array('user_last_login' => date('Y-m-d H:i:s'), 'user_key' => $key);
-		return $this->dbpointer->updateRow($fields, 'users', $this->user['user_id']);
+		return $this->db->updateRow($fields, 'users', $this->user['user_id']);
 	}
 	
 	/**
@@ -264,7 +265,7 @@ class User {
 			if ($userid != null and is_numeric($userid)) {
 				// We're checking a permission on a user who is not currently logged in
 				
-				// TODO - implement this case
+				// TODO DEH - implement this case
 			}
 
 			if (empty($permission)) {
@@ -279,7 +280,7 @@ class User {
 			} else {
 				if ($required === true) {
 //echo "checking user perm, debugger adding error<br />";
-					addError(E_USER_ERROR, 'You do not have permission to access this area of the site.', null, null, 401);
+					Debugger::addError(E_USER_ERROR, 'You do not have permission to access this area of the site.', null, null, 401);
 					exit();
 				} else {
 					return false;
@@ -337,7 +338,7 @@ class User {
 		$fields = array('user_preferences' => serialize($this->user['user_preferences']));
 		
 		// Update database
-		return $this->dbpointer->updateFields($fields);
+		return $this->db->updateFields($fields);
 	}
 	
 	/**
@@ -364,7 +365,7 @@ class User {
 		if (count($fields) == 0) { return false; }
 		
 		// Update database
-		return $this->dbpointer->updateRow($fields, 'users', $this->user['user_id']);
+		return $this->db->updateRow($fields, 'users', $this->user['user_id']);
 	}
 
 	// NEW METHODS
@@ -416,7 +417,7 @@ class User {
 			}
 		}
 		// check database for the specified user's permissions
-		$query = $this->dbpointer->prepare('SELECT user_permissions FROM users WHERE user_id = :user_id;');
+		$query = $this->db->prepare('SELECT user_permissions FROM users WHERE user_id = :user_id;');
 		$query->execute(array(':user_id' => $user_id));
 		$userperms = $query->fetchAll();
 		$userperms = unserialize($userperms);
@@ -479,7 +480,7 @@ class User {
 			}
 		}
 		// check database for the specified user's permissions
-		$query = $this->dbpointer->prepare('SELECT user_permissions FROM users WHERE user_id = :user_id;');
+		$query = $this->db->prepare('SELECT user_permissions FROM users WHERE user_id = :user_id;');
 		$query->execute(array(':user_id' => $user_id));
 		$userperms = $query->fetchAll();
 		$userperms = unserialize($userperms);

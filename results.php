@@ -8,9 +8,9 @@
 
 require_once('config.php');
 
-$dbpointer = getDB();
+global $db;
 
-$dbpointer->recordStat('home');
+$db->recordStat('home');
 
 if (empty($_SESSION['fsip']['search']['table'])) {
 	$location = LOCATION . BASE . 'search' . URL_CAP;

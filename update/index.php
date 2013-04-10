@@ -8,20 +8,19 @@
 
 
 require_once('../config.php');
-
-$dbpointer = getDB();
+global $db;
 
 $builds = array(918, 928, 1000, 1100, 1200);
 
 foreach($builds as $build) {
 	// Import default SQL
-	$queries = file_get_contents(PATH . 'update/' . $build . '/' . $dbpointer->db_type . '.sql');
+	$queries = file_get_contents(PATH . 'update/' . $build . '/' . $db->db_type . '.sql');
 	$queries = explode("\n", $queries);
 
 	foreach($queries as $query) {
 		$query = trim($query);
 		if (!empty($query)) {
-			$dbpointer->exec($query);
+			$db->exec($query);
 		}
 	}
 }

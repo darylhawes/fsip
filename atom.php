@@ -8,9 +8,9 @@
 
 require_once('config.php');
 
-$dbpointer = getDB();
+global $db;
 
-$dbpointer->recordStat('atom');
+$db->recordStat('atom');
 
 header('Content-Type: application/xml');
 

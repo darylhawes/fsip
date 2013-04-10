@@ -13,28 +13,20 @@ $orbit = new Orbit;
 $user = new User;
 $user->userHasPermission('configuration', true);
 
-$dbpointer = getDB();
+global $db;
 
 if (!empty($_POST['configuration_save'])) {
 	$theme_id = intval($_POST['theme_id']);
 	if ($_POST['theme_id'] != returnConf('theme_id')) {
-		$theme = $dbpointer->getRow('themes', $theme_id);
+		$theme = $db->getRow('themes', $theme_id);
 		
 		setConf('theme_id', $theme_id);
 		setConf('theme_folder', $theme['theme_folder']);
 	}
 	
-	$page_size_id = intval($_POST['page_size_id']);
-	if ($_POST['page_size_id'] != returnConf('page_size_id')) {
-		$size = $dbpointer->getRow('sizes', $page_size_id);
-		
-		setConf('page_size_id', $page_size_id);
-		setConf('page_size_label', $size['size_label']);
-	}
-	
 	$post_size_id = intval($_POST['post_size_id']);
 	if ($_POST['post_size_id'] != returnConf('post_size_id')) {
-		$size = $dbpointer->getRow('sizes', $post_size_id);
+		$size = $db->getRow('sizes', $post_size_id);
 		
 		setConf('post_size_id', $post_size_id);
 		setConf('post_size_label', $size['size_label']);
@@ -79,8 +71,6 @@ if (!empty($_POST['configuration_save'])) {
 	setConf('thumb_watermark_pos', @$_POST['thumb_watermark_pos']);
 	setConf('thumb_watermark_margin', intval(@$_POST['thumb_watermark_margin']));
 	setConf('tag_alpha', @$_POST['tag_alpha']);
-	setConf('page_div_wrap', @$_POST['page_div_wrap']);
-	setConf('page_div_wrap_class', @$_POST['page_div_wrap_class']);
 	setConf('comm_enabled', @$_POST['comm_enabled']);
 	setConf('comm_email', @$_POST['comm_email']);
 	setConf('comm_mod', @$_POST['comm_mod']);
@@ -110,6 +100,7 @@ if (!empty($_POST['configuration_save'])) {
 	setConf('sphinx_max_exec', @$_POST['sphinx_max_exec']);
 	setConf('maint_reports', @$_POST['maint_reports']);
 	setConf('maint_debug', @$_POST['maint_debug']);
+	setConf('maint_debug_admin_only', @$_POST['maint_debug_admin_only']);
 	setConf('maint_disable', @$_POST['maint_disable']);
 	
 	if (saveConf()) {
@@ -306,23 +297,6 @@ require_once(PATH . INCLUDES . 'admin/admin_header.php');
 		</tr>
 	</table>
 	
-	<h3>Pages</h3>
-	
-	<table>
-		<tr>
-			<td class="input middle"><input type="checkbox" id="page_size_id" name="page_size_id" disabled="disabled" checked="checked" /></td>
-			<td class="description">
-				<label for="page_size_id">Use the thumbnail size <?php echo showSizes('page_size_id', returnConf('page_size_id')); ?> when adding images by point-and-click</label>
-			</td>
-		</tr>
-		<tr>
-			<td class="input middle"><input type="checkbox" id="page_div_wrap" name="page_div_wrap" <?php echo readConf('page_div_wrap'); ?> value="true" /></td>
-			<td>
-				<label for="page_div_wrap">Wrap thumbnails in a &#0060;div&#0062; wrapper with the classes:</label> <input type="text" id="page_div_wrap_class" name="page_div_wrap_class" value="<?php echo returnConf('page_div_wrap_class'); ?>" class="xs" />
-			</td>
-		</tr>
-	</table>
-
 	<h3>Comments</h3>
 	
 	<table>
@@ -579,22 +553,30 @@ require_once(PATH . INCLUDES . 'admin/admin_header.php');
 			</td>
 		</tr>
 	</table>
-	<!--
+
 	<h3>Diagnostics</h3>
 	
 	<table>
+<!-- DEH Disable maint_reports sending diagnostic data back to remote service
 		<tr>
 			<td class="input"><input type="checkbox" id="maint_reports" name="maint_reports" <?php echo readConf('maint_reports'); ?> value="true" /></td>
 			<td class="description">
 				<label for="maint_reports">Send anonymous system profile and usage data</label><br />
-				Transmits nonidentifiable data to <a href="http://www.alkalineapp.com/">alkalineapp.com</a> help improve Alkaline
+				Transmits anonymized data to <a href="http://www.alkalineapp.com/">alkalineapp.com</a> help improve Alkaline
 			</td>
-		</tr>
+		</tr>-->
 		<tr>
 			<td class="input"><input type="checkbox" id="maint_debug" name="maint_debug" <?php echo readConf('maint_debug'); ?> value="true" /></td>
 			<td class="description">
 				<label for="maint_debug">Enable debug mode</label><br />
 				Appends technical data to the footer of pages
+			</td>
+		</tr>
+		<tr>
+			<td class="input"><input type="checkbox" id="maint_debug_admin_only" name="maint_debug_admin_only" <?php echo readConf('maint_debug_admin_only'); ?> value="true" /></td>
+			<td class="description">
+				<label for="maint_debug">Only show debug to admin users</label><br />
+				Appends technical data to the footer of pages ONLY if the current user is an admin user.
 			</td>
 		</tr>
 		<tr>
@@ -604,7 +586,6 @@ require_once(PATH . INCLUDES . 'admin/admin_header.php');
 			</td>
 		</tr>
 	</table>
-	-->
 	<p><input type="submit" name="configuration_save" value="Save changes" /> or <a href="<?php echo back(); ?>">cancel</a></p>
 </form>
 

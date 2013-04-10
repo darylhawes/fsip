@@ -16,8 +16,8 @@ $user->userHasPermission('dashboard', true);
 
 setCallback();
 //echo "dashboard 7<br />";
-$db = getDB();
-$fm = getFileManager();
+global $db;
+
 //echo "dashboard 8<br />";
 
 // Vitals
@@ -79,15 +79,14 @@ require_once(PATH . INCLUDES . 'admin/admin_header.php');
 
 		<h3>Census</h3>
 		<table class="census">
-			<?php
+<?php
 			$census_tables = $db->getInfo();
 			foreach($census_tables as $table) {
 				echo '<tr><td class="right">' . number_format($table['count']) . '</td><td><a href="' . BASE . ADMINFOLDER . $table['table'] . URL_CAP . '">' . $table['display'] . '</a></td></tr>';
 				
 				if($table['table'] == 'images'){ $image_count = $table['count']; }
 			}
-// DEH TODO: in census instead of reporting only image: #, report publisher images # vs. total images in dbase, maybe also display #deleted images!
-			?>
+?>
 		</table>
 
 		<h3>FSIP</h3>
@@ -102,7 +101,7 @@ require_once(PATH . INCLUDES . 'admin/admin_header.php');
 	
 	<h1><img src="<?php echo BASE . IMGFOLDER; ?>icons/timeline.png" alt="" /> Timeline</h1><br />
 	
-	<?php
+<?php
 
 	$timestamps = array();
 	$items = array();
@@ -224,7 +223,7 @@ require_once(PATH . INCLUDES . 'admin/admin_header.php');
 require_once(PATH . INCLUDES . 'admin/admin_footer.php');
 
 // Delete old cache
-$fm->emptyDirectory(PATH . CACHE, false, 3600);
+Files::emptyDirectory(PATH . CACHE, false, 3600);
 
 // Anonymous usage reports
 $now = time();

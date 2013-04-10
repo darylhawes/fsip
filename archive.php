@@ -8,9 +8,9 @@
 
 require_once('config.php');
 
-$dbpointer = getDB();
+global $db;
 
-$dbpointer->recordStat('archive');
+$db->recordStat('archive');
 
 $year = intval($_REQUEST['y']);
 $month = intval($_REQUEST['m']);

@@ -20,7 +20,7 @@ class Comment {
 
 	protected $sql;
 	
-	private $dbpointer;
+	private $db;
 	
 	/**
 	 * Initiate Comment class
@@ -29,7 +29,8 @@ class Comment {
 	 */
 	public function __construct($comment_ids=null) {
 //echo "constructing comments object 1<br />";
-		$this->dbpointer = getDB();
+		global $db;
+		$this->db = $db;
 		
 		// Recomment comment array
 		$this->comments = array();
@@ -72,7 +73,7 @@ class Comment {
 //echo "constructing comments object 5.2<br />";
 			if (count($this->comment_ids) > 0) {
 //echo "constructing comments object 5.3<br />";
-				$query = $this->dbpointer->prepare('SELECT * FROM comments' . $this->sql . ';');
+				$query = $this->db->prepare('SELECT * FROM comments' . $this->sql . ';');
 				$query->execute();
 				$comments = $query->fetchAll();
 		
@@ -133,7 +134,7 @@ class Comment {
 	 */
 	public function delete($permanent=false) {
 		if ($permanent === true) {
-			$this->dbpointer->deleteRow('comments', $this->comment_ids);
+			$this->db->deleteRow('comments', $this->comment_ids);
 		} else {
 			$fields = array('comment_deleted' => date('Y-m-d H:i:s'));
 			$this->updateFields($fields);
@@ -165,7 +166,7 @@ class Comment {
 		foreach($this->comments as $comment) {
 			$ids[] = $comment['comment_id'];
 		}
-		return $this->dbpointer->updateRow($fields, 'comments', $ids);
+		return $this->db->updateRow($fields, 'comments', $ids);
 	}
 	
 

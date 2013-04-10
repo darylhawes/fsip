@@ -11,10 +11,10 @@ require_once('../../config.php');
 $user = new User;
 $user->userHasPermission('admin', true);
 
-$dbpointer = getDB();
+global $db;
 
 if (!empty($_POST['id'])) {
-	$version = $dbpointer->getRow('versions', $_POST['id']);
+	$version = $db->getRow('versions', $_POST['id']);
 	echo removeNull(json_encode($version));
 }
 

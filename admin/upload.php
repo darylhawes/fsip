@@ -14,8 +14,6 @@ $user = new User;
 //echo "uploads 5<br />";
 $orbit = new Orbit;
 //echo "uploads 6<br />";
-$db = getDB();
-//echo "uploads 7<br />";
 
 // cliqcliq Quickpic support
 if (isset($_REQUEST['context']) and ($_REQUEST['context'] == sha1(PATH . BASE . DB_DSN . DB_TYPE))) {

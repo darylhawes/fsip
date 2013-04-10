@@ -24,8 +24,8 @@ function hintTag($hint) {
 	$hint_lower = strtolower($hint);
 	
 	$sql = 'SELECT DISTINCT(tags.tag_name) FROM tags WHERE LOWER(tags.tag_name) LIKE :hint_lower ORDER BY tags.tag_name ASC';
-	$dbpointer = getDB();
-	$query = $dbpointer->prepare($sql);
+	global $db;
+	$query = $db->prepare($sql);
 	$query->execute(array(':hint_lower' => $hint_lower . '%'));
 	$tags = $query->fetchAll();
 	

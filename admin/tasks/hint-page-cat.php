@@ -28,8 +28,8 @@ function hintPageCategory($hint) {
 	} else {
 		$sql = 'SELECT DISTINCT(pages.page_category) FROM pages ORDER BY pages.page_category ASC';
 	}
-	$dbpointer = getDB();
-	$query = $dbpointer->prepare($sql);
+	global $db;
+	$query = $db->prepare($sql);
 	$query->execute(array(':hint_lower' => $hint_lower . '%'));
 	$pages = $query->fetchAll();
 	

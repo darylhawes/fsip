@@ -19,7 +19,7 @@ class Page {
 	public $pages;
 	
 	protected $sql;
-	private $dbpointer;
+	private $db;
 
 	/**
 	 * Initiate Page object
@@ -27,7 +27,8 @@ class Page {
 	 * @param int|array|string $page Page search (IDs or page title)
 	 */
 	public function __construct($page_ids=null) {
-		$this->dbpointer = getDB();
+		global $db;
+		$this->db = $db;
 		
 		// Repage page array
 		$this->pages = array();
@@ -62,7 +63,7 @@ class Page {
 			$this->pages = unserialize($pages);
 		} else {
 			if (count($this->page_ids) > 0) {			
-				$query = $this->dbpointer->prepare('SELECT * FROM pages' . $this->sql . ';');
+				$query = $this->db->prepare('SELECT * FROM pages' . $this->sql . ';');
 				$query->execute();
 				$pages = $query->fetchAll();
 		
@@ -161,10 +162,10 @@ class Page {
 					'version_text_raw' => $page_text_raw,
 					'version_created' => date('Y-m-d H:i:s'),
 					'version_similarity' => round($version_similarity));
-				$this->dbpointer->addRow($version_fields, 'versions');
+				$this->db->addRow($version_fields, 'versions');
 			}
 			
-			$this->dbpointer->updateRow($fields, 'pages', $this->pages[$i]['page_id']);
+			$this->db->updateRow($fields, 'pages', $this->pages[$i]['page_id']);
 		}
 		
 		return true;
@@ -178,7 +179,7 @@ class Page {
 	 */
 	public function delete($permanent=false) {
 		if ($permanent === true) {
-			$this->dbpointer->deleteRow('pages', $this->page_ids);
+			$this->db->deleteRow('pages', $this->page_ids);
 		} else {
 			$fields = array('page_deleted' => date('Y-m-d H:i:s'));
 			$this->updateFields($fields);
@@ -300,7 +301,7 @@ class Page {
 	 * @return array Array of version data
 	 */
 	public function getVersions() {
-		$query = $this->dbpointer->prepare('SELECT versions.* FROM versions, pages' . $this->sql . ' AND versions.page_id = pages.page_id ORDER BY versions.version_created DESC;');
+		$query = $this->db->prepare('SELECT versions.* FROM versions, pages' . $this->sql . ' AND versions.page_id = pages.page_id ORDER BY versions.version_created DESC;');
 		$query->execute();
 		$this->versions = $query->fetchAll();
 		
@@ -313,7 +314,7 @@ class Page {
 	 * @return array Array of version data
 	 */
 	public function getCitations() {
-		$query = $this->dbpointer->prepare('SELECT citations.* FROM citations, pages' . $this->sql . ' AND citations.page_id = pages.page_id;');
+		$query = $this->db->prepare('SELECT citations.* FROM citations, pages' . $this->sql . ' AND citations.page_id = pages.page_id;');
 		$query->execute();
 		$this->citations = $query->fetchAll();
 		
@@ -351,7 +352,7 @@ class Page {
 		}
 		
 		if (count($to_delete) > 0) {
-			$this->dbpointer->deleteRow('citations', $to_delete);
+			$this->db->deleteRow('citations', $to_delete);
 		}
 		
 		foreach($this->pages as $page) {
@@ -363,7 +364,7 @@ class Page {
 				loadCitation($match, 'page_id', $page['page_id']);
 			}
 			
-			$query = $this->dbpointer->prepare('SELECT citations.* FROM citations, pages WHERE pages.page_id = :page_id AND citations.page_id = pages.page_id;');
+			$query = $this->db->prepare('SELECT citations.* FROM citations, pages WHERE pages.page_id = :page_id AND citations.page_id = pages.page_id;');
 			$query->execute(array(':page_id' => $page['page_id']));
 			$citations = $query->fetchAll();
 			
@@ -377,7 +378,7 @@ class Page {
 				}
 			}
 			
-			$this->dbpointer->updateRow(array('page_citations' => implode(' ', $page_citations)), 'pages', $page['page_id']);
+			$this->db->updateRow(array('page_citations' => implode(' ', $page_citations)), 'pages', $page['page_id']);
 		}
 	}
 }

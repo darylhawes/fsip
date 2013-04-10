@@ -8,9 +8,9 @@
 
 require_once('config.php');
 
-$dbpointer = getDB();
+global $db;
 
-$dbpointer->recordStat('page');
+$db->recordStat('page');
 
 $id = findID($_GET['id']);
 if (!$id) { 

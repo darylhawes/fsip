@@ -15,7 +15,7 @@ $user = new User;
 $user->userHasPermission('editor', true);
 //echo "comments 3<br />";
 
-$dbpointer = getDB();
+global $db;
 
 if (!empty($_GET['id'])) {
 	$comment_id = findID($_GET['id']);
@@ -74,12 +74,12 @@ if (!empty($_POST['comment_id'])) {
 		
 		$fields = $orbit->hook('comment_add', $fields, $fields);
 		
-		if (!$comment_id = $dbpointer->addRow($fields, 'comments')) {
+		if (!$comment_id = $db->addRow($fields, 'comments')) {
 			addNote('The response could not be added.', 'error');
 		} else {
 			// Update comment counts
 			if ($id_type == 'image_id') {
-				$dbpointer->updateCount('comments', 'images', 'image_comment_count', $id);
+				$db->updateCount('comments', 'images', 'image_comment_count', $id);
 			}
 			
 			addNote('The response was successfully added.', 'success');
@@ -98,7 +98,7 @@ if (!empty($_POST['comment_id'])) {
 		}
 		
 		if ($id_type == 'image_id') {
-			$dbpointer->updateCount('comments', 'images', 'image_comment_count', $id);
+			$db->updateCount('comments', 'images', 'image_comment_count', $id);
 		}
 	} elseif (isset($_POST['comment_recover']) and ($_POST['comment_recover'] == 'recover')) {
 		if ($comment->recover()){
@@ -112,7 +112,7 @@ if (!empty($_POST['comment_id'])) {
 		}
 		
 		if ($id_type == 'image_id') {
-			$dbpointer->updateCount('comments', 'images', 'image_comment_count', $id);
+			$db->updateCount('comments', 'images', 'image_comment_count', $id);
 		}
 	} elseif (!empty($_POST['comment_quick'])) {
 		if ($_POST['comment_quick'] == 'go_image') {
@@ -140,7 +140,7 @@ if (!empty($_POST['comment_id'])) {
 			}
 
 			if ($id_type == 'image_id') {
-				$dbpointer->updateCount('comments', 'images', 'image_comment_count', $id);
+				$db->updateCount('comments', 'images', 'image_comment_count', $id);
 			}
 		}
 	} else {
@@ -386,7 +386,7 @@ if (empty($comment_id)) {
 	require_once(PATH . INCLUDES . 'admin/admin_footer.php');
 	
 } else {
-	$comment = $dbpointer->getRow('comments', $comment_id);
+	$comment = $db->getRow('comments', $comment_id);
 	$comment = makeHTMLSafe($comment);
 	
 	define('TITLE', 'FSIP Comment');

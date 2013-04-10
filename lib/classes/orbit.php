@@ -28,7 +28,7 @@ class Orbit {
 	public $extension_count;
 	
 	private $db_safe;
-	private $dbpointer;
+	private $db;
 	
 	/**
 	 * Initiate Orbit object
@@ -37,16 +37,17 @@ class Orbit {
 	 */
 	public function __construct($id=null) {
 //echo "contructing orbit!<br />";
-		$this->dbpointer = getDB();
+		global $db;
+		$this->db = $db;
 
 		// Start Orbit Engine
 		if (!is_subclass_of($this, 'Orbit')) {
 			if (empty($_SESSION['fsip']['extensions'])) {
 				if (empty($id)) {
-					$query = $this->dbpointer->prepare('SELECT * FROM extensions WHERE extension_status > 0 ORDER BY extension_title ASC;');
+					$query = $this->db->prepare('SELECT * FROM extensions WHERE extension_status > 0 ORDER BY extension_title ASC;');
 				} else {
 					$id = intval($id);
-					$query = $this->dbpointer->prepare('SELECT * FROM extensions WHERE extension_id = ' . $id . ' AND extension_status > 0;');
+					$query = $this->db->prepare('SELECT * FROM extensions WHERE extension_id = ' . $id . ' AND extension_status > 0;');
 				}
 				$query->execute();
 				$extensions = $query->fetchAll();
@@ -67,11 +68,11 @@ class Orbit {
 		} else { // Prepare Orbit-powered extension
 			if (empty($_SESSION['fsip']['extensions'])) {
 				if (empty($id)) {
-					$query = $this->dbpointer->prepare('SELECT * FROM extensions WHERE extension_class = :extension_class AND extension_status > 0;');
+					$query = $this->db->prepare('SELECT * FROM extensions WHERE extension_class = :extension_class AND extension_status > 0;');
 					$query->execute(array(':extension_class' => get_class($this)));
 				} else {
 					$id = intval($id);
-					$query = $this->dbpointer->prepare('SELECT * FROM extensions WHERE extension_id = ' . $id . ' AND extension_status > 0;');
+					$query = $this->db->prepare('SELECT * FROM extensions WHERE extension_id = ' . $id . ' AND extension_status > 0;');
 					$query->execute();
 				}
 				$extensions = $query->fetchAll();
@@ -171,7 +172,7 @@ class Orbit {
 	 * @return void
 	 */
 	public function savePref() {
-		$query = $this->dbpointer->prepare('UPDATE extensions SET extension_preferences = :extension_preferences WHERE extension_uid = :extension_uid;');
+		$query = $this->db->prepare('UPDATE extensions SET extension_preferences = :extension_preferences WHERE extension_uid = :extension_uid;');
 		return $query->execute(array(':extension_preferences' => serialize($this->preferences), ':extension_uid' => $this->uid));
 	}
 	
@@ -181,7 +182,7 @@ class Orbit {
 	 * @return PDOStatement
 	 */
 	public function reset() {
-		$query = $this->dbpointer->prepare('UPDATE extensions SET extension_preferences = "" WHERE extension_uid = :extension_uid;');
+		$query = $this->db->prepare('UPDATE extensions SET extension_preferences = "" WHERE extension_uid = :extension_uid;');
 		return $this->execute(array(':extension_uid' => $this->uid));
 	}
 	

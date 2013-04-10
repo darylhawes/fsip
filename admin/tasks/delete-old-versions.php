@@ -9,7 +9,7 @@
 require_once('../../config.php');
 
 $user = new User;
-$dbpointer = getDB();
+global $db;
 
 $user->userHasPermission('admin', true);
 
@@ -18,7 +18,7 @@ $id = findID(@$_POST['image_id']);
 if (empty($id)) {
 	$olds = array();
 	
-	$query = $dbpointer->prepare('SELECT DISTINCT versions.version_id FROM versions WHERE versions.version_similarity > :version_similarity AND versions.version_created < :version_created;');
+	$query = $db->prepare('SELECT DISTINCT versions.version_id FROM versions WHERE versions.version_similarity > :version_similarity AND versions.version_created < :version_created;');
 	$query->execute(array(':version_similarity' => 65, ':version_created' => date('Y-m-d H:i:s', strtotime('-2 weeks'))));
 	$versions1 = $query->fetchAll();
 	
@@ -35,7 +35,7 @@ if (empty($id)) {
 	
 	echo json_encode($version_ids);
 } else {
-	$dbpointer->exec('DELETE FROM versions WHERE version_id = ' . intval($id));
+	$db->exec('DELETE FROM versions WHERE version_id = ' . intval($id));
 }
 
 ?>

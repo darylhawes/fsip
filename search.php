@@ -8,7 +8,7 @@
 
 require_once('config.php');
 
-$dbpointer = getDB();
+global $db;
 
 if (isset($_REQUEST['type'])) {
 	$type = $_REQUEST['type'];
@@ -28,7 +28,7 @@ if (isset($_REQUEST['type'])) {
 	exit();
 }
 
-$dbpointer->recordStat('home');
+$db->recordStat('home');
 
 $header = new Canvas;
 $header->load('header');

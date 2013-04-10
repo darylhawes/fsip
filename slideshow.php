@@ -8,8 +8,8 @@
 
 require_once('config.php');
 
-$dbpointer = getDB();
-$dbpointer->recordStat('slideshow');
+global $db;
+$db->recordStat('slideshow');
 
 $image_ids = new Find('images');
 $image_ids->sort('images.image_published', 'DESC');

@@ -11,7 +11,7 @@ require_once('../../config.php');
 $user = new User;
 $user->userHasPermission('maintenance', true);
 
-$dbpointer = getDB();
+global $db;
 
 $tables_index = getTablesIndex();
 
@@ -48,7 +48,7 @@ if(empty($id)) {
 		
 		$fields = array('item_table' => $tables_index[$id],
 			'item_table_id' => $item_id);
-		$dbpointer->addRow($fields, 'items');
+		$db->addRow($fields, 'items');
 	}
 	
 	$delete_ids = array();
@@ -60,7 +60,7 @@ if(empty($id)) {
 		$delete_ids[] = $item_id;
 	}
 	
-	$query = $dbpointer->prepare('DELETE FROM items WHERE item_table = :item_table AND item_table_id IN (' . implode(', ', $delete_ids) . ')');
+	$query = $db->prepare('DELETE FROM items WHERE item_table = :item_table AND item_table_id IN (' . implode(', ', $delete_ids) . ')');
 	$query->execute(array(':item_table' => $table));
 }
 

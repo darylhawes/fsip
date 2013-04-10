@@ -10,10 +10,10 @@ require_once('../../config.php');
 
 $user = new User;
 $user->userHasPermission('admin', true);
-$dbpointer = getDB();
+global $db;
 
 $json = array();
-$json['dockBadge'] = array_sum($dbpointer->getBadges());
+$json['dockBadge'] = array_sum($db->getBadges());
 
 $now = time();
 

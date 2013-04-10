@@ -48,7 +48,7 @@ if (!empty($_SERVER['HTTP_REFERER']) and ($_SERVER['HTTP_REFERER'] != LOCATION .
 
 // Log-in GUESTS via cookie
 /*if (!empty($_COOKIE['guest_key']) and !empty($_COOKIE['guest_id']) and empty($_SESSION['fsip']['guest'])) {
-	$query = $this->dbpointer->prepare('SELECT * FROM guests WHERE guest_id = :guest_id LIMIT 0, 1;');
+	$query = $this->db->prepare('SELECT * FROM guests WHERE guest_id = :guest_id LIMIT 0, 1;');
 	$query->execute(array(':guest_id' => $_COOKIE['guest_id']));
 	$guests = $query->fetchAll();
 	$guest = $guests[0];
@@ -58,11 +58,13 @@ if (!empty($_SERVER['HTTP_REFERER']) and ($_SERVER['HTTP_REFERER'] != LOCATION .
 	}
 }*/
 
+// Set a few globals
+$debugger = new Debugger;
+$db = new DB();
 
-// Debug info
+// DEBUG INFO
 
 // Set error handlers
-$debugger = getDebugger();
 set_error_handler(array($debugger, 'addError'), E_ALL);
 set_exception_handler(array($debugger, 'addException'));
 
@@ -1003,6 +1005,7 @@ function saveConf() {
  * @return int|false Comment ID or false on failure
  */
 function addComments() {
+	global $db;
 	// Configuration: comm_enabled
 	if (!returnConf('comm_enabled')) {
 		return false;
@@ -1054,9 +1057,8 @@ function addComments() {
 		'comment_author_ip' => $_SERVER['REMOTE_ADDR']);
 	
 	$fields = $orbit->hook('comment_add', $fields, $fields);
-	$dbpointer = getDB();
 	
-	if (!$comment_id = $dbpointer->addRow($fields, 'comments')) {
+	if (!$comment_id = $db->addRow($fields, 'comments')) {
 		return false;
 	}
 	
@@ -1065,7 +1067,7 @@ function addComments() {
 	}
 	
 	if ($id_type == 'image_id') {
-		$dbpointer->updateCount('comments', 'images', 'image_comment_count', $id);
+		$db->updateCount('comments', 'images', 'image_comment_count', $id);
 	}
 	
 	return $comment_id;
@@ -1630,7 +1632,7 @@ function siftDomain($uri) {
  * @return True if successful
  */
 function email($to=0, $subject=null, $message=null) {
-	$dbpointer = getDB();
+	global $db;
 	if (empty($subject) or empty($message))
 	{ 
 		return false;
@@ -1641,7 +1643,7 @@ function email($to=0, $subject=null, $message=null) {
 	}
 	
 	if (is_int($to) or preg_match('#[0-9]+#s', $to)) {
-		$query = $dbpointer->prepare('SELECT user_email FROM users WHERE user_id = ' . $to);
+		$query = $db->prepare('SELECT user_email FROM users WHERE user_id = ' . $to);
 		$query->execute();
 		$user = $query->fetch();
 		$to = $user['user_email'];
@@ -1674,6 +1676,7 @@ function email($to=0, $subject=null, $message=null) {
  * @return array Associative array of newly created citation row
  */
 function loadCitation($uri, $field, $field_id) {
+	global $db;
 	if ((strpos($uri, 'http://') !== 0) and (strpos($uri, 'https://') !== 0)) 
 	{ 
 		return false;
@@ -1681,9 +1684,8 @@ function loadCitation($uri, $field, $field_id) {
 	
 	// Check if exists
 	$sql = 'SELECT * FROM citations WHERE citation_uri_requested = :citation_uri_requested';
-	$dbpointer = getDB();
 	
-	$query = $dbpointer->prepare($sql);
+	$query = $db->prepare($sql);
 	$query->execute(array(':citation_uri_requested' => $uri));
 	$citations = $query->fetchAll();
 	
@@ -1824,7 +1826,7 @@ function loadCitation($uri, $field, $field_id) {
 		}
 	}
 	
-	$fields['citation_id'] = $dbpointer->addRow($fields, 'citations');
+	$fields['citation_id'] = $db->addRow($fields, 'citations');
 	
 	if (empty($fields['citation_site_name'])) {
 		$fields['citation_site_name'] = $domain;
@@ -1943,13 +1945,13 @@ function returnNotes($type = null) {
  * @return string
  */
 function showRights($name, $right_id=null) {
+	global $db;
 
 	if (empty($name)) {
 		return false;
 	}
-	$dbpointer = getDB();
 	
-	$query = $dbpointer->prepare('SELECT right_id, right_title FROM rights WHERE right_deleted IS NULL;');
+	$query = $db->prepare('SELECT right_id, right_title FROM rights WHERE right_deleted IS NULL;');
 	$query->execute();
 	$rights = $query->fetchAll();
 	
@@ -1976,13 +1978,13 @@ function showRights($name, $right_id=null) {
  * @return string
  */
 function showSizes($name, $size_id=null) {
+	global $db;
 
 	if (empty($name)) {
 		return false;
 	}
-	$dbpointer = getDB();
 	
-	$query = $dbpointer->prepare('SELECT size_id, size_title FROM sizes;');
+	$query = $db->prepare('SELECT size_id, size_title FROM sizes;');
 	$query->execute();
 	$sizes = $query->fetchAll();
 	
@@ -2045,13 +2047,13 @@ function showSets($name, $set_id=null, $static_only=false) {
 	if (empty($name)) {
 		return false;
 	}
-	$dbpointer = getDB();
+	global $db;
 	
 	if ($static_only === true) {
-		$query = $dbpointer->prepare('SELECT set_id, set_title FROM sets WHERE set_type = :set_type AND set_deleted IS NULL;');
+		$query = $db->prepare('SELECT set_id, set_title FROM sets WHERE set_type = :set_type AND set_deleted IS NULL;');
 		$query->execute(array(':set_type' => 'static'));
 	} else {
-		$query = $dbpointer->prepare('SELECT set_id, set_title FROM sets WHERE set_deleted IS NULL;');
+		$query = $db->prepare('SELECT set_id, set_title FROM sets WHERE set_deleted IS NULL;');
 		$query->execute();
 	}
 	$sets = $query->fetchAll();
@@ -2083,9 +2085,9 @@ function showThemes($name, $theme_id=null) {
 	if (empty($name)) {
 		return false;
 	}
-	$dbpointer = getDB();
+	global $db;
 	
-	$query = $dbpointer->prepare('SELECT theme_id, theme_title FROM themes;');
+	$query = $db->prepare('SELECT theme_id, theme_title FROM themes;');
 	$query->execute();
 	$themes = $query->fetchAll();
 	
@@ -2116,9 +2118,9 @@ function showEXIFNames($name, $exif_name=null) {
 	if (empty($name)) {
 		return false;
 	}
-	$dbpointer = getDB();
+	global $db;
 	
-	$query = $dbpointer->prepare('SELECT DISTINCT exif_name FROM exifs ORDER BY exif_name ASC;');
+	$query = $db->prepare('SELECT DISTINCT exif_name FROM exifs ORDER BY exif_name ASC;');
 	$query->execute();
 	$exifs = $query->fetchAll();
 	
@@ -2137,32 +2139,13 @@ function showEXIFNames($name, $exif_name=null) {
 	return $html;
 }
 
-////////////////  GETTERS FOR BASE APPLICATION VARIABLES AND OBJECTS
- 
-function getDB() {
-	if (!isset($db)) {
-		$db = new DB;
-	}
-	return $db;
-}
+////////////////  GETTERS FOR BASE APPLICATION VARIABLES
 
-function getDebugger() {
-	if (!isset($debugger)) {
-		$debugger = new Debugger;
-	}
-	return $debugger;
-}
-
-function getFileManager() {
-//echo "getting file manager<br />";
-	if (!isset($file_manager)) {
-//echo "no fm already, creating one<br />";
-		$file_manager = new Files;
-	}
-//echo "returning a filemanager<br />";
-	return $file_manager;
-}
-
+/**
+ * Desc
+ *
+ * @return 
+ */
 function getTables() {
 	if (!isset($tables)) {
 //		echo "setting tables<br />";
@@ -2176,6 +2159,11 @@ function getTables() {
 	return $tables;
 }
 
+/**
+ * Desc
+ *
+ * @return 
+ */
 function getTablesCache() {
 	if (!isset($tables_cache)) {
 //		echo "setting tables cache<br />";
@@ -2187,6 +2175,11 @@ function getTablesCache() {
 	return $tables_cache;
 }
 
+/**
+ * Desc
+ *
+ * @return 
+ */
 function getTablesIndex() {
 	if (!isset($tables_index)) {
 //		echo "setting tables index<br />";
@@ -2198,7 +2191,17 @@ function getTablesIndex() {
 	return $tables_index;
 }
 
-function addError($severity, $message=null, $filename=null, $line_number=null, $http_headers=null) {
-	Debugger::addError($severity, $message, $filename, $line_number, $http_headers);	
+/**
+ * Is there a valid user currently logged in?
+ *
+ * @return bool true if there is a user logged in
+ */
+ function redirectToLogin() {
+	$_SESSION['fsip']['destination'] = location();
+	session_write_close();
+	
+	$location = LOCATION . BASE . 'login' . URL_CAP;
+	headerLocationRedirect($location);
+	exit();
 }
 ?>
