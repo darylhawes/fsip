@@ -32,7 +32,7 @@ if (!empty($_POST['act'])) {
 }
 
 //echo "users 6 - user_db_act = $user_db_act<br />";
-//echo "users 6.1 - full GET is<br />";
+//echo "users 6.1 - the full GET object is<br />";
 //print_r($_GET);
 //echo "<br />";
 
@@ -107,17 +107,17 @@ if ($user_db_act == 'none') {
 //echo "users 11.2<br />";
 	
 	define('TITLE', 'FSIP Users');
-//echo "users 11.3<br />Requiring:".PATH . INCLUDES . 'admin/admin_header.php';
 
+//echo "users 11.3<br />Requiring:".PATH . INCLUDES . 'admin/admin_header.php';
 	require_once(PATH . INCLUDES . 'admin/admin_header.php');
 //echo "users 11.4<br />";
 	
 	// Include table of users from html include file.
 	require_once(PATH . INCLUDES . "admin/users/view_inc.html");
+
 //echo "users 11.5, about to include footer<br />";
-	
 	require_once(PATH . INCLUDES . 'admin/admin_footer.php');
-//echo "users 11.6<br />";
+//echo "users 11.6 after footer include<br />";
 
 } else if ($user_db_act == 'view_user' || $user_db_act == 'add') {
 //echo "users 12<br />";
