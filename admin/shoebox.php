@@ -14,7 +14,6 @@ $orbit = new Orbit;
 $user = new User;
 $user->userHasPermission('shoebox', true);
 
-$fm = getFileManager();
 
 // PROCESS SUBMITTED IMAGES
 if (!empty($_POST['image_ids'])) {
@@ -76,7 +75,7 @@ addNote('Your shoebox has been processed.', 'success');
 
 // New images DEH - here is where we should be able to seek through subdirectories 
 // based on a userid parent folder for uploading
-$files = $fm->seekDirectory(PATH . SHOEBOX);
+$files = Files::seekDirectory(PATH . SHOEBOX);
 $i_count = count($files);
 
 if ($i_count == 0) {

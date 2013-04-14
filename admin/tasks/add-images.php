@@ -11,10 +11,8 @@ require_once('../../config.php');
 $user = new User;
 $user->userHasPermission('admin', true);
 
-$fm = getFileManager();
-
 if (empty($_POST['image_file'])) {
-	$image_files = $fm->seekDirectory(PATH . SHOEBOX);
+	$image_files = Files::seekDirectory(PATH . SHOEBOX);
 	$image_files = array_reverse($image_files);
 	if (returnConf('shoe_max')) {
 		$image_files = array_splice($image_files, 0, returnConf('shoe_max_count'));

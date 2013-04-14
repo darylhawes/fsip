@@ -11,9 +11,7 @@ require_once('../config.php');
 $user = new User;
 $user->userHasPermission('admin', true);
 
-$fm = getFileManager();
-
-$includes = $fm->getThemeIncludes();
+$includes = Files::getThemeIncludes();
 $include_count = count($includes);
 
 define('TAB', 'settings');

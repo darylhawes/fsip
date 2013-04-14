@@ -172,8 +172,7 @@ class Image {
 			if (!is_file($file)) {
 				return false;
 			}
-			$fm = getFileManager();
-			$filename = $fm->getFilename($file);
+			$filename = Files::getFilename($file);
 			
 			// Add image to database
 			$image_ext = $this->getExt($file);
@@ -533,6 +532,7 @@ class Image {
 				$key = array_search($tag, $tags_db_names);
 				if ($key !== false) {
 					$query = 'INSERT INTO links (image_id, tag_id) VALUES (' . $this->images[$i]['image_id'] . ', ' . $tags_db[$key]['tag_id'] . ');';
+					$this->db->exec($query);
 				} else {
 					$query = $this->db->prepare('INSERT INTO tags (tag_name) VALUES (:tag);');
 					$query->execute(array(':tag' => $tag));

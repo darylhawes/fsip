@@ -161,8 +161,7 @@ class Dropbox extends Orbit{
 	
 	public function get($path) {
 		$fetch = $this->dropbox->filesGet($path);
-		$fm = getFileManager();
-		file_put_contents(PATH . SHOEBOX . $fm->getFilename($path), base64_decode($fetch['data']));
+		file_put_contents(PATH . SHOEBOX . Files::getFilename($path), base64_decode($fetch['data']));
 	}
 }
 

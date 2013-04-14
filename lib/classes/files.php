@@ -179,7 +179,7 @@ class Files {
 	 * @param string $subject Subject input
 	 * @return string Subject output
 	 */
-	public function replaceVar($var, $replacement, $subject) {
+	public static function replaceVar($var, $replacement, $subject) {
 		$replacement = str_replace('\\', '\\\\\\\\', $replacement);
 		return preg_replace('#^\s*(' . str_replace('$', '\$', $var) . ')\s*=(.*)$#mi', '\\1 = \'' . $replacement . '\';', $subject);
 	}
@@ -189,11 +189,11 @@ class Files {
 	 *
 	 * @return array Array of includes
 	 */
-	public function getThemeIncludes() {
-		$theme_includes = self::seekDirectory(PATH . INCLUDES, '.*');
+	public static function getThemeIncludes() {
+		$theme_includes = Files::seekDirectory(PATH . INCLUDES, '.*');
 		
 		foreach($theme_includes as &$include) {
-			$include = self::getFilename($include);
+			$include = Files::getFilename($include);
 		}
 		
 		return $theme_includes;

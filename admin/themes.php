@@ -8,14 +8,13 @@
 
 require_once('../config.php');
 
-$dbpointer = getDB();
-$fm = getFileManager();
+global $db;
 
 $user = new User;
 $user->userHasPermission('themes', true);
 
 // Load current themes
-$themes = $dbpointer->getTable('themes');
+$themes = $db->getTable('themes');
 
 $theme_ids = array();
 $theme_uids = array();
@@ -30,7 +29,7 @@ foreach($themes as $theme) {
 }
 
 // Seek all themes
-$seek_themes = $fm->seekDirectory(PATH . THEMES, '');
+$seek_themes = Files::seekDirectory(PATH . THEMES, '');
 
 $theme_deleted = array();
 
@@ -42,14 +41,14 @@ foreach($themes as $theme) {
 	}
 }
 
-$dbpointer->deleteRow('themes', $theme_deleted);
+$db->deleteRow('themes', $theme_deleted);
 
 // Determine which themes are new, install them
 $themes_installed = array();
 $themes_updated = array();
 
 foreach($seek_themes as &$theme_folder) {
-	$theme_folder = $fm->getFilename($theme_folder);
+	$theme_folder = Files::getFilename($theme_folder);
 	if (!in_array($theme_folder, $theme_folders)) {
 		$data = file_get_contents(PATH . THEMES . $theme_folder . '/theme.xml');
 		if (empty($data)) { 
@@ -67,7 +66,7 @@ foreach($seek_themes as &$theme_folder) {
 			'theme_creator_name' => $xml->creator->name,
 			'theme_creator_uri' => $xml->creator->uri);
 		
-		$theme_intalled_id = $dbpointer->addRow($fields, 'themes');
+		$theme_intalled_id = $db->addRow($fields, 'themes');
 		$themes_installed[] = $theme_intalled_id;
 	} else {
 		$data = file_get_contents(PATH . THEMES . $theme_folder . '/theme.xml');
@@ -83,7 +82,7 @@ foreach($seek_themes as &$theme_folder) {
 					'theme_version' => $xml->version,
 					'theme_creator_name' => $xml->creator->name,
 					'theme_creator_uri' => $xml->creator->uri);
-				$dbpointer->updateRow($fields, 'themes', $id);
+				$db->updateRow($fields, 'themes', $id);
 				$themes_updated[] = $id;
 			}
 		}
@@ -100,7 +99,7 @@ if ($themes_installed_count > 0) {
 	
 	addNote($notification, 'success');
 	
-	$themes = $dbpointer->getTable('themes');
+	$themes = $db->getTable('themes');
 }
 
 $themes_updated_count = count($themes_updated);
@@ -113,7 +112,7 @@ if ($themes_updated_count > 0) {
 	
 	addNote($notification, 'success');
 	
-	$themes = $dbpointer->getTable('themes');
+	$themes = $db->getTable('themes');
 }
 
 // Check for updates
@@ -140,7 +139,7 @@ if (!empty($latest_themes)) {
 }
 */
 
-$themes = $dbpointer->getTable('themes');
+$themes = $db->getTable('themes');
 $theme_count = @count($themes);
 
 define('TAB', 'settings');

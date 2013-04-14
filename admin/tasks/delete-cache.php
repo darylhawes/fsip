@@ -9,10 +9,9 @@
 require_once('../../config.php');
 
 $user = new User;
-$fm = getFileManager();
 
 $user->userHasPermission('maintenance', true);
 
-$fm->emptyDirectory(PATH . CACHE, false);
+Files::emptyDirectory(PATH . CACHE, false);
 
 ?>

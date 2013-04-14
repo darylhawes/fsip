@@ -9,8 +9,6 @@
 
 require_once('../config.php');
 
-$fm = getFileManager();
-
 $_POST = array_map('strip_tags', $_POST);
 
 // Check that variables that we plan to use exist or clear them out to avoid PHP warnings.
@@ -32,22 +30,22 @@ if (!isset($_POST['install_email']))     { $_POST['install_email'] = ""; }
 
 // Diagnostic checks
 //DEH - if dir not exist try to create it and set permissions THEN warn.
-if ($fm->checkFilePerm(PATH . DB) != '0777') {
+if (Files::checkFilePerm(PATH . DB) != '0777') {
 	addNote('WARNING: Database folder at ('. PATH . DB .') may not be writable.<br />', 'notice');
 }
-if ($fm->checkFilePerm(PATH . IMGFOLDER) != '0777') {
+if (Files::checkFilePerm(PATH . IMGFOLDER) != '0777') {
 	addNote('WARNING:Images folder at ('. PATH . IMGFOLDER .') may not be writable.<br />', 'notice');
 }
-if ($fm->checkFilePerm(PATH . SHOEBOX) != '0777') {
+if (Files::checkFilePerm(PATH . SHOEBOX) != '0777') {
 	addNote('WARNING:Shoebox folder at ('. PATH . SHOEBOX .') may not be writable.<br />', 'notice');
 }
-if ($fm->checkFilePerm(PATH . CACHE) != '0777') {
+if (Files::checkFilePerm(PATH . CACHE) != '0777') {
 	addNote('WARNING:Cache folder at ('. PATH . CACHE .') may not be writable.<br />', 'notice');
 }
-if (($fm->checkFilePerm(PATH . 'config.json') != '0777') and (SERVER_TYPE != 'win')) {
+if ((Files::checkFilePerm(PATH . 'config.json') != '0777') and (SERVER_TYPE != 'win')) {
 	addNote('WARNING:Configuration file at ('.PATH.'config.json) may not be writable.<br />', 'notice');
 }
-if ($fm->checkFilePerm(PATH . 'config.php') == '0777') {
+if (Files::checkFilePerm(PATH . 'config.php') == '0777') {
 	addNote('WARNING:Configuration file at ('.PATH.'config.php)  should not be writable.<br />', 'notice');
 }
 
@@ -63,14 +61,14 @@ if (@$_POST['install'] == 'Install') {
 		addNote('Cannot find default configuration file.', 'error');
 	}
 
-	$config = $fm->replaceVar('$base', $_POST['install_base'], $config);
-	$config = $fm->replaceVar('$path', $_POST['install_path'], $config);
+	$config = Files::replaceVar('$base', $_POST['install_base'], $config);
+	$config = Files::replaceVar('$path', $_POST['install_path'], $config);
 	
 	if ( is_null($_POST['install_server'])) { 
 		$_POST['install_server'] = ""; 
 	}
 	if ($_POST['install_server'] == 'win') {
-		$config = $fm->replaceVar('$server_type', 'win', $config);
+		$config = Files::replaceVar('$server_type', 'win', $config);
 	}
 	
 	if ($_POST['install_db_type'] == 'mysql') {
@@ -95,10 +93,10 @@ if (@$_POST['install'] == 'Install') {
 		
 		$dsn .= 'dbname=' . $_POST['install_db_name'];
 
-		$config = $fm->replaceVar('$db_dsn', $dsn, $config);
-		$config = $fm->replaceVar('$db_type', 'mysql', $config);
-		$config = $fm->replaceVar('$db_user', $username, $config);
-		$config = $fm->replaceVar('$db_pass', $password, $config);
+		$config = Files::replaceVar('$db_dsn', $dsn, $config);
+		$config = Files::replaceVar('$db_type', 'mysql', $config);
+		$config = Files::replaceVar('$db_user', $username, $config);
+		$config = Files::replaceVar('$db_pass', $password, $config);
 	} elseif($_POST['install_db_type'] == 'sqlite') {
 		if (!empty($_POST['install_db_file'])) {
 			$path = $_POST['install_db_file'];
@@ -122,10 +120,10 @@ if (@$_POST['install'] == 'Install') {
 		
 		$dsn = 'sqlite:' . $path;
 		
-		$config = $fm->replaceVar('$db_dsn', $dsn, $config);
-		$config = $fm->replaceVar('$db_type', 'sqlite', $config);
+		$config = Files::replaceVar('$db_dsn', $dsn, $config);
+		$config = Files::replaceVar('$db_type', 'sqlite', $config);
 		
-		if (($fm->checkFilePerm($path) != '0777') and (SERVER_TYPE != 'win')) {
+		if ((Files::checkFilePerm($path) != '0777') and (SERVER_TYPE != 'win')) {
 			addNote('Your SQLite database is not writable (chmod 777).', 'error');
 		}
 	} elseif ($_POST['install_db_type'] == 'pgsql') {
@@ -150,14 +148,14 @@ if (@$_POST['install'] == 'Install') {
 		
 		$dsn .= 'dbname=' . $_POST['install_db_name'];
 		
-		$config = $fm->replaceVar('$db_dsn', $dsn, $config);
-		$config = $fm->replaceVar('$db_type', 'pgsql', $config);
-		$config = $fm->replaceVar('$db_user', $username, $config);
-		$config = $fm->replaceVar('$db_pass', $password, $config);
+		$config = Files::replaceVar('$db_dsn', $dsn, $config);
+		$config = Files::replaceVar('$db_type', 'pgsql', $config);
+		$config = Files::replaceVar('$db_user', $username, $config);
+		$config = Files::replaceVar('$db_pass', $password, $config);
 	}
 	
 	if (!empty($_POST['install_db_prefix'])) {
-		$config = $fm->replaceVar('$table_prefix', $_POST['install_db_prefix'], $config);
+		$config = Files::replaceVar('$table_prefix', $_POST['install_db_prefix'], $config);
 	}
 }
 
