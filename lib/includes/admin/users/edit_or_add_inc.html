@@ -1,41 +1,49 @@
-
 	<form id="user" action="<?php echo BASE . ADMINFOLDER . 'users' . URL_CAP; ?>" method="post">
 		<table>
 			<tr>
 				<td class="right middle"><label for="user_realname">Name:</label></td>
-				<td><input type="text" id="user_realname" name="user_realname" value="<?php echo (isset($user_db)) ?  $user_db['user_realname'] :  ''; ?>" class="s notempty" /></td>
+				<td><input type="text" class="tip" id="user_realname" title="User's real name." name="user_realname" value="<?php echo (isset($user_db)) ?  $user_db['user_realname'] :  ''; ?>" class="s notempty" /></td>
 			</tr>
 			<tr>
 				<td class="right middle"><label for="user_username">Username:</label></td>
-				<td><input type="text" id="user_username" name="user_username" value="<?php echo (isset($user_db)) ?  $user_db['user_username'] :  ''; ?>" class="s notempty" /></td>
+				<td><input type="text" class="tip" id="user_username" title="User's username that they will login with." name="user_username" value="<?php echo (isset($user_db)) ?  $user_db['user_username'] :  ''; ?>" class="s notempty" /></td>
 			</tr>
 			<tr>
 				<td class="right middle"><label for="user_pass">Password:</label></td>
 				<td>
-					<input type="password" id="user_pass" name="user_pass" value="<?php if (isset($user_db) && !empty($user_db['user_pass'])){ echo '********'; } ?>" class="s notempty" />
+					<input type="password" class="tip" id="user_pass" title="User's password." name="user_pass" value="<?php if (isset($user_db) && !empty($user_db['user_pass'])){ echo '********'; } ?>" class="s notempty" />
 				</td>
 			</tr>
 			<tr>
 				<td class="right middle"><label for="user_email">Email:</label></td>
-				<td><input type="text" id="user_email" name="user_email" value="<?php echo (isset($user_db)) ?  $user_db['user_email'] :  ''; ?>" class="m" /></td>
+				<td><input type="text" class="tip" id="user_email" title="Email address of user to be used to send notifications, etc." name="user_email" value="<?php echo (isset($user_db)) ?  $user_db['user_email'] :  ''; ?>" class="m" /></td>
 			</tr>
 			<tr>
 				<td class="right middle"><label for="user_uri">Web site:</label></td>
-				<td><input type="text" id="user_uri" name="user_uri" placeholder="http://www.yoursite.com/" value="<?php echo (isset($user_db)) ?  $user_db['user_uri'] :  ''; ?>" class="m" /></td>
+				<td><input type="text" class="tip" id="user_uri" title = "User's optional website information if applicable." name="user_uri" placeholder="http://www.yoursite.com/" value="<?php echo (isset($user_db)) ?  $user_db['user_uri'] :  ''; ?>" class="m" /></td>
 			</tr>
 <?php
-			if ((isset($user_db)) && ($user_db['user_id'] != 1) && ($user_db['user_id'] != $user->user['user_id'])) {
+			if (isset($user_db) ) {
+				echo 'userdb IS set';
+			}
+			if ( ($user_db['user_id'] != 1) ) {
+				echo 'userdb user id is not 1';
+			}
+			if ( $user_db['user_id'] != $user->user['user_id'] ) {
+				echo 'user is IS NOT the same';
+			}
+			if (!isset($user_db) || ( ($user_db['user_id'] != 1) && ($user_db['user_id'] != $user->user['user_id']) ) ) {
 				// don't let the user change their own permissions and the SuperAdmin/root 
 				// user has all permissions applied so skip
 				require_once(PATH . INCLUDES . "admin/users/edit_access_inc.html");
 			}
 ?>
 			<tr>
-				<td class="right"><input type="checkbox" id="user_reset_pass" name="user_reset_pass" value="reset_pass" /></td>
+				<td class="right"><input type="checkbox" class="tip" id="user_reset_pass" title="On saving this form user's password will be reset." name="user_reset_pass" value="reset_pass" /></td>
 				<td><strong><label for="user_reset_pass">Reset password.</label></strong> This action cannot be undone.</td>
 			</tr>
 			<tr>
-				<td class="right"><input type="checkbox" id="user_delete" name="user_delete" value="delete" /></td>
+				<td class="right"><input type="checkbox" class="tip" id="user_delete" title="On saving this form this user will be deleted from the system. Be careful!" name="user_delete" value="delete" /></td>
 				<td><strong><label for="user_delete">Delete this user.</label></strong> This action cannot be undone.</td>
 			</tr>
 			<tr>

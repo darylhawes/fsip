@@ -1,71 +1,62 @@
-
 				<tr>
-					<td class="right pad"><label>Access control:</label></td>
+					<td class="right pad">&nbsp;</td>
+					<td><strong>-------Access Control--------</strong></td>
+				</tr>
+				<tr>
+					<td class="right pad"><strong>Contributor:</strong></td>
+					<td>&nbsp;</td>
+				</tr>
+				<tr>
+					<td class="right pad"><label>&nbsp;</label></td>
 					<td>
-						<table>
-							<tr>
-								<td class="input"><input type="checkbox" id="user_permission_upload" name="user_permission_upload" value="true" <?php if(in_array('upload', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td style="width: 15em;"><label for="user_permission_upload">Upload</label></td>
-								<td class="input"><input type="checkbox" id="user_permission_shoebox" name="user_permission_shoebox" value="true" <?php if(in_array('shoebox', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_shoebox">Shoebox</label></td>
-							</tr>
-							<tr>
-								<td class="input"><input type="checkbox" id="user_permission_library" name="user_permission_library" value="true" <?php if(in_array('library', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_library">Library</label> (edit images)</td>
-							</tr>
-							<tr>
-								<td colspan="4"></td>
-							</tr>
-							<tr>
-								<td class="input"><input type="checkbox" id="user_permission_comments" name="user_permission_comments" value="true" <?php if(in_array('comments', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_comments">Comments</label></td>
-							</tr>
-							<tr>
-								<td colspan="4"></td>
-							</tr>
-							<tr>
-								<td class="input"><input type="checkbox" id="user_permission_editor" name="user_permission_editor" value="true" <?php if(in_array('editor', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_editor">Editor</label> (bulk edit images)</td>
-								<td class="input"><input type="checkbox" id="user_permission_tags" name="user_permission_tags" value="true" <?php if(in_array('tags', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_tags">Tags</label></td>
-							</tr>
-							<tr>
-								<td class="input"><input type="checkbox" id="user_permission_sets" name="user_permission_sets" value="true" <?php if(in_array('sets', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_sets">Sets</label></td>
-								<td class="input"><input type="checkbox" id="user_permission_pages" name="user_permission_pages" value="true" <?php if(in_array('pages', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_pages">Pages</label></td>
-							</tr>
-							<tr>
-								<td class="input"><input type="checkbox" id="user_permission_rights" name="user_permission_rights" value="true" <?php if(in_array('rights', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_rights">Rights</label></td>
-							</tr>
-							<tr>
-								<td colspan="4"></td>
-							</tr>
-							<tr>
-								<td class="input"><input type="checkbox" id="user_permission_statistics" name="user_permission_statistics" value="true" <?php if(in_array('statistics', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_statistics">Statistics</label></td>
-								<td class="input"><input type="checkbox" id="user_permission_thumbnails" name="user_permission_thumbnails" value="true" <?php if(in_array('thumbnails', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_thumbnails">Thumbnails</label></td>
-							</tr>
-							<tr>
-								<td class="input"><input type="checkbox" id="user_permission_users" name="user_permission_users" value="true" <?php if(in_array('users', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_users">Users</label></td>
-								<td class="input"><input type="checkbox" id="user_permission_guests" name="user_permission_guests" value="true" <?php if(in_array('guests', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_guests">Guests</label></td>
-							</tr>
-							<tr>
-								<td class="input"><input type="checkbox" id="user_permission_themes" name="user_permission_themes" value="true" <?php if(in_array('themes', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_themes">Themes</label></td>
-								<td class="input"><input type="checkbox" id="user_permission_extensions" name="user_permission_extensions" value="true" <?php if(in_array('extensions', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_extensions">Extensions</label></td>
-							</tr>
-							<tr>
-								<td class="input"><input type="checkbox" id="user_permission_configuration" name="user_permission_configuration" value="true" <?php if(in_array('configuration', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_configuration">Configuration</label></td>
-								<td class="input"><input type="checkbox" id="user_permission_maintenance" name="user_permission_maintenance" value="true" <?php if(in_array('maintenance', $user_db_perms)){ echo 'checked="checked"'; } ?> /></td>
-								<td><label for="user_permission_maintenance">Maintenance</label></td>
-							</tr>
-						</table>
+						<div class="input"><input class="tip" type="checkbox" id="user_permission_contributor" name="user_permission_contributor" title="Can upload images for review." value="true" <?php 
+							if (in_array('contributor', $user_db_perms)) { echo 'checked="checked"'; } ?> /> &nbsp;&nbsp;<label for="user_permission_contributor">Image Contributor</label></div>
+						<div class="input"><input class="tip" type="checkbox" id="user_permission_upload" name="user_permission_upload" title="Overloaded setting with contributor." value="true" <?php 
+							if (in_array('upload', $user_db_perms)) { echo 'checked="checked"'; } ?> /> &nbsp;&nbsp;<label for="user_permission_upload">Upload</label></div>
+				</tr>
+				<tr>
+					<td class="right pad"><strong>Admin:</strong></td>
+					<td>&nbsp;</td>
+				</tr>
+				<tr>
+					<td class="right pad">&nbsp;</td>
+					<td>
+						<div class="input"><input class="tip" type="checkbox" id="user_permission_admin" title="General admin credential allowing access to Dashboard, etc." name="user_permission_admin" value="true" <?php 
+							if (in_array('admin', $user_db_perms)) { echo 'checked="checked"'; } ?> /> &nbsp;&nbsp;<label for="user_permission_admin">Admin</label></div>
+						<div class="input"><input class="tip" type="checkbox" id="user_permission_reviewer" name="user_permission_reviewer" title="Can approve/publish images that are in the upload queue." value="true" <?php 
+							if (in_array('reviewer', $user_db_perms)) { echo 'checked="checked"'; } ?> /> &nbsp;&nbsp;<label for="user_permission_reviewer">Image Reviewer</label></div>
+						<div class="input"><input class="tip" type="checkbox" id="user_permission_shoebox" name="user_permission_shoebox" title="Can process uploaded images." value="true" <?php 
+							if (in_array('shoebox', $user_db_perms)) { echo 'checked="checked"'; } ?> /> &nbsp;&nbsp;<label for="user_permission_shoebox">Shoebox Manager</label></div>
+						<div class="input"><input class="tip" type="checkbox" id="user_permission_users" name="user_permission_users" title="Can add and edit users." value="true" <?php 
+							if (in_array('users', $user_db_perms)) { echo 'checked="checked"'; } ?> /> &nbsp;&nbsp;<label for="user_permission_users">User Manager</label></div>
+						<div class="input"><input class="tip" type="checkbox" id="user_permission_maintenance" name="user_permission_maintenance" title="Can run site maintenance tasks such as database repair, etc." value="true" <?php 
+							if (in_array('maintenance', $user_db_perms)) { echo 'checked="checked"'; } ?> /> &nbsp;&nbsp;<label for="user_permission_maintenance">Site Maintenance</label></div>
+						<div class="input"><input class="tip" type="checkbox" id="user_permission_configuration" name="user_permission_configuration" title="Can modify site wide configuration settings." value="true" <?php 
+							if (in_array('configuration', $user_db_perms)) { echo 'checked="checked"'; } ?> /> &nbsp;&nbsp;<label for="user_permission_configuration">Site Configuration</label></div>
+				</tr>
+				<tr>
+					<td class="right pad">&nbsp;</td>
+					<td>
+						<div class="input"><input class="tip" type="checkbox" id="user_permission_library" name="user_permission_library" title="Can edit images." value="true" <?php 
+							if (in_array('library', $user_db_perms)) { echo 'checked="checked"'; } ?> /> &nbsp;&nbsp;<label for="user_permission_library">Library</label></div>
+						<div class="input"><input class="tip" type="checkbox" id="user_permission_editor" name="user_permission_editor" title="Can bulk edit images." value="true" <?php 
+							if (in_array('editor', $user_db_perms)) { echo 'checked="checked"'; } ?> /> &nbsp;&nbsp;<label for="user_permission_editor">Editor</label></div>
+						<div class="input"><input class="tip" type="checkbox" id="user_permission_comments" name="user_permission_comments" title="Can moderate comments on images." value="true" <?php 
+							if (in_array('comments', $user_db_perms)) { echo 'checked="checked"'; } ?> /> &nbsp;&nbsp;<label for="user_permission_comments">Comments</label></div>
+						<div class="input"><input class="tip" type="checkbox" id="user_permission_tags" name="user_permission_tags" title="Can edit site wide tags." value="true" <?php 
+							if (in_array('tags', $user_db_perms)) { echo 'checked="checked"'; } ?> /> &nbsp;&nbsp;<label for="user_permission_tags">Tags</label></div>
+						<div class="input"><input class="tip" type="checkbox" id="user_permission_sets" name="user_permission_sets" title="Can create and populate image sets. These are lightboxes to highlight groups of images." value="true" <?php 
+							if (in_array('sets', $user_db_perms)) { echo 'checked="checked"'; } ?> /> &nbsp;&nbsp;<label for="user_permission_sets">Sets</label></div>
+						<div class="input"><input class="tip" type="checkbox" id="user_permission_rights" name="user_permission_rights" title="Can create and edit rights to apply to uploaded images." value="true" <?php 
+							if (in_array('rights', $user_db_perms)) { echo 'checked="checked"'; } ?> /> &nbsp;&nbsp;<label for="user_permission_rights">Rights</label></div>
+						<div class="input"><input class="tip" type="checkbox" id="user_permission_statistics" name="user_permission_statistics" title="Can see site wide statistics." value="true" <?php 
+							if (in_array('statistics', $user_db_perms)) { echo 'checked="checked"'; } ?> /> &nbsp;&nbsp;<label for="user_permission_statistics">Statistics</label></div>
+						<div class="input"><input class="tip" type="checkbox" id="user_permission_thumbnails" name="user_permission_thumbnails" title="Can modify site wide thumbnail sizes and behaviors." value="true" <?php 
+							if (in_array('thumbnails', $user_db_perms)) { echo 'checked="checked"'; } ?> /> &nbsp;&nbsp;<label for="user_permission_thumbnails">Thumbnails</label></div>
+						<div class="input"><input class="tip" type="checkbox" id="user_permission_themes" name="user_permission_themes" title="Can choose a different site wide theme." value="true" <?php 
+							if (in_array('themes', $user_db_perms)) { echo 'checked="checked"'; } ?> /> &nbsp;&nbsp;<label for="user_permission_themes">Themes</label></div>
+						<div class="input"><input class="tip" type="checkbox" id="user_permission_extensions" name="user_permission_extensions" title="Can enable, disable and modify settings for system plugins." value="true" <?php 
+							if (in_array('extensions', $user_db_perms)) { echo 'checked="checked"'; } ?> /> &nbsp;&nbsp;<label for="user_permission_extensions">Extensions</label></div>
+						<br />
 					</td>
 				</tr>
