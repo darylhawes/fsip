@@ -10,8 +10,8 @@ require_once('config.php');
 
 //echo "in index 1<br />";
 
-$dbpointer = getDB();
-$dbpointer->recordStat('home');
+global $db;
+$db->recordStat('home');
 //echo "in index 2<br />";
 
 $with_id = null;
