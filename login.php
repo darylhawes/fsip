@@ -38,11 +38,7 @@ if ($user->userHasPermission('admin', false)) {
 		headerLocationRedirect($location);
 		exit();
 	}
-} else {
-	$location = LOCATION . BASE;
-	headerLocationRedirect($location);
-	exit();
-}
+} 
 
 if (!empty($username) or !empty($password)) {
 	if ($user->auth($username, $password, $remember)) {
