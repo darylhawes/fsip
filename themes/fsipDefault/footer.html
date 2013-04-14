@@ -5,6 +5,13 @@
 			<span class="footer_stats">There are {Published_Public_Image_Count} images available.</span>
 		</div>
 		{/if:Published_Public_Image_Count}
+		<div id="debug" class="span-24 quiet last">
+<?php
+			echo Debugger::getErrors();
+			echo '<br />';
+			echo Debugger::getDebugString();
+?>
+		</div>
 		<div id="copyright" class="span-24 quiet last">
 			{Powered_by}
 		</div>

@@ -89,7 +89,7 @@ class Canvas {
 		}
 		
 		if (empty($theme_folder)) {
-			addError(E_USER_ERROR, 'No default theme selected');
+			Debugger::addError(E_USER_ERROR, 'No default theme selected');
 		}
 		
 		$path = correctWinPath(PATH . THEMES . $theme_folder . '/' . $filename . TEMP_EXT);
@@ -97,7 +97,7 @@ class Canvas {
 		if (is_file($path)) {
 			$this->template .= file_get_contents($path) . "\n";
 		} else {
-			addError(E_USER_ERROR, 'Cannot locate theme file');
+			Debugger::addError(E_USER_ERROR, 'Cannot locate theme file');
 		}
 	}
 	

@@ -14,7 +14,7 @@ $db->recordStat('page');
 
 $id = findID($_GET['id']);
 if (!$id) { 
-	addError('No page was found.', 'Try searching for the page you were seeking.', null, null, 404); 
+	Debugger::addError('No page was found.', 'Try searching for the page you were seeking.', null, null, 404); 
 }
 
 $pages = new Page($id);
@@ -23,7 +23,7 @@ $pages->updateViews();
 $page = $pages->pages[0];
 
 if (!$page) { 
-	addError('No page was found.', 'Try searching for the page you were seeking.', null, null, 404); 
+	Debugger::addError('No page was found.', 'Try searching for the page you were seeking.', null, null, 404); 
 }
 
 $header = new Canvas;

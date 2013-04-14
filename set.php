@@ -14,13 +14,13 @@ $db->recordStat('set');
 
 $id = findID($_GET['id']);
 if (!$id) { 
-	addError('No set was found.', 'Try searching for the set you were seeking.', null, null, 404); 
+	Debugger::addError('No set was found.', 'Try searching for the set you were seeking.', null, null, 404); 
 }
 
 $set = new Set($id);
 $set = @$set->sets[0];
 if (!$set) { 
-	addError('No set was found.', 'Try searching for the set you were seeking.', null, null, 404); 
+	Debugger::addError('No set was found.', 'Try searching for the set you were seeking.', null, null, 404); 
 }
 
 $set['set_created'] = formatTime(null, $set['set_created']);

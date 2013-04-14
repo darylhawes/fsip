@@ -32,7 +32,7 @@ $image_ids->sort('image_published', 'ASC');
 $image_ids->find();
 
 if (empty($image_ids)) { 
-	addError('No images were found.', 'Try searching for the images you were seeking.', null, null, 404); 
+	Debugger::addError('No images were found.', 'Try searching for the images you were seeking.', null, null, 404); 
 }
 
 $images = new Image($image_ids);

@@ -14,13 +14,13 @@ $db->recordStat('tag');
 
 $id = findID($_GET['id']);
 if (!$id) { 
-	addError('No tag was found.', 'Try searching for the images you were seeking.', null, null, 404); 
+	Debugger::addError('No tag was found.', 'Try searching for the images you were seeking.', null, null, 404); 
 }
 
 $tag = $db->getRow('tags', $id);
 
 if (!$tag) { 
-	addError('No tag was found.', 'Try searching for the images you were seeking.', null, null, 404); 
+	Debugger::addError('No tag was found.', 'Try searching for the images you were seeking.', null, null, 404); 
 }
 
 $image_ids = new Find('images');

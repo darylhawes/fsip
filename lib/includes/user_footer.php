@@ -4,13 +4,9 @@
 			Powered by <a href="http://github.com/darylhawes/fsip">FSIP</a> based on <a href="http://www.alkalineapp.com/">Alkaline</a> under MIT license.
 			<?php 
 			
-			$debugger = getDebugger();
-			echo $debugger->returnErrors();
-
-			if (returnConf('maint_debug')) {
-				$debug = $debugger->debug();
-				echo 'Execution time: ' . round($debug['execution_time'], 3) . ' seconds. Queries: ' . $debug['queries']  . '. ';
-			}
+			echo '<br />';
+			echo Debugger::getErrors();
+			echo Debugger::getDebugString();
 			
 			echo Orbit::promptTasks();
 			

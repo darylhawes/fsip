@@ -238,16 +238,24 @@ class Debugger {
 	}
 	
 	/**
-	 * Display errors
+	 * Return errors as HTML-formatted string
 	 *
 	 * @return void|string HTML-formatted notifications 
 	 */
-	public static function returnErrors() {
-		if (!isset($_SESSION['fsip']) || !isset($_SESSION['fsip']['errors'])) { return; }
-		//TODO check if admin user should be only one to see errors and if admin is logged in else return
-		//				$user = new User();
-//				if(!empty($user) and $user->userIsLoggedIn()){
-//
+	public static function getErrors() {
+		if (!isset($_SESSION['fsip']) || !isset($_SESSION['fsip']['errors'])) { 
+			return; 
+		}
+
+		// check if admin user should be only one to see errors 
+		if (returnConf('maint_debug_admin_only') !== false) {
+			$user = new User();
+			if (!empty($user) and !$user->isAdmin()) {
+				// we're supposed to show this to admin users only, and the current user is not an admin, return
+				return;
+			}
+		}
+
 		$count = @count($_SESSION['fsip']['errors']);
 		
 		if (empty($count)) { return; }
@@ -298,13 +306,22 @@ class Debugger {
 	/**
 	 * Return debug data as string
 	 *
-	 * @return array
+	 * @return void|string with debug info and page execution time 
 	 */
-	public function getDebugString() {
-	// DEH - beef this up and add a new function to addDebugNote and include those messages here
-		if (returnConf('maint_debug')) {
+	public static function getDebugString() {
+	//TODO DEH - beef this function up with greater detail 
+	//TODO DEH add a new core function as addDebugNote and return those messages here
+		if (returnConf('maint_debug') !== false) {
+			// check if admin user should be only one to see errors 
+			if (returnConf('maint_debug_admin_only') !== false) {
+				$user = new User();
+				if (!empty($user) and !$user->isAdmin()) {
+					// we're supposed to show this to admin users only, and the current user is not an admin, return
+					return;
+				}
+			}
 			$_SESSION['fsip']['debug']['execution_time'] = microtime(true) - $_SESSION['fsip']['debug']['start_time'];
-			return 'Execution time: ' . round($debug['execution_time'], 3) . ' seconds. Queries: ' . $debug['queries']  . '. ';
+			return 'Execution time: ' . round($_SESSION['fsip']['debug']['execution_time'], 3) . ' seconds. Queries: ' . $_SESSION['fsip']['debug']['queries']  . '. ';
 		}
 	}
 	
@@ -331,7 +348,7 @@ class Debugger {
 		// Write message
 		$handle = fopen(correctWinPath(PATH . DB . 'log.txt'), 'a');
 		if (@fwrite($handle, $message) === false) {
-			addError(E_USER_ERROR, 'Cannot write to report file');
+			$this->addError(E_USER_ERROR, 'Cannot write to report file');
 		}
 		fclose($handle);
 	}
@@ -435,13 +452,13 @@ class FSIPException extends Exception implements Serializable {
 			$page = substr($page, strlen(BASE) - 1);
 		}
 		
-		$query = $this->dbpointer->prepare('INSERT INTO stats (stat_session, stat_date, stat_duration, stat_referrer, stat_page, stat_page_type, stat_local) VALUES (:stat_session, :stat_date, :stat_duration, :stat_referrer, :stat_page, :stat_page_type, :stat_local);');
+		$query = $this->db->prepare('INSERT INTO stats (stat_session, stat_date, stat_duration, stat_referrer, stat_page, stat_page_type, stat_local) VALUES (:stat_session, :stat_date, :stat_duration, :stat_referrer, :stat_page, :stat_page_type, :stat_local);');
 		
 		$query->execute(array(':stat_session' => session_id(), ':stat_date' => date('Y-m-d H:i:s'), ':stat_duration' => $duration, ':stat_referrer' => $referrer, ':stat_page' => $page, ':stat_page_type' => $page_type, ':stat_local' => $local));
 		
 		if (isset($_SESSION['fsip']['guest'])) {
 			$_SESSION['fsip']['guest']['guest_views']++;
-			$this->dbpointer->exec('UPDATE guests SET guest_views = ' . $_SESSION['fsip']['guest']['guest_views'] . ' WHERE guest_id = ' . $_SESSION['fsip']['guest']['guest_id'] . ';');
+			$this->db->exec('UPDATE guests SET guest_views = ' . $_SESSION['fsip']['guest']['guest_views'] . ' WHERE guest_id = ' . $_SESSION['fsip']['guest']['guest_id'] . ';');
 		}
 	}
 }

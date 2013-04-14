@@ -21,7 +21,7 @@ if (isset($_GET['with'])) {
 }
 //echo "in index 3<br />";
 if (!isset($with_id) and !empty($_GET['with'])) {
-	addError('No matching image was found with that ID in our database.', 'Try searching for the image you were seeking.', null, null, 404); 
+	Debugger::addError('No matching image was found with that ID in our database.', 'Try searching for the image you were seeking.', null, null, 404); 
 }
 
 $image_ids = new Find('images');

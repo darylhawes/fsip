@@ -67,7 +67,7 @@ class DB {
 		if (!$this->db) { 
 			// This error message may mean that we're not installed properly. Offer the user a link to setup their installation.
 			echo "<h1>ERROR: No database connection.</h1> <p><strong>You may not have FSIP configured properly. </strong></p><p>Try to <a href=".LOCATION . BASE."admin/install.php>install</a> again?</p>";
-			addError(E_USER_ERROR, 'No database connection'); 
+			Debugger::addError(E_USER_ERROR, 'No database connection'); 
 			exit;
 		}
 		
@@ -95,7 +95,7 @@ class DB {
 		if (!$this->db) {
 			// This error message may mean that we're not installed properly. Offer the user a link to setup their installation.
 			echo "<h1>ERROR: No database connection.</h1> <p><strong>You may not have FSIP configured properly. </strong></p><p>Try to <a href=".LOCATION . BASE."admin/install.php>install</a> again?</p>";
-			addError(E_USER_ERROR, 'No database connection'); 
+			Debugger::addError(E_USER_ERROR, 'No database connection'); 
 			exit;
 		}
 	
@@ -110,7 +110,7 @@ class DB {
 		}
 
 		if (!$response) { 
-			addError(E_USER_ERROR, 'Invalid query, check database log and connection');
+			Debugger::addError(E_USER_ERROR, 'Invalid query, check database log and connection');
 		}
 
 //echo "db prepare complete and returning<br />";
@@ -764,10 +764,7 @@ class DB {
 //echo "in get badges<br />";
 		$badges = array();
 //echo "in get badges2<br />";
-		$fm = getFileManager();
-//echo "in get badges and FM is:";
-//print_r($fm);
-		$badges['images'] = $fm->countDirectory(PATH . SHOEBOX);
+		$badges['images'] = Files::countDirectory(PATH . SHOEBOX);
 
 		$comment_ids = new Find('comments');
 		$comment_ids->status(0);

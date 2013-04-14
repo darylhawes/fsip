@@ -545,7 +545,7 @@ class Cache_Lite
     */
     function raiseError($msg, $code)
     {
-		return addError(E_USER_ERROR, $msg . ' (' . $code . ')', null, null, 500);
+		return Debugger::addError(E_USER_ERROR, $msg . ' (' . $code . ')', null, null, 500);
     }
     
     /**
