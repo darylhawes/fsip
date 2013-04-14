@@ -1,8 +1,8 @@
 <?php 
 //echo "in admin header<br />";
 if (!empty($user) and $user->userHasPermission('admin', false)) { 
-	$mydb = getDB();
-	$badges = $mydb->getBadges();
+	global $db;
+	$badges = $db->getBadges();
 } 
 $web_title = returnConf('web_title');
 if ($web_title  == "(Untitled Site)") {
@@ -113,7 +113,7 @@ $pg_title = (defined('TITLE') ? TITLE. ' - '. $web_title  : 'FSIP'. ' - '. $web_
 							<ul>
 								<li id="sub_tags"><a href="<?php echo BASE . ADMINFOLDER . 'tags' . URL_CAP; ?>"><img src="<?php echo BASE . IMGFOLDER; ?>minis/tags.png" alt="" /> Tags</a></li>
 								<li id="sub_sets"><a href="<?php echo BASE . ADMINFOLDER. 'sets' . URL_CAP; ?>"><img src="<?php echo BASE . IMGFOLDER; ?>minis/sets.png" alt="" /> Sets</a></li>
-								<li id="sub_pages"><a href="<?php echo BASE . ADMINFOLDER . 'pages' . URL_CAP; ?>"><img src="<?php echo BASE . IMGFOLDER; ?>minis/pages.png" alt="" /> Pages</a></li>
+								<!--<li id="sub_pages"><a href="<?php echo BASE . ADMINFOLDER . 'pages' . URL_CAP; ?>"><img src="<?php echo BASE . IMGFOLDER; ?>minis/pages.png" alt="" /> Pages</a></li>-->
 								<li id="sub_rights"><a href="<?php echo BASE . ADMINFOLDER . 'rights' . URL_CAP; ?>"><img src="<?php echo BASE . IMGFOLDER; ?>minis/rights.png" alt="" /> Rights</a></li>
 							</ul>
 						</li>
@@ -121,7 +121,7 @@ $pg_title = (defined('TITLE') ? TITLE. ' - '. $web_title  : 'FSIP'. ' - '. $web_
 							<a href="<?php echo BASE . ADMINFOLDER . 'settings' . URL_CAP; ?>"<?php if (@TAB == 'settings') { echo ' class="selected"'; } ?>>Settings <span>&#9662;</span></a>
 							<ul>
 								<li id="sub_users"><a href="<?php echo BASE . ADMINFOLDER . 'users' . URL_CAP; ?>"><img src="<?php echo BASE . IMGFOLDER; ?>minis/users.png" alt="" /> Users</a></li>
-								<li id="sub_guests"><a href="<?php echo BASE . ADMINFOLDER . 'guests' . URL_CAP; ?>"><img src="<?php echo BASE . IMGFOLDER; ?>minis/guests.png" alt="" /> Guests</a></li>
+								<!--<li id="sub_guests"><a href="<?php echo BASE . ADMINFOLDER . 'guests' . URL_CAP; ?>"><img src="<?php echo BASE . IMGFOLDER; ?>minis/guests.png" alt="" /> Guests</a></li>-->
 								<li id="sub_thumbnails"><a href="<?php echo BASE . ADMINFOLDER . 'thumbnails' . URL_CAP; ?>"><img src="<?php echo BASE . IMGFOLDER; ?>minis/thumbnails.png" alt="" /> Thumbnails</a></li>
 								<li id="sub_themes"><a href="<?php echo BASE . ADMINFOLDER . 'themes' . URL_CAP; ?>"><img src="<?php echo BASE . IMGFOLDER; ?>minis/themes.png" alt="" /> Themes</a></li>
 								<li id="sub_extensions"><a href="<?php echo BASE . ADMINFOLDER . 'extensions' . URL_CAP; ?>"><img src="<?php echo BASE . IMGFOLDER; ?>minis/extensions.png" alt="" /> Extensions</a></li>
