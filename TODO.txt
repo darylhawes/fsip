@@ -1,120 +1,107 @@
-Warnings and errors printed at the bottom of the page should have a setting for displaying to "admin" users only.
-_______
+// DEH TODO: in dashboard.php census instead of reporting only image: #, report publisher images # vs. total images in dbase, maybe also display #deleted images!
 
-Template update? add next image / previous image buttons to Image editor in admin area to the image preview in main index as well.
+TODO: figure out if config.json can be stored in the database as a single string rather than out to the filesystem (which can be prone to write errors, etc)
 
-Template update? Where have the color swatches gone across the main index image? Any way to get those small across the thumbnails?
+USER
+Create a user profile page in /user folder. Allow user to change their password and set preferences
+//create user_twitter, user_fb, user_flickr personal details options?
+Add more personal user profile fields to user record and in user preferences/settings area. Tumblr link, youtube links.
 ________
-
-Rename "getIncludes" in fsip class to getThemeIncludes and rename config.php var INCLUDES to THEME_INCLUDES
-create new theme_includes folder at the root and move the hello world bit there.
-________
-
-
-
-add FSIP test on construct to warn if memory below 128MB?
-// Require at least 128M memory
-$mem = ini_get('memory_limit');
-if (substr($mem, -1) == 'M') {
-	if (substr($mem, 0, strlen($mem) - 1) < 128) {
-		if (!ini_set('memory_limit', '128M')) {
-			exit();
-		}
-	}
-}
-
-________
-
-Create "editorial" rights set. Add "no rights reserved" and "editorial" as default rights to project.
-add some rights into system. basic default should be royalty free rights, free purchase.
-add editorials capabilities. mark a photo as one, search for them, rights/licensing associated bits, etc
-
-Template mod: add dbase stats. Total number of images in database, total number of views by guests on an image, etc.
-
-________
-
-There is a user preference to "Display <x>  images per page." That's only for admin image views when adding data to uploaded files. That's not for the user template of viewing images that are in the system as a guest, etc. Check on or add that feature as a user preference as well.
-
+USER/THEME
+Theme: Ensure that the user who uploaded the file and their profile settings are shown for every image displayed.
+	Probably requires the $user overhaul to create new methods to get a user details from ID, etc.
 _________
-Javascript: after uploading a single file when you upload another the progress bar has not reset. it should clear and build again on second upload in a single upload.php session.
-________
-
-Search terms / filter should be displayed so you know what you're looking at.
-
-It appears that the search filter may be saved in the session? There are issues working with multiple windows of the same browser for multiple tasks. If so - move it to _GET or _POST arguments!
-
-_________
-
-change index template pagination to match dashboard in admin page's results version
-
+USER
 If the user is logged in and viewing the normal user template image page 
-add a link to edit the image itself in user's dashboard.
+	add a link to edit the image itself in user's dashboard (if they are an admin or it is their image)
+_______
+USER
+
+Shoebox subfolders needed once $user new roles and methods added.
+	Create a subfolder for the user's userid to upload into and process from. 
+	admin/shoebox.php likely to be the area where reading should be done and admin/upload.php as well.
+
+-- In configuration there is the heirarchical option:
+	Images	 Enable hierarchical directory mode using   format 
+	Recommended for efficiently storing large image libraries, reorganize your image library after changing this setting
+	-- check into this. surely we can insert the userid parent folder in here.
+_______
+THEME
+Theme: Look for front page options. Just showing the large version of the latest upload is not good enough. 
+	It should appear more professional like our favourite stock sites appear.
 
 ________
-admin page title should be FSIP Dashboard - SiteName or Untitled.
-Similar to this check in comments.php:
-	// Configuration: comm_enabled
-	if (!$fsip->returnConf('comm_enabled')) {
-		?>
-		<p class="notice">New comments have been disabled. You can enabled comments in your <a href="<?php echo BASE . ADMIN . 'configuration' . URL_CAP; ?>">configuration</a>.</p><br />
-		<?php
-	}
-provide a notice in admin dashboard if sitename is untitled to go to confiration page.
-
-________
-
-allow tags to be entered as space or comma separated multiples in a single line
-
-insert a user preference for how many images to show per page.
-
-
-convert fsip default image size on first index page. maybe check if num images over 1 then show smaller icons?
-
-Allow users to create their own "lightboxes", playlists or collections of images they have bookmarked. Allow these to be shared easily.
-________
-
-Themes:
-	- Find out why there is a <uid></uid> var in XML file. Can that be removed without breaking anything? There is already a folder/project name and a version and build number.
-	- In install/index.php there is a manual load of a default theme ~line 234. Why not install all present themes at load time and then manually set the choice of default only? It seems that going on admin/themes does the check for extra themes and install. Shouldn't this be a regular check and notify the user that there are new themes ready to install, etc?
+INSTALL
+Theme and install process: In install/index.php there is a manual load of a default theme ~line 234. Why not install all present themes at load time and then manually set the choice of default only? It seems that going on admin/themes does the check for extra themes and install. Shouldn't this be a regular check and notify the user that there are new themes ready to install, etc?
 	//		$query = $db->prepare('INSERT INTO ' . $_POST['install_db_prefix'] . 'themes (theme_uid, theme_title, theme_build, theme_version, theme_folder, theme_creator_name, theme_creator_uri) VALUES (?, ?, ?, ?, ?, ?, ?);');
 //		$query->execute(array('225b134b655901223d2f2ee26599b71763b1e5fe', 'P1', 1, '1.0', 'p1', 'Wilkes & Barre', 'http://www.wilkesandbarre.com/'));
 		$query = $db->prepare('INSERT INTO ' . $_POST['install_db_prefix'] . 'themes (theme_uid, theme_title, theme_build, theme_version, theme_folder, theme_creator_name, theme_creator_uri) VALUES (?, ?, ?, ?, ?, ?, ?);');
 		$query->execute(array('FSIP_DEFAULT', 'fsipDefault', 1, '0.1', 'fsipDefault', 'Daryl Hawes', 'http://fsip.sdelargy.com/'));
-
 _______
 
-Shoebox subfolders needed. 
-Create a subfolder for the user's userid to upload into and process from. 
-admin/shoebox.php likely to be the area where reading should be done and admin/upload.php as well.
--- In configuration there is the heirarchical option:
-Images	 Enable hierarchical directory mode using   format 
-Recommended for efficiently storing large image libraries, reorganize your image library after changing this setting
--- check into this. surely we can insert the userid parent folder in here.
+THEME / TEMPLATE - fsipDefault
+- add ability for users to send in suggestions for tags on images
+- add ability for users to send in suggestions for alternate titles and descriptions on images
+- add ability for users to send in requests for new images (challenges, work for hire)
+- put pagination bar before and after images in results.php
+_______
+THEME
+create new theme_includes folder at the root and move the hello world bit there. 
+Also create per-theme php_includes folders and put a local hello world in there?
+________
+THEME
+Theme: Add optional sidebar blocks? Can put tag cloud, most downloaded, etc there.
 
+________
+In dashboard.php census area: instead of reporting only image: #
+	report publisher images # vs. total images in dbase, maybe also display #deleted images!
+________
+In configuration.php create sub-tabs inside the page. General (save settings), Storage(?) (save settings), Advanced (with Sphinx, etc) (save settings)
+_______
+add next image / previous image buttons in admin/image.php
+add next image / previous image buttons to the image preview in /image.php.
+________
+
+Add some default rights into system. The basic system default should be royalty free rights, free purchase.
+Create "editorial" rights set. Add "no rights reserved" and "editorial" as rights to include by default with project initial download.
+Add editorials capabilities. mark a photo as one, search for them, rights/licensing associated bits, etc
+
+There is a user preference to "Display <x>  images per page." That's only for admin image views when adding data to uploaded files. 
+	That's not for the user template of viewing images that are in the system as a guest, etc. 
+	Check on or add that feature as a user preference as well.
+________
+
+Search terms / filter should be displayed so you know what filtered images you're looking at.
+
+It appears that the search filter may be saved in the session variables? 
+There are issues working with multiple windows of the same browser for multiple tasks. 
+If so - move it to _GET or _POST arguments perhaps to make multi tab browsing work better!
 
 ________
 
---global setting check is returnConf('key')	if($fsip->returnConf('syndication_summary_only')){
+allow tags to be entered as space or comma separated multiples in a single line. Vanilla tag addition format is cool, converting anything before a space into a luggage tag.
 
-in users and other places find code like $user_db['user_id'] != 1 which 
-means userid of 1 is the first added user which is the superuser. replace with isAdmin($user_id) and isSuperUser($user_id) functions in FSIP class?
-user_id of 1 should be user class of "super admin"
+insert a user preference for how many images to show per page.
 
-admin/users.php --
+Allow users to create their own "lightboxes", playlists or collections of images they have bookmarked. Allow these to be shared easily.
+________
+THEME
+Themes: Find out why there is a <uid></uid> var in XML file. Is it for the remote boomerang 3rd party extension version check stuff? Can that be removed without breaking anything? There is already a folder/project name and a version and build number.
 
-Create/verify "admin" user and "contributor" user and "guest" user classes.
+________
 
-add user class of "reviewer"
-
-add user class of "contributor"
-
-user class "guest" should only be able to browse images or login.
+Update system needs rework.
+	- When new updates are discovered tell admin and offer them a link to a new update.php admin page where the update would then be performed rather than performing updates every time there are files in the update folder on login.
+	- Updates should be named by date and installed updates tracked in the db then ignored.
+	- No need to rename or remove the updates folder moving forward.
+________
+ADMIN - MAINTENANCE
+Add an admin task/php file to view the db/log.txt database transaction log
 
 _______
-
-When installing site configuration should be the first stop rather than dashboard.
+INSTALL / UPDATE
+After installing the site's configuration page should be the first stop rather than the site dashboard.
 _______
-
 
 Add Publish button and date field similar to wp admin Add Post page!
 	If NOT and ADMIN then "publish" should not be an option. "ACCEPT and PUBLISH" should be the admin action. "REJECT" should be another option and images rejected should remain in the system marked as rejected by admin.
@@ -123,75 +110,72 @@ ________
 
 add notification to admins when a new image is uploaded and ready to publish. 
 
-add a button on the user's profile to allow them to "request publish" from admins on their images.
-
-
+add a button on the user's profile to allow them to "request publish" from admins on their images?
 
 add support for model and building releases.
 
 ________
+TODO in Javascript? after uploading a single file when you upload another the progress bar has not reset. 
+	-it should clear and build again on second upload in a single upload.php session.
 
 Upload progress bar does not reset to clear on second upload. Maybe redo it with a per file upload hover box that marks as completed like the file upload tool in cpanel?
 
-Analytics plugin edit needed: Do not display analytics code if the logged in user is an admin. Add option for this feature in setup area.
+________
+Analytics plugin edit needed: Do not display analytics code if the logged in user is an admin. 
+	Add option for this feature in setup area (create new plugin settings page in admin area).
 ________
 
-Add plugin settings panes similar to vanilla forums? 
-
-Adapt vanilla plugin user registration plugins for social network logins! (Cannot use vanilla forums code directly, it is GPLv3 licensed) (wordpress is GPL v2!)
+Adapt vanilla plugin user registration plugins for social network logins! 
+(Cannot use vanilla forums code directly, it is GPLv3 licensed) (wordpress is GPL v2!)
 
 Create user registration page. "login or register."
 _________
-
-add reviewer's comments field to image editing options.
-
 add an admin moderation process for file submissions
+_________
+add a reviewer comments field to image editing options.
 ________
-
-Ensure that the user who uploaded the file and their profile settings are shown for every image displayed.
-________
-
-Fork codebase and rename project to FSIP - Free Stock Image Project?
-
-Look for front page options. Just showing the large version of the latest upload is not good enough. It should appear more professional like the istockphoto or photodune.net sites appear.
-
 Will need a project logo and mini icon for URL bar.
+________
 
-Add personal user profile fields to user record and in user preferences/settings area. Tumlr link, youtube, flickr, Facebook links.
+Link in header to "my images" should not go to 
+	admin/search (result) but user/search (result) instead.
+________
+
+When looking at your own images allow different views. 
+	Thumbnails, or list view with metadata on the side. Also allow users to reorder images at their leisure to manually sort their order.
+
+________
+Filters for Royalty Free. Add sort/search/filter by rights option?
+______
+
+run phpdoc and process phpdoc output into docs/ folder when far enough along.
+
 ________
 
 What about the ability to publish an approved image with reviewers comments and model release references to a central database which could then inform an extended library (as an extension or option)?
-________
-
-When looking at your own images allow different views. Thumbnails, or list view with metadata on the side. Also allow users to reorder images at their leisure to manually sort their order.
-________
-
-
-When prompted to empty cache just do it, don't go to maintenance page where you hav eto dig through to find the option.
-
-_________
-
-Update rework.
-	- When new updates are discovered tell admin and offer them a link to a new update.php admin page where the update would then be performed rather than performing updates every time there are files in the update folder on login.
-	- Updates should be named by date and installed updates tracked in the db then ignored.
-	- No need to rename or remove the updates folder moving forward.
-	
 
 ________
-Getty Images - filters for Royalty Free. Add sort/search/filter by rights option?
-______
-run phpdoc and process phpdoc output into docs/ folder?
 
-________
+USER
+What is the whole existing "guest" account about? 
+	-- It allows access to "protected" images or sets with a "key." 
+	TODO: This should be CHANGED to work similar to youtube protected access - if you know the URL then you have access.
+_____
 
 List out all third party tools included and check their versions to see if any of them need updates. Add to bottom of README as "included third party code" or whatever.
-- markdown-js, MIT license
-- jquery, MIT license
+
+
+PEAR Cache_Lite, LGPL license
 - CacheLite * @version $Id: Lite.php 308851 2011-03-02 11:01:42Z tacker $
+****UPDATED https://github.com/pear/Cache_Lite
+* @package Cache_Lite
+* @version $Id: File.php 276823 2009-03-07 12:55:39Z tacker $
+* @author Fabien MARTY <fab@php.net>
+
 - PhpThumb, MIT license, v 3.0
 - Text_Diff, LGPL license -  * $Horde: framework/Text_Diff/Diff.php,v 1.11.2.12 2009/01/06 15:23:41 jan Exp $
 
-From README.MD file:
+
 Open source components
 Modifications published by Budin Ltd. to these components, where allowed by their licenses, are copyrighted.
 
@@ -199,24 +183,16 @@ ExplorerCanvas, Apache 2 license
 Flot, MIT license
 Formalize, MIT/GPL license
 GeoNames, CC-Attribution license
-jQuery, MIT/GPL2 license
-jQuery AjaxQ, MIT license
-jQuery Caret Range, MIT/GPL license
-jQuery HTML5 Upload, MIT license
-jQuery JSON, MIT license
-jQuery UI, MIT/GPL2 license
+jQuery, MIT/GPL2 license; lib/js/jquery
+jQuery AjaxQ, MIT license; lib/js/jquery
+jQuery Caret Range, MIT/GPL license; lib/js/jquery
+jQuery HTML5 Upload, MIT license; lib/js/jquery
+jQuery JSON, MIT license; lib/js/jquery
+jQuery UI, MIT/GPL2 license; lib/js/jquery
 PEAR, PHP license
-PEAR Cache_Lite, LGPL license
 PEAR Text_Diff, LGPL license
 PHPThumb, MIT license - UPDATED from 3.0 to 3.0.066
-TipTip, MIT/GPL license
-
-
-Cache_Lite - UPDATED https://github.com/pear/Cache_Lite
-* @package Cache_Lite
-* @version $Id: File.php 276823 2009-03-07 12:55:39Z tacker $
-* @author Fabien MARTY <fab@php.net>
-
+TipTip v1.3 last update Mar 23 2010, MIT/GPL license, lib/js/jquery/jquery.tiptip.min.js; www.drewwilson.com, code.drewwilson.com/entry/tiptip-jquery-plugin
 
 admin/tasks/export-pallete.php
 	* Make an Adobe Swatch Exchange file 
@@ -255,7 +231,7 @@ Akismet extension
 This project MOVED - https://github.com/achingbrain/php5-akismet and updated from 0.4 to 0.5 (incuded sockreadwrite class was updated from 0.1 to 0.5)
 (note PHPdocs included in this one)
 
---Similar to other plugins, Akismet extension needs an admin config panel to notify the user that an api key is needed and set it correctly.
+--TODO Similar to other plugins, Akismet extension needs an admin config panel to notify the user that an api key is needed and set it correctly.
 
 
 Dropbox extension code:
