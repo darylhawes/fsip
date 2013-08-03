@@ -42,14 +42,11 @@ if (Files::checkFilePerm(PATH . SHOEBOX) != '0777') {
 if (Files::checkFilePerm(PATH . CACHE) != '0777') {
 	addNote('WARNING:Cache folder at ('. PATH . CACHE .') may not be writable.<br />', 'notice');
 }
-if ((Files::checkFilePerm(PATH . 'config.json') != '0777') and (SERVER_TYPE != 'win')) {
-	addNote('WARNING:Configuration file at ('.PATH.'config.json) may not be writable.<br />', 'notice');
-}
 if (Files::checkFilePerm(PATH . 'config.php') == '0777') {
 	addNote('WARNING:Configuration file at ('.PATH.'config.php)  should not be writable.<br />', 'notice');
 }
 
-// Configuration setup
+///// Configuration setup
 
 if (@$_POST['install'] == 'Install') {
 	$type = $_POST['install_db_type'];
@@ -160,14 +157,16 @@ if (@$_POST['install'] == 'Install') {
 }
 
 
-// Database setup
+///// Database setup
 
 if ((@$_POST['install'] == 'Install') and (countNotes('error') == 0)) {
-	// Check to see if can connect
+	global $db; // already defined in config.php, reset and use global db here.
+
+	// First check to see if can connect
 	$db = new PDO($dsn, $username, $password);
 	$error = $db->errorInfo();
 	if (!empty($error[0])) {
-		addNote('The database could not be contacted. ' . $error[0] . ' Check your settings.', 'error');
+		addNote('The database could not be contacted. ' . $error[0] . ' Check your settings and try again.', 'error');
 	} else {
 		function appendTableName($query) {
 			if (!empty($_POST['install_db_prefix'])) {
@@ -230,10 +229,69 @@ if ((@$_POST['install'] == 'Install') and (countNotes('error') == 0)) {
 		
 		$query->closeCursor();
 		
+//// INSTALL DEFAULT SITE CONFIG SETTINGS
+
 		setConf('theme_id', '1');
 		setConf('theme_folder', 'fsipDefault');
+		setConf('web_name', '');
+		setConf('web_title', '(Untitled Site)');
+		setConf('web_title_format', 'emdash2');
+		setConf('web_description', '');
+		setConf('web_email', '');
+		setConf('web_timezone', 'America\/New_York');
+		setConf('shoe_exif', true);
+		setConf('shoe_iptc', true);
+		setConf('shoe_geo', null);
+		setConf('image_markup', null);
+		setConf('image_markup_ext', '');
+		setConf('thumb_imagick', null);
+		setConf('thumb_compress', null);
+		setConf('thumb_compress_tol', 100);
+		setConf('thumb_watermark', null);
+		setConf('thumb_watermark_pos', 'nw');
+		setConf('thumb_watermark_margin', '');
+		setConf('image_original', null);
+		setConf('tag_alpha', null);
+		setConf('comm_enabled', null);
+		setConf('comm_email', null);
+		setConf('comm_mod', null);
+		setConf('comm_markup', null);
+		setConf('comm_markup_ext', 'bbcode');
+		setConf('rights_default', null); //DEH here is where we should add a default right of none_reserved
+		setConf('rights_default_id', '');
+		setConf('stat_enabled', true);
+		setConf('stat_ignore_user', '');
+		setConf('canvas_remove_unused', null);
+		setConf('maint_reports', null);
+		setConf('maint_debug', true);
+		setConf('maint_disable', null);
+		setConf('page_size_id', '1');
+		setConf('page_size_label', 'admin');
+		setConf('shoe_max', null);
+		setConf('shoe_max_count', '');
+		setConf('image_hdm', null);
+		setConf('image_hdm_format', 'yyyy\/mm\/dd');
+		setConf('web_markup', null);
+		setConf('web_markup_ext', '');
+		setConf('bulk_delete', null);
+		setConf('thumb_metadata', null);
+		setConf('page_div_wrap', null);
+		setConf('page_div_wrap_class', '');
+		setConf('comm_allow_html', null);
+		setConf('comm_allow_html_tags', '');
+		setConf('guest_remember', null);
+		setConf('guest_remember_time', '86400');
+		setConf('syndication_cache_time', '15');
+		setConf('syndication_summary_only', null);
+		setConf('sphinx_enabled', null);
+		setConf('sphinx_server', '');
+		setConf('sphinx_port', '');
+		setConf('sphinx_index', '');
+		setConf('sphinx_max_exec', '');
+		setConf('maint_debug_admin_only', true);
+
 		saveConf();
-	}
+	} // end if can connect to db
 }
 
 define('TAB', 'Installation');

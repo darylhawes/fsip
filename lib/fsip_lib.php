@@ -80,9 +80,8 @@ if (!headers_sent()) {
 
 $_SESSION['fsip']['debug']['start_time'] = microtime(true);
 $_SESSION['fsip']['debug']['queries'] = 0;
-if ($contents = file_get_contents(correctWinPath(PATH . 'config.json'))) {
-	$_SESSION['fsip']['config'] = json_decode($contents, true);
-}
+
+loadConf();
 
 if (empty($_SESSION['fsip']['config'])) {
 	$_SESSION['fsip']['config'] = array();
@@ -987,14 +986,29 @@ function returnConf($name) {
 }
 
 /**
- * Save configuration
+ * Save configuration to database as a json string
  *
- * @return int|false Bytes written or error
+ * @return ?
  */
 function saveConf() {
-	return file_put_contents(correctWinPath(PATH . 'config.json'), json_encode(reverseHTMLSafe($_SESSION['fsip']['config'])));
+	global $db;
+	$json_config_string = json_encode(reverseHTMLSafe($_SESSION['fsip']['config']));
+	return $db->exec('UPDATE config SET json = ' . $json_config_string);
 }
 
+/**
+ * Load configuration from database and convert from json string to array contents
+ *
+ * @return null
+ */
+function loadConf() {
+	$query = $db->prepare('SELECT json FROM config');
+	$query->execute();
+	$json_config_strings = $query->fetchAll();
+	$json_config_string = @$json_config_strings[0];
+
+	$_SESSION['fsip']['config'] = json_decode($json_config_string, true);
+}
 
 
 //////////////// COMMENTS
