@@ -10,7 +10,7 @@ require_once('./../config.php');
 
 
 $user = new User;
-$user->userIsLoggedIn(true);
+$user->isLoggedIn(true);
 
 if(!empty($_POST['preferences_save'])){
 	$user->setPref('page_limit', @$_POST['page_limit']);

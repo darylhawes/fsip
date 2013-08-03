@@ -32,11 +32,11 @@ $user = new User();
 			<div id="userbar" class="span-24 right">
 				 <div id="userbar_user">
 					<?php
-					if(!empty($user) and $user->userIsLoggedIn()){
+					if(!empty($user) and $user->isLoggedIn()){
 							?>
 									<strong>
-											<?php echo $user->user['user_username']; ?>
-									</strong> &#0160;
+											<a href="<?php echo BASE . USERFOLDER . 'profile' . URL_CAP; ?>"><?php echo $user->user['user_username'];?></a>									</strong> &#0160;
+									</strong>
 									<a href="<?php echo BASE . ADMINFOLDER . 'search' . URL_ACT . 'me' . URL_RW; ?>">My Images</a>,
 									<a href="<?php echo BASE . ADMINFOLDER . 'comments' . URL_ACT . 'me' . URL_RW; ?>">Comments</a> &#0160;
 									<a href="<?php echo BASE . USERFOLDER . 'preferences' . URL_CAP; ?>">Preferences</a> &#0160;

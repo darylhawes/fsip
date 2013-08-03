@@ -419,7 +419,7 @@ class FSIPException extends Exception implements Serializable {
 		
 		if (returnConf('stat_ignore_user')) {
 			$user = new User();
-			if ($user->userIsLoggedIn(false)) {
+			if ($user->isLoggedIn(false)) {
 				return;
 			}
 		}

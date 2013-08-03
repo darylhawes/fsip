@@ -601,7 +601,7 @@ class DB {
 			$show_deleted = false;
 			if (Files::isInAdminPath() === true) {
 				$user = new User();
-				if (!empty($user) and $user->userHasPermission('admin', false)) {
+				if (!empty($user) and $user->hasPermission('admin', false)) {
 					if ($user->returnPref('recovery_mode') === true) {
 						$show_deleted = true;
 					}
@@ -630,7 +630,7 @@ class DB {
 		
 		if (returnConf('stat_ignore_user')) {
 			$user = new User();
-			if($user->userIsLoggedIn()){
+			if($user->isLoggedIn()){
 				return;
 			}
 		}

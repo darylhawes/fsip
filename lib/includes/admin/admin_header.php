@@ -1,6 +1,6 @@
 <?php 
 //echo "in admin header<br />";
-if (!empty($user) and $user->userHasPermission('admin', false)) { 
+if (!empty($user) and $user->hasPermission('admin', false)) { 
 	global $db;
 	$badges = $db->getBadges();
 } 
@@ -17,7 +17,7 @@ $pg_title = (defined('TITLE') ? TITLE. ' - '. $web_title  : 'FSIP'. ' - '. $web_
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="base" content="<?php echo LOCATION . BASE; ?>" />
 	<meta name="folder_prefix" content="<?php echo FOLDER_PREFIX; ?>" />
-	<meta name="permissions" content="<?php if (!empty($user) and $user->userIsLoggedIn() and !empty($user->user['user_permissions'])) { echo @implode(', ', $user->user['user_permissions']); } ?>" />
+	<meta name="permissions" content="<?php if (!empty($user) and $user->isLoggedIn() and !empty($user->user['user_permissions'])) { echo @implode(', ', $user->user['user_permissions']); } ?>" />
 	<title><?php echo $pg_title; ?></title>
 	<link rel="stylesheet" href="<?php echo BASE . INCLUDES; ?>css/blueprint/screen.css" type="text/css" media="screen, projection" />
 	<link rel="stylesheet" href="<?php echo BASE . INCLUDES; ?>css/blueprint/print.css" type="text/css" media="print" />	
@@ -35,7 +35,7 @@ $pg_title = (defined('TITLE') ? TITLE. ' - '. $web_title  : 'FSIP'. ' - '. $web_
 		<div class="container">
 			<div id="userbar" class="span-24 right">
 <?php
-				if (!empty($user) and $user->userIsLoggedIn()) {
+				if (!empty($user) and $user->isLoggedIn()) {
 ?>
 					<div id="userbar_home">
 						<strong>
@@ -46,7 +46,7 @@ $pg_title = (defined('TITLE') ? TITLE. ' - '. $web_title  : 'FSIP'. ' - '. $web_
 					
 					<div id="userbar_user">
 						<strong>
-							<?php echo $user->user['user_username']; ?>
+							<a href="<?php echo BASE . USERFOLDER . 'profile' . URL_CAP; ?>"><?php echo $user->user['user_username'];?></a>									</strong> &#0160;
 						</strong> &#0160;
 						<a href="<?php echo BASE . ADMINFOLDER . 'search' . URL_ACT . 'me' . URL_RW; ?>">My Images</a>,
 						<a href="<?php echo BASE . ADMINFOLDER . 'comments' . URL_ACT . 'me' . URL_RW; ?>">Comments</a> &#0160;
@@ -63,7 +63,7 @@ $pg_title = (defined('TITLE') ? TITLE. ' - '. $web_title  : 'FSIP'. ' - '. $web_
 				</div>
 				<div id="panels" class="span-17 last">
 <?php
-					if (!empty($user) and $user->userIsLoggedIn()) {
+					if (!empty($user) and $user->isLoggedIn()) {
 ?>
 						<div id="search_panel" class="span-17 append-1">
 							<form action="<?php echo BASE . ADMINFOLDER . 'search' . URL_CAP; ?>" method="post">

@@ -10,14 +10,11 @@ require_once('../config.php');
 
 $user = new User;
 
-if ($user->userIsLoggedIn()) {
-	$page = "dashboard";
-} else {
-	$page = "login";
+// Require that there is a valid user logged in or redirect the user to the login page.
+if ($user->isLoggedIn(true)) {
+	$location = LOCATION . BASE. 'user/profile' . URL_CAP;
+	headerLocationRedirect($location);
 }
 
-$location = LOCATION . BASE . USERFOLDER . $page . URL_CAP;
-headerLocationRedirect($location);
 exit();
-
 ?>
