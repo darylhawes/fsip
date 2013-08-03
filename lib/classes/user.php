@@ -231,7 +231,7 @@ class User {
 	 * @param bool $required Redirects (on failure) if true
 	 * @return bool true if there is a user logged in
 	 */
-	 public function userIsLoggedIn($required=false) {
+	 public function isLoggedIn($required=false) {
 		if (!empty($this->user)) {
 			return true;
 		}
@@ -249,7 +249,7 @@ class User {
 	 * @param int $userid The userid of the user we are checking a permission against, if not the currently logged in user.
 	 * @return void
 	 */
-	public function userHasPermission($permission=null, $required=false, $userid=null) {
+	public function hasPermission($permission=null, $required=false, $userid=null) {
 //echo "checking user perm<br />";
 		if (empty($this->user) && $userid == null) {
 //echo "checking user perm, user NOT logged in<br />";
@@ -299,7 +299,7 @@ class User {
 	 * @return void
 	 */
 	public function setPref($name='', $unset='') {
-		if (!$this->userIsLoggedIn(true)) { return false; }
+		if (!$this->isLoggedIn(true)) { return false; }
 		setForm($this->user['user_preferences'], $name, $unset);
 	}
 	
@@ -311,7 +311,7 @@ class User {
 	 * @return void
 	 */
 	public function readPref($name='', $check=true) {
-		if (!$this->userIsLoggedIn(true)) { return false; }
+		if (!$this->isLoggedIn(true)) { return false; }
 		readForm($this->user['user_preferences'], $name, $check);
 	}
 	
@@ -323,7 +323,7 @@ class User {
 	 * @return void
 	 */
 	public function returnPref($name='', $default=null) {
-		if (!$this->userIsLoggedIn(true)) { return false; }
+		if (!$this->isLoggedIn(true)) { return false; }
 		returnForm($this->user['user_preferences'], $name, $default);
 	}
 	
@@ -333,7 +333,7 @@ class User {
 	 * @return void
 	 */
 	public function savePref() {
-		if (!$this->userIsLoggedIn(true)) { return false; }
+		if (!$this->isLoggedIn(true)) { return false; }
 		
 		$fields = array('user_preferences' => serialize($this->user['user_preferences']));
 		
@@ -349,7 +349,7 @@ class User {
 	 * @return void
 	 */
 	public function updateFields($fields=array(), $overwrite=true) {
-		if (!$this->userIsLoggedIn(true)) { return false; }
+		if (!$this->isLoggedIn(true)) { return false; }
 		
 		// Verify each key has changed; if not, unset the key
 		foreach($fields as $key => $value) {
