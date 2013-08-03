@@ -1,14 +1,19 @@
-// DEH TODO: in dashboard.php census instead of reporting only image: #, report publisher images # vs. total images in dbase, maybe also display #deleted images!
+ADMIN - MAINTENANCE
+Add an admin task/php file to view the db/log.txt database transaction log
 
-TODO: figure out if config.json can be stored in the database as a single string rather than out to the filesystem (which can be prone to write errors, etc)
+_______
 
+
+// DEH TODO: in dashboard.php census instead of reporting only image #: 
+	report publisher images # vs. total images in dbase, maybe also display #deleted images!
+________
 USER
-Create a user profile page in /user folder. Allow user to change their password and set preferences
+Allow user to change their password and set preferences in user's own profile page.
 //create user_twitter, user_fb, user_flickr personal details options?
 Add more personal user profile fields to user record and in user preferences/settings area. Tumblr link, youtube links.
 ________
 USER/THEME
-Theme: Ensure that the user who uploaded the file and their profile settings are shown for every image displayed.
+Ensure that the user who uploaded the file and their profile settings are shown for every image displayed.
 	Probably requires the $user overhaul to create new methods to get a user details from ID, etc.
 _________
 USER
@@ -16,7 +21,6 @@ If the user is logged in and viewing the normal user template image page
 	add a link to edit the image itself in user's dashboard (if they are an admin or it is their image)
 _______
 USER
-
 Shoebox subfolders needed once $user new roles and methods added.
 	Create a subfolder for the user's userid to upload into and process from. 
 	admin/shoebox.php likely to be the area where reading should be done and admin/upload.php as well.
@@ -32,11 +36,17 @@ Theme: Look for front page options. Just showing the large version of the latest
 
 ________
 INSTALL
-Theme and install process: In install/index.php there is a manual load of a default theme ~line 234. Why not install all present themes at load time and then manually set the choice of default only? It seems that going on admin/themes does the check for extra themes and install. Shouldn't this be a regular check and notify the user that there are new themes ready to install, etc?
-	//		$query = $db->prepare('INSERT INTO ' . $_POST['install_db_prefix'] . 'themes (theme_uid, theme_title, theme_build, theme_version, theme_folder, theme_creator_name, theme_creator_uri) VALUES (?, ?, ?, ?, ?, ?, ?);');
+Theme and install process:
+	In install/index.php there is a manual load of a default theme ~line 234. 
+	Why not install all present themes at load time and then manually set the choice of default only? 
+	It seems that going on admin/themes does the check for extra themes and install. 
+
+//		$query = $db->prepare('INSERT INTO ' . $_POST['install_db_prefix'] . 'themes (theme_uid, theme_title, theme_build, theme_version, theme_folder, theme_creator_name, theme_creator_uri) VALUES (?, ?, ?, ?, ?, ?, ?);');
 //		$query->execute(array('225b134b655901223d2f2ee26599b71763b1e5fe', 'P1', 1, '1.0', 'p1', 'Wilkes & Barre', 'http://www.wilkesandbarre.com/'));
 		$query = $db->prepare('INSERT INTO ' . $_POST['install_db_prefix'] . 'themes (theme_uid, theme_title, theme_build, theme_version, theme_folder, theme_creator_name, theme_creator_uri) VALUES (?, ?, ?, ?, ?, ?, ?);');
 		$query->execute(array('FSIP_DEFAULT', 'fsipDefault', 1, '0.1', 'fsipDefault', 'Daryl Hawes', 'http://fsip.sdelargy.com/'));
+
+Shouldn't this be a regular check and notify the user that there are new themes ready to install, etc?
 _______
 
 THEME / TEMPLATE - fsipDefault
@@ -51,7 +61,6 @@ Also create per-theme php_includes folders and put a local hello world in there?
 ________
 THEME
 Theme: Add optional sidebar blocks? Can put tag cloud, most downloaded, etc there.
-
 ________
 In dashboard.php census area: instead of reporting only image: #
 	report publisher images # vs. total images in dbase, maybe also display #deleted images!
@@ -91,22 +100,21 @@ Themes: Find out why there is a <uid></uid> var in XML file. Is it for the remot
 ________
 
 Update system needs rework.
-	- When new updates are discovered tell admin and offer them a link to a new update.php admin page where the update would then be performed rather than performing updates every time there are files in the update folder on login.
+	- When new updates are discovered tell admin and offer them a link to a new update.php
+	 	admin page where the update would then be performed rather than performing updates 
+	 	every time there are files in the update folder on login.
 	- Updates should be named by date and installed updates tracked in the db then ignored.
 	- No need to rename or remove the updates folder moving forward.
 ________
-ADMIN - MAINTENANCE
-Add an admin task/php file to view the db/log.txt database transaction log
-
-_______
 INSTALL / UPDATE
 After installing the site's configuration page should be the first stop rather than the site dashboard.
 _______
 
+USER / ADMIN
 Add Publish button and date field similar to wp admin Add Post page!
-	If NOT and ADMIN then "publish" should not be an option. "ACCEPT and PUBLISH" should be the admin action. "REJECT" should be another option and images rejected should remain in the system marked as rejected by admin.
+	If user is NOT an ADMIN then "publish" should not be an option. "ACCEPT and PUBLISH" should be the admin action. 
+	"REJECT" should be another option and images rejected should remain in the system marked as rejected by admin.
 ________
-
 
 add notification to admins when a new image is uploaded and ready to publish. 
 
@@ -118,7 +126,8 @@ ________
 TODO in Javascript? after uploading a single file when you upload another the progress bar has not reset. 
 	-it should clear and build again on second upload in a single upload.php session.
 
-Upload progress bar does not reset to clear on second upload. Maybe redo it with a per file upload hover box that marks as completed like the file upload tool in cpanel?
+Upload progress bar does not reset to clear on second upload. Maybe redo it with a per file 
+	upload hover box that marks as completed like the file upload tool in cpanel?
 
 ________
 Analytics plugin edit needed: Do not display analytics code if the logged in user is an admin. 
@@ -129,6 +138,9 @@ Adapt vanilla plugin user registration plugins for social network logins!
 (Cannot use vanilla forums code directly, it is GPLv3 licensed) (wordpress is GPL v2!)
 
 Create user registration page. "login or register."
+
+adapt vanilla tag autocomplete and css for photo tags. Perhaps use autosuggest javascript.
+	http://code.drewwilson.com/entry/autosuggest-jquery-plugin
 _________
 add an admin moderation process for file submissions
 _________
@@ -142,7 +154,8 @@ Link in header to "my images" should not go to
 ________
 
 When looking at your own images allow different views. 
-	Thumbnails, or list view with metadata on the side. Also allow users to reorder images at their leisure to manually sort their order.
+	Thumbnails, or list view with metadata on the side. 
+	Also allow users to reorder images at their leisure to manually sort their order.
 
 ________
 Filters for Royalty Free. Add sort/search/filter by rights option?
@@ -152,17 +165,21 @@ run phpdoc and process phpdoc output into docs/ folder when far enough along.
 
 ________
 
-What about the ability to publish an approved image with reviewers comments and model release references to a central database which could then inform an extended library (as an extension or option)?
+What about the ability to publish an approved image with reviewers comments and model 
+	release references to a central database which could then inform an extended library 
+	(as an extension or option)?
 
 ________
 
 USER
 What is the whole existing "guest" account about? 
 	-- It allows access to "protected" images or sets with a "key." 
-	TODO: This should be CHANGED to work similar to youtube protected access - if you know the URL then you have access.
+	TODO: This should be CHANGED to work similar to youtube protected access - 
+		if you know the URL then you have access.
 _____
 
-List out all third party tools included and check their versions to see if any of them need updates. Add to bottom of README as "included third party code" or whatever.
+List out all third party tools included and check their versions to see if any of them need updates. 
+	Add to bottom of README as "included third party code" or whatever.
 
 
 PEAR Cache_Lite, LGPL license

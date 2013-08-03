@@ -49,10 +49,13 @@ Unsure if your site is compatible? Use the [compatibility suite](/cs.php/) to ch
 
 2. Unpack the archive (usually by double-clicking on it).
 3. Use an FTP application to move the contents of the folder `fsip/` from your computer to your Web site.
-	- Set the permissions on the folders: `cache/`, `data/db/`, `data/images/`, and `shoebox/` to `0777` (read, write, and execute), also set the same permissions to the file `config.json`
+	- Set the permissions on the folders: `cache/`, `data/db/`, `data/images/`, and `shoebox/` to `0777` 
+	(read, write, and execute)
 	- Delete the `update/` folder
-	- *Recommended:* Remove the included themes and extesions by deleting the folders within `extensions/` and `themes/` (except `themes/p1/`)
-4. Once you're done uploading the files visit the `install/` directory of your Web site where you installed Alkaline to complete your installation.
+	- *Recommended:* Remove the included themes and extesions by deleting the folders within `extensions/` and 
+	`themes/` (except `themes/p1/`)
+4. Once you're done uploading the files visit the `install/` directory of your Web site where you installed 
+FSIP to complete your installation.
 
 ## Support
 
@@ -60,7 +63,8 @@ No support is offered for this open source product. "Swim at your own risk."
 
 ## Contributing
 
-FSIP is undergoing development by Daryl Hawes and you are welcome to contribute bug reports, patches and comments via [git.com](https://github.com/darylhawes/fsip)
+FSIP is undergoing development by Daryl Hawes and you are welcome to contribute bug reports, 
+patches and comments via [git.com](https://github.com/darylhawes/fsip)
 
 The original "Alkaline" project  is no longer undergoing active development. 
 

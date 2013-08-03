@@ -4,7 +4,6 @@ cache/*
 
 license.php
 config.php
-config.json
 log.txt
 cache/*
 data/images/*.jpg
