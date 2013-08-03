@@ -10,7 +10,7 @@ require_once('../config.php');
 
 $user = new User;
 //echo "statistics 1<br />";
-$user->userHasPermission('statistics', true);
+$user->hasPermission('statistics', true);
 
 global $db;
 

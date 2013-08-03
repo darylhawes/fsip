@@ -11,7 +11,7 @@ require_once('../config.php');
 $orbit = new Orbit;
 
 $user = new User;
-$user->userHasPermission('editor', true);
+$user->hasPermission('editor', true);
 
 if(!empty($_GET['id'])){
 	$comment_id = findID($_GET['id']);

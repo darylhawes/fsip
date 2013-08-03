@@ -11,7 +11,7 @@ require_once('../config.php');
 global $db;
 
 $user = new User;
-$user->userHasPermission('themes', true);
+$user->hasPermission('themes', true);
 
 // Load current themes
 $themes = $db->getTable('themes');

@@ -13,7 +13,7 @@ $user = new User;
 //echo "users 3<br />";
 global $db;
 
-$user->userHasPermission('users', true);
+$user->hasPermission('users', true);
 //echo "users 4<br />";
 
 if (!empty($_GET['id'])) {

@@ -11,7 +11,7 @@ require_once('../config.php');
 $orbit = new Orbit;
 
 $user = new User;
-$user->userHasPermission('admin', true);
+$user->hasPermission('admin', true);
 
 if (!empty($_POST['act']) and !empty($_POST['object'])) {
 	$_SESSION['fsip']['preview']['act'] = $_POST['act'];

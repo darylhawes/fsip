@@ -9,7 +9,7 @@
 require_once('../../config.php');
 
 $user = new User;
-$user->userHasPermission('admin', true);
+$user->hasPermission('admin', true);
 
 if (!empty($_SESSION['fsip']['maintenance']['size_id'])) {
 	if (empty($_POST['image_id'])) {

@@ -11,7 +11,7 @@ require_once('../config.php');
 $orbit = new Orbit;
 
 $user = new User;
-$user->userHasPermission('configuration', true);
+$user->hasPermission('configuration', true);
 
 global $db;
 

@@ -11,7 +11,7 @@ require_once('./../config.php');
 $orbit = new Orbit;
 
 $user = new User;
-$user->userHasPermission('shoebox', true);
+$user->hasPermission('shoebox', true);
 
 // PROCESS SUBMITTED IMAGES
 if (!empty($_POST['image_ids'])) {

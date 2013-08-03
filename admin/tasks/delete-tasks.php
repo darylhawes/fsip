@@ -10,7 +10,7 @@ require_once('../../config.php');
 
 $user = new User;
 
-$user->userHasPermission('maintenance', true);
+$user->hasPermission('maintenance', true);
 
 Files::emptyDirectory(PATH . CACHE . 'tasks/');
 

@@ -10,7 +10,7 @@ require_once('../config.php');
 global $db;
 
 $user = new User;
-$user->userHasPermission('thumbnails', true);
+$user->hasPermission('thumbnails', true);
 
 if (!empty($_GET['id'])) {
 	$size_id = findID($_GET['id']);

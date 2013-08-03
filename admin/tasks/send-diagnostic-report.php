@@ -9,7 +9,7 @@
 require_once('../../config.php');
 
 $user = new User;
-$user->userHasPermission('maintenance', true);
+$user->hasPermission('maintenance', true);
 
 // Cache
 require_once(PATH . CLASSES . 'cache_lite/Lite.php');

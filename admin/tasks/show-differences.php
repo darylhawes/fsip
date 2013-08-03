@@ -13,7 +13,7 @@ require_once('../../config.php');
 global $db;
 
 $user = new User;
-$user->userHasPermission('admin', true);
+$user->hasPermission('admin', true);
 
 $version_id = intval($_POST['version_id']);
 $version = $db->getRow('versions', $version_id);

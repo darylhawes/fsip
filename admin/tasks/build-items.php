@@ -9,7 +9,7 @@
 require_once('../../config.php');
 
 $user = new User;
-$user->userHasPermission('maintenance', true);
+$user->hasPermission('maintenance', true);
 
 global $db;
 

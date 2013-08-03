@@ -9,7 +9,7 @@
 require_once('../../config.php');
 
 $user = new User;
-$user->userHasPermission('admin', true);
+$user->hasPermission('admin', true);
 
 if (!empty($_POST['uri'])) {
 	$citation = loadCitation($_POST['uri'], $_POST['field'], $_POST['field_id']);

@@ -12,7 +12,7 @@ require_once('../config.php');
 $orbit = new Orbit;
 
 $user = new User;
-$user->userHasPermission('images', true);
+$user->hasPermission('images', true);
 
 
 // GET IMAGE

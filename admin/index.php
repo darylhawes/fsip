@@ -10,14 +10,11 @@ require_once('../config.php');
 
 $user = new User;
 
-if ($user->userHasPermission('dashboard')) {
+// Require permission to access the dashboard or redirect the user to the login page.
+if ($user->hasPermission('dashboard', true)) {
 	$location = LOCATION . BASE. ADMINFOLDER . 'dashboard' . URL_CAP;
 	headerLocationRedirect($location);
-} else {
-	$location = LOCATION . BASE. 'login' . URL_CAP;
-	headerLocationRedirect($location);
 }
-
 
 exit();
 

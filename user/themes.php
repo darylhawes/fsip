@@ -10,7 +10,7 @@ require_once('./../config.php');
 
 
 $user = new User;
-$user->userHasPermission('themes', true);
+$user->hasPermission('themes', true);
 
 // Load current themes
 $themes = $fsip->getTable('themes');

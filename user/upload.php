@@ -30,7 +30,7 @@ if(isset($_REQUEST['context']) and ($_REQUEST['context'] == sha1(PATH . BASE . D
 	<?php
 }
 
-$user->userHasPermission('upload', true);
+$user->hasPermission('upload', true);
 
 if(!empty($_FILES)){
 	$filename = $_FILES['user_file']['name'][0];

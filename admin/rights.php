@@ -10,7 +10,7 @@ require_once('../config.php');
 
 
 $user = new User;
-$user->userHasPermission('rights', true);
+$user->hasPermission('rights', true);
 
 $orbit = new Orbit;
 

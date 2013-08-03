@@ -11,7 +11,7 @@ require_once('../../config.php');
 global $db;
 
 $user = new User;
-$user->userHasPermission('admin', true);
+$user->hasPermission('admin', true);
 
 if (empty($_POST['image_id'])) {
 	$image_ids = new Find('images');

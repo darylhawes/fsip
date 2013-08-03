@@ -11,7 +11,7 @@ require_once('./../config.php');
 $orbit = new Orbit;
 $user = new User;
 
-$user->userHasPermission('images', true);
+$user->hasPermission('images', true);
 
 // GET PHOTO
 if (!$image_id = $fsip->findID($_GET['id'])) {

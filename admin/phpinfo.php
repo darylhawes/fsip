@@ -9,7 +9,7 @@
 require_once('../config.php');
 
 $user = new User;
-$user->userHasPermission('admin', true);
+$user->hasPermission('admin', true);
 
 require_once(PATH . INCLUDES . 'admin/admin_header.php');
 

@@ -9,7 +9,7 @@
 require_once('../../config.php');
 
 $user = new User;
-$user->userHasPermission('admin', true);
+$user->hasPermission('admin', true);
 
 if (empty($_POST['image_file'])) {
 	$image_files = Files::seekDirectory(PATH . SHOEBOX);

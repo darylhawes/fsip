@@ -12,7 +12,7 @@ $user = new User;
 
 global $db;
 
-$user->userHasPermission('admin', true);
+$user->hasPermission('admin', true);
 
 $id = findID(@$_POST['image_id']);
 

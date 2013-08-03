@@ -9,7 +9,7 @@
 require_once('../config.php');
 
 $user = new User;
-$user->userHasPermission('admin', true);
+$user->hasPermission('admin', true);
 
 $includes = Files::getThemeIncludes();
 $include_count = count($includes);

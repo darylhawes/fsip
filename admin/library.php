@@ -10,7 +10,7 @@
 require_once('../config.php');
 
 $user = new User;
-$user->userHasPermission('admin', true);
+$user->hasPermission('admin', true);
 //echo "library 6<br />";
 
 setCallback();
