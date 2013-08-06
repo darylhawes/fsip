@@ -35,7 +35,7 @@ $db_pass = '';
 $table_prefix = '';
 
 // Subdirectory prefix
-$folder_prefix = '';
+$folder_prefix = '../';
 
 // URL rewriting (supports Apache mod_rewrite, Microsoft URL Rewrite 2, and compatible)
 $url_rewrite = false;
@@ -86,13 +86,6 @@ if ($url_rewrite) {
 	define('URL_RW', '');
 }
 
-define('DB_DSN', $db_dsn);
-define('DB_TYPE', $db_type);
-@define('DB_USER', $db_user);
-@define('DB_PASS', $db_pass);
-define('TABLE_PREFIX', $table_prefix);
-define('FOLDER_PREFIX', $folder_prefix);
-define('SALT', $salt);
 
 $server_address = $_SERVER['SERVER_NAME'];
 if (isset ($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] != "80") {
@@ -136,5 +129,68 @@ define('DATAFOLDER', FOLDER_PREFIX . 'data/');
 define('IMAGEDATA', DATAFOLDER . 'images/');
 define('DB', DATAFOLDER . 'db/');
 
-require_once(PATH . LIB . 'fsip_lib.php');
+
+global $config_defaults;
+$config_defaults = array(
+	'theme_id'=>'1',
+	'theme_folder'=>'fsipDefault',
+	'web_name'=>'',
+	'web_title'=>'(Untitled Site)',
+	'web_title_format'=>'emdash2',
+	'web_description'=>'',
+	'web_email'=>'',
+	'web_timezone'=>'America/New_York',
+	'shoe_exif'=>true,
+	'shoe_iptc'=>true,
+	'shoe_geo'=>null,
+	'image_markup'=>null,
+	'image_markup_ext'=>'',
+	'thumb_imagick'=>null,
+	'thumb_compress'=>null,
+	'thumb_compress_tol'=>100,
+	'thumb_watermark'=>null,
+	'thumb_watermark_pos'=>'nw',
+	'thumb_watermark_margin'=>'',
+	'image_original'=>null,
+	'tag_alpha'=>null,
+	'comm_enabled'=>null,
+	'comm_email'=>null,
+	'comm_mod'=>null,
+	'comm_markup'=>null,
+	'comm_markup_ext'=>'bbcode',
+	'rights_default'=>null,
+	'rights_default_id'=>'',
+	'stat_enabled'=>true,
+	'stat_ignore_user'=>null,
+	'canvas_remove_unused'=>null,
+	'maint_reports'=>null,
+	'maint_debug'=>true,
+	'maint_disable'=>null,
+	'page_size_id'=>'1',
+	'page_size_label'=>'admin',
+	'shoe_max'=>null,
+	'shoe_max_count'=>'',
+	'image_hdm'=>null,
+	'image_hdm_format'=>'yyyy\/mm\/dd',
+	'web_markup'=>null,
+	'web_markup_ext'=>'',
+	'bulk_delete'=>null,
+	'thumb_metadata'=>null,
+	'page_div_wrap'=>null,
+	'page_div_wrap_class'=>'',
+	'comm_allow_html'=>null,
+	'comm_allow_html_tags'=>'',
+	'guest_remember'=>null,
+	'guest_remember_time'=>'86400',
+	'syndication_cache_time'=>'15',
+	'syndication_summary_only'=>null,
+	'sphinx_enabled'=>null,
+	'sphinx_server'=>'',
+	'sphinx_port'=>'',
+	'sphinx_index'=>'',
+	'sphinx_max_exec'=>'',
+	'maint_debug_admin_only'=>true
+);
+
+require_once('../lib/fsip_lib.php');
 ?>
