@@ -6,7 +6,11 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('../config.php');
+if (file_exists('../config.php')) {
+	require_once('../config.php');
+} else {
+	require_once('config_default.php');
+}
 
 if (session_id() == '') { session_start(); }
 
@@ -14,7 +18,7 @@ $e = $_SESSION['fsip']['exception'];
 
 define('TAB', 'Error');
 define('TITLE', 'FSIP Error');
-require_once(PATH . INCLUDES . 'admin/admin_header.php');
+require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>
 
@@ -40,6 +44,6 @@ foreach($trace as $stack) {
 </ol>
 <?php
 
-require_once(PATH . INCLUDES . 'admin/admin_footer.php');
+require_once(PATH . INCLUDES . '/admin_footer.php');
 
 ?>

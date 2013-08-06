@@ -145,7 +145,7 @@ if (!empty($image['image_title'])) {
 } else {
 	define('TITLE', 'FSIP Image');
 }
-require_once(PATH . INCLUDES . 'admin/admin_header.php');
+require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>
 
@@ -330,6 +330,6 @@ if (empty($image['image_title'])) {
 
 <?php
 
-require_once(PATH . INCLUDES . 'admin/admin_footer.php');
+require_once(PATH . INCLUDES . '/admin_footer.php');
 
 ?>

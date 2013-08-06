@@ -175,7 +175,7 @@ $images->hook();
 
 define('TAB', 'features');
 define('TITLE', 'FSIP Features');
-require_once(PATH . INCLUDES . 'admin/admin_header.php');
+require_once(PATH . INCLUDES . '/admin_header.php');
 ?>
 
 <div class="span-24 last">
@@ -279,6 +279,6 @@ require_once(PATH . INCLUDES . 'admin/admin_header.php');
 
 <?php
 
-require_once(PATH . INCLUDES . 'admin/admin_footer.php');
+require_once(PATH . INCLUDES . '/admin_footer.php');
 
 ?>

@@ -16,7 +16,7 @@ $include_count = count($includes);
 
 define('TAB', 'settings');
 define('TITLE', 'Theme Includes');
-require_once(PATH . INCLUDES . 'admin/admin_header.php');
+require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>
 
@@ -40,5 +40,5 @@ require_once(PATH . INCLUDES . 'admin/admin_header.php');
 </table>
 
 <?php
-require_once(PATH . INCLUDES . 'admin/admin_footer.php');
+require_once(PATH . INCLUDES . '/admin_footer.php');
 ?>

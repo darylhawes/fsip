@@ -261,7 +261,7 @@ if(empty($extension_id)){
 	$extensions_count = @count($extensions);
 	
 	define('TITLE', 'FSIP Extensions');
-	require_once(PATH . INCLUDES . 'admin/admin_header.php');
+	require_once(PATH . INCLUDES . '/admin_header.php');
 
 	?>
 
@@ -320,7 +320,7 @@ if(empty($extension_id)){
 	
 	<?php
 
-	require_once(PATH . INCLUDES . 'admin/admin_footer.php');
+	require_once(PATH . INCLUDES . '/admin_footer.php');
 	
 }
 else{
@@ -333,7 +333,7 @@ else{
 		$orbit->hook('config_load');
 	
 		define('TITLE', 'Extension: &#8220;' . $extension['extension_title']  . '&#8221;');
-		require_once(PATH . INCLUDES . 'admin/admin_header.php');
+		require_once(PATH . INCLUDES . '/admin_header.php');
 	
 		?>
 	
@@ -362,11 +362,11 @@ else{
 	
 		<?php
 	
-		require_once(PATH . INCLUDES . 'admin/admin_footer.php');
+		require_once(PATH . INCLUDES . '/admin_footer.php');
 	}
 	else{
 		define('TITLE', 'Extension: &#8220;' . $extension['extension_title']  . '&#8221;');
-		require_once(PATH . INCLUDES . 'admin/admin_header.php');
+		require_once(PATH . INCLUDES . '/admin_header.php');
 		
 		?>
 		
@@ -391,7 +391,7 @@ else{
 		
 		<?php
 	
-		require_once(PATH . INCLUDES . 'admin/admin_footer.php');
+		require_once(PATH . INCLUDES . '/admin_footer.php');
 	}
 	
 }

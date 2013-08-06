@@ -151,7 +151,7 @@ if (!empty($_POST['comment_id'])) {
 		if (!empty($_POST['comm_markup'])) {
 			$comment_markup_ext = $_POST['comm_markup'];
 			$comment_text = $orbit->hook('markup_' . $comment_markup_ext, $comment_text_raw, $comment_text);
-		} elseif(returnConf('comm_markup')) {
+		} elseif (returnConf ('comm_markup')) {
 			$comment_markup_ext = returnConf('comm_markup_ext');
 			$comment_text = $orbit->hook('markup_' . $comment_markup_ext, $comment_text_raw, $comment_text);
 		} else {
@@ -232,7 +232,7 @@ if (empty($comment_id)) {
 	$images->getSizes('square');
 	
 	define('TITLE', 'FSIP Comments');
-	require_once(PATH . INCLUDES . 'admin/admin_header.php');
+	require_once(PATH . INCLUDES . '/admin_header.php');
 
 	?>
 	
@@ -383,14 +383,14 @@ if (empty($comment_id)) {
 <?php
 	}
 	
-	require_once(PATH . INCLUDES . 'admin/admin_footer.php');
+	require_once(PATH . INCLUDES . '/admin_footer.php');
 	
 } else {
 	$comment = $db->getRow('comments', $comment_id);
 	$comment = makeHTMLSafe($comment);
 	
 	define('TITLE', 'FSIP Comment');
-	require_once(PATH . INCLUDES . 'admin/admin_header.php');
+	require_once(PATH . INCLUDES . '/admin_header.php');
 	
 	$email_action = '';
 	
@@ -512,7 +512,7 @@ if (empty($comment_id)) {
 
 <?php
 	
-	require_once(PATH . INCLUDES . 'admin/admin_footer.php');
+	require_once(PATH . INCLUDES . '/admin_footer.php');
 	
 }
 
