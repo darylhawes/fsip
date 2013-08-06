@@ -1,16 +1,18 @@
+Admin - create an Alkaline export tool and an import-from-alkaline fsip tool.
+Admin - create an upgrade tool for database upgrades.
+
 ADMIN - MAINTENANCE
-Add an admin task/php file to view the db/log.txt database transaction log
-
+Add an admin task.php file to view the db/log.txt database transaction log
 _______
-
 
 // DEH TODO: in dashboard.php census instead of reporting only image #: 
 	report publisher images # vs. total images in dbase, maybe also display #deleted images!
 ________
 USER
 Allow user to change their password and set preferences in user's own profile page.
+Add more personal user profile fields to user record and in user preferences/settings area. 
+Tumblr link, youtube links.
 //create user_twitter, user_fb, user_flickr personal details options?
-Add more personal user profile fields to user record and in user preferences/settings area. Tumblr link, youtube links.
 ________
 USER/THEME
 Ensure that the user who uploaded the file and their profile settings are shown for every image displayed.
@@ -18,7 +20,10 @@ Ensure that the user who uploaded the file and their profile settings are shown 
 _________
 USER
 If the user is logged in and viewing the normal user template image page 
-	add a link to edit the image itself in user's dashboard (if they are an admin or it is their image)
+	add a link to edit the image itself 
+		(meta data, etc. Should be able to lock this info down as admin and require the user to make a request to edit it.)
+	in user's dashboard 
+		only if they are an admin or it is their image
 _______
 USER
 Shoebox subfolders needed once $user new roles and methods added.
@@ -29,25 +34,24 @@ Shoebox subfolders needed once $user new roles and methods added.
 	Images	 Enable hierarchical directory mode using   format 
 	Recommended for efficiently storing large image libraries, reorganize your image library after changing this setting
 	-- check into this. surely we can insert the userid parent folder in here.
+
+________
+
+Link in header to "my images" should not go to 
+	admin/search (result) but user/search (result) instead.
+________
+
+When looking at your own images allow different views. 
+	Thumbnails, or list view with metadata on the side. 
+	Also allow users to reorder images at their leisure to manually sort their order.
+
 _______
 THEME
-Theme: Look for front page options. Just showing the large version of the latest upload is not good enough. 
+Look for front page options by adding a new theme or two with different front page appearances. 
+Just showing the large version of the latest upload is not good enough. 
 	It should appear more professional like our favourite stock sites appear.
 
 ________
-INSTALL
-Theme and install process:
-	In install/index.php there is a manual load of a default theme ~line 234. 
-	Why not install all present themes at load time and then manually set the choice of default only? 
-	It seems that going on admin/themes does the check for extra themes and install. 
-
-//		$query = $db->prepare('INSERT INTO ' . $_POST['install_db_prefix'] . 'themes (theme_uid, theme_title, theme_build, theme_version, theme_folder, theme_creator_name, theme_creator_uri) VALUES (?, ?, ?, ?, ?, ?, ?);');
-//		$query->execute(array('225b134b655901223d2f2ee26599b71763b1e5fe', 'P1', 1, '1.0', 'p1', 'Wilkes & Barre', 'http://www.wilkesandbarre.com/'));
-		$query = $db->prepare('INSERT INTO ' . $_POST['install_db_prefix'] . 'themes (theme_uid, theme_title, theme_build, theme_version, theme_folder, theme_creator_name, theme_creator_uri) VALUES (?, ?, ?, ?, ?, ?, ?);');
-		$query->execute(array('FSIP_DEFAULT', 'fsipDefault', 1, '0.1', 'fsipDefault', 'Daryl Hawes', 'http://fsip.sdelargy.com/'));
-
-Shouldn't this be a regular check and notify the user that there are new themes ready to install, etc?
-_______
 
 THEME / TEMPLATE - fsipDefault
 - add ability for users to send in suggestions for tags on images
@@ -70,6 +74,19 @@ _______
 add next image / previous image buttons in admin/image.php
 add next image / previous image buttons to the image preview in /image.php.
 ________
+INSTALL
+Theme and install process:
+	In install/index.php there is a manual load of a default theme ~line 234. 
+	Why not install all present themes at load time and then manually set the choice of default only? 
+	It seems that going on admin/themes does the check for extra themes and install. 
+
+//		$query = $db->prepare('INSERT INTO ' . $_POST['install_db_prefix'] . 'themes (theme_uid, theme_title, theme_build, theme_version, theme_folder, theme_creator_name, theme_creator_uri) VALUES (?, ?, ?, ?, ?, ?, ?);');
+//		$query->execute(array('225b134b655901223d2f2ee26599b71763b1e5fe', 'P1', 1, '1.0', 'p1', 'Wilkes & Barre', 'http://www.wilkesandbarre.com/'));
+		$query = $db->prepare('INSERT INTO ' . $_POST['install_db_prefix'] . 'themes (theme_uid, theme_title, theme_build, theme_version, theme_folder, theme_creator_name, theme_creator_uri) VALUES (?, ?, ?, ?, ?, ?, ?);');
+		$query->execute(array('FSIP_DEFAULT', 'fsipDefault', 1, '0.1', 'fsipDefault', 'Daryl Hawes', 'http://fsip.sdelargy.com/'));
+
+Shouldn't this be a regular check and notify the user that there are new themes ready to install, etc?
+_______
 
 Add some default rights into system. The basic system default should be royalty free rights, free purchase.
 Create "editorial" rights set. Add "no rights reserved" and "editorial" as rights to include by default with project initial download.
@@ -134,8 +151,8 @@ Analytics plugin edit needed: Do not display analytics code if the logged in use
 	Add option for this feature in setup area (create new plugin settings page in admin area).
 ________
 
-Adapt vanilla plugin user registration plugins for social network logins! 
-(Cannot use vanilla forums code directly, it is GPLv3 licensed) (wordpress is GPL v2!)
+Create new plugin user registration plugins for social network logins! 
+	(various exist, be careful of licensing, look for BSD/MIT style licensing of these plugins)
 
 Create user registration page. "login or register."
 
@@ -147,15 +164,6 @@ _________
 add a reviewer comments field to image editing options.
 ________
 Will need a project logo and mini icon for URL bar.
-________
-
-Link in header to "my images" should not go to 
-	admin/search (result) but user/search (result) instead.
-________
-
-When looking at your own images allow different views. 
-	Thumbnails, or list view with metadata on the side. 
-	Also allow users to reorder images at their leisure to manually sort their order.
 
 ________
 Filters for Royalty Free. Add sort/search/filter by rights option?
@@ -171,10 +179,7 @@ What about the ability to publish an approved image with reviewers comments and 
 
 ________
 
-USER
-What is the whole existing "guest" account about? 
-	-- It allows access to "protected" images or sets with a "key." 
-	TODO: This should be CHANGED to work similar to youtube protected access - 
+Add feature for "unlisted" images to work similar to youtube protected access - 
 		if you know the URL then you have access.
 _____
 
