@@ -28,7 +28,7 @@ $images->getSizes('square');
 
 define('TAB', 'library');
 define('TITLE', 'FSIP Search Results');
-require_once(PATH . INCLUDES . 'admin/admin_header.php');
+require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>
 
@@ -91,6 +91,6 @@ if ($image_ids->count_result > 0) {
 	}
 }
 
-require_once(PATH . INCLUDES . 'admin/admin_header.php');
+require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>

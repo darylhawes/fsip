@@ -88,7 +88,7 @@ if (empty($size_id)) {
 	$size_count = @count($sizes);
 	
 	define('TITLE', 'FSIP Thumbnails');
-	require_once(PATH . INCLUDES . 'admin/admin_header.php');
+	require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>
 	
@@ -125,7 +125,7 @@ if (empty($size_id)) {
 
 <?php
 	
-	require_once(PATH . INCLUDES . 'admin/admin_footer.php');
+	require_once(PATH . INCLUDES . '/admin_footer.php');
 	
 } else {
 	// Get sizes set
@@ -140,7 +140,7 @@ if (empty($size_id)) {
 	if (!empty($size['size_title'])) {
 		define('TITLE', 'Thumbnail: &#8220;' . ucwords($size['size_title'])  . '&#8221;');
 	}
-	require_once(PATH . INCLUDES . 'admin/admin_header.php');
+	require_once(PATH . INCLUDES . '/admin_header.php');
 	
 	if (empty($size['size_title'])) {
 		echo '<h1><img src="' . BASE . IMGFOLDER . 'icons/thumbnails.png" alt="" /> New Thumbnail</h1>';
@@ -226,7 +226,7 @@ if (empty($size_id)) {
 
 <?php
 	
-	require_once(PATH . INCLUDES . 'admin/admin_footer.php');
+	require_once(PATH . INCLUDES . '/admin_footer.php');
 	
 }
 

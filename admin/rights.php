@@ -99,7 +99,7 @@ if (empty($right_id)) {
 	$rights = new Right($right_ids);
 	
 	define('TITLE', 'FSIP Rights Sets');
-	require_once(PATH . INCLUDES . 'admin/admin_header.php');
+	require_once(PATH . INCLUDES . '/admin_header.php');
 	
 	?>
 	
@@ -136,7 +136,7 @@ if (empty($right_id)) {
 
 <?php
 	
-	require_once(PATH . INCLUDES . 'admin/admin_footer.php');
+	require_once(PATH . INCLUDES . '/admin_footer.php');
 	
 } else {
 	// Update image count on rights set
@@ -154,7 +154,7 @@ if (empty($right_id)) {
 	if (!empty($right['right_title'])) {
 		define('TITLE', 'Rights Set: &#8220;' . $right['right_title']  . '&#8221;');
 	}
-	require_once(PATH . INCLUDES . 'admin/admin_header.php');
+	require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>
 	
@@ -213,7 +213,7 @@ if (empty($right_id)) {
 
 <?php
 	
-	require_once(PATH . INCLUDES . 'admin/admin_footer.php');
+	require_once(PATH . INCLUDES . '/admin_footer.php');
 	
 }
 

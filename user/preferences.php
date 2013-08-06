@@ -34,7 +34,7 @@ if(!empty($_POST['preferences_save'])){
 
 define('TAB', 'dashboard');
 define('TITLE', 'Preferences');
-require_once(PATH . INCLUDES . 'admin/admin_header.php');
+require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>
 
@@ -127,6 +127,6 @@ require_once(PATH . INCLUDES . 'admin/admin_header.php');
 
 <?php
 
-require_once(PATH . INCLUDES . 'admin/admin_footer.php');
+require_once(PATH . INCLUDES . '/admin_footer.php');
 
 ?>

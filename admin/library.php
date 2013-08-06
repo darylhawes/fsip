@@ -57,7 +57,7 @@ if ($shoebox_count > 0) {
 
 define('TAB', 'library');
 define('TITLE', 'FSIP Library');
-require_once(PATH . INCLUDES . 'admin/admin_header.php');
+require_once(PATH . INCLUDES . '/admin_header.php');
 //echo "library 17<br />";
 
 ?>
@@ -278,6 +278,6 @@ require_once(PATH . INCLUDES . 'admin/admin_header.php');
 
 <?php
 
-require_once(PATH . INCLUDES . 'admin/admin_footer.php');
+require_once(PATH . INCLUDES . '/admin_footer.php');
 
 ?>

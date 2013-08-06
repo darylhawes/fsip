@@ -59,7 +59,7 @@ $orbit->hook('shoebox');
 
 define('TAB', 'upload');
 define('TITLE', 'FSIP Upload');
-require_once(PATH . INCLUDES . 'admin/admin_header.php');
+require_once(PATH . INCLUDES . '/admin_header.php');
 //echo "uploads 11<br />";
 
 // cliqcliq Quickpic support
@@ -121,5 +121,5 @@ if(preg_match('#iphone|ipad#si', $_SERVER['HTTP_USER_AGENT']) and !isset($_GET['
 </div>
 
 <?php
-require_once(PATH . INCLUDES . 'admin/admin_footer.php');
+require_once(PATH . INCLUDES . '/admin_footer.php');
 ?>

@@ -157,8 +157,8 @@ foreach($stats->referrers_popular as &$referrer) {
 define('TAB', 'dashboard');
 //echo "statistics 18<br />";
 define('TITLE', 'FSIP Statistics');
-//echo "statistics 19. now including".PATH . INCLUDES . 'admin/admin_header.php'."<br />";
-include_once(PATH . INCLUDES . 'admin/admin_header.php');
+//echo "statistics 19. now including".PATH . INCLUDES . '/admin_header.php'."<br />";
+include_once(PATH . INCLUDES . '/admin_header.php');
 //echo "statistics 20<br />";
 
 ?>
@@ -272,6 +272,6 @@ include_once(PATH . INCLUDES . 'admin/admin_header.php');
 
 <?php
 
-require_once(PATH . INCLUDES . 'admin/admin_footer.php');
+require_once(PATH . INCLUDES . '/admin_footer.php');
 
 ?>

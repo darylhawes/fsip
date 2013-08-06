@@ -65,7 +65,7 @@ define('TAB', 'features');
 // GET TAG CLOUD TO VIEW OR TAG TO EDIT
 if (empty($tag_id)) {
 	define('TITLE', 'FSIP Tags');
-	require_once(PATH . INCLUDES . 'admin/admin_header.php');
+	require_once(PATH . INCLUDES . '/admin_header.php');
 //echo "tags 6<br />";
 
 ?>
@@ -89,7 +89,7 @@ if (empty($tag_id)) {
 	</p>
 
 <?php
-	require_once(PATH . INCLUDES . 'admin/admin_footer.php');
+	require_once(PATH . INCLUDES . '/admin_footer.php');
 } else {
 	// Update image count on rights set
 	$image_ids = new Find('images');
@@ -103,7 +103,7 @@ if (empty($tag_id)) {
 	if (!empty($tag['tag_name'])) {
 		define('TITLE', 'Tag: &#8220;' . $tag['tag_name']  . '&#8221;');
 	}
-	require_once(PATH . INCLUDES . 'admin/admin_header.php');
+	require_once(PATH . INCLUDES . '/admin_header.php');
 	
 ?>
 	
@@ -155,6 +155,6 @@ if (empty($tag_id)) {
 	</form>
 	
 <?php
-	require_once(PATH . INCLUDES . 'admin/admin_footer.php');	
+	require_once(PATH . INCLUDES . '/admin_footer.php');	
 }
 ?>

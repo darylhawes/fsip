@@ -108,15 +108,15 @@ if ($user_db_act == 'none') {
 	
 	define('TITLE', 'FSIP Users');
 
-//echo "users 11.3<br />Requiring:".PATH . INCLUDES . 'admin/admin_header.php';
-	require_once(PATH . INCLUDES . 'admin/admin_header.php');
+//echo "users 11.3<br />Requiring:".PATH . INCLUDES . '/admin_header.php';
+	require_once(PATH . INCLUDES . '/admin_header.php');
 //echo "users 11.4<br />";
 	
 	// Include table of users from html include file.
-	require_once(PATH . INCLUDES . "admin/users/view_inc.html");
+	require_once(PATH . INCLUDES . "/users_view_inc.html");
 
 //echo "users 11.5, about to include footer<br />";
-	require_once(PATH . INCLUDES . 'admin/admin_footer.php');
+	require_once(PATH . INCLUDES . '/admin_footer.php');
 //echo "users 11.6 after footer include<br />";
 
 } else if ($user_db_act == 'view_user' || $user_db_act == 'add') {
@@ -152,7 +152,7 @@ if ($user_db_act == 'none') {
 		define('TITLE', 'Add User');
 	}
 
-	require_once(PATH . INCLUDES . 'admin/admin_header.php');
+	require_once(PATH . INCLUDES . '/admin_header.php');
 
 	if ($user_db_act == 'view_user') {
 ?>	
@@ -166,10 +166,10 @@ if ($user_db_act == 'none') {
 		echo '<h1><img src="' . BASE . IMGFOLDER . 'icons/users.png" alt="" /> New User</h1>';
 	}		
 	
-	require_once(PATH . INCLUDES . "admin/users/edit_or_add_inc.html");
+	require_once(PATH . INCLUDES . "/users_edit_or_add_inc.html");
 	
 //echo "users , about to include footer<br />";
-	require_once(PATH . INCLUDES . 'admin/admin_footer.php');
+	require_once(PATH . INCLUDES . '/admin_footer.php');
 
 } else if ($user_db_act == 'save') {
 //echo "IN ACT = SAVE 1 <br />";
@@ -227,13 +227,13 @@ if ($user_db_act == 'none') {
 
 	define('TITLE', 'FSIP Added new user: '. $_POST['user_username']);
 
-	require_once(PATH . INCLUDES . 'admin/admin_header.php');
+	require_once(PATH . INCLUDES . '/admin_header.php');
 	
 	// Include table of users from html include file.
-	require_once(PATH . INCLUDES . "admin/users/view_inc.html");
+	require_once(PATH . INCLUDES . "/users_view_inc.html");
 //echo "users in act = save, about to include footer<br />";
 	
-	require_once(PATH . INCLUDES . 'admin/admin_footer.php');
+	require_once(PATH . INCLUDES . '/admin_footer.php');
 }
 
 ?>

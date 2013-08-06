@@ -87,7 +87,7 @@ if ($i_count == 0) {
 
 define('TAB', 'shoebox');
 define('TITLE', 'FSIP Shoebox');
-require_once(PATH . INCLUDES . 'admin/admin_header.php');
+require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>
 
@@ -120,6 +120,6 @@ require_once(PATH . INCLUDES . 'admin/admin_header.php');
 	
 <?php
 
-require_once(PATH . INCLUDES . 'admin/admin_footer.php');
+require_once(PATH . INCLUDES . '/admin_footer.php');
 
 ?>

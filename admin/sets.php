@@ -135,7 +135,7 @@ if (empty($set_id)) {
 	$sets = new Set($set_ids);
 	
 	define('TITLE', 'FSIP Sets');
-	require_once(PATH . INCLUDES . 'admin/admin_header.php');
+	require_once(PATH . INCLUDES . '/admin_header.php');
 	
 ?>
 	
@@ -177,7 +177,7 @@ if (empty($set_id)) {
 
 <?php
 	
-	require_once(PATH . INCLUDES . 'admin/admin_footer.php');
+	require_once(PATH . INCLUDES . '/admin_footer.php');
 	
 } else {
 	// Get set
@@ -196,7 +196,7 @@ if (empty($set_id)) {
 	} else {
 		define('TITLE', 'Set');
 	}
-	require_once(PATH . INCLUDES . 'admin/admin_header.php');
+	require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>
 	
@@ -437,7 +437,7 @@ if (empty($set_id)) {
 
 <?php
 	
-	require_once(PATH . INCLUDES . 'admin/admin_footer.php');
+	require_once(PATH . INCLUDES . '/admin_footer.php');
 	
 }
 
