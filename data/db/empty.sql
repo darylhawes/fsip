@@ -14,3 +14,4 @@ DROP TABLE stats;
 DROP TABLE tags;
 DROP TABLE themes;
 DROP TABLE users;
+DROP TABLE config;

@@ -16,4 +16,4 @@ CREATE TABLE "tags" ("tag_id" SERIAL PRIMARY KEY, "tag_name" TEXT, "tag_parents"
 CREATE TABLE "themes" ("theme_id" SERIAL PRIMARY KEY, "theme_uid" TEXT, "theme_title" TEXT, "theme_build" INTEGER, "theme_build_latest" INTEGER, "theme_version" TEXT, "theme_version_latest" TEXT, "theme_folder" TEXT, "theme_creator_name" TEXT, "theme_creator_uri" TEXT);
 CREATE TABLE "users" ("user_id" SERIAL PRIMARY KEY, "user_username" TEXT, "user_pass" TEXT, "user_pass_salt" TEXT, "user_key" TEXT, "user_realname" TEXT, "user_email" TEXT, "user_last_login" TIMESTAMP, "user_created" TIMESTAMP, "user_permissions" TEXT, "user_preferences" TEXT, "user_image_count" INTEGER, "user_uri" TEXT, "user_comment_count" INTEGER);
 CREATE TABLE "versions" ("version_id" SERIAL PRIMARY KEY, "page_id" INTEGER, "user_id" INTEGER, "version_title" TEXT, "version_text_raw" TEXT, "version_created" TIMESTAMP, "version_similarity" INTEGER);
-CREATE TABLE "config" ("json" TEXT);
+CREATE TABLE "config" ("id" SERIAL PRIMARY KEY, "json" TEXT);
