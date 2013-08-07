@@ -1,0 +1,9 @@
+about this folder
+
+- cities.json
+- countries.json
+- empty.sql
+- log.txt
+- mysql.sql
+- pgsql.sql
+- sqlite.sql
