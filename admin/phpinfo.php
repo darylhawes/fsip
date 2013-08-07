@@ -11,10 +11,10 @@ require_once('../config.php');
 $user = new User;
 $user->hasPermission('admin', true);
 
-require_once(PATH . INCLUDES . 'admin/admin_header.php');
+require_once(PATH . INCLUDES . '/admin_header.php');
 
 phpinfo();
 
-require_once(PATH . INCLUDES . 'admin/admin_footer.php');
+require_once(PATH . INCLUDES . '/admin_footer.php');
 
 ?>
