@@ -1,7 +1,7 @@
 <?php
 
-define('FSIP_VERSION', '1.2');
-define('FSIP_BUILD', '1300');
+define('FSIP_VERSION', '1.2'); // human readable version number
+define('FSIP_BUILD', '2013080400'); // YYYYMMDDXX, used by update system when applying database updates
 define('COPYRIGHT', '');
 define('POWERED_BY', 'Powered by <a href="http://github.com/darylhawes/fsip">FSIP</a> based on <a href="http://www.alkalineapp.com/">Alkaline</a> under MIT license.');
 
@@ -9,7 +9,8 @@ if (function_exists('__autoload')) {
 	return;
 } else {
 	function __autoload($class) {
-		$file = strtolower($class) . '.php';
+		$file = strtolower($class) . '.php';		
+//		print "loading class: ".PATH . CLASSES . $file;
 		if (file_exists(PATH . CLASSES . $file)) {
 			require_once(PATH . CLASSES . $file);
 		}
@@ -59,10 +60,13 @@ if (!empty($_SERVER['HTTP_REFERER']) and ($_SERVER['HTTP_REFERER'] != LOCATION .
 }*/
 
 // Set a few globals
+global $debugger;
 $debugger = new Debugger;
+
+global $db;
 $db = new DB();
 
-// DEBUG INFO
+//////////////// DEBUG INFO
 
 // Set error handlers
 set_error_handler(array($debugger, 'addError'), E_ALL);
@@ -78,17 +82,82 @@ if (!headers_sent()) {
 	header('Expires: Sat, 26 Jul 1997 05:00:00 GMT', false);
 }
 
+
+////////////////  SYSTEM DEFAULTS
+global $config_defaults;
+$config_defaults = array(
+	'theme_id'=>'1',
+	'theme_folder'=>'fsipDefault',
+	'web_name'=>'',
+	'web_title'=>'(Untitled Site)',
+	'web_title_format'=>'emdash2',
+	'web_description'=>'',
+	'web_email'=>'',
+	'web_timezone'=>'America/New_York',
+	'shoe_exif'=>true,
+	'shoe_iptc'=>true,
+	'shoe_geo'=>null,
+	'image_markup'=>null,
+	'image_markup_ext'=>'',
+	'thumb_imagick'=>null,
+	'thumb_compress'=>null,
+	'thumb_compress_tol'=>100,
+	'thumb_watermark'=>null,
+	'thumb_watermark_pos'=>'nw',
+	'thumb_watermark_margin'=>'',
+	'image_original'=>null,
+	'tag_alpha'=>null,
+	'comm_enabled'=>null,
+	'comm_email'=>null,
+	'comm_mod'=>null,
+	'comm_markup'=>null,
+	'comm_markup_ext'=>'bbcode',
+	'rights_default'=>null,
+	'rights_default_id'=>'',
+	'stat_enabled'=>true,
+	'stat_ignore_user'=>null,
+	'canvas_remove_unused'=>null,
+	'maint_reports'=>null,
+	'maint_debug'=>true,
+	'maint_disable'=>null,
+	'page_size_id'=>'1',
+	'page_size_label'=>'admin',
+	'shoe_max'=>null,
+	'shoe_max_count'=>'',
+	'image_hdm'=>null,
+	'image_hdm_format'=>'yyyy\/mm\/dd',
+	'web_markup'=>null,
+	'web_markup_ext'=>'',
+	'bulk_delete'=>null,
+	'thumb_metadata'=>null,
+	'page_div_wrap'=>null,
+	'page_div_wrap_class'=>'',
+	'comm_allow_html'=>null,
+	'comm_allow_html_tags'=>'',
+	'guest_remember'=>null,
+	'guest_remember_time'=>'86400',
+	'syndication_cache_time'=>'15',
+	'syndication_summary_only'=>null,
+	'sphinx_enabled'=>null,
+	'sphinx_server'=>'',
+	'sphinx_port'=>'',
+	'sphinx_index'=>'',
+	'sphinx_max_exec'=>'',
+	'maint_debug_admin_only'=>true
+);
+
 $_SESSION['fsip']['debug']['start_time'] = microtime(true);
 $_SESSION['fsip']['debug']['queries'] = 0;
 
-loadConf();
-
-if (empty($_SESSION['fsip']['config'])) {
-	$_SESSION['fsip']['config'] = array();
+if (!isset($installing) || $installing === false) {
+	// Load up the JSON config string from the database
+	// unless we're installing at the moment
+	loadConf(); 
 }
 
+
 if ($timezone = returnConf('web_timezone')) {
-	date_default_timezone_set($timezone);
+	date_default_timezone_set(reverseHTMLSafe($timezone));
 } else {
 	date_default_timezone_set('GMT');
 }
@@ -933,17 +1002,19 @@ function readForm($array=null, $name, $check=true) {
 /**
  * Return form option
  *
- * @param string $array 
+ * @param array $array An associative array to parse.
  * @param string $name 
  * @param string $default 
  * @return string
  */
-function returnForm($array, $name, $default=null){
-	if(!isset($array[$name])){
-		if(isset($default)){
+function returnForm($array, $name, $default=null) {
+//print "INCOMING ARRAY TO returnForm FUNCTION:<br />";
+//print_r($array);
+//print "<br />";
+	if (!isset($array[$name])) {
+		if (isset($default)) {
 			return $default;
-		}
-		else{
+		} else {
 			return false;
 		}
 	}
@@ -961,6 +1032,7 @@ function returnForm($array, $name, $default=null){
  * @return void
  */
 function setConf($name, $unset='') {
+//print "SETTING CONF $name";
 	return setForm($_SESSION['fsip']['config'], $name, $unset);
 }
 
@@ -981,8 +1053,26 @@ function readConf($name, $check=true) {
  * @param string $name 
  * @return string
  */
-function returnConf($name) {
-	return makeHTMLSafe(returnForm($_SESSION['fsip']['config'], $name));
+function returnConf($name, $default=null) {
+global $config_defaults;
+//print_r($config_defaults);
+//print "<br />";
+//print "asked to return a configuration setting for $name<br />";
+	if ( $default == null && isset($config_defaults[$name]) ) {
+//		print "DEFAULT IS NULL!<br />";
+		$default = $config_defaults[$name];
+//		print "set default to: ". $default."<br />";
+	}
+	$result = makeHTMLSafe(returnForm($_SESSION['fsip']['config'], $name, $default));
+//print "configuration setting for $name is being returned as $result<br />";
+	// Hack to clean up escaped characters returned from the json_decode
+	$result = str_replace("\\/", '/', $result); // remove \ escape characters added inside strings by jsonencode which for some reason are not being removed in decode process
+
+//print "after str_replace performed: $result<br />";
+//print_r($_SESSION['fsip']);
+//print_r($_SESSION['fsip']['config']);
+//print "<br />";
+	return $result;
 }
 
 /**
@@ -990,10 +1080,19 @@ function returnConf($name) {
  *
  * @return ?
  */
-function saveConf() {
+function saveConf($installing=false) {
 	global $db;
+//print "Trying to save this config:<br />";
+//print_r($_SESSION['fsip']['config']);
 	$json_config_string = json_encode(reverseHTMLSafe($_SESSION['fsip']['config']));
-	return $db->exec('UPDATE config SET json = ' . $json_config_string);
+//print "<br />Config string to save: $json_config_string";
+	if ($installing) {
+print "<br /><br />SQL: ".'INSERT config  (`json`) VALUES (\'' . $json_config_string .'\')';
+		return $db->exec('INSERT config  (`json`) VALUES (\'' . $json_config_string .'\')' );
+	} else {
+//print "<br /><br />SQL: ".'UPDATE config SET `json` = [\'' . $json_config_string. '\'] where id=1';
+		return $db->exec('UPDATE config SET `json` = \'' . $json_config_string. '\' where id=1');
+	}
 }
 
 /**
@@ -1002,12 +1101,22 @@ function saveConf() {
  * @return null
  */
 function loadConf() {
-	$query = $db->prepare('SELECT json FROM config');
+	global $db;
+
+	$query = $db->prepare('SELECT `json` FROM config where `id` = 1');
 	$query->execute();
 	$json_config_strings = $query->fetchAll();
-	$json_config_string = @$json_config_strings[0];
 
-	$_SESSION['fsip']['config'] = json_decode($json_config_string, true);
+	if	($query->rowCount() >= 1) {
+		$json_config = @$json_config_strings[0]; //extract first record
+		$json_config_string = @$json_config[0]; // extract string entry from first record
+		$json_config_string = str_replace("\\/", '/', $json_config_string); // remove \ escape characters added inside strings by jsonencode which for some reason are not being removed in decode process
+		$_SESSION['fsip']['config'] = json_decode($json_config_string, true);
+	} else {
+		// We were unable to load a config string from the database for some reason
+		// Create an empty array - defaults will be used instead for this session.
+		$_SESSION['fsip']['config'] = array();
+	}
 }
 
 
@@ -1948,6 +2057,7 @@ function returnNotes($type = null) {
 	
 	return $return;
 }
+
 ////////////////  SHOW HTML OF CORE APPLICATION DATA
 
 
