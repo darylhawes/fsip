@@ -6,7 +6,16 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('config.php');
+if (file_exists('config.php')) {
+	require_once('config.php');
+} else {
+	header('Location: admin/install.php');
+	echo "<h1>Redirecting</h1>";
+	echo "<p>It appears that you have not installed FSIP yet. ";
+	echo " You are being redirected to the installation page. ";
+	echo " If you're still here after a few seconds please ";
+	echo '<a href="admin/install.php">'."click here</a></p>";
+}
 
 //echo "in index 1<br />";
 
@@ -42,7 +51,9 @@ $image_ids->sort('image_published', 'DESC');
 $image_ids->find();
 
 if ($image_ids->count == 0) {
-	addNote('No images have been found in our database matching your query. Perhaps you would like to <a href="'.PATH.ADMIN.'upload'.URL_CAP.'">upload</a>? Or maybe you have some images waiting to <a href="'.PATH.ADMIN.'library'.URL_CAP.'">publish</a>?');
+	addNote('No images have been found in our database matching your query. Perhaps you would like to <a href="' . 
+			PATH . ADMINFOLDER . 'upload' . URL_CAP . '">upload</a>? Or maybe you have some images waiting to <a href="' . 
+			PATH . ADMINFOLDER . 'library' . URL_CAP . '">publish</a>?');
 }
 //echo "in index 5<br />";
 
