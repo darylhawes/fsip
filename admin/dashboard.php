@@ -50,7 +50,7 @@ define('TAB', 'dashboard');
 define('TITLE', 'FSIP Dashboard');
 //echo "dashboard 15<br />";
 
-require_once(PATH . INCLUDES . 'admin/admin_header.php');
+require_once(PATH . INCLUDES . '/admin_header.php');
 //echo "dashboard 16<br />";
 
 ?>
@@ -220,7 +220,7 @@ require_once(PATH . INCLUDES . 'admin/admin_header.php');
 
 <?php
 
-require_once(PATH . INCLUDES . 'admin/admin_footer.php');
+require_once(PATH . INCLUDES . '/admin_footer.php');
 
 // Delete old cache
 Files::emptyDirectory(PATH . CACHE, false, 3600);
