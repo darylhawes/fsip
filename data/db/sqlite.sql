@@ -16,4 +16,4 @@ CREATE TABLE `tags` (`tag_id` INTEGER, `tag_name` TEXT, `tag_parents` TEXT, PRIM
 CREATE TABLE `themes` (`theme_id` INTEGER, `theme_uid` TEXT, `theme_title` TEXT, `theme_build` INTEGER, `theme_build_latest` INTEGER, `theme_version` TEXT, `theme_version_latest` TEXT, `theme_folder` TEXT, `theme_creator_name` TEXT, `theme_creator_uri` TEXT, PRIMARY KEY (`theme_id`));
 CREATE TABLE `users` (`user_id` INTEGER, `user_username` TEXT, `user_pass` TEXT, `user_pass_salt` TEXT, `user_key` TEXT, `user_realname` TEXT, `user_email` TEXT, `user_last_login` TEXT, `user_created` TEXT, `user_permissions` TEXT, `user_preferences` TEXT, `user_image_count` INTEGER, `user_uri` TEXT, `user_comment_count` INTEGER, PRIMARY KEY (`user_id`));
 CREATE TABLE `versions` (`version_id` INTEGER, `page_id` INTEGER, `user_id` INTEGER, `version_title` TEXT, `version_text_raw` TEXT, `version_created` TEXT, `version_similarity` INTEGER, PRIMARY KEY (`version_id`));
-CREATE TABLE `config` (`json` TEXT);
+CREATE TABLE `config` (`id` INTEGER, `json` TEXT, PRIMARY KEY(`id`));
