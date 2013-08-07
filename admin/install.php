@@ -6,8 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-
-require_once('../config.php');
+require_once('config_default.php');
 
 $_POST = array_map('strip_tags', $_POST);
 
@@ -26,7 +25,6 @@ if (!isset($_POST['install_name']))      { $_POST['install_name'] = ""; }
 if (!isset($_POST['install_user']))      { $_POST['install_user'] = ""; }
 if (!isset($_POST['install_pass']))      { $_POST['install_pass'] = ""; }
 if (!isset($_POST['install_email']))     { $_POST['install_email'] = ""; }
-
 
 // Diagnostic checks
 //DEH - if dir not exist try to create it and set permissions THEN warn.
@@ -49,18 +47,18 @@ if (Files::checkFilePerm(PATH . 'config.php') == '0777') {
 ///// Configuration setup
 
 if (@$_POST['install'] == 'Install') {
+
 	$type = $_POST['install_db_type'];
 	$name = $_POST['install_db_name'];
 	$username = $_POST['install_db_user'];
 	$password = $_POST['install_db_pass'];
-	
-	if (!$config = file_get_contents(PATH . ADMINFOLDER . 'config_default.php', false)) {
+
+	if (!$config = file_get_contents('config_default.php', false)) {
 		addNote('Cannot find default configuration file.', 'error');
 	}
 
 	$config = Files::replaceVar('$base', $_POST['install_base'], $config);
 	$config = Files::replaceVar('$path', $_POST['install_path'], $config);
-	
 	if ( is_null($_POST['install_server'])) { 
 		$_POST['install_server'] = ""; 
 	}
@@ -94,6 +92,7 @@ if (@$_POST['install'] == 'Install') {
 		$config = Files::replaceVar('$db_type', 'mysql', $config);
 		$config = Files::replaceVar('$db_user', $username, $config);
 		$config = Files::replaceVar('$db_pass', $password, $config);
+
 	} elseif($_POST['install_db_type'] == 'sqlite') {
 		if (!empty($_POST['install_db_file'])) {
 			$path = $_POST['install_db_file'];
@@ -156,10 +155,10 @@ if (@$_POST['install'] == 'Install') {
 	}
 }
 
-
 ///// Database setup
 
 if ((@$_POST['install'] == 'Install') and (countNotes('error') == 0)) {
+
 	global $db; // already defined in config.php, reset and use global db here.
 
 	// First check to see if can connect
@@ -221,7 +220,6 @@ if ((@$_POST['install'] == 'Install') and (countNotes('error') == 0)) {
 		$query->closeCursor();
 		
 		// Add default theme
-		
 //		$query = $db->prepare('INSERT INTO ' . $_POST['install_db_prefix'] . 'themes (theme_uid, theme_title, theme_build, theme_version, theme_folder, theme_creator_name, theme_creator_uri) VALUES (?, ?, ?, ?, ?, ?, ?);');
 //		$query->execute(array('225b134b655901223d2f2ee26599b71763b1e5fe', 'P1', 1, '1.0', 'p1', 'Wilkes & Barre', 'http://www.wilkesandbarre.com/'));
 		$query = $db->prepare('INSERT INTO ' . $_POST['install_db_prefix'] . 'themes (theme_uid, theme_title, theme_build, theme_version, theme_folder, theme_creator_name, theme_creator_uri) VALUES (?, ?, ?, ?, ?, ?, ?);');
@@ -297,7 +295,7 @@ if ((@$_POST['install'] == 'Install') and (countNotes('error') == 0)) {
 define('TAB', 'Installation');
 define('TITLE', 'FSIP Installation');
 
-require_once(PATH . INCLUDES . 'admin/admin_header.php');
+require_once(PATH . INCLUDES . '/admin_header.php');
 if ((@$_POST['install'] == 'Install') and (countNotes('error') == 0)) {
 	
 	?>
