@@ -1,0 +1,125 @@
+<h1>FSIP</h1>
+
+<p>Free Stock Image Project</p>
+
+<p>Drag-and-drop uploading, automatic metadata retrieval, and deceptively simple theming are just the beginning. Based on Alkaline.</p>
+
+<p>Alkaline was developed by <a href="http://www.budinltd.com/">Budin Ltd.</a> as a commercial PHP content management system from February 2011 to August 2012. It has since been discontinued, and is now available as open source software under the MIT license. A license is no longer required to use the application. You can learn more about Alkaline at <a href="http://www.alkalineapp.com/">alkalineapp.com</a>.</p>
+
+<h2>Help Files</h2>
+
+<h3>Site Admin and Using FSIP</h3>
+
+<ul>
+<li><a href="docs/faq.md.html">FAQ</a></li>
+<li><a href="docs/simple-customization.md.html">Simple Customization</a></li>
+<li><a href="docs/installation-and-updates.md.html">Installation and Updates</a></li>
+<li><a href="docs/managing-images.md.html">Managing Images</a></li>
+<li><a href="docs/troubleshooting.md.html">Troubleshooting</a></li>
+<li><a href="docs/uploading-images.md.html">Uploading Images</a></li>
+<li><a href="docs/using-features.md.html">Using Features (Rights, Sets, Tags, Pages, Comments)</a></li>
+<li><a href="docs/backup.md.html">Backup</a></li>
+<li><a href="docs/versions-reverting-recovering.md.html">Versions, Revering and Recovering</a></li>
+</ul>
+
+<h3>Extending</h3>
+
+<ul>
+<li><a href="docs/extensions.md.html">Extensions</a></li>
+<li><a href="docs/themes.md.html">Themes</a></li>
+</ul>
+
+<h3>About / More info</h3>
+
+<ul>
+<li><a href="docs/metadata.md.html">Metadata</a></li>
+<li><a href="docs/howto-enable-url-rewriting.md.html">How to: Enable URL Rewriting</a></li>
+<li><a href="docs/howto-increase-reach.md.html">How to: Inscrease Reach</a></li>
+<li><a href="docs/howto-increase-upload-size-limit.md.html">How to: Increase Upload Size Limit</a></li>
+<li><a href="docs/howto-pagination.md.html">How to: Pagination</a></li>
+<li><a href="docs/howto-reset-admin-password.md.html">How to: Reset Admin Password</a></li>
+<li><a href="docs/howto-sell-photos.md.html">How to: Sell Photos</a></li>
+<li><a href="docs/howto-setup-sphinx-search.md.html">How to: Setup Sphinx Search</a></li>
+</ul>
+
+<h2>Requirements</h2>
+
+<ul>
+<li>PHP 5.2+ with modules: GD, JSON, PDO (with appropriate database driver), SimpleXML</li>
+<li>A MySQL 5.x or PostgreSQL 8.x database, or SQLite 3.x support</li>
+</ul>
+
+<p>Unsure if your site is compatible? Use the <a href="/cs.php/">compatibility suite</a> to check your configuration automatically. The site admin installing FSIP should also have rudimentary knowledge of HTML and previous experience transferring files via FTP. Also, additional RAM may need to be allocated to PHP in order for FSIP to process very large images; your Web hosting provider should be able to do this for you if you&#8217;re unable to do so on your own.</p>
+
+<h2>Installation</h2>
+
+<ol>
+<li><p>Download FSIP <a href="https://github.com/darylhawes/fsip">available for free on GitHub</a>.</p></li>
+<li><p>Unpack the archive (usually by double-clicking on it).</p></li>
+<li>Use an FTP application to move the contents of the folder <code>fsip/</code> from your computer to your Web site.
+
+<ul>
+<li>Set the permissions on the folders: <code>cache/</code>, <code>data/db/</code>, <code>data/images/</code>, and <code>shoebox/</code> to <code>0777</code> 
+(read, write, and execute)</li>
+<li>Delete the <code>update/</code> folder</li>
+<li><em>Recommended:</em> Remove the included themes and extesions by deleting the folders within <code>extensions/</code> and 
+<code>themes/</code> (except <code>themes/p1/</code>)</li>
+</ul></li>
+<li>Once you&#8217;re done uploading the files visit the <code>install/</code> directory of your Web site where you installed 
+FSIP to complete your installation.</li>
+</ol>
+
+<h2>Support</h2>
+
+<p>No support is offered for this open source product. &#8220;Swim at your own risk.&#8221;</p>
+
+<h2>Contributing</h2>
+
+<p>FSIP is undergoing development by Daryl Hawes and you are welcome to contribute bug reports, 
+patches and comments via <a href="https://github.com/darylhawes/fsip">git.com</a></p>
+
+<p>The original &#8220;Alkaline&#8221; project  is no longer undergoing active development. </p>
+
+<h3>Credits</h3>
+
+<h5>Design elements</h5>
+
+<ul>
+<li>&#8220;Moi&#8221; by <a href="http://icondock.com/">IconDock</a>, all rights reserved</li>
+<li>&#8220;Pictos&#8221; by <a href="http://www.drewwilson.com/">Drew Wilson</a>, all rights reserved</li>
+<li>&#8220;Rocky&#8221; by <a href="http://icondock.com/">IconDock</a>, all rights reserved</li>
+<li>&#8220;Dark Metal Grid&#8221; by <a href="http://www.ormanclark.com/">Orman Clark</a>, public domain</li>
+</ul>
+
+<h5>Open source components</h5>
+
+<p>Modifications published by Budin Ltd. to these components, where allowed by their licenses, are copyrighted.</p>
+
+<ul>
+<li><a href="http://code.google.com/p/explorercanvas/">ExplorerCanvas</a>, Apache 2 license</li>
+<li><a href="http://code.google.com/p/flot/">Flot</a>, MIT license</li>
+<li><a href="http://formalize.me/">Formalize</a>, MIT/GPL license</li>
+<li><a href="http://www.geonames.org/">GeoNames</a>, CC-Attribution license</li>
+<li><a href="http://jquery.com/">jQuery</a>, MIT/GPL2 license</li>
+<li><a href="https://code.google.com/p/jquery-ajaxq/">jQuery AjaxQ</a>, MIT license</li>
+<li><a href="http://plugins.jquery.com/project/caret-range">jQuery Caret Range</a>, MIT/GPL license</li>
+<li><a href="http://code.google.com/p/jquery-html5-upload/">jQuery HTML5 Upload</a>, MIT license</li>
+<li><a href="http://code.google.com/p/jquery-json/">jQuery JSON</a>, MIT license</li>
+<li><a href="http://jqueryui.com/">jQuery UI</a>, MIT/GPL2 license</li>
+<li><a href="http://pear.php.net/">PEAR</a>, PHP license</li>
+<li><a href="http://pear.php.net/package/Cache_Lite">PEAR Cache_Lite</a>, LGPL license</li>
+<li><a href="http://pear.php.net/package/Text_Diff">PEAR Text_Diff</a>, LGPL license</li>
+<li><a href="http://phpthumb.gxdlabs.com/">PHPThumb</a>, MIT license</li>
+<li><a href="http://code.drewwilson.com/entry/tiptip-jquery-plugin">TipTip</a>, MIT/GPL license</li>
+</ul>
+
+<h2>License</h2>
+
+<p>The MIT License (MIT)<br />
+Copyright (c) 2010-2012 Budin Ltd.</p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &#8220;Software&#8221;), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED &#8220;AS IS&#8221;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>

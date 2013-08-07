@@ -1,0 +1,23 @@
+<h3>Extensions and the Orbit Engine</h3>
+
+<p>FSIP offers an extension engine that allows Web developers to add new functionality and share their creations with other FSIP users. Even if you don&#8217;t know how to program you can easily add new features by installing extensions.</p>
+
+<h5>Installing Extensions</h5>
+
+<p>You can install most themes by dragging an extension&#8217;s folder to your <code>/extensions/</code> folder, choosing <strong>Configuration > Extensions</strong>, and clicking Install Extensions. Check with the documentation that came with your extension if any further configuration is required; some extensions will not work if left unconfigured.</p>
+
+<h5>Developing An Extension</h5>
+
+<p><em>Warning: Experience with PHP and SQL is required to develop your own extension. You will only be able to create an extension as complex as your mastery of these programming languages.</em></p>
+
+<h6>Naming Rubric</h6>
+
+<p>Type        |   Naming      |   Examples
+&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;|&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-|&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;
+Class                   |   CamelCase       |   <code>Alkaline</code>, <code>AlkalineHelper</code>
+Methods, Functions      |   lowerCamelCase  |   <code>import()</code>, <code>addTags()</code>
+Variables               |   lowercase underscored |     <code>$photo</code>, <code>$photo_height</code></p>
+
+<h6>Hook Reference</h6>
+
+<p>Hooks are specific places in FSIP in which extension code is executed. Additional hooks can be embedded within themes themselves.</p>

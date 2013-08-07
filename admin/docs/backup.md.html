@@ -1,0 +1,42 @@
+<h3>How to Backup FSIP</h3>
+
+<p>You&#8217;ll need access to both your Web and database data to perform a complete backup of FSIP.</p>
+
+<ol>
+<li>Download your Web directory.</li>
+<li>Download your database contents.</li>
+</ol>
+
+<h5>Download your Web directory</h5>
+
+<p>Using an FTP, SFTP, WebDAV or other client, download your entire FSIP installation. For quicker backups, the essential files are 
+<code>config.php</code>, <code>/extensions</code>, <code>/includes</code>, and <code>/themes</code>. 
+Optionally, you may or may not want to backup <code>/images</code> (likely the largest directory) 
+depending on whether you have copies of your images elsewhere.</p>
+
+<div class="note">
+    <strong>Tip</strong>
+    <p>If you have root access, compress your directory into an archive, and then download that archive. 
+    The download will be much faster.</p>
+
+    <p class="nm"><code>tar -c <em>your_directory</em> --exclude "images" > <em>your_archive</em>.tar</code></p>
+</div>
+
+<h5>Download your database contents</h5>
+
+<p>First, determine which database type you&#8217;re using by choosing <strong>Settings</strong>. 
+Then follow the directions below for your database type.</p>
+
+<h6>MySQL</h6>
+
+<p>Go to your Web host&#8217;s control panel and look for an automated method to perform backups. 
+You can also use <a href="http://www.phpmyadmin.net/">phpMyAdmin</a>, which is commonly offered, to download your database.</p>
+
+<h6>PostgreSQL</h6>
+
+<p>Go to your Web host&#8217;s control panel and look for an automated method to perform backups. 
+You can also use <a href="http://pgadmin.org/">pgAdmin</a>, which is commonly offered, to download your database.</p>
+
+<h6>SQLite</h6>
+
+<p>Download the file <code>/db/fsip_??????.db</code>. That&#8217;s it.</p>

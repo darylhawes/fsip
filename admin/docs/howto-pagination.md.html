@@ -1,0 +1,25 @@
+<h3>Change Pagination of Images</h3>
+
+<p>FSIP lets you paginate images however you choose regardless of the theme you&#8217;re using. 
+Let&#8217;s take a look at the <code>page()</code> method of the <code>Find</code> classes, the method works the same for images.</p>
+
+<p>Let&#8217;s open <code>index.php</code>, you should see a line like this:</p>
+
+<pre><code>$image_ids-&gt;page(null, 12, 1);
+</code></pre>
+
+<p>This tells the <code>Find</code> object to automatically determine the page (<code>null</code>), 
+display 12 images per page (<code>12</code>), and to display 1 image on the first page (<code>1</code>). 
+You can change these values and save/upload the file to observe the changes to your Web site. Here are a few examples:</p>
+
+<h5>Images</h5>
+
+<p>Auto-determine the page number with 25 images on every page:</p>
+
+<pre><code>$image_ids-&gt;page(null, 25);
+</code></pre>
+
+<p>Show page one with all the images (here, <code>0</code> is infinity):</p>
+
+<pre><code>$image_ids-&gt;page(1, 0);
+</code></pre>

@@ -1,0 +1,55 @@
+<h3>Installation and Updates</h3>
+
+<h5>Installation</h5>
+
+<p>Experienced individuals, such as Web developers, should be able to install FSIP pretty quickly. 
+Novices should allocate an hour or more for the process.</p>
+
+<ol>
+<li>Take a deep breath.</li>
+<li>Download FSIP from <a href="https://github.com/darylhawes/fsip"> GitHub</a>.</li>
+<li>Unpack the archive by double-clicking on it.</li>
+<li>Use an FTP application to move the contents of the folder <code>/fsip/</code> from your computer to your Web site.
+
+<ul>
+<li>Set the permissions on the folders: <code>/cache/</code>, <code>/data/db/</code>, <code>/data/images/</code>, and <code>/shoebox/</code> to 777 
+(read, write, and execute)</li>
+<li>Delete the <code>/update/</code> folder</li>
+</ul></li>
+<li>Once your done uploading the files, using your Web browser, visit the <code>/install/</code> directory 
+of your Web site where you installed FSIP.</li>
+</ol>
+
+<p>From here, FSIP will ask you to supply information to complete the installation. Afterwards, you may want:</p>
+
+<ul>
+<li><strong>To enable vector support,</strong> choose Dashboard > Configuration and enable ImageMagick if available.</li>
+<li><strong>To enable smart URLs,</strong> <a href="/docs/howto/enable-url-rewriting.md">read our quick how-to guide</a>.</li>
+<li><strong>To load the internal geo database,</strong> choose Dashboard > Maintenance and click &#8220;Rebuild geographic library&#8221;.</li>
+</ul>
+
+<p>You might want to delete the <code>/admin/install.php</code> file once you&#8217;re happy with your new FSIP installation.</p>
+
+<h6>Choosing the database type</h6>
+
+<p>FSIP supports <a href="http://www.mysql.com/">MySQL</a>, <a href="http://www.postgresql.org/">PostgreSQL</a>, and <a href="http://www.sqlite.org/">SQLite</a>, 
+but you should only use the database types that were indicated satisfactory in the compatibility suite. 
+(For instance, having access to a PostgreSQL database does not mean you have the PDO driver necessary for FSIP to utilize it.) 
+When it&#8217;s available we recommend choosing MySQL.</p>
+
+<h6>A quick note on security</h6>
+
+<p>Your Web server may allow for more restrictive file and folder permissions than those indicated above. 
+FSIP only checks for (and warns of) incorrect permissions during installation. 
+If you so desire and your Web server allows, you may make these permissions more restrictive once installed.</p>
+
+<p>If you&#8217;re using SQLite, you should ensure wherever you located your database file (<code>fsip</code>) 
+that it cannot be accessed or downloaded from the outside world. You should move this file to at 
+least one level below the public HTTP/public_html directory.</p>
+
+<h5>Updates</h5>
+
+<p>The method of installing updates varies from update to update. Most of the time, 
+it simply requires replacing files. Be careful not to overwrite your installation&#8217;s 
+themes and extensions, or your <code>config.php</code> file unless specifically directed to do so. 
+Refer to the update&#8217;s documentation for instructions.</p>

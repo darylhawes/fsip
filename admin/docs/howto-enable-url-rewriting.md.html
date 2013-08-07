@@ -1,0 +1,43 @@
+<h3>Enable URL Rewriting</h3>
+
+<p>URL rewriting goes by many names: &#8220;semantic URLs&#8221;, &#8220;fancy URLs&#8221;, &#8220;SEO-friendly URLs&#8221;, but they all refer to the same result. When possible, you should always enable URL rewriting; it denotes professionalism, increases search engine accessibility, and is easier on the eyes.</p>
+
+<pre><code>With rewriting disabled:  
+http://www.yourdomain.com/image.php?id=47-my-party
+
+With rewriting enabled:
+http://www.yourdomain.com/image/47-my-party/
+</code></pre>
+
+<h6>1. Determine your server configuration.</h6>
+
+<p>Go to your Alkaline Dashboard. Choose <strong>Settings.</strong> Look beneath the &#8220;Environment&#8221; header, and note your HTTP server. Depending on your HTTP server, proceed to the appropriate step 2.</p>
+
+<h6>2a. Apache or LiteSpeed</h6>
+
+<p>On your Web server, rename the file <code>htaccess.txt</code> to <code>.htaccess</code>. Continue to step 3.</p>
+
+<h6>2b. Microsoft IIS</h6>
+
+<p>Continue to step 3.</p>
+
+<h6>2c. Nginx</h6>
+
+<p>See this article at the <a href="http://wiki.nginx.org/Alkaline">Nginx Wiki</a> to modify your Nginx configuration. Continue to step 3.</p>
+
+<h6>2d. Other</h6>
+
+<p>Determine whether your Web server abides by Apache-style rewriting (known as mod_rewrite via <code>.htaccess</code>) or Windows-style rewriting (URL Module 2 via <code>Web.config</code>). Some servers are compatible with neither, and need to be dealt with on an individual basis.</p>
+
+<h6>3. Enable URL rewriting</h6>
+
+<p>Open <code>config.php</code> from Alkaline and:</p>
+
+<pre><code>// Replace this:
+$url_rewrite = false;
+
+// With this:
+$url_rewrite = true;
+</code></pre>
+
+<p>Save the file to Alkaline.</p>
