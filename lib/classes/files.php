@@ -168,7 +168,10 @@ class Files {
 	 * @return string Octal value (e.g., 0644)
 	 */
 	public static function checkFilePerm($file) {
-		return substr(sprintf('%o', @fileperms($file)), -4);
+		if (file_exists($file)) {
+			return substr(sprintf('%o', @fileperms($file)), -4);
+		}
+		return false;
 	}
 	
 	/**
