@@ -73,7 +73,7 @@ if (!empty($username) or !empty($password)) {
 
 define('TAB', 'Login');
 define('TITLE', 'FSIP Login');
-require_once(PATH . INCLUDES . 'admin/admin_header.php');
+require_once(PATH . INCLUDES . '/admin_header.php');
 
 ?>
 
@@ -117,6 +117,6 @@ require_once(PATH . INCLUDES . 'admin/admin_header.php');
 
 <?php
 
-require_once(PATH . INCLUDES . 'admin/admin_footer.php');
+require_once(PATH . INCLUDES . '/admin_footer.php');
 
 ?>
