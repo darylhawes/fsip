@@ -16,7 +16,8 @@ class DB {
 	 * @return void
 	 **/
 	public function __construct() {
-//		$this->setDebugSQL(true); // add SQL calls to addNotes perhaps? In debug add and use new addDebugNote method.
+// add SQL calls to addNotes perhaps? In debug add and use new addDebugNote method.
+//		$this->setDebugSQL(true); 
 		$this->setDebugSQL(false);
 //echo "creating db object";
 		// Get tables
@@ -95,7 +96,7 @@ class DB {
 		if (!$this->db) {
 			// This error message may mean that we're not installed properly. Offer the user a link to setup their installation.
 			echo "<h1>ERROR: No database connection.</h1> <p><strong>You may not have FSIP configured properly. </strong></p><p>Try to <a href=".LOCATION . BASE."admin/install.php>install</a> again?</p>";
-			Debugger::addError(E_USER_ERROR, 'No database connection'); 
+			Debugger::addError(E_USER_ERROR, 'No database connection');
 			exit;
 		}
 	
@@ -213,16 +214,17 @@ class DB {
 		$error = $db->errorInfo();
 		
 		if (isset($error[2])) {
+			global $debugger; 
 			$code = $error[0];
 			$message = $query . ' ' . ucfirst(preg_replace('#^Error\:[[:space:]]+#si', '', $error[2])) . ' (' . $code . ').';
 			
 			if (substr($code, 0, 2) == '00') {
-				$this->report($message, $code);
+				$debugger->report($message, $code);
 			} elseif($code == '23000') {
-				$this->report($message, $code);
+				$debugger->report($message, $code);
 				return false;
 			} else {
-				$this->report($message, $code);
+				$debugger->report($message, $code);
 				return false;
 			}
 		}
