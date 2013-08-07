@@ -533,6 +533,6 @@ if ((@$_POST['install'] == 'Install') and (countNotes('error') == 0)) {
 	<?php
 }
 
-require_once(PATH . INCLUDES . 'admin/admin_footer.php');
+require_once(PATH . INCLUDES . '/admin_footer.php');
 
 ?>
