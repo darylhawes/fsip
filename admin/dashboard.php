@@ -75,8 +75,15 @@ require_once(PATH . INCLUDES . '/admin_header.php');
 	</div>
 	<div class="span-6 prepend-top last">
 		<h3>Hello</h3>
-		<p><?php echo ($user->user['user_last_login']) ? 'Welcome back! You last logged in on:  ' .  formatTime($user->user['user_last_login'], 'l, F j \a\t g:i a') : 'Welcome to FSIP. You should begin by <a href="' . BASE . USERFOLDER . 'preferences' . URL_CAP . '">configuring your preferences</a> and <a href="' . BASE . ADMINFOLDER . 'upload' . URL_CAP . '">uploading some content</a>.'; ?></p>
-
+		<p>
+<?php 
+				if (!isset($installing) || $installing === false) {
+					// Welcome the user
+					// unless we're installing at the moment
+					echo ($user->user['user_last_login']) ? 'Welcome back! You last logged in on:  ' .  formatTime($user->user['user_last_login'], 'l, F j \a\t g:i a') : 'Welcome to FSIP. You should begin by <a href="' . BASE . USERFOLDER . 'preferences' . URL_CAP . '">configuring your preferences</a> and <a href="' . BASE . ADMINFOLDER . 'upload' . URL_CAP . '">uploading some content</a>.';
+				}
+?>
+		</p>
 		<h3>Census</h3>
 		<table class="census">
 <?php
@@ -90,7 +97,7 @@ require_once(PATH . INCLUDES . '/admin_header.php');
 		</table>
 
 		<h3>FSIP</h3>
-		<p>You are running FSIP <?php echo FSIP_VERSION; ?>.</p>
+		<p>You are running FSIP <?php echo FSIP_VERSION; ?> <span class="small">(<?php echo FSIP_BUILD; ?>)</span></p>
 	</div>
 </div>
 
@@ -240,7 +247,7 @@ if ((returnConf('maint_reports') === true) && (returnConf('maint_reports_time') 
 			'db_server' => $db->db_type,
 			'db_server_version' => $db->db_version,
 			'php_version' => phpversion(),
-			'image_count' => $image_count,
+			'image_count' => $image_count
 	    )
 	);
 
