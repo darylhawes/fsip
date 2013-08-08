@@ -10,6 +10,8 @@ require_once('config_default.php');
 
 $_POST = array_map('strip_tags', $_POST);
 
+$installing = true; // flag to ensure that the main library does not try to load the conf settings from the database
+
 // Check that variables that we plan to use exist or clear them out to avoid PHP warnings.
 if (!isset($_POST['install']))           { $_POST['install'] = ""; }
 if (!isset($_POST['install_db_type']))   { $_POST['install_db_type'] = ""; }
@@ -31,7 +33,7 @@ if (!isset($_POST['install_email']))     { $_POST['install_email'] = ""; }
 if (Files::checkFilePerm(PATH . DB) != '0777') {
 	addNote('WARNING: Database folder at ('. PATH . DB .') may not be writable.<br />', 'notice');
 }
-if (Files::checkFilePerm(PATH . IMGFOLDER) != '0777') {
+if (Files::checkFilePerm(PATH . IMAGEDATA) != '0777') {
 	addNote('WARNING:Images folder at ('. PATH . IMGFOLDER .') may not be writable.<br />', 'notice');
 }
 if (Files::checkFilePerm(PATH . SHOEBOX) != '0777') {
@@ -59,6 +61,9 @@ if (@$_POST['install'] == 'Install') {
 
 	$config = Files::replaceVar('$base', $_POST['install_base'], $config);
 	$config = Files::replaceVar('$path', $_POST['install_path'], $config);
+	$config = Files::replaceVar('$folder_prefix', '', $config);
+	$config = str_replace("require_once('../lib/fsip_lib.php');", "require_once(PATH . LIB . 'fsip_lib.php');", $config);
+
 	if ( is_null($_POST['install_server'])) { 
 		$_POST['install_server'] = ""; 
 	}
@@ -226,69 +231,13 @@ if ((@$_POST['install'] == 'Install') and (countNotes('error') == 0)) {
 		$query->execute(array('FSIP_DEFAULT', 'fsipDefault', 1, '0.1', 'fsipDefault', 'Daryl Hawes', 'http://fsip.sdelargy.com/'));
 		
 		$query->closeCursor();
-		
-//// INSTALL DEFAULT SITE CONFIG SETTINGS
 
-		setConf('theme_id', '1');
-		setConf('theme_folder', 'fsipDefault');
-		setConf('web_name', '');
-		setConf('web_title', '(Untitled Site)');
-		setConf('web_title_format', 'emdash2');
-		setConf('web_description', '');
-		setConf('web_email', '');
-		setConf('web_timezone', 'America\/New_York');
-		setConf('shoe_exif', true);
-		setConf('shoe_iptc', true);
-		setConf('shoe_geo', null);
-		setConf('image_markup', null);
-		setConf('image_markup_ext', '');
-		setConf('thumb_imagick', null);
-		setConf('thumb_compress', null);
-		setConf('thumb_compress_tol', 100);
-		setConf('thumb_watermark', null);
-		setConf('thumb_watermark_pos', 'nw');
-		setConf('thumb_watermark_margin', '');
-		setConf('image_original', null);
-		setConf('tag_alpha', null);
-		setConf('comm_enabled', null);
-		setConf('comm_email', null);
-		setConf('comm_mod', null);
-		setConf('comm_markup', null);
-		setConf('comm_markup_ext', 'bbcode');
-		setConf('rights_default', null); //DEH here is where we should add a default right of none_reserved
-		setConf('rights_default_id', '');
-		setConf('stat_enabled', true);
-		setConf('stat_ignore_user', '');
-		setConf('canvas_remove_unused', null);
-		setConf('maint_reports', null);
-		setConf('maint_debug', true);
-		setConf('maint_disable', null);
-		setConf('page_size_id', '1');
-		setConf('page_size_label', 'admin');
-		setConf('shoe_max', null);
-		setConf('shoe_max_count', '');
-		setConf('image_hdm', null);
-		setConf('image_hdm_format', 'yyyy\/mm\/dd');
-		setConf('web_markup', null);
-		setConf('web_markup_ext', '');
-		setConf('bulk_delete', null);
-		setConf('thumb_metadata', null);
-		setConf('page_div_wrap', null);
-		setConf('page_div_wrap_class', '');
-		setConf('comm_allow_html', null);
-		setConf('comm_allow_html_tags', '');
-		setConf('guest_remember', null);
-		setConf('guest_remember_time', '86400');
-		setConf('syndication_cache_time', '15');
-		setConf('syndication_summary_only', null);
-		setConf('sphinx_enabled', null);
-		setConf('sphinx_server', '');
-		setConf('sphinx_port', '');
-		setConf('sphinx_index', '');
-		setConf('sphinx_max_exec', '');
-		setConf('maint_debug_admin_only', true);
+		//// INSTALL DEFAULT SITE CONFIG SETTINGS
+		foreach($config_defaults as $key => $value) {
+			setConf($key, $value);
+		}
 
-		saveConf();
+		saveConf(true);
 	} // end if can connect to db
 }
 
@@ -300,7 +249,7 @@ if ((@$_POST['install'] == 'Install') and (countNotes('error') == 0)) {
 	
 	?>
 	
-	<p class="large"><strong>Almost there.</strong> Copy and paste the text below into a text editor and save it as &#8220;config.php&#8221; to your hard disk. Then upload this file (overwriting the file that is already there) to your fsip root directory in order to complete your installation.</p>
+	<p class="large"><strong>Almost there.</strong> Copy and paste the text below into a text editor and save it as &#8220;config.php&#8221; to your hard disk. Then upload this file (overwriting the file that is already there) to your FSIP root directory in order to complete your installation.</p>
 	
 	<p>Once you&#8217;re done, <a href="<?php echo BASE . ADMINFOLDER; ?>">log in to access your Dashboard</a>.</p>
 	
