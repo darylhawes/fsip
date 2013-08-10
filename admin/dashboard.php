@@ -46,6 +46,10 @@ foreach($stats->stats as $stat) {
 //echo "dashboard 14<br />";
 $visitors = json_encode($visitors);
 
+// Update any new or deleted themes and extensions
+updateThemes();
+updateExtensions();
+
 define('TAB', 'dashboard');
 define('TITLE', 'FSIP Dashboard');
 //echo "dashboard 15<br />";

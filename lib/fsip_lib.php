@@ -2328,4 +2328,314 @@ function redirectToLogin() {
 	headerLocationRedirect($location);
 	exit();
 }
+
+////////////////  EXTENSION AND THEME UTILITY FUNCTIONS
+
+/**
+ * Look for deleted themes and remove them from the database
+ * Also look for newly added themse and add them to the database
+ */
+function updateThemes() {
+	global $db;
+
+	// Load current themes
+	$themes = $db->getTable('themes');
+
+	$theme_ids = array();
+	$theme_uids = array();
+	$theme_builds = array();
+	$theme_folders = array();
+
+	// Seek all themes
+	$seek_themes = Files::seekDirectory(PATH . THEMES, '');
+
+	$theme_deleted = array();
+
+	foreach($themes as $theme) {
+		$theme_ids[] = $theme['theme_id'];
+		$theme_uids[] = $theme['theme_uid'];
+		$theme_builds[] = $theme['theme_build'];
+		$theme_folders[] = $theme['theme_folder'];
+		// Check if this current theme has been deleted from the filesystem
+		$theme_folder = PATH . THEMES . $theme['theme_folder'];
+		if (!in_array($theme_folder, $seek_themes)) {
+			$theme_deleted[] = $theme['theme_id'];
+		}
+
+	}
+
+	// Delete rows from table of themes that were found to have been deleted
+	$db->deleteRow('themes', $theme_deleted);
+
+	// Determine which themes are new, install them
+	$themes_installed = array();
+	$themes_updated = array();
+
+	foreach($seek_themes as &$theme_folder) {
+		$theme_folder = Files::getFilename($theme_folder);
+		if (!in_array($theme_folder, $theme_folders)) {
+			$data = file_get_contents(PATH . THEMES . $theme_folder . '/theme.xml');
+			if (empty($data)) { 
+				addNote('Could not install a new theme. Its XML file is missing or corrupted.', 'error'); 
+				continue; 
+			}
+
+			$xml = new SimpleXMLElement($data);
+		
+			$fields = array('theme_uid' => $xml->uid,
+				'theme_title' => $xml->title,
+				'theme_folder' => $theme_folder,
+				'theme_build' => $xml->build,
+				'theme_version' => $xml->version,
+				'theme_creator_name' => $xml->creator->name,
+				'theme_creator_uri' => $xml->creator->uri);
+		
+			$theme_intalled_id = $db->addRow($fields, 'themes');
+			$themes_installed[] = $theme_intalled_id;
+		} else {
+			$data = file_get_contents(PATH . THEMES . $theme_folder . '/theme.xml');
+			$xml = new SimpleXMLElement($data);
+			$keys = array_keys($theme_uids, $xml->uid);
+			foreach($keys as $key) {
+				if ($xml->build != $theme_builds[$key]) {
+					$id = $theme_ids[$key];
+		
+					$fields = array('theme_title' => $xml->title,
+						'theme_folder' => $theme_folder,
+						'theme_build' => $xml->build,
+						'theme_version' => $xml->version,
+						'theme_creator_name' => $xml->creator->name,
+						'theme_creator_uri' => $xml->creator->uri);
+					$db->updateRow($fields, 'themes', $id);
+					$themes_updated[] = $id;
+				}
+			}
+		}
+	}
+
+	$themes_installed_count = count($themes_installed);
+	if ($themes_installed_count > 0) {
+		if ($themes_installed_count == 1) {
+			$notification = 'You have successfully installed 1 theme.';
+		} else {
+			$notification = 'You have successfully installed ' . $themes_installed_count . ' themes.';
+		}
+	
+		addNote($notification, 'success');
+	}
+
+	$themes_updated_count = count($themes_updated);
+	if ($themes_updated_count > 0) {
+		if ($themes_updated_count == 1) {
+			$notification = 'You have successfully updated 1 theme.';
+		} else {
+			$notification = 'You have successfully updated ' . $themes_updated_count . ' themes.';
+		}
+	
+		addNote($notification, 'success');
+	}
+
+	// Check for updates
+	/* DEH remove dead remote services
+	$latest_themes = @$fsip->boomerang('latest-themes');
+	if (!empty($latest_themes)) {
+		foreach($latest_themes as $latest_theme) {
+			foreach($themes as $theme) {
+				if ($theme['theme_uid'] == $latest_theme['theme_uid']) {
+					if ($latest_theme['theme_build'] > $theme['theme_build']) {
+						$fields = array('theme_build_latest' => $latest_theme['theme_build'],
+							'theme_version_latest' => $latest_theme['theme_version']);
+						$alkaline->updateRow($fields, 'themes', $theme['theme_id']);
+					} else {
+						if (!empty($theme['theme_build_latest']) or !empty($theme['theme_version_latest'])) {
+							$fields = array('theme_build_latest' => '',
+								'theme_version_latest' => '');
+							$alkaline->updateRow($fields, 'themes', $theme['theme_id']);
+						}
+					}
+				}
+			}
+		}
+	}
+	*/
+}
+
+/**
+ * Look for deleted themes and remove them from the database
+ * Also look for newly added themse and add them to the database
+ */
+function updateExtensions() {
+	global $db;
+	// Load current extensions
+	$extensions = $db->getTable('extensions');
+
+	// Seek all extensions
+	$seek_extensions = Files::seekDirectory(PATH . EXTENSIONS, '');
+	//echo "extensions 4<br />";
+
+	$extension_ids = array();
+	$extension_uids = array();
+	$extension_builds = array();
+	$extension_folders = array();
+	$extension_classes = array();
+
+	$extension_deleted = array();
+
+	foreach($extensions as $extension) {
+		$extension_ids[] = $extension['extension_id'];
+		$extension_uids[] = $extension['extension_uid'];
+		$extension_builds[] = $extension['extension_build'];
+		$extension_folders[] = $extension['extension_folder'];
+		$extension_classes[] = $extension['extension_class'];
+		// check if the extensions was removed from the filesystem
+		$extension_folder = PATH . EXTENSIONS . $extension['extension_folder'];
+		if (!in_array($extension_folder, $seek_extensions)) {
+			$extension_deleted[] = $extension['extension_id'];
+		}
+
+	}
+
+	// Delete rows from table of extensions that have been removed
+	$db->deleteRow('extensions', $extension_deleted);
+
+	// Determine which extensions are new, install them
+	$extensions_installed = array();
+	$extensions_updated = array();
+
+	//echo "extensions 7<br />";
+
+	foreach($seek_extensions as &$extension_folder) {
+		if (strpos(Files::getFilename($extension_folder), '.') === 0) { continue; }
+	
+		$extension_folder = Files::getFilename($extension_folder);
+	//echo "extensions 8, extfolder=$extension_folder<br />";
+		if (!in_array($extension_folder, $extension_folders)) {
+			$data = file_get_contents(PATH . EXTENSIONS . $extension_folder . '/extension.xml');
+			if (empty($data)) { 
+				addNote('Could not install a new extension. Its XML file is missing or corrupted.', 'error'); continue; 
+			}
+		
+			$xml = new SimpleXMLElement($data);
+	//echo "extensions 8.1<br />";
+		
+			if (in_array($xml->class, $extension_classes)) {
+				addNote('Could not install a new extension. Its class name interferes with a pre-existing extension.', 'error');
+			}
+	//echo "extensions 8.2, about to require: ".PATH . EXTENSIONS . $extension_folder . '/' . $xml->file . '.php'."<br />";
+
+			require_once(PATH . EXTENSIONS . $extension_folder . '/' . $xml->file . '.php');
+	//echo "extensions 8.3<br />";
+		
+			$extension_methods = get_class_methods(strval($xml->class));
+			$extension_hooks = array();
+		
+			foreach($extension_methods as $method) {
+				if (strpos($method, 'orbit_') === 0) {
+					$extension_hooks[] = substr($method, 6);
+				}
+			}
+		
+			$fields = array('extension_uid' => $xml->uid,
+				'extension_class' => $xml->class,
+				'extension_title' => $xml->title,
+				'extension_file' => $xml->file,
+				'extension_folder' => $extension_folder,
+				'extension_status' => 1,
+				'extension_build' => $xml->build,
+				'extension_version' => $xml->version,
+				'extension_hooks' => serialize($extension_hooks),
+				'extension_description' => $xml->description,
+				'extension_creator_name' => $xml->creator->name,
+				'extension_creator_uri' => $xml->creator->uri);
+			$extension_intalled_id = $db->addRow($fields, 'extensions');
+			$extensions_installed[] = $extension_intalled_id;
+		} else {
+	//echo "extensions 9<br />";
+			$data = file_get_contents(PATH . EXTENSIONS . $extension_folder . '/extension.xml');
+			$xml = new SimpleXMLElement($data);
+			$keys = array_keys($extension_classes, $xml->class);
+			foreach($keys as $key){
+				if($xml->build != $extension_builds[$key]) {
+					$id = $extension_ids[$key];
+		
+					require_once(PATH . EXTENSIONS . $extension_folder . '/' . $xml->file . '.php');
+		
+					$extension_methods = get_class_methods(strval($xml->class));
+					$extension_hooks = array();
+		
+					foreach($extension_methods as $method) {
+						if (strpos($method, 'orbit_') === 0) {
+							$extension_hooks[] = substr($method, 6);
+						}
+					}
+		
+					$fields = array('extension_class' => $xml->class,
+						'extension_title' => $xml->title,
+						'extension_file' => $xml->file,
+						'extension_folder' => $extension_folder,
+						'extension_build' => $xml->build,
+						'extension_version' => $xml->version,
+						'extension_hooks' => serialize($extension_hooks),
+						'extension_description' => $xml->description,
+						'extension_creator_name' => $xml->creator->name,
+						'extension_creator_uri' => $xml->creator->uri);
+					$db->updateRow($fields, 'extensions', $id);
+					$extensions_updated[] = $id;
+				}
+			}
+		}
+	}
+	//echo "extensions 10<br />";
+
+	$extensions_installed_count = count($extensions_installed);
+	if ($extensions_installed_count > 0) {
+		if ($extensions_installed_count == 1) {
+			$notification = 'You have successfully installed 1 extension.';
+		} else {
+			$notification = 'You have successfully installed ' . $extensions_installed_count . ' extensions.';
+		}
+	
+		addNote($notification, 'success');
+	
+		$extensions = $db->getTable('extensions');
+	}
+
+	$extensions_updated_count = count($extensions_updated);
+	if ($extensions_updated_count > 0) {
+		if ($extensions_updated_count == 1) {
+			$notification = 'You have successfully updated 1 extension.';
+		} else {
+			$notification = 'You have successfully updated ' . $extensions_updated_count . ' extensions.';
+		}
+	
+		addNote($notification, 'success');
+	
+		$extensions = $db->getTable('extensions');
+	}
+	// Check for updates
+/*
+//DEH remove the currently dead remote extension version checking
+	$latest_extensions = @$fsip->boomerang('latest-extensions');
+	if (!empty($latest_extensions)) {
+		foreach($latest_extensions as $latest_extension) {
+			foreach($extensions as &$extension) {
+				if ($extension['extension_uid'] == $latest_extension['extension_uid']) {
+					if ($latest_extension['extension_build'] > $extension['extension_build']) {
+						$fields = array('extension_build_latest' => $latest_extension['extension_build'],
+							'extension_version_latest' => $latest_extension['extension_version']);
+						$fsip->updateRow($fields, 'extensions', $extension['extension_id']);
+					} else {
+						if (!empty($extension['extension_build_latest']) or !empty($extension['extension_version_latest'])) {
+							$fields = array('extension_build_latest' => '',
+								'extension_version_latest' => '');
+							$fsip->updateRow($fields, 'extensions', $extension['extension_id']);
+						}
+					}
+				}
+			}
+		}
+	}
+*/	
+
+}
 ?>
