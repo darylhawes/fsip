@@ -17,7 +17,12 @@ class Five_OAuthConsumer {
     $this->callback_url = $callback_url;
   }
 
-  function __toString() {
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+   function __toString() {
     return "OAuthConsumer[key=$this->key,secret=$this->secret]";
   }
 }
@@ -47,7 +52,12 @@ class Five_Five_OAuthToken {
            Five_OAuthUtil::urlencode_rfc3986($this->secret);
   }
 
-  function __toString() {
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+   function __toString() {
     return $this->to_string();
   }
 }

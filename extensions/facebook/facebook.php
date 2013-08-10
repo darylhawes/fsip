@@ -35,14 +35,19 @@ class FacebookHandler extends Orbit {
 		parent::__destruct();
 	}
 	
-	public function orbit_config() {
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 	public function orbit_config() {
 		if ($this->facebook_active) {
 			$params = array('access_token' => $this->facebook_access_token);
 			$albums = $this->facebook->api('me/albums', $params);
 		
 			$albums_list = array();
 		
-			foreach($albums['data'] as $album){
+			foreach($albums['data'] as $album) {
 				$albums_list[$album['id']] = $album['name'];
 			}
 		}
@@ -87,8 +92,7 @@ class FacebookHandler extends Orbit {
 				</tr>
 			</table>
 			<?php
-		}
-		else{
+		} else {
 			?>
 			<table>
 				<tr>
@@ -103,7 +107,12 @@ class FacebookHandler extends Orbit {
 		}
 	}
 	
-	public function orbit_config_load() {
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 	public function orbit_config_load() {
 		if (!empty($_GET['from'])) {
 			switch($_GET['from']) {
 				case 'facebook':
@@ -222,7 +231,12 @@ class FacebookHandler extends Orbit {
 		*/
 	}
 	
-	public function orbit_config_save() {
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 	public function orbit_config_save() {
 		$now = time();
 		$this->setPref('facebook_last_image_time', $now);
 		$this->setPref('facebook_last_post_time', $now);
@@ -236,7 +250,12 @@ class FacebookHandler extends Orbit {
 		$this->savePref();
 	}
 	
-	public function orbit_image($images, $override=false) {
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 	public function orbit_image($images, $override=false) {
 		if (($this->facebook_auto != 'auto') && ($override === false)) { return; }
 		if (strpos($this->facebook_transmit, 'image') === false) { return; }
 		if (count($images) < 1) { return; }
@@ -260,7 +279,12 @@ class FacebookHandler extends Orbit {
 		$this->savePref();
 	}
 
-	public function upload_image($image) {
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 	public function upload_image($image) {
 		$canvas = new Canvas($this->facebook_format_image);
 		$canvas->assignArray($image);
 		$canvas->generate();
@@ -275,11 +299,21 @@ class FacebookHandler extends Orbit {
 		$photos = $this->facebook->api($this->facebook_album_id . '/photos', 'POST', $params);
 	}
 
-	public function orbit_send_html_image(){
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+	public function orbit_send_html_image() {
 		echo '<option value="facebook">Facebook</option>';
 	}
 
-	public function orbit_send_facebook_image($images){
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 	public function orbit_send_facebook_image($images) {
 		return $this->orbit_image($images, true);
 	}
 }

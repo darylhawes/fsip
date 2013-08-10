@@ -8,7 +8,7 @@ class Dropbox extends Orbit{
 	private $dropbox_oauth_token;
 	private $dropbox_oauth_secret;
 	
-	public function __construct(){
+	public function __construct() {
 		parent::__construct();
 		
 		$this->dropbox_active = $this->returnPref('dropbox_active');
@@ -23,22 +23,27 @@ class Dropbox extends Orbit{
 		$this->dropbox = new Dropbox_Dropbox('x3b5rc2yaew6ny9',
 			'xqj58kjgyrhiqir');
 					
-		if(!empty($this->dropbox_oauth_token) and !empty($this->dropbox_oauth_secret)){
+		if (!empty($this->dropbox_oauth_token) and !empty($this->dropbox_oauth_secret)) {
 			$this->dropbox->setOAuthToken($this->dropbox_oauth_token);
 			$this->dropbox->setOAuthTokenSecret($this->dropbox_oauth_secret);
 		}
 	}
 	
-	public function __destruct(){
+	public function __destruct() {
 		parent::__destruct();
 	}
 	
-	public function orbit_config(){
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 	public function orbit_config() {
 		?>
 		<p>Monitor a folder on your Dropbox account and automatically download new files to your Shoebox folder.</p>
 		
 		<?php
-		if($this->dropbox_active){
+		if ($this->dropbox_active) {
 			?>
 			<table>
 				<tr>
@@ -54,8 +59,7 @@ class Dropbox extends Orbit{
 				</tr>
 			</table>
 			<?php
-		}
-		else{
+		} else {
 			?>
 			<table>
 				<tr>
@@ -70,9 +74,14 @@ class Dropbox extends Orbit{
 		}
 	}
 	
-	public function orbit_config_load(){
-		if(!empty($_GET['from'])){
-			switch($_GET['from']){
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 	public function orbit_config_load() {
+		if (!empty($_GET['from'])) {
+			switch($_GET['from']) {
 				case 'dropbox':
 					$dropbox_access_token = $this->dropbox->oAuthAccessToken($_GET['oauth_token']);
 					
@@ -101,8 +110,8 @@ class Dropbox extends Orbit{
 			}
 		}
 		
-		if(!empty($_GET['link'])){
-			switch($_GET['link']){
+		if (!empty($_GET['link'])) {
+			switch($_GET['link']) {
 				case 'dropbox':
 					$dropbox_token = $this->dropbox->oAuthRequestToken();
 					$dropbox_authorize_uri = $this->dropbox->oAuthAuthorize($dropbox_token['oauth_token'], locationFull(array('from' => 'dropbox')));
@@ -119,8 +128,8 @@ class Dropbox extends Orbit{
 			}
 		}
 		
-		if(!empty($_GET['unlink'])){
-			switch($_GET['unlink']){
+		if (!empty($_GET['unlink'])) {
+			switch($_GET['unlink']) {
 				case 'dropbox':
 					$this->dropbox_active = false;
 					$this->setPref('dropbox_active', false);
@@ -138,12 +147,22 @@ class Dropbox extends Orbit{
 		}
 	}
 	
-	public function orbit_config_save() {
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 	public function orbit_config_save() {
 		$this->setPref('dropbox_folder', $_POST['dropbox_folder']);
 		$this->savePref();
 	}
 	
-	public function orbit_shoebox() {
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 	public function orbit_shoebox() {
 		if ($this->dropbox_active != true) { return; }
 		
 		$folder = $this->dropbox->metadata($this->dropbox_folder);
@@ -159,7 +178,12 @@ class Dropbox extends Orbit{
 		$this->savePref();
 	}
 	
-	public function get($path) {
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 	public function get($path) {
 		$fetch = $this->dropbox->filesGet($path);
 		file_put_contents(PATH . SHOEBOX . Files::getFilename($path), base64_decode($fetch['data']));
 	}

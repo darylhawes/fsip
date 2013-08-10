@@ -23,7 +23,12 @@ $comparison = compare($version['version_title'] . "\n\n" . $version['version_tex
 // Bold title
 $comparison = preg_replace('#(.*?)\n#si', '<strong>\\1</strong>', $comparison, 1);
 
-function charsToBlanks($str) {
+/**
+ * Desc
+ *
+ * @return 
+ */
+ function charsToBlanks($str) {
 	$paras = substr_count($str, "\n");
 	$len = strlen($str);
 	$str = ' &#0160; ' . str_repeat(' &#0160;', ceil($len / 2));

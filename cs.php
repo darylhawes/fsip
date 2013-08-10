@@ -6,7 +6,12 @@
 // http://www.alkalineapp.com/
 */
 
-//Compatibility Suite
+//
+/**
+ * Compatibility Suite class - 
+ *   check that the hosting environment supports the componenets needed by FSIP.
+ *
+ */
 class CS {
 	const build = 3;
 	const version = '1.2';
@@ -18,7 +23,12 @@ class CS {
 	public $phpinfo;
 	Public $php_pdo_drivers;
 	
-	function __construct() {
+	/**
+	 * Constructor
+	 *
+	 * @return 
+	 */
+ 	function __construct() {
 		$this->compatible = true;
 		$this->php_version = phpversion();
 		$this->php_extensions = get_loaded_extensions();
@@ -47,7 +57,12 @@ class CS {
 		}
 	}
 	
-	public function isExt($ext, $req=true) {
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 	public function isExt($ext, $req=true) {
 		if (in_array($ext, $this->php_extensions)) {
 			return true;
 		} else {
@@ -58,7 +73,12 @@ class CS {
 		}
 	}
 	
-	public function isVer($pat, $str) {
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 	public function isVer($pat, $str) {
 		if (preg_match($pat, $str)) {
 			return true;
 		} else {
@@ -67,13 +87,23 @@ class CS {
 		}
 	}
 	
-	public function isThere($str) {
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 	public function isThere($str) {
 		if (stripos($this->phpinfo, $str)) {
 			return true;
 		}
 	}
 	
-	public function isNet() {
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 	public function isNet() {
 		$ip = gethostbyname('http://fsip.sdelargy.com/');
 		if (!empty($ip)) {
 			return true;
@@ -83,7 +113,12 @@ class CS {
 		}
 	}
 	
-	public function boolToHTML($bool, $positive=null, $negative=null) {
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 	public function boolToHTML($bool, $positive=null, $negative=null) {
 		if (empty($positive)) {
 			$positive = '<strong>Installed</strong>';
 		}
@@ -100,7 +135,12 @@ class CS {
 		}
 	}
 	
-	public function boolToIMG($bool) {
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 	public function boolToIMG($bool) {
 		if ($bool === true) {
 			echo '<td class="center middle" style="width: 2%"><img src="http://www.alkalineapp.com/remote/cs/images/positive.png" alt="" /></td>';
 		} elseif ($bool === false) {
@@ -110,7 +150,12 @@ class CS {
 		}
 	}
 	
-	public function noteRAM() {
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 	public function noteRAM() {
 		$ram = ini_get('memory_limit');
 		$value = substr($ram, 1, -1);
 		$unit = substr($ram, -1, 1);

@@ -172,6 +172,12 @@ if ((@$_POST['install'] == 'Install') and (countNotes('error') == 0)) {
 	if (!empty($error[0])) {
 		addNote('The database could not be contacted. ' . $error[0] . ' Check your settings and try again.', 'error');
 	} else {
+
+		/**
+		 * Desc
+ 		 *
+ 		 * @return 
+ 		 */
 		function appendTableName($query) {
 			if (!empty($_POST['install_db_prefix'])) {
 				return preg_replace('#TABLE ([[:punct:]]*)(\w+)#s', 'TABLE \\1' . $_POST['install_db_prefix'] . '\\2', $query);
@@ -474,7 +480,9 @@ if ((@$_POST['install'] == 'Install') and (countNotes('error') == 0)) {
 		
 		<h3>Install FSIP</h3>
 	
-		<p>This may take several moments, please be patient. Do not interrupt the process by stopping the page from loading or closing your Web browser.</p><p><input type="submit" name="install" value="Install" /></p>
+		<p>This may take several moments, please be patient. Do not interrupt the process 
+		by stopping the page from loading or closing your Web browser.</p>
+		<p><input type="submit" name="install" value="Install" /></p>
 	</form>
 
 	<?php

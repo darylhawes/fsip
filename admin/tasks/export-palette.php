@@ -22,7 +22,11 @@ if (empty($title)) {
 }
 $rgb_colors = unserialize($images->images[0]['image_colors']);
 
-// Convert RGB image colors to HEX values
+/**
+ *  Convert RGB image colors to HEX values
+ *
+ * @return 
+ */
 function rgb2hex() {
 	$str = '';
 	foreach(func_get_args() as $c) {

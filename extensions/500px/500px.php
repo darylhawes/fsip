@@ -1,12 +1,21 @@
 <?php
 
-class Five extends Orbit{
+/**
+ * Class desc
+ *
+ */
+ class Five extends Orbit{
 	public $five;
 	public $five_username;
 	
 	private $five_password;
 	
-	public function __construct(){
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 	public function __construct() {
 		parent::__construct();
 		
 		$this->five_active = $this->returnPref('five_active');
@@ -31,15 +40,14 @@ class Five extends Orbit{
 		}
 		*/
 		
-		if(!empty($this->five_oauth_token) and !empty($this->five_oauth_secret)){
+		if (!empty($this->five_oauth_token) and !empty($this->five_oauth_secret)) {
 			ini_set('default_socket_timeout', 1);
 			$this->five = new Five_FiveAPI('ol2NtEYlEjbs19qU4yEg1KkJaPbdnZSbARyem2rG',
 				'F3yhjN8T9wcahHbV6Nrq5AHZISunhlgISpKghZmd',
 				$this->five_oauth_token,
 				$this->five_oauth_secret);
 			ini_restore('default_socket_timeout');
-		}
-		else{
+		} else {
 			ini_set('default_socket_timeout', 1);
 			$this->five = new Five_FiveAPI('ol2NtEYlEjbs19qU4yEg1KkJaPbdnZSbARyem2rG',
 				'F3yhjN8T9wcahHbV6Nrq5AHZISunhlgISpKghZmd');
@@ -47,16 +55,26 @@ class Five extends Orbit{
 		}
 	}
 	
-	public function __destruct(){
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 	public function __destruct() {
 		parent::__destruct();
 	}
 	
-	public function orbit_config(){
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 	public function orbit_config() {
 		
 		?>
 		<p>Update your <a href="http://www.500px.com/">500px</a>.</p>
 		<?php
-		if($this->five_active){
+		if ($this->five_active) {
 			$this->five_format_image = makeHTMLSafe($this->five_format_image);
 			?>
 			<table>
@@ -73,8 +91,7 @@ class Five extends Orbit{
 				</tr>
 			</table>
 			<?php
-		}
-		else{
+		} else {
 			?>
 			<table>
 				<tr>
@@ -89,9 +106,14 @@ class Five extends Orbit{
 		}
 	}
 	
-	public function orbit_config_load(){
-		if(!empty($_GET['from'])){
-			switch($_GET['from']){
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 	public function orbit_config_load() {
+		if (!empty($_GET['from'])) {
+			switch($_GET['from']) {
 				case 'five':
 					$five_access_token = $this->five->getAccessToken($_GET['oauth_verifier']);
 					
@@ -115,8 +137,8 @@ class Five extends Orbit{
 			}
 		}
 		
-		if(!empty($_GET['link'])){
-			switch($_GET['link']){
+		if (!empty($_GET['link'])) {
+			switch($_GET['link']) {
 				case 'five':
 					$five_token = $this->five->getRequestToken($this->locationFull(array('from' => 'five')));
 					$five_authorize_uri = $this->five->getAuthorizeURL($five_token['oauth_token']);
@@ -133,8 +155,8 @@ class Five extends Orbit{
 			}
 		}
 		
-		if(!empty($_GET['unlink'])){
-			switch($_GET['unlink']){
+		if (!empty($_GET['unlink'])) {
+			switch($_GET['unlink']) {
 				case 'five':
 					$this->five_active = false;
 					$this->setPref('five_active', false);
@@ -198,7 +220,12 @@ class Five extends Orbit{
 		*/
 	}
 	
-	public function orbit_config_save(){
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 	public function orbit_config_save() {
 		$now = time();
 		$this->setPref('five_last_image_time', $now);
 		
@@ -207,20 +234,25 @@ class Five extends Orbit{
 		$this->savePref();
 	}
 	
-	public function orbit_image($images, $override=false){
-		if($override === false){ return; }
-		if(count($images) < 1){ return; }
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 	public function orbit_image($images, $override=false) {
+		if ($override === false) { return; }
+		if (count($images) < 1) { return; }
 		
 		$now = time();
 		
-		foreach($images as $image){
+		foreach($images as $image) {
 			$image_published = strtotime($image['image_published']);
 			
-			if(empty($image_published)){ continue; }
-			if($image_published > $now){ continue; }
-			if($override !== true){
-				if($image_published <= $this->five_last_image_time){ continue; }
-				if($image['image_privacy'] != 1){ continue; }
+			if (empty($image_published)) { continue; }
+			if ($image_published > $now) { continue; }
+			if ($override !== true) {
+				if ($image_published <= $this->five_last_image_time) { continue; }
+				if ($image['image_privacy'] != 1) { continue; }
 			}
 			
 			$image['500px_category_id'] = $_POST['500px_category_id'];
@@ -232,7 +264,12 @@ class Five extends Orbit{
 		$this->savePref();
 	}
 	
-	public function upload_image($image){
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 	public function upload_image($image) {
 		// Format caption
 		$canvas = new Canvas($this->five_format_image);
 		$canvas->assignArray($image);
@@ -269,7 +306,12 @@ class Five extends Orbit{
 		var_dump($response);
 	}
 	
-	public function orbit_send_html_image(){
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 	public function orbit_send_html_image() {
 		echo '<option value="five">500px</option>
 			<script type="text/javascript">
 				$("#image_send_service").change(function() {
@@ -281,7 +323,12 @@ class Five extends Orbit{
 			</script>';
 	}
 	
-	public function orbit_send_five_image($images){
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 	public function orbit_send_five_image($images) {
 		return $this->orbit_image($images, true);
 	}
 }

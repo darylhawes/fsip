@@ -55,7 +55,12 @@ if ( !class_exists('phpFlickr') ) {
 		 */
 		var $max_cache_rows = 1000;
 
-		function phpFlickr ($api_key, $secret = NULL, $die_on_error = false) {
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 		function phpFlickr ($api_key, $secret = NULL, $die_on_error = false) {
 			//The API Key must be set before any calls can be made.  You can
 			//get your own at http://www.flickr.com/services/api/misc.api_keys.html
 			$this->api_key = $api_key;
@@ -68,7 +73,12 @@ if ( !class_exists('phpFlickr') ) {
 			$this->php_version = explode(".", $this->php_version[0]);
 		}
 
-		function enableCache ($type, $connection, $cache_expire = 600, $table = 'flickr_cache') {
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 		function enableCache ($type, $connection, $cache_expire = 600, $table = 'flickr_cache') {
 			// Turns on caching.  $type must be either "db" (for database caching) or "fs" (for filesystem).
 			// When using db, $connection must be a PEAR::DB connection string. Example:
 			//	  "mysql://user:password@server/database"
@@ -124,7 +134,12 @@ if ( !class_exists('phpFlickr') ) {
 			$this->cache_expire = $cache_expire;
 		}
 
-		function getCached ($request)
+	/**
+	 * Desc
+	 *
+	 * @return 
+	 */
+ 		function getCached ($request)
 		{
 			//Checks the database or filesystem for a cached result to the request.
 			//If there is no cache result, it returns a value of false. If it finds one,
@@ -160,7 +175,12 @@ if ( !class_exists('phpFlickr') ) {
 			return false;
 		}
 
-		function cache ($request, $response)
+		/**
+ 		 * Desc
+ 		 *
+ 		 * @return 
+ 		 */
+ 		function cache ($request, $response)
 		{
 			//Caches the unparsed response of a request.
 			unset($request['api_sig']);
@@ -192,10 +212,20 @@ if ( !class_exists('phpFlickr') ) {
 			return false;
 		}
 		
-		function setCustomPost ( $function ) {
+		/**
+		 * Desc
+		 *
+		 * @return 
+		 */
+ 		function setCustomPost ( $function ) {
 			$this->custom_post = $function;
 		}
 		
+		/**
+		 * Desc
+		 *
+		 * @return 
+		 */
 		function post ($data, $type = null) {
 			if ( is_null($type) ) {
 				$url = $this->rest_endpoint;
@@ -259,6 +289,11 @@ if ( !class_exists('phpFlickr') ) {
 			return $response;
 		}
 		
+		/**
+		 * Desc
+		 *
+		 * @return 
+		 */
 		function request ($command, $args = array(), $nocache = false)
 		{
 			//Sends a request to Flickr's REST endpoint via POST.
@@ -313,6 +348,11 @@ if ( !class_exists('phpFlickr') ) {
 			return $this->response;
 		}
 
+		/**
+		 * Desc
+		 *
+		 * @return 
+		 */
 		function clean_text_nodes ($arr) {
 			if (!is_array($arr)) {
 				return $arr;
@@ -328,30 +368,55 @@ if ( !class_exists('phpFlickr') ) {
 			}
 		}
 
+		/**
+		 * Desc
+		 *
+		 * @return 
+		 */
 		function setToken ($token) {
 			// Sets an authentication token to use instead of the session variable
 			$this->token = $token;
 		}
 
+		/**
+		 * Desc
+		 *
+		 * @return 
+		 */
 		function setProxy ($server, $port) {
 			// Sets the proxy for all phpFlickr calls.
 			$this->req->setProxy($server, $port);
 		}
 
+		/**
+		 * Desc
+		 *
+		 * @return 
+		 */
 		function getErrorCode () {
 			// Returns the error code of the last call.  If the last call did not
 			// return an error. This will return a false boolean.
 			return $this->error_code;
 		}
 
+		/**
+		 * Desc
+		 *
+		 * @return 
+		 */
 		function getErrorMsg () {
 			// Returns the error message of the last call.  If the last call did not
 			// return an error. This will return a false boolean.
 			return $this->error_msg;
 		}
 
-		/* These functions are front ends for the flickr calls */
+//////////// These functions are front ends for the flickr calls ///////////////
 
+		/**
+		 * Desc
+		 *
+		 * @return 
+		 */
 		function buildPhotoURL ($photo, $size = "Medium") {
 			//receives an array (can use the individual photo data returned
 			//from an API call) and returns a URL (doesn't mean that the
@@ -379,6 +444,11 @@ if ( !class_exists('phpFlickr') ) {
 			return $url;
 		}
 
+		/**
+		 * Desc
+		 *
+		 * @return 
+		 */
 		function getFriendlyGeodata ($lat, $lon) {
 			/* I've added this method to get the friendly geodata (i.e. 'in New York, NY') that the
 			 * website provides, but isn't available in the API. I'm providing this service as long
@@ -387,6 +457,11 @@ if ( !class_exists('phpFlickr') ) {
 			return unserialize(file_get_contents('http://phpflickr.com/geodata/?format=php&lat=' . $lat . '&lon=' . $lon));
 		}
 
+		/**
+		 * Desc
+		 *
+		 * @return 
+		 */
 		function sync_upload ($photo, $title = null, $description = null, $tags = null, $is_public = null, $is_friend = null, $is_family = null) {
 			if ( function_exists('curl_init') ) {
 				// Has curl. Use it!
@@ -449,6 +524,12 @@ if ( !class_exists('phpFlickr') ) {
 
 		}
 
+
+		/**
+		 * Desc
+		 *
+		 * @return 
+		 */
 		function async_upload ($photo, $title = null, $description = null, $tags = null, $is_public = null, $is_friend = null, $is_family = null) {
 			if ( function_exists('curl_init') ) {
 				// Has curl. Use it!
@@ -509,7 +590,11 @@ if ( !class_exists('phpFlickr') ) {
 			}
 		}
 
-		// Interface for new replace API method.
+		/**
+		 * Interface for new replace API method.
+		 *
+		 * @return 
+		 */
 		function replace ($photo, $photo_id, $async = null) {
 			if ( function_exists('curl_init') ) {
 				// Has curl. Use it!
@@ -575,6 +660,11 @@ if ( !class_exists('phpFlickr') ) {
 			}
 		}
 
+		/**
+		 * Desc
+		 *
+		 * @return 
+		 */
 		function auth ($perms = "read", $remember_uri = true) {
 			// Redirects to Flickr's authentication piece if there is no valid token.
 			// If remember_uri is set to false, the callback script (included) will
@@ -607,15 +697,17 @@ if ( !class_exists('phpFlickr') ) {
 			}
 		}
 
-		/*******************************
-
-		To use the phpFlickr::call method, pass a string containing the API method you want
-		to use and an associative array of arguments.  For example:
-			$result = $f->call("flickr.photos.comments.getList", array("photo_id"=>'34952612'));
-		This method will allow you to make calls to arbitrary methods that haven't been
-		implemented in phpFlickr yet.
-
-		*******************************/
+		/**
+		 * call
+		 *
+		 * To use the phpFlickr::call method, pass a string containing the API method you want
+		 * to use and an associative array of arguments.  For example:
+		 * 	$result = $f->call("flickr.photos.comments.getList", array("photo_id"=>'34952612'));
+		 * This method will allow you to make calls to arbitrary methods that haven't been
+		 * implemented in phpFlickr yet.
+		 *
+		 * @return 
+		 */
 
 		function call ($method, $arguments) {
 			foreach ( $arguments as $key => $value ) {
