@@ -48,7 +48,13 @@ if ($page == "README") {
 	exit;
 }*/
 
-/// FUNCTIONS
+////// FUNCTIONS
+
+/**
+ * Desc
+ *
+ * @return 
+ */
 function rebuildREADME() {
 	$infile = PATH . 'README.md';
 	$page_contents = file_get_contents($infile);
@@ -61,6 +67,11 @@ function rebuildREADME() {
 	return $page_contents;
 }
 
+/**
+ * Desc
+ *
+ * @return 
+ */
 function rebuildDoc($infile) {
 	$page_contents = file_get_contents($infile);
 	if ($page_contents === false) { 
@@ -72,6 +83,11 @@ function rebuildDoc($infile) {
 	return $page_contents;
 }
 
+/**
+ * Desc
+ *
+ * @return 
+ */
 function convert_and_put_contents($out, $text) {
 	// Markdown
 	$parser = new Markdown_Parser;
