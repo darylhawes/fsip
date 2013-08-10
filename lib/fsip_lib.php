@@ -2320,7 +2320,7 @@ function getTablesIndex() {
  *
  * @return bool true if there is a user logged in
  */
- function redirectToLogin() {
+function redirectToLogin() {
 	$_SESSION['fsip']['destination'] = location();
 	session_write_close();
 	
