@@ -1568,6 +1568,16 @@ function fsip_nl2br($str) {
 }
 
 /**
+ * Remove nulls from a JSON string
+ *
+ * @param string $input JSON input
+ * @return string JSON ouput
+ */
+function removeNullFromJSON($input) {
+	return str_replace(':null', ':""', $input);
+}
+
+/**
  * Choose between singular and plural forms of a string
  *
  * @param string $count Count

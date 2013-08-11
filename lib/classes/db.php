@@ -231,16 +231,6 @@ class DB {
 		
 		return true;
 	}
-	
-	/**
-	 * Remove nulls from a JSON string
-	 *
-	 * @param string $input JSON input
-	 * @return string JSON ouput
-	 */
-	public function removeNull($input) {
-		return str_replace(':null', ':""', $input);
-	}
 
 	/**
 	 * Sanitize table and column names (to prevent SQL injection attacks)

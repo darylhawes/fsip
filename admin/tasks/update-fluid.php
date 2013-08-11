@@ -32,6 +32,6 @@ foreach($comments->comments as $comment) {
 	$json['showGrowlNotification'][] = array('title' => 'New comment', 'description' => $comment_text);
 }
 
-echo removeNull(json_encode($json));
+echo removeNullFromJSON(json_encode($json));
 
 ?>

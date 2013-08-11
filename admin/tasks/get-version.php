@@ -15,7 +15,7 @@ global $db;
 
 if (!empty($_POST['id'])) {
 	$version = $db->getRow('versions', $_POST['id']);
-	echo removeNull(json_encode($version));
+	echo removeNullFromJSON(json_encode($version));
 }
 
 ?>

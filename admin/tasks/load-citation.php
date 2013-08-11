@@ -14,7 +14,7 @@ $user->hasPermission('admin', true);
 if (!empty($_POST['uri'])) {
 	$citation = loadCitation($_POST['uri'], $_POST['field'], $_POST['field_id']);
 	if ($citation != false) {
-		echo removeNull(json_encode($citation));
+		echo removeNullFromJSON(json_encode($citation));
 	}
 }
 

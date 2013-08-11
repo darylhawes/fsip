@@ -18,7 +18,7 @@ if (empty($_POST['image_id'])) {
 		$tasks[] = $i;
 	}
 	
-	echo removeNull(json_encode($tasks));
+	echo removeNullFromJSON(json_encode($tasks));
 } else {
 	$prbit = new Orbit;
 	$prbit->executeTask($_POST['image_id']);

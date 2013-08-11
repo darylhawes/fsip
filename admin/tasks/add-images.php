@@ -37,7 +37,7 @@ if (empty($_POST['image_file'])) {
 	}
 	
 	$image['image_tags'] = $tag_names;
-	echo removeNull(json_encode($image));
+	echo removeNullFromJSON(json_encode($image));
 }
 
 ?>
