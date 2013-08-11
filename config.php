@@ -85,6 +85,8 @@ if ($url_rewrite) {
 	define('URL_AID', '&id=');
 	define('URL_RW', '');
 }
+
+
 $server_address = $_SERVER['SERVER_NAME'];
 if (isset ($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] != "80") {
 	$server_address .= ':'.$_SERVER['SERVER_PORT'];
@@ -128,5 +130,4 @@ define('IMAGEDATA', DATAFOLDER . 'images/');
 define('DB', DATAFOLDER . 'db/');
 
 require_once(PATH . LIB . 'fsip_lib.php');
-
 ?>

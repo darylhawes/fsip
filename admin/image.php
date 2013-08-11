@@ -36,7 +36,7 @@ if (!empty($_POST['image_id'])) {
 		if ($images->delete()) {
 			addNote('The image has been deleted.', 'success');
 		}
-	} elseif(isset($_POST['image_recover']) && (@$_POST['image_recover'] == 'recover')) {
+	} elseif (isset($_POST['image_recover']) && (@$_POST['image_recover'] == 'recover')) {
 		if ($images->recover()) {
 			addNote('The image has been recovered.', 'success');
 		}
@@ -51,7 +51,7 @@ if (!empty($_POST['image_id'])) {
 			$image_markup_ext = $_POST['image_markup'];
 			$image_title = $orbit->hook('markup_title_' . $image_markup_ext, $image_title, $image_title);
 			$image_description = $orbit->hook('markup_' . $image_markup_ext, $image_description_raw, $image_description_raw);
-		} elseif(returnConf('web_markup')) {
+		} elseif (returnConf('web_markup')) {
 			$image_markup_ext = returnConf('web_markup_ext');
 			$image_title = $orbit->hook('markup_title_' . $image_markup_ext, $image_title, $image_title);
 			$image_description = $orbit->hook('markup_' . $image_markup_ext, $image_description_raw, $image_description_raw);
@@ -188,12 +188,12 @@ if (empty($image['image_title'])) {
 				<a href="#get_location" class="get_location"><img src="<?php echo BASE . IMGFOLDER; ?>icons/location.png" alt="" style="vertical-align: middle;" /></a>
 <?php
 				
-				if (!empty($image['image_geo_lat'])) {
+	if (!empty($image['image_geo_lat'])) {
 ?>
 					<br />
 					<img src="<?php echo BASE . IMGFOLDER; ?>icons/geo.png" alt="" /> <?php echo round($image['image_geo_lat'], 5); ?>, <?php echo round($image['image_geo_long'], 5); ?>
 <?php
-				}
+	}
 ?>
 				<span class="none get_location_set"><?php if(!empty($_SESSION['fsip']['location'])){ echo $_SESSION['fsip']['location']; } ?></span>
 			</p>
@@ -213,7 +213,9 @@ if (empty($image['image_title'])) {
 				<?php echo showRights('right_id', $image['right_id']); ?>
 			</p>
 			
-			<?php if (!empty($image_colorkey)) { ?>
+<?php 
+	if (!empty($image_colorkey)) { 
+?>
 			<p class="slim"><span class="switch">&#9656;</span> <a href="#" class="show">Show color palette</a></p>
 			
 			<div class="reveal">
@@ -223,25 +225,26 @@ if (empty($image['image_title'])) {
 					<li>Export: <a href="<?php echo BASE . ADMINFOLDER . 'tasks/export-palette.php?image_id=' . $image['image_id'] . '&format=ase'; ?>" title="Adobe Swatch Exchange">ASE</a>, <a href="<?php echo BASE . ADMINFOLDER . 'tasks/export-palette.php?image_id=' . $image['image_id'] . '&format=css'; ?>" title="Cascading Style Sheets">CSS</a>, <a href="<?php echo BASE . ADMINFOLDER . 'tasks/export-palette.php?image_id=' . $image['image_id'] . '&format=gpl'; ?>" title="GIMP Palette">GPL</a></li>
 				</ul>
 			</div>
-			<?php } ?>
+
+<?php 
+	} 
+?>
 			
 			<p class="slim"><span class="switch">&#9656;</span> <a href="#" class="show">Show image files</a></p>
 			
 			<div class="reveal">
 				<ul>
 					<li><a href="<?php echo $image['image_src']; ?>">Original</a> <span class="quiet">(<?php echo $image['image_width']; ?> &#0215; <?php echo $image['image_height']; ?>)</span></li>
-<?php
 
+<?php
 					foreach($sizes as $size) {
 						echo '<li><a href="' . $size['size_src'] . '">' . $size['size_title'] . '</a> <span class="quiet">(' . $size['size_width'] . ' &#0215; ' . $size['size_height'] . ')</span></li>';
 					}
-
 ?>
 				</ul>
 			</div>
 			
 <?php
-			
 			if (count($exifs) > 0) {
 				echo '<p><span class="switch">&#9656;</span> <a href="#" class="show">Show EXIF data</a></p>';
 				echo '<div class="reveal"><ul>' . "\n";
@@ -252,8 +255,7 @@ if (empty($image['image_title'])) {
 					}
 				}
 				echo '</ul></div>';
-			}
-			
+			}			
 ?>
 			
 			<hr />

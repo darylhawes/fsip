@@ -6,7 +6,7 @@
 // http://www.alkalineapp.com/
 */
 
-require_once('./../config.php');
+require_once('../config.php');
 //echo "comments 1<br />";
 
 $orbit = new Orbit;

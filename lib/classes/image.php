@@ -72,7 +72,7 @@ class Image {
 		if (!empty($this->image_ids) && ($images = $cache->get('images:' . implode(',', $this->image_ids), 'images')) && !empty($last_modified) && ($cache->lastModified() > $last_modified)) {
 			$this->images = unserialize($images);
 		} else {
-			if(count($this->image_ids) > 0){
+			if (count($this->image_ids) > 0) {
 				$query = $this->db->prepare('SELECT * FROM images' . $this->sql . ';');
 				$query->execute();
 				$images = $query->fetchAll();
@@ -106,9 +106,9 @@ class Image {
 
 					$this->images[$i]['image_uri'] = LOCATION . $this->images[$i]['image_uri_rel'];
 
-					if(returnConf('comm_enabled') != true) {
+					if (returnConf('comm_enabled') != true) {
 						$this->images[$i]['image_comment_disabled'] = 1;
-					} elseif(returnConf('comm_close') == true) {
+					} elseif (returnConf('comm_close') == true) {
 						if((time() - strtotime($this->images[$i]['image_published'])) > returnConf('comm_close_time')) {
 							$this->images[$i]['image_comment_disabled'] = 1;
 						}

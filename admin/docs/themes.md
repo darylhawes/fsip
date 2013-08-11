@@ -32,7 +32,13 @@ Insertions are the most basic component of your theme. They tell FSIP where to i
 
 ###### Filters
 
-Filters modify the data to be inserted and are appear after the insertion, followed by a pipe, like so: `{Insertion|Filter}`. You can apply multiple filters to a single tag like so: `{Insertion|Filter1|Filter2}`. Here are the current filters:
+Filters modify the data to be inserted and are appear after the insertion, followed by 
+a pipe, like so: 
+`{Insertion|Filter}`.
+You can apply multiple filters to a single tag like so: 
+`{Insertion|Filter1|Filter2}`. 
+
+Here are the current filters:
 
 - `alpha` -- convert number to words (for example, 2 to "two") (U.S. English only)
 - `alpha0` -- convert number to words, except zero
@@ -51,8 +57,10 @@ Filters modify the data to be inserted and are appear after the insertion, follo
 
 ###### Blocks
 
-Blocks display a series of data in a loop. There are seven major blocks in FSIP: Comments, Images, Pages, Sets, Sizes, and Tags. For example:
+Blocks display a series of data in a loop. There are seven major blocks in FSIP: 
+Comments, Images, Pages, Sets, Sizes, and Tags. 
 
+For example:
 	{block:Images}
 		{Image_Title}
 	{/block:Images}
@@ -75,7 +83,9 @@ Hooks tell FSIP when to execute extensions. FSIP extension developers can use th
 
 ##### Slideshow
 
-The standard slideshow can be operated by keyboard shortcuts; use your keyboard's arrow keys to move back and forth and press the `P` key to play or pause the automatic rotation. Additionally, you can add buttons or links to navigate your slideshow by adding classes like so: `<a href="" class="slideshow_next">Next image</a>`.
+The standard slideshow can be operated by keyboard shortcuts; use your keyboard's arrow keys to move back and forth and press the `P` key to play or pause the automatic rotation. 
+Additionally, you can add buttons or links to navigate your slideshow by adding classes like so: 
+`<a href="" class="slideshow_next">Next image</a>`.
 
 These are the pre-installed CSS classes:
 
@@ -87,7 +97,8 @@ These are the pre-installed CSS classes:
 
 ##### Insertion Reference
 
-There are nearly a hundred built-in insertions. Themes, extensions, and additional programming can add any number more.
+There are nearly a hundred built-in insertions. 
+Themes, extensions, and additional programming can add any number more.
 
 ###### Comment
 
