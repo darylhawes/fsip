@@ -28,7 +28,7 @@ class Thumbnail extends FSIP {
 	public function __construct($file=null) {
 		parent::__construct();
 		
-		$file = parent::correctWinPath($file);
+		$file = Files::correctWinPath($file);
 		$ext = Image::getExt($file);
 		
 		$this->quality = $this->returnConf('thumb_compress_tol');
@@ -173,7 +173,7 @@ class Thumbnail extends FSIP {
 	}
 	
 	public function save($path) {
-		$this->path = parent::correctWinPath($path);
+		$this->path = Files::correctWinPath($path);
 		
 		if ($this->library == 'gd'){
 			$this->thumbnail->save($this->path);
@@ -200,7 +200,7 @@ class Thumbnail extends FSIP {
 			$position = returnConf('thumb_watermark_pos');
 		}
 		
-		$watermark = correctWinPath($watermark);
+		$watermark = Files::correctWinPath($watermark);
 		
 		// Check to see if watermark exists
 		if (!file_exists($watermark)) { 

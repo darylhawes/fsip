@@ -1603,19 +1603,6 @@ function returnFullCount($count, $singular, $plural=null) {
 }
 
 /**
- * If Windows Server, make path Windows-friendly
- *
- * @param string $path
- * @return string
- */
-function correctWinPath($path) {
-	if (SERVER_TYPE == 'win') {
-		$path = str_replace('/', '\\', $path);
-	}
-	return $path;
-}
-
-/**
  * Compare two strings
  *
  * @param string $string1 

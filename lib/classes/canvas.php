@@ -92,7 +92,7 @@ class Canvas {
 			Debugger::addError(E_USER_ERROR, 'No default theme selected');
 		}
 		
-		$path = correctWinPath(PATH . THEMES . $theme_folder . '/' . $filename . TEMP_EXT);
+		$path = Files::correctWinPath(PATH . THEMES . $theme_folder . '/' . $filename . TEMP_EXT);
 		
 		if (is_file($path)) {
 			$this->template .= file_get_contents($path) . "\n";
@@ -252,17 +252,21 @@ class Canvas {
 		}
 		
 		$class = strtolower(get_class($object));
+//echo "debug: class of object we're looping in Canvas is $class<br />";
 		$this->objects[$class] = $object;
 		
 		if ($this->slideshow === true) {
 			$this->template = '<ul id="slideshow">' . $this->template . '</ul>';
 		}
 		
+//echo "this template: <br />";
+//echo "<pre>  $this->template </pre><br />";
 		$matches = array();
 		preg_match_all('#{block:(' . $table_regex . ')}(.*?){/block:\1}#si', $this->template, $matches, PREG_SET_ORDER);
 		
 		$loops = array();
-		
+//echo "debug: number of matches for block: text is ".count($matches).". For regex of $table_regex<br />matches: <br />";		
+//print_r($matches);
 		if (count($matches) > 0) {
 			foreach($matches as $match) {
 				$match[1] = strtolower($match[1]);
@@ -270,7 +274,7 @@ class Canvas {
 				// Wrap in <form> for commenting
 				if (($match[1] == 'images') and ($this->form_wrap === true)) {
 					$match[2] = '<form action="" method="post">' . $match[2] . '</form>';
-				} elseif(($match[1] == 'images') and ($this->slideshow === true)) {
+				} elseif (($match[1] == 'images') and ($this->slideshow === true)) {
 					$match[2] = '<li><!-- ' . $match[2] . ' --></li>';
 				}
 				$loops[] = array('replace' => $match[0], 'reel' => $match[1], 'template' => $match[2], 'replacement' => '');
@@ -281,7 +285,7 @@ class Canvas {
 		
 		
 		$loop_count = count($loops);
-		
+//echo "debug: number of loops in Canvas loop for object of class $class = $loop_count<br />";
 		for($j = 0; $j < $loop_count; ++$j) {
 			if ($loops[$j]['reel'] != $class . 's') { continue; }
 			if (!isset($object->$loops[$j]['reel'])) { continue; }
@@ -307,6 +311,7 @@ class Canvas {
 				}
 				
 				for($i = $offset; $i < $finish; ++$i) {
+
 					$field_label = substr($field, 0, -3);
 					
 					if ($i == 0) {
@@ -384,6 +389,7 @@ class Canvas {
 	 * @return void
 	 */
 	protected function loopSub($array, $template, $field, $id) {
+//echo "debug: in loopSub<br />";
 		$loops = array();
 		$tables = getTables();
 		

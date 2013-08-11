@@ -103,12 +103,12 @@ if (@$_POST['install'] == 'Install') {
 			$path = $_POST['install_db_file'];
 		} else {
 			$path = PATH . DB . 'fsip.db';
-			$path = correctWinPath($path);
+			$path = Files::correctWinPath($path);
 			
 			$rand = randInt();
 			$rand = substr(md5($rand), 0, 8);
 			$path_new = PATH . DB . 'fsip_' . $rand . '.db';
-			$path_new = correctWinPath($path_new);
+			$path_new = Files::correctWinPath($path_new);
 			
 			if (copy($path, $path_new)) {
 				unlink($path);
@@ -117,7 +117,7 @@ if (@$_POST['install'] == 'Install') {
 			}
 		}
 		
-		$path = correctWinPath($path);
+		$path = Files::correctWinPath($path);
 		
 		$dsn = 'sqlite:' . $path;
 		

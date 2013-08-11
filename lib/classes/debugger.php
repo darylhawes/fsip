@@ -346,7 +346,7 @@ class Debugger {
 		$message .= "\n";
 		
 		// Write message
-		$handle = fopen(correctWinPath(PATH . DB . 'log.txt'), 'a');
+		$handle = fopen(Files::correctWinPath(PATH . DB . 'log.txt'), 'a');
 		if (@fwrite($handle, $message) === false) {
 			$this->addError(E_USER_ERROR, 'Cannot write to report file');
 		}

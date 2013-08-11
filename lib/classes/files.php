@@ -16,6 +16,20 @@ class Files {
 	}
 
 	// FILE HANDLING
+
+
+	/**
+	 * If Windows Server, make path Windows-friendly
+	 *
+	 * @param string $path
+	 * @return string
+	 */
+	public static function correctWinPath($path) {
+		if (SERVER_TYPE == 'win') {
+			$path = str_replace('/', '\\', $path);
+		}
+		return $path;
+	}
 	
 	/**
 	 * Browse a local directory (non-recursive) for filenames
@@ -31,7 +45,7 @@ class Files {
 		}
 		
 		// Windows-friendly
-		$dir = correctWinPath($dir);
+		$dir = Files::correctWinPath($dir);
 		
 		$files = array();
 		$ignore = array('.', '..');

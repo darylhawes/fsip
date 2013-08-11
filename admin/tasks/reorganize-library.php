@@ -40,7 +40,7 @@ if (empty($id)) {
 		$dir .= '/';
 	}
 	
-	$path = correctWinPath(PATH . IMAGEDATA . $dir);
+	$path = Files::correctWinPath(PATH . IMAGEDATA . $dir);
 	$dest = $path . $image['image_id'] . '.' . $image['image_ext'];
 	
 	if ($src != $dest) {
@@ -54,7 +54,7 @@ if (empty($id)) {
 		
 		foreach($sizes as $size) {
 			$src = $size['size_file'];
-			$dest = correctWinPath(PATH . IMAGEDATA . $dir . $size['size_prepend'] . $image['image_id'] . $size['size_append'] . '.' . $image['image_ext']);
+			$dest = Files::correctWinPath(PATH . IMAGEDATA . $dir . $size['size_prepend'] . $image['image_id'] . $size['size_append'] . '.' . $image['image_ext']);
 			
 			rename($src, $dest);
 		}

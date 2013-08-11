@@ -20,10 +20,10 @@ if (isset($_REQUEST['context']) and ($_REQUEST['context'] == sha1(PATH . BASE . 
 	header('Content-Type: application/x-plist');
 	
 	$file = $_FILES['upload_file'];
-	move_uploaded_file($file['tmp_name'], correctWinPath(PATH . SHOEBOX . $file['name']));
+	move_uploaded_file($file['tmp_name'], Files::correctWinPath(PATH . SHOEBOX . $file['name']));
 	
 	echo '<?xml version="1.0" encoding="UTF-8"?>';
-	?>
+?>
 	<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 	<plist version="1.0">
 	<dict>
@@ -31,7 +31,7 @@ if (isset($_REQUEST['context']) and ($_REQUEST['context'] == sha1(PATH . BASE . 
 	<true/>
 	</dict>
 	</plist>
-	<?php
+<?php
 }
 
 $user->hasPermission('upload', true);
@@ -40,7 +40,7 @@ $user->hasPermission('upload', true);
 if (!empty($_FILES)) {
 	$filename = $_FILES['user_file']['name'][0];
 	$tmp_file = $_FILES['user_file']['tmp_name'][0];
-	copy($tmp_file, correctWinPath(PATH . SHOEBOX . $filename));
+	copy($tmp_file, Files::correctWinPath(PATH . SHOEBOX . $filename));
 	unlink($tmp_file);
 	
 	exit();

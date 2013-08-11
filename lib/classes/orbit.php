@@ -56,7 +56,7 @@ class Orbit {
 
 				foreach($extensions as &$extension) {
 					$extension['extension_uid'] = strval($extension['extension_uid']);
-					$extension['extension_file'] = correctWinPath(PATH . EXTENSIONS . $extension['extension_folder'] . '/' . $extension['extension_file'] . '.php');
+					$extension['extension_file'] = Files::correctWinPath(PATH . EXTENSIONS . $extension['extension_folder'] . '/' . $extension['extension_file'] . '.php');
 					$extension['extension_hooks'] = unserialize($extension['extension_hooks']);
 				}
 			
@@ -114,7 +114,7 @@ class Orbit {
 			}
 			
 			$this->uid = strval($this->uid);
-			$this->file = correctWinPath(PATH . EXTENSIONS . $this->folder . '/' . $this->file . '.php');
+			$this->file = Files::correctWinPath(PATH . EXTENSIONS . $this->folder . '/' . $this->file . '.php');
 			if (!is_array($this->hooks)) {
 				$this->hooks = unserialize($this->hooks);
 			}

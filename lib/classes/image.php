@@ -92,9 +92,9 @@ class Image {
 				// Attach additional fields
 				for($i = 0; $i < $image_count; ++$i) {
 					if (empty($this->images[$i]['image_directory'])) {	
-						$this->images[$i]['image_file'] = correctWinPath(PATH . IMAGEDATA . $this->images[$i]['image_id'] . '.' . $this->images[$i]['image_ext']);
+						$this->images[$i]['image_file'] = Files::correctWinPath(PATH . IMAGEDATA . $this->images[$i]['image_id'] . '.' . $this->images[$i]['image_ext']);
 					} else {
-						$this->images[$i]['image_file'] = correctWinPath(PATH . IMAGEDATA . $this->images[$i]['image_directory'] . $this->images[$i]['image_id'] . '.' . $this->images[$i]['image_ext']);
+						$this->images[$i]['image_file'] = Files::correctWinPath(PATH . IMAGEDATA . $this->images[$i]['image_directory'] . $this->images[$i]['image_id'] . '.' . $this->images[$i]['image_ext']);
 					}
 					$this->images[$i]['image_src'] = BASE . IMAGEDATA . $this->images[$i]['image_id'] . '.' . $this->images[$i]['image_ext'];
 					$title_url = makeURL($this->images[$i]['image_title']);
@@ -198,7 +198,7 @@ class Image {
 			$image_ids[] = $image_id;
 
 			// Copy image to archive, delete original from shoebox
-			copy($file, correctWinPath(PATH . IMAGEDATA . $image_id . '.' . $image_ext));
+			copy($file, Files::correctWinPath(PATH . IMAGEDATA . $image_id . '.' . $image_ext));
 			@unlink($file);
 		}
 		
@@ -276,7 +276,7 @@ class Image {
 				$size_append = $size['size_append'];
 				$size_watermark = $size['size_watermark'];
 				$size_label = $size['size_label'];
-				$size_dest = correctWinPath(PATH . IMAGEDATA . $images[$i]['image_directory'] . $size_prepend . $images[$i]['image_id'] . $size_append . '.' . $images[$i]['image_ext']);
+				$size_dest = Files::correctWinPath(PATH . IMAGEDATA . $images[$i]['image_directory'] . $size_prepend . $images[$i]['image_id'] . $size_append . '.' . $images[$i]['image_ext']);
 				
 				if (in_array($images[$i]['image_ext'], array('pdf', 'svg'))) {
 					$size_dest = $this->changeExt($size_dest, 'png');
@@ -301,7 +301,7 @@ class Image {
 				if ($this->returnConf('thumb_watermark') and ($size_watermark == 1)) {
 					$watermark = correctWinPath(PATH . WATERMARKS . $size_label . '.png');
 					if (!file_exists($watermark)) {
-						$watermark = correctWinPath(PATH . WATERMARKS . 'watermark.png');
+						$watermark = Files::correctWinPath(PATH . WATERMARKS . 'watermark.png');
 					}
 					$thumbnail->watermark($watermark);
 				}
@@ -1434,7 +1434,7 @@ class Image {
 					$this->images[$j]['image_directory'] = '';
 				}
 				
-				$size['size_file'] = correctWinPath(PATH . IMAGEDATA . $this->images[$j]['image_directory'] . $size_prepend . $this->images[$j]['image_id'] . $size_append . '.' . $this->images[$j]['image_ext']);
+				$size['size_file'] = Files::correctWinPath(PATH . IMAGEDATA . $this->images[$j]['image_directory'] . $size_prepend . $this->images[$j]['image_id'] . $size_append . '.' . $this->images[$j]['image_ext']);
 				
 				$size['size_src'] = BASE . IMAGEDATA . $this->images[$j]['image_directory'] . $size_prepend . $this->images[$j]['image_id'] . $size_append . '.' . $image_ext;
 				
@@ -1927,7 +1927,7 @@ class Image {
 	 */
 	public function deSizeImage($original=false, $save_labels=null) {
 		// Open image directory
-		$dir = correctWinPath(PATH . IMAGEDATA);
+		$dir = Files::correctWinPath(PATH . IMAGEDATA);
 		$handle = opendir($dir);
 		$images = array();
 		
