@@ -83,11 +83,10 @@ class Find {
 	 * @param bool $ignore_deleted Ignore "deleted" table rows (except in recovery mode)
 	 */
 	public function __construct($table=null, $ids=null, $auto_guest=true, $process_request=true, $ignore_deleted=true) {
-//echo "contructing find";
+//echo "contructing find for $table<br />";
 		global $db;
 		$this->db = $db;
-//echo "dbpointer has been set";
-//print_r($this->db);
+
 		// Error handling
 		if (empty($table)) { return false; }
 		
@@ -1727,13 +1726,13 @@ class Find {
 		
 		// Set SQL limit
 		if ($page == 1) {
-			$this->page_limit_curent = $this->page_limit_first; 
+			$this->page_limit_current = $this->page_limit_first; 
 		} else { 
-			$this->page_limit_curent = $this->page_limit; 
+			$this->page_limit_current = $this->page_limit; 
 		}
 
-		$this->page_begin = (($page - 1) * $this->page_limit_curent) - $this->page_limit_curent + $this->page_limit_first;
-		$this->sql_limit = ' LIMIT ' . $this->page_begin . ', ' . $this->page_limit_curent;
+		$this->page_begin = (($page - 1) * $this->page_limit_current) - $this->page_limit_current + $this->page_limit_first;
+		$this->sql_limit = ' LIMIT ' . $this->page_begin . ', ' . $this->page_limit_current;
 		
 		return true;
 	}
