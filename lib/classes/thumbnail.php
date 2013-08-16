@@ -12,7 +12,9 @@
  * @version 1.1
  */
 
-class Thumbnail extends FSIP {
+//require_once('../../config.php');
+
+class Thumbnail {
 	public $library;
 	public $thumbnail;
 	protected $path;
@@ -26,15 +28,14 @@ class Thumbnail extends FSIP {
 	 * @param file $file Filename
 	 */
 	public function __construct($file=null) {
-		parent::__construct();
 		
 		$file = Files::correctWinPath($file);
 		$ext = Image::getExt($file);
 		
-		$this->quality = $this->returnConf('thumb_compress_tol');
+		$this->quality = returnConf('thumb_compress_tol');
 		if (empty($this->quality)) { $this->quality = 100; }
 		
-		if (class_exists('Imagick', false) and ($this->returnConf('thumb_imagick') or in_array($ext, array('pdf', 'svg')))) {
+		if (class_exists('Imagick', false) and (returnConf('thumb_imagick') or in_array($ext, array('pdf', 'svg')))) {
 			$this->library = 'imagick';
 			$this->thumbnail = new Imagick($file);
 		} else {
@@ -52,8 +53,6 @@ class Thumbnail extends FSIP {
 			$this->thumbnail->clear();
 			$this->thumbnail->destroy();
 		}
-		
-		parent::__destruct();
 	}
 	
 	public function resize($width, $height) {
@@ -325,8 +324,8 @@ class Thumbnail extends FSIP {
 	 * @return void
 	 */
 	private function watermarkPosition($image_height, $image_width, $water_height, $water_width, $margin=null, $position=null) {
-		if (empty($margin)) { $margin = $this->returnConf('thumb_watermark_margin'); }
-		if (empty($position)) { $position = $this->returnConf('thumb_watermark_pos'); }
+		if (empty($margin)) { $margin = returnConf('thumb_watermark_margin'); }
+		if (empty($position)) { $position = returnConf('thumb_watermark_pos'); }
 
 		switch($position) {
 			case 'nw':
