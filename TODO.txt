@@ -1,10 +1,20 @@
+Showbox and upload progress bars are not working. They should be smoother and more obvious in what they're doing.
+
+_______
+Move "themes" and "extensions" folder into a subfolder? "watermarks" as well
+	maybe create a plugins folder and put all three in there? Or create an extensions folder and rename extensions to plugins??
+_______
+
+Investigate slideshow.php - when is it used, how do you invoke it? Template class Canvas has a function to set the template to a slideshow - slideshow($bool=true)  ? why?
+_______
+
 Admin - create an Alkaline export tool and an import-from-alkaline fsip tool.
 Admin - create an upgrade tool for database upgrades.
 
 ADMIN - MAINTENANCE
 Add an admin task.php file to view the db/log.txt database transaction log
 _______
-
+	
 // DEH TODO: in dashboard.php census instead of reporting only image #: 
 	report publisher images # vs. total images in dbase, maybe also display #deleted images!
 ________
@@ -112,8 +122,12 @@ insert a user preference for how many images to show per page.
 Allow users to create their own "lightboxes", playlists or collections of images they have bookmarked. Allow these to be shared easily.
 ________
 THEME
-Themes: Find out why there is a <uid></uid> var in XML file. Is it for the remote boomerang 3rd party extension version check stuff? Can that be removed without breaking anything? There is already a folder/project name and a version and build number.
+Themes: Find out WHY there is a <uid></uid> var in XML file. 
+	Is it for the remote boomerang 3rd party extension version check stuff? 
+	Can that be removed without breaking anything? 
+	There is already a folder/project name and a version and build number, is that not enough to identify?
 
+Themes: add a description tag to the heme.xml file so admins can see data on what the theme's details are
 ________
 
 Update system needs rework.
@@ -295,6 +309,15 @@ Dropbox extension code:
  http://classes.verkoyen.eu
  
 ______
+
+check out the function in extensions/flickr/classes/phpFlickr.php... Is this available elsewhere, in a library or something?
+		function getFriendlyGeodata ($lat, $lon) {
+			/* I've added this method to get the friendly geodata (i.e. 'in New York, NY') that the
+			 * website provides, but isn't available in the API. I'm providing this service as long
+			 * as it doesn't flood my server with requests and crash it all the time.
+			 */
+			return unserialize(file_get_contents('http://phpflickr.com/geodata/?format=php&lat=' . $lat . '&lon=' . $lon));
+		}
 
 Make a note on the geo text field of the format that is expected with/without the google map API extension activated.
 (You do not have the google map API string <activated>. The format we expect in this field is long/lat ex. 00000 0000)
