@@ -26,45 +26,29 @@ if (!empty($remember) and ($remember == 1)) {
 	$remember = true; 
 }
 
-// DEH This is where we run updates on login if present. 
-//This should be moved to an admin function with an addNote() pointing to the update page when available.
 if ($user->hasPermission('admin', false)) {
-	if (file_exists(PATH . 'update/index.php')) {
-		$location = LOCATION . BASE . 'update/';
-		headerLocationRedirect($location);
-		exit();
-	} else {
-		$location = LOCATION . BASE . ADMINFOLDER . 'dashboard' . URL_CAP;
-		headerLocationRedirect($location);
-		exit();
+/* DEH remove dead remote services
+	$latest = @$fsip->boomerang('latest');
+	if($latest['build'] > FSIP_BUILD){
+		$fsip->addNote('A new version of FSIP (v' . $latest['version'] . ') is available. Learn more and download the update at <a href="http://www.alkalineapp.com/">alkalineapp.com</a>.', 'notice');
 	}
+*/
+	include_once(LOCATION . BASE . ADMINFOLDER . '/update/index.php');
 } 
 
 if (!empty($username) or !empty($password)) {
 	if ($user->auth($username, $password, $remember)) {
-		// Check for updates
-/* DEH remove dead remote services
-		$latest = @$fsip->boomerang('latest');
-		if($latest['build'] > FSIP_BUILD){
-			$fsip->addNote('A new version of FSIP (v' . $latest['version'] . ') is available. Learn more and download the update at <a href="http://www.alkalineapp.com/">alkalineapp.com</a>.', 'notice');
-		}
-*/
 		unset($_SESSION['fsip']['destination']);
 		session_write_close();
 		
-// DEH This is another area where we run updates on login if present. 
-//This should be moved to an admin function with an addNote() pointing to the update page when available.
-		if (file_exists(PATH . 'update/index.php')) {
-			$location = LOCATION . BASE . 'update/';
-			headerLocationRedirect($location);
-		} elseif(empty($_POST['destination'])) {
+		if(empty($_POST['destination'])) {
 			$location = LOCATION . BASE . ADMINFOLDER . 'dashboard' . URL_CAP;
 			headerLocationRedirect($location);
 		} else {
 			$location = strip_tags($_POST['destination']);
 			headerLocationRedirect($location);
 		}
-		
+
 		exit();
 	} else {
 		addNote('Your username or password is invalid. Please try again.', 'error');
