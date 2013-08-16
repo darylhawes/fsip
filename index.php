@@ -38,12 +38,15 @@ $image_ids = new Find('images');
 
 // no difference between first page and subsequent. 
 // Here is a good place to insert a user preference for how many items to show per page. DEH
-$image_ids->page(null, 12, null); //page($page=Page number, $limit=Number of items per page, $first=Number of items on the first page (if different)) {
-//$image_ids->page(null, 12, 1); //DEH mod
+//
+//page($page=Page number, $limit=Number of items per page, $first=Number 
+//   of items on the first page (if different)) {
+//$image_ids->page(null, 12, null); 
+$image_ids->page(null, 12, 1); //DEH mod
 
 
-if ($with_id) { 
-	$image_ids->with($with_id); 
+if ($with_id) {
+	$image_ids->with($with_id);
 }
 $image_ids->published();
 $image_ids->privacy('public');
@@ -71,7 +74,12 @@ $template_variable['Total_Image_Count'] = $image_ids->total_image_count;
 //echo "in index 6<br />";
 
 $images = new Image($image_ids);
-//echo "in index 6.1<br />";
+
+//echo "Image Ids: <br />";
+//print_r($image_ids);
+//echo "Images: <br />";
+//print_r($images);
+
 $images->formatTime();
 //echo "in index 6.2<br />";
 $images->getSizes();
@@ -94,18 +102,19 @@ $images->addSequence('medium_last', 3);
 //echo "in index 6.11<br />";
 $images->hook();
 
-//echo "in index 7<br />";
+//echo "in index 7 - header<br />";
 $header = new Canvas;
 //echo "in index 7.1<br />";
 $header->load('header');
 //echo "in index 7.2<br />";
 $header->assignArray($template_variable);
 //echo "in index 7.3<br />";
-$header->setTitle('Welcome');
-//echo "in index 7.4<br />";
-$header->display();
-//echo "in index 8<br />";
 
+// Why "Welcome" and not an admin customizable page title?
+$header->setTitle('Welcome'); 
+$header->display();
+
+//echo "in index 8<br />";
 $page_ids = new Find('pages');
 $page_ids->find();
 
@@ -116,22 +125,29 @@ $set_ids->find();
 
 $sets = new Set($set_ids);
 
+//echo "in index 9 - directory<br />";
 $directory = new Canvas;
 $directory->load('directory');
 $directory->assignArray($template_variable);
 $directory->loop($pages);
 $directory->loop($sets);
 $directory->display();
+//echo "in index 9.5<br />";
 
+//print_r($images);
+//echo "in index 10 - indexmain<br />";
 $index = new Canvas;
 if ($image_ids->page == 1) {
+//echo "index 10.1 - loading index page<br />";
 	$index->load('index');
 } else {
+//echo "in index 10 - loading index_sub page<br />";
 	$index->load('index_sub');
 }
 $index->assignArray($template_variable);
 $index->loop($images);
 $index->display();
+//echo "end index 10.5<br />";
 
 $footer = new Canvas;
 $footer->load('footer');
