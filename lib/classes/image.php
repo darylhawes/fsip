@@ -12,6 +12,8 @@
  * @version 1.1
  */
 
+//require_once('../../config.php');
+
 class Image {
 	public $comments;
 	public $images = array();
@@ -50,9 +52,10 @@ class Image {
 		}
 		
 		$this->image_ids = convertToIntegerArray($image_ids);
-		
+
 		// Error checking
-		$this->sql = ' WHERE (images.image_id IS NULL)';
+//		$this->sql = ' WHERE (images.image_id IS NULL)';
+
 		if (count($this->image_ids) > 0) {	
 			$this->sql = ' WHERE (images.image_id IN (' . implode(', ', $this->image_ids) . '))';
 		}
@@ -211,15 +214,15 @@ class Image {
 		// Process imported images
 		$this->findColors();
 		
-		if ($this->returnConf('shoe_exif')) {
+		if (returnConf('shoe_exif')) {
 			$this->readEXIF();
 		}
 		
-		if ($this->returnConf('shoe_iptc')) {
+		if (returnConf('shoe_iptc')) {
 			$this->readIPTC();
 		}
 		
-		if ($this->returnConf('shoe_geo')) {
+		if (returnConf('shoe_geo')) {
 			$this->readGeo();
 		}
 		
@@ -298,8 +301,8 @@ class Image {
 				}
 				
 				// Apply watermark
-				if ($this->returnConf('thumb_watermark') and ($size_watermark == 1)) {
-					$watermark = correctWinPath(PATH . WATERMARKS . $size_label . '.png');
+				if (returnConf('thumb_watermark') and ($size_watermark == 1)) {
+					$watermark = Files::correctWinPath(PATH . WATERMARKS . $size_label . '.png');
 					if (!file_exists($watermark)) {
 						$watermark = Files::correctWinPath(PATH . WATERMARKS . 'watermark.png');
 					}
@@ -1130,7 +1133,7 @@ class Image {
 			
 			$fields = array('image_title' => @$title,
 				'image_description_raw' => @$description,
-				'image_description' => $this->nl2br(@$description));
+				'image_description' => fsip_nl2br(@$description));
 			
 			$image = new Image($images[$i]['image_id']);
 			$image->updateFields($fields, false);
