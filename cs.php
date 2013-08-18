@@ -1,17 +1,20 @@
 <?php
 
-/*
-// FSIP based on Alkaline
-// Alkaline Copyright (c) 2010-2012 by Budin Ltd. Released to the wild under MIT license.
-// http://www.alkalineapp.com/
-*/
-
-//
 /**
  * Compatibility Suite class - 
  *   check that the hosting environment supports the componenets needed by FSIP.
  *
+ * FSIP based on Alkaline
+ * 
+ *
+ * http://www.alkalineapp.com/
+ * Alkaline Copyright (c) 2010-2012 by Budin Ltd. Released to the wild under MIT license.
+ *
+ * @package FSIP
+ * @since 1.2
  */
+
+
 class CS {
 	const build = 3;
 	const version = '1.2';

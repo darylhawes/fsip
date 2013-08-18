@@ -1,4 +1,14 @@
 <?php 
+/**
+ * FSIP based on Alkaline
+ * 
+ *
+ * @package FSIP
+ * @author Daryl Hawes
+ * @version 1.2
+ * @since 1.2
+ */
+
 //echo "in admin header<br />";
 if (!empty($user) and $user->hasPermission('admin', false)) { 
 	global $db;

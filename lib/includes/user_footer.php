@@ -1,4 +1,15 @@
-		</div>
+<?php 
+/**
+ * FSIP based on Alkaline
+ * 
+ *
+ * @package FSIP
+ * @author Daryl Hawes
+ * @version 1.2
+ * @since 1.2
+ */
+ ?>
+ 		</div>
 		<hr class="invisible" />
 		<div id="footer" class="span-24 last">
 			Powered by <a href="http://github.com/darylhawes/fsip">FSIP</a> based on <a href="http://www.alkalineapp.com/">Alkaline</a> under MIT license.

@@ -1,15 +1,17 @@
 <?php
 
-/*
-// FSIP based on Alkaline
-// Alkaline Copyright (c) 2010-2012 by Budin Ltd. Released to the wild under MIT license.
-// http://www.alkalineapp.com/
-*/
-
 /**
+ * FSIP based on Alkaline
+ * 
+ *
+ * http://www.alkalineapp.com/
+ * Alkaline Copyright (c) 2010-2012 by Budin Ltd. Released to the wild under MIT license.
+ *
+ * @package FSIP
  * @author Budin Ltd. <contact@budinltd.com>
- * @copyright Copyright (c) 2010-2012, Budin Ltd.
+ * @copyright Copyright (c) 2010-2012, Budin Ltd. (MIT licensed)
  * @version 1.1
+ * @since 1.1
  */
 
 class Geo {

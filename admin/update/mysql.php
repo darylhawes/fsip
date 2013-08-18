@@ -1,6 +1,20 @@
 <?php 
 
+/**
+ * FSIP based on Alkaline
+ * 
+ *
+ * http://www.alkalineapp.com/
+ * Alkaline Copyright (c) 2010-2012 by Budin Ltd. Released to the wild under MIT license.
+ *
+ * @package FSIP
+ * @subpackage admin
+ * @since 1.2
+ */
+
+// example of build define in fsip_lib.php
 //define('FSIP_BUILD', '2013080400'); // YYYYMMDDXX, used by update system when applying database updates
+
 require_once('../config.php');
 
 global $db;

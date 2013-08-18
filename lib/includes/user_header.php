@@ -1,4 +1,15 @@
-<?php if(!empty($user) and $user->isLoggedIn()){ $badges = $fsip->getBadges(); } ?>
+<?php 
+/**
+ * FSIP based on Alkaline
+ * 
+ *
+ * @package FSIP
+ * @author Daryl Hawes
+ * @version 1.2
+ * @since 1.2
+ */
+  if(!empty($user) and $user->isLoggedIn()){ $badges = $fsip->getBadges(); } 
+?>
 
 <!DOCTYPE html>
 <html lang="en">

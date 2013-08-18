@@ -1,10 +1,14 @@
 <?php
 
-/*
-// FSIP based on Alkaline
-// Alkaline Copyright (c) 2010-2012 by Budin Ltd. Released to the wild under MIT license.
-// http://www.alkalineapp.com/
-*/
+/**
+ * FSIP based on Alkaline
+ * 
+ *
+ * @package FSIP
+ * @author Daryl Hawes
+ * @version 1.2
+ * @since 1.2
+ */
 
 require_once('./../config.php');
 

@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * FSIP based on Alkaline
+ * 
+ *
+ * @package FSIP
+ * @author Daryl Hawes
+ * @version 1.2
+ * @since 1.2
+ */
+ 
 class Debugger {
 	
 	/**

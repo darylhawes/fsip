@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * FSIP based on Alkaline
+ * 
+ *
+ * @package FSIP
+ * @author Daryl Hawes
+ * @version 1.2
+ * @since 1.2
+ */
+
 define('FSIP_VERSION', '1.2'); // human readable version number
 define('FSIP_BUILD', '2013080400'); // YYYYMMDDXX, used by update system when applying database updates
 define('COPYRIGHT', '');

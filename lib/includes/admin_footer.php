@@ -1,4 +1,14 @@
-
+<?php 
+/**
+ * FSIP based on Alkaline
+ * 
+ *
+ * @package FSIP
+ * @author Daryl Hawes
+ * @version 1.2
+ * @since 1.2
+ */
+ ?>
 		</div>
 		<hr class="invisible" />
 		<div id="debug" class="span-24 quiet last">
