@@ -1,4 +1,9 @@
-Showbox and upload progress bars are not working. They should be smoother and more obvious in what they're doing.
+Admin/appearance/bug:
+	Shoebox and upload progress bars are not working. 
+	Shoebox and upload progress bars should be smoother and more obvious in what they're doing.
+________
+
+Will need a project logo and mini icon for URL bar.
 
 _______
 Move "themes" and "extensions" folder into a subfolder? "watermarks" as well
@@ -15,7 +20,7 @@ ADMIN - MAINTENANCE
 Add an admin task.php file to view the db/log.txt database transaction log
 _______
 	
-// DEH TODO: in dashboard.php census instead of reporting only image #: 
+// DEH TODO: in dashboard.php census: instead of reporting only image #: 
 	report publisher images # vs. total images in dbase, maybe also display #deleted images!
 ________
 USER
@@ -26,7 +31,7 @@ Tumblr link, youtube links.
 ________
 USER/THEME
 Ensure that the user who uploaded the file and their profile settings are shown for every image displayed.
-	Probably requires the $user overhaul to create new methods to get a user details from ID, etc.
+	Probably requires the $user overhaul to create new methods to get a user's details from ID, etc.
 _________
 USER
 If the user is logged in and viewing the normal user template image page 
@@ -177,13 +182,7 @@ add an admin moderation process for file submissions
 _________
 add a reviewer comments field to image editing options.
 ________
-Will need a project logo and mini icon for URL bar.
-
-________
 Filters for Royalty Free. Add sort/search/filter by rights option?
-______
-
-run phpdoc and process phpdoc output into docs/ folder when far enough along.
 
 ________
 
@@ -410,3 +409,9 @@ example from the goog
 
 example 2:
 http://www.webmonkey.com/2010/02/get_started_with_google_geocoding_via_http/
+
+
+
+______
+
+run phpdoc and process phpdoc output into docs/ folder when far enough along.
